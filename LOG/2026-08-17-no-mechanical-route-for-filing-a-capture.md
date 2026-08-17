@@ -1,4 +1,4 @@
-# [HASH] — filing a capture gets a tool, so an append can no longer land in the wrong section
+# dc52025 — filing a capture gets a tool, so an append can no longer land in the wrong section
 
 Filing was the last queue operation still done by hand. The mover covers moves and deletions; nothing appended a new entry, so every capture was written by a text edit anchored to whatever sat at the end of the file — and an anchor read before the file changed underneath it put a capture into Processed, above the readiness line, where a run would have tried to build three undesigned routes.
 

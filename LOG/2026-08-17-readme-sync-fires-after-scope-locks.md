@@ -1,4 +1,4 @@
-# [HASH] — the close gets a standing permitted set, so a required write finally has a permitted moment
+# dc52025 — the close gets a standing permitted set, so a required write finally has a permitted moment
 
 The README feature-list sync rides the SPEC-sync trigger and fires at the close, after scope is locked — so the file it names is always outside the run's list and all three genuinely needed corrections were denied. Not a scoping mistake: a run self-scopes from the items it builds, none of which named README.md, and none should have, because the obligation is a consequence of several items together.
 

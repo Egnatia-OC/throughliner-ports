@@ -1,4 +1,4 @@
-# [HASH] — a routed message names its sender in a committed document, against a rule that already forbids it
+# dc52025 — a routed message names its sender in a committed document, against a rule that already forbids it
 
 Found while sending a reply, and worked immediately on the user's instruction rather than deferred.
 

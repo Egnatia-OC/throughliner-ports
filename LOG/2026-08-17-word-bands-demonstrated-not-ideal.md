@@ -1,4 +1,4 @@
-# [HASH] — the word bands stand, the claim narrows to "demonstrated sufficient", and four consequences follow
+# dc52025 — the word bands stand, the claim narrows to "demonstrated sufficient", and four consequences follow
 
 Four captures from the measurement run were taken as one subject, governed by a concern the user raised before any of them was opened: that July's figures may have been elevated into THE standard when they are only what we used to have — real evidence that the work can be done at lower counts, and no evidence at all about an ideal length.
 

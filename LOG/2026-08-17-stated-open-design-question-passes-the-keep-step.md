@@ -1,4 +1,4 @@
-# [HASH] — a file entry contingent on an unmade decision now fails the keep-step's second limb
+# dc52025 — a file entry contingent on an unmade decision now fails the keep-step's second limb
 
 Reported by a consumer project: an item passed /plan, was cleared to run, and halted a build run because it stated one design question as open and instructed that it "should be settled at the start of the build rather than during it". Its file list, for the affected file, read "any affordance the link-address question settles on".
 

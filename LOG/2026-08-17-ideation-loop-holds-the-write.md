@@ -1,4 +1,4 @@
-# [HASH] — an ideation loop: Claude offers to capture and holds the write until the design settles
+# dc52025 — an ideation loop: Claude offers to capture and holds the write until the design settles
 
 The write-first rule's test — is the previous version recoverable without the user? — holds, and is untouched. What it assumed silently is that the text being written is *finished*. Mid-design it is not, so it fired at every turn of a discussion that had not settled: six writes across one continuous conversation, with the two re-written items landing at 634 and 586 words against a ceiling of 265.
 

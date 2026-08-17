@@ -1,4 +1,4 @@
-# [HASH] — the always-loaded admission test gains a limb rather than being restated
+# dc52025 — the always-loaded admission test gains a limb rather than being restated
 
 The always-loaded file admits a rule only if it fires in all four skills, but the file governs every reply including conversation with no skill running. The test and the file disagreed about what the file is for, and the test is the one that gets applied.
 

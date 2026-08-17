@@ -1,4 +1,4 @@
-# [HASH] — the /plan carve-out gains the word "before", which is the whole of what it was missing
+# dc52025 — the /plan carve-out gains the word "before", which is the whole of what it was missing
 
 The user noticed that Claude consistently offers to *capture* something it raises mid-planning, rather than asking whether to work it now — consistently enough, across sessions, that she took it for the design. It looked like a contradiction between the always-loaded rules and plan.md.
 

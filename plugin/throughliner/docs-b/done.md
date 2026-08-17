@@ -10,6 +10,20 @@ note: >
 
 Close the current session — record what happened, update docs, commit.
 
+## Declare the close  [SILENT]
+
+**First action of every close: write an empty file named
+`.throughliner-close-active` into the session scratchpad directory, and delete it
+as the last action before the close finishes.** While it exists the scope-lock
+permits the few files the method's own close obligations name — `README.md`
+today — which a build's file list can never contain, because those obligations
+are consequences of a whole run rather than of any one item. Outside the close
+those paths are denied exactly as before.
+
+Same declaration mechanism /setup uses, and deliberately narrower: /setup's
+marker permits everything for the length of its run, this one permits a fixed
+short list. If the close dies before removing it, the scratchpad clears itself.
+
 ## Route by session shape  [SILENT]
 
 Check for **this session's** build working file, `_build-<session-id>.md` — not
@@ -241,6 +255,32 @@ one place because the entry format is shared: adding it to `done-build.md` and
 `done-plan.md` separately would put the same rule in two files that already point
 here.
 
+**Where the section goes depends on how many entries this close writes**, which
+the close already knows:
+
+```
+close writes ONE entry      ->  `Also in this chat:` stays inline, unchanged.
+                                Every planning close is this case.
+close writes SEVERAL        ->  the chat-level record becomes its OWN entry,
+  entries                       named for the chat rather than for a slug, with
+                                its own line in LOG/index.md.
+```
+
+**The condition falls out of the close's own shape rather than being an
+exception**: it reads off how many entries are being written and needs no
+carve-out. On one entry per built item, the chat-level content belongs to none of
+them — writing it on every entry duplicates one text across twenty-odd files, and
+writing it on one makes a later reader guess which. Its own entry matches what
+the content is, and it is findable the ordinary way, from its own index line.
+
+The two placement conventions were weighed and lost: "the first entry" and "the
+last entry written" both attach chat-level content to an item it does not belong
+to, and then need a convention for a reader to find it. **The cost is one extra
+file and one extra index line per multi-item close.**
+
+It is not a new kind of artifact — a log entry with a different filename — so the
+index format is unchanged.
+
 **The frame, identical for every flavor.** Write the entry, then report in one
 line what landed and where. A revert undoes a LOG entry, so it doesn't wait on
 approval — the commit message does, because a commit is harder to unwind and
@@ -389,6 +429,26 @@ two things:
    # uncleared flag at a ship close means the model was bypassed.
 ```
 
+## Triage any waiting mail  [SILENT] when the mailbox is empty; [BRIEF] when it isn't
+
+Read anything still sitting in this project's `INBOX/`, route it through the
+three-way triage, and move each file to `INBOX/archive/`. Full mechanics —
+`${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md`.
+
+**The close is the site because it is the one skill that always runs**, which is
+the same argument that sited the wind-down re-scan below. /plan and /next open
+mail at their own openings, but only mail already waiting when the chat began,
+and only if one of those skills is run at all — so a chat that runs neither, or
+one where mail lands after the opening, leaves it sitting. The close catches
+exactly that case.
+
+**Filing, not processing.** Anything a message raises becomes a capture in
+Unprocessed; deciding its fate stays /plan's, like every other capture.
+
+**Where a reply is owed, draft it here** and show the exact wording before
+anything is sent. This is the moment that draft belongs to — a run is unattended
+in practice, so mid-run is the wrong place for text that leaves the machine.
+
 ## Wind-down re-scan (file-only)  [BRIEF, PROMPT]
 
 Commit core points here, so it runs at **every** /done close regardless of session
@@ -492,6 +552,9 @@ If nothing session-created looks throwaway, say so in one line and move on.
 ## Commit core  [BRIEF, PROMPT]
 
 Every sub-doc's Commit step points here.
+
+**Run the mail triage before staging** — anything it files, and the archive
+moves it makes, belong in this same commit.
 
 **Run the wind-down re-scan before staging** — it files any un-flagged captures
 from this session's discussion so they land in this same commit. File-only.

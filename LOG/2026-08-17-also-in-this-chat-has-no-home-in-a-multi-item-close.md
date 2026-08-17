@@ -1,4 +1,4 @@
-# [HASH] — chat-level record gets its own entry when a close writes several
+# dc52025 — chat-level record gets its own entry when a close writes several
 
 The `Also in this chat:` section was authored against one entry per session, which is what a planning close used to write. A build close writes one entry per item, and the chat-level content belongs to none of them: on every entry it duplicates one text many times, on none it is lost. The close that first applied the rule put it on the first item's entry and recorded that as arbitrary.
 

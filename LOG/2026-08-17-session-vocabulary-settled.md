@@ -1,4 +1,4 @@
-# [HASH] — a run is a command executing, a session is the chat: five captures collapse into an audit and a corrections build
+# dc52025 — a run is a command executing, a session is the chat: five captures collapse into an audit and a corrections build
 
 Five captures from the terminology survey were taken as one subject, because settling them apart would have answered the same question five times. Four of them were waiting on a decision only the user could make.
 

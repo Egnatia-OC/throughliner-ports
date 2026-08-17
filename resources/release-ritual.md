@@ -62,10 +62,29 @@ every later update was a silent no-op, and a /plan session ran half its length
 loading procedure docs from a docset that had already been retired. Bumping to
 `-test2` fixed it instantly.
 
-1. Bump the test suffix in `plugin/throughliner/.claude-plugin/plugin.json`: read the
-   current version and increment N (`-test1` → `-test2`), or start at `-test1` if
-   the base carries no suffix (`1.12.0` → `1.12.0-test1`). Never skip this on the
-   grounds that a rezip already happened.
+1. Bump the test suffix in `plugin/throughliner/.claude-plugin/plugin.json`. **Read
+   the next number from the installed builds in the plugin cache — take the
+   highest `-testN` present on this release line and add one** — not from
+   `plugin.json`. List the cache directory to see them:
+   `Get-ChildItem "$env:USERPROFILE\.claude\plugins\cache\flintcraft\throughliner"`.
+   Bump on every rezip, whatever the reason for it.
+
+   **The cache is the authority because it is what the CLI matches against.**
+   `claude plugin update` keys on the version string, so re-installing a string
+   the CLI has already seen reports success, re-snapshots nothing, and leaves the
+   session believing it runs new code — the silent no-op this bump exists to
+   prevent, which cost most of a session on 2026-08-09.
+
+   **`plugin.json` cannot answer this**, and the branch that read it is deleted
+   rather than left standing: the push strips the suffix, so the committed
+   version always carries none, and every rezip following a push therefore read a
+   bare version and named `-test1` — a build that already existed. That misfired
+   twice, on 2026-08-14 and 2026-08-15, and both times was saved only by someone
+   listing the cache, which nothing asked for. This writes that habit in.
+
+   A release bump starts a new release line, which genuinely has no prior test
+   builds, so the first rezip after one finds nothing in the cache for that line
+   and starts at `-test1`.
 2. Delete all `__pycache__` folders under `plugin/throughliner/` so compiled Python
    bytecode never gets snapshotted into the installed host (disposable — Python
    regenerates them as needed):
@@ -125,6 +144,13 @@ loading procedure docs from a docset that had already been retired. Bumping to
    silent-no-op failure the bump rule describes, and it caught a real shipped bug
    the day it was first written down. Its honest limit: it proves the installed copy
    matches the source, and cannot prove the stamp function computes the right thing.
+
+   **The stamp hashes `plugin.json` with its `version` key dropped**, so the
+   `-testN` suffix the rezip just set does not itself move it. That is what makes
+   the comparison meaningful across the rezip-then-push sequence: without the
+   exclusion the push's version-clean moved the source stamp on its own, and the
+   host read as stale in exactly the sessions most likely to be checking. It also
+   means a pure release bump leaves the stamp where it is.
 7. **Check the CLI's version against the app's.** The `claude` CLI and the desktop
    app can be on different builds, and a plugin behaviour that depends on a recent
    Claude Code version will then work in one and not the other. Note the mismatch

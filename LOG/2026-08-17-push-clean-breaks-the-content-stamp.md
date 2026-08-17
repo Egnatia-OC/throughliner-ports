@@ -1,4 +1,4 @@
-# [HASH] — the content stamp stops hashing the version key, so it stops lying right after a rezip
+# dc52025 — the content stamp stops hashing the version key, so it stops lying right after a rezip
 
 The rezip installs a `-testN` version and the push resets it; separately, the content stamp hashes the installed plugin's files and a session compares it against the source. Both correct alone, and together they made the stamp report the host as stale immediately after a refresh — measured, not reasoned about: identical stamps after installing, then two different values after the version-clean and no other edit.
 

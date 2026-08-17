@@ -1,4 +1,4 @@
-# [HASH] — a ladder rung can become live again, and the throughput floor goes stale the same way
+# dc52025 — a ladder rung can become live again, and the throughput floor goes stale the same way
 
 The user raised this from the session in progress: having just agreed to file an audit that blocks a corrections build, she observed that the ordering rung should now move back **up**, and that this is not obvious.
 

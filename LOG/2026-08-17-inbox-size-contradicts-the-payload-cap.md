@@ -1,4 +1,4 @@
-# [HASH] — message bodies leave the session briefing and become a directive with a check
+# dc52025 — message bodies leave the session briefing and become a directive with a check
 
 The cap turned out not to be ours. Claude Code limits hook output to 10,000 characters, sourced to Anthropic's own reference and two issue reports, and past that limit the harness discards the whole payload and substitutes a short preview plus a file path. So enough unread mail costs a session its project state, its queue facts and its rules directive — not merely its mail.
 

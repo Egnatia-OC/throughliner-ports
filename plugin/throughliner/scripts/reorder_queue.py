@@ -17,6 +17,7 @@ Contract:
   python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> [--position <TOP|BOTTOM>] [--marker-after ...]
   python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> --position <BEFORE|AFTER> <anchor-slug> [--marker-after ...]
   python reorder_queue.py <queue_path> --delete <slug> <Section>
+  python reorder_queue.py <queue_path> --append <Section> --body <path>
 
   <section>  one of: Processed | Unprocessed
   <slug...>  the FULL desired order of that section's work-item slugs, top to
@@ -48,6 +49,14 @@ Contract:
              in the target section as its next bare word. The
              heading text is NOT rewritten — a processed item's new description
              is a separate deliberate edit, made after the mechanical move.
+  --append <Section> --body <path>  file one NEW entry at the bottom of a
+             section, addressed by section rather than by an anchor — so a file
+             that changes underneath the write cannot send it into the wrong
+             one. The entry's text comes from a file (write it to the session
+             scratchpad first), because a multi-paragraph rationale does not
+             survive shell quoting. Refuses a body that is not a single
+             `#### ` entry with a slug, and refuses a slug already in use.
+
   --delete <slug> <Section>  remove one item's whole block, addressed by slug.
              The removal every /plan keep-or-delete decision and every close
              clearing shipped work needs — and the one operation this script
@@ -375,6 +384,107 @@ def write_verified(queue_path, new_lines, absent=(), present=()):
                 % (slug, section))
 
 
+def append_item(queue_path, section, body_path):
+    """Append one new entry at the bottom of a named section.
+
+    The last queue operation still done by hand. Filing a capture had no tool,
+    so every one was an exact-string edit anchored to whatever text sat at the
+    end of the file — and an anchor read before the file changed underneath it
+    puts the append in the wrong place. That happened: a capture landed in
+    Processed above the readiness line, where a run would have tried to build an
+    item whose whole content was three undesigned routes, and it was found only
+    because the user asked for an unrelated summary. Two safe operations, the
+    mover and the edit, composed into an unsafe one.
+
+    Addressed by section rather than by anchor, so there is no anchor to go
+    stale. The gain is the mover's own, applied to the operation it never
+    covered.
+
+    **The body arrives by FILE, never on the command line.** A multi-paragraph
+    rationale passed as an argument breaks on Windows over quoting, newlines and
+    em-dashes. Claude writes the text to the session scratchpad with the ordinary
+    editing tools — that path is already permitted — and this reads it. The queue
+    itself is still only ever touched by this script.
+
+    Refuses rather than guesses: a body that is not a single `#### ` entry with a
+    slug, or a slug already present in either section, exits non-zero and changes
+    nothing.
+    """
+    if section not in ('Processed', 'Unprocessed'):
+        die("section must be Processed or Unprocessed, got: " + section)
+
+    try:
+        with open(body_path, 'r', encoding='utf-8', newline='') as f:
+            body_lines = f.read().splitlines(keepends=True)
+    except OSError as exc:
+        die("--body could not be read: %s" % exc)
+
+    while body_lines and not body_lines[0].strip():
+        body_lines.pop(0)
+    while body_lines and not body_lines[-1].strip():
+        body_lines.pop()
+    if not body_lines:
+        die("--body file is empty. It must hold one entry, starting with a "
+            "'#### ' heading carrying a [slug].")
+    if not body_lines[0].startswith('#### '):
+        die("--body must start with a '#### ' heading line, got: %r"
+            % body_lines[0][:60])
+
+    headings = [i for i, l in enumerate(body_lines) if l.startswith('#### ')]
+    if len(headings) > 1:
+        die("--body holds %d '#### ' headings. Append one entry per call, so "
+            "each one's placement is checked on its own." % len(headings))
+
+    new_slug = heading_slug(body_lines[0])
+    if not new_slug:
+        die("--body heading carries no [slug]. The slug sits at the END of the "
+            "heading line, in square brackets.")
+
+    with open(queue_path, 'r', encoding='utf-8', newline='') as f:
+        lines = f.read().splitlines(keepends=True)
+    sections = parse(lines)
+    if section not in sections:
+        die("section '%s' not found in %s" % (section, queue_path))
+
+    for name, (s, e) in sections.items():
+        for existing in section_slugs(lines, name):
+            if existing == new_slug:
+                die("slug '%s' is already an entry in section %s. Slugs are "
+                    "unique across the queue — pick another, or edit the "
+                    "existing entry instead." % (new_slug, name))
+
+    start, end = sections[section]
+    preamble, blocks, marker_after, had_marker = split_blocks(lines[start:end])
+
+    if not body_lines[-1].endswith('\n'):
+        body_lines[-1] += '\n'
+    new_blocks = blocks + [(new_slug, body_lines)]
+
+    # The marker keeps its anchor, so an append to Processed lands BELOW the
+    # readiness line whenever the marker is anchored to an existing item. That
+    # is the safe direction: a new entry is never silently cleared to run.
+    pref = 'TOP' if marker_after is None else marker_after
+    out = assemble_section(preamble,
+                           elements_with_marker(new_blocks, had_marker, pref))
+    new_lines = lines[:start] + out + lines[end:]
+
+    # ---- Self-checks: refuse to write on any failure ----
+    out_text = ''.join(out)
+    for s, blk in blocks:
+        if ''.join(blk) not in out_text:
+            die("self-check failed: existing block for [%s] changed content" % s)
+    if ''.join(body_lines) not in out_text:
+        die("self-check failed: the appended entry is not present verbatim")
+    if had_marker != any(MARKER_RE.match(l) for l in out):
+        die("self-check failed: marker presence changed")
+    if lines[:start] != new_lines[:start] or lines[end:] != new_lines[start + len(out):]:
+        die("self-check failed: content outside section %s changed" % section)
+
+    write_verified(queue_path, new_lines, present=((new_slug, section),))
+    print("reorder_queue: appended to %s: %s"
+          % (section, body_lines[0].rstrip('\n')))
+
+
 def delete_item(queue_path, slug, section):
     """Remove one work item's whole block, addressed by slug.
 
@@ -461,8 +571,14 @@ def delete_item(queue_path, slug, section):
     # deletion can happen by hand edit, bypassing this script entirely.
     dependents = []
     for i, line in enumerate(new_lines):
-        m = re.match(r'^Blocked by:\s*\[([a-z0-9][a-z0-9-]*)\]', line.strip(), re.I)
-        if m and m.group(1) == slug:
+        # `Blocked by:` may name several slugs, so every one on the line is read
+        # rather than only the first. A single-slug match missed a dependent
+        # whose second or third blocker was the item being deleted, and that is
+        # exactly the item whose premise most needs re-examining.
+        stripped_line = line.strip()
+        names = (re.findall(r'\[([a-z0-9][a-z0-9-]*)\]', stripped_line)
+                 if re.match(r'^Blocked by:', stripped_line, re.I) else [])
+        if slug in names:
             heading = None
             for j in range(i, -1, -1):
                 if ITEM_RE.match(new_lines[j]):
@@ -684,6 +800,30 @@ def main():
         except IndexError:
             die("--marker-after needs a value (a slug, TOP, or BOTTOM)")
         args = args[:k] + args[k + 2:]
+
+    if '--append' in args:
+        k = args.index('--append')
+        try:
+            ap_section = args[k + 1]
+        except IndexError:
+            die("--append needs a section: <Processed|Unprocessed>")
+        rest = args[:k] + args[k + 2:]
+        if '--body' not in rest:
+            die("--append needs --body <path> — the entry's text lives in a "
+                "file, not on the command line, because a multi-paragraph "
+                "rationale does not survive shell quoting. Write it to the "
+                "session scratchpad with the editing tools first.")
+        b = rest.index('--body')
+        try:
+            body_path = rest[b + 1]
+        except IndexError:
+            die("--body needs a path to the file holding the entry's text")
+        rest = rest[:b] + rest[b + 2:]
+        if len(rest) != 1:
+            die("usage: reorder_queue.py <queue_path> --append "
+                "<Processed|Unprocessed> --body <path>")
+        append_item(rest[0], ap_section, body_path)
+        return
 
     if '--delete' in args:
         k = args.index('--delete')

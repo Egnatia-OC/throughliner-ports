@@ -52,7 +52,12 @@ for _stream in (sys.stderr, sys.stdout):
 
 SLUG_RE = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]\s*$")
 ITEM_RE = re.compile(r"^####\s+\S")
-BLOCKED_RE = re.compile(r"^Blocked by:\s*\[([a-z0-9][a-z0-9-]*)\]", re.IGNORECASE)
+# `Blocked by:` takes ONE OR MORE slugs, and an item lifts only when every one
+# of them resolves. Matched as a line, then every `[slug]` on it is read out; a
+# single-slug pattern silently dropped the rest, which is how a group condition
+# would report liftable with most of the group outstanding.
+BLOCKED_RE = re.compile(r"^Blocked by:", re.IGNORECASE)
+SLUG_REF_RE = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]")
 # `Not before: YYYY-MM-DD` — the second holding fact, and the only one that
 # resolves without anyone confirming it. Printed with whether the date has
 # passed, so the lift is a fact on the line rather than a date the reader has
@@ -174,7 +179,8 @@ def parse(path):
                 "flavor": flavor,
                 "heading": heading,
                 "slug": slug,
-                "blocked_by": None,
+                # A LIST — one or more blockers, all of which must resolve.
+                "blocked_by": [],
                 "not_before": None,
                 "flag": None,
                 "runs_alone": False,
@@ -199,9 +205,10 @@ def parse(path):
             current["last_line"] = lineno
 
         if current is not None:
-            blocked = BLOCKED_RE.match(stripped)
-            if blocked:
-                current["blocked_by"] = blocked.group(1)
+            if BLOCKED_RE.match(stripped):
+                for ref in SLUG_REF_RE.findall(stripped):
+                    if ref not in current["blocked_by"]:
+                        current["blocked_by"].append(ref)
             not_before = NOT_BEFORE_RE.match(stripped)
             if not_before:
                 current["not_before"] = not_before.group(1).strip()
@@ -542,13 +549,23 @@ def _blocker_loop(item, items):
     fix that session.
     """
     by_slug = {i["slug"]: i for i in items if i["slug"]}
+    # Depth-first over the blocker graph, because an item may name several
+    # blockers and a cycle can run through any one of them. The single-successor
+    # walk this replaces followed only the first named blocker, so a loop
+    # reachable through the second was invisible.
     seen = set()
-    current = item
-    while current is not None and current["blocked_by"]:
+    stack = [item]
+    while stack:
+        current = stack.pop()
+        if current is None or not current["blocked_by"]:
+            continue
         if current["slug"] in seen:
             return True
         seen.add(current["slug"])
-        current = by_slug.get(current["blocked_by"])
+        for ref in current["blocked_by"]:
+            nxt = by_slug.get(ref)
+            if nxt is not None:
+                stack.append(nxt)
     return False
 
 
@@ -639,7 +656,14 @@ def render(items, root="", queue_path="QUEUE.md"):
             slug = item["slug"] or "NO-SLUG"
             line = f"- [{slug}] ({', '.join(bits)}) {item['heading']}"
             if item["blocked_by"]:
-                line += f"  | Blocked by: [{item['blocked_by']}] -> {locate(item['blocked_by'], items)}"
+                # Every blocker is printed with where it sits, because the item
+                # lifts only when all of them resolve — printing the first alone
+                # would read as one outstanding dependency when there are four.
+                shown = ", ".join(
+                    f"[{ref}] -> {locate(ref, items)}"
+                    for ref in item["blocked_by"]
+                )
+                line += f"  | Blocked by: {shown}"
             if item["not_before"]:
                 line += f"  | Not before: {item['not_before']} -> {not_before_state(item['not_before'])}"
             if item["flag"]:

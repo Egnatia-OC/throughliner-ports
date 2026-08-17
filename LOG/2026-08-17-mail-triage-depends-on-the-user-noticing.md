@@ -1,4 +1,4 @@
-# [HASH] — the close gains a mail step, because it is the one skill that always runs
+# dc52025 — the close gains a mail step, because it is the one skill that always runs
 
 Two messages arrived mid-chat, nothing triaged them, the briefing outgrew a shipped test, and a close halted on a failure several steps removed from anything the person committing had done. What broke the loop was the user telling Claude to file them — nothing in the method did, and nothing would have.
 

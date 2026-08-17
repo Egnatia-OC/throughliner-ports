@@ -1,4 +1,4 @@
-# [HASH] — look up how a concept is taught at the moment explaining it fails
+# dc52025 — look up how a concept is taught at the moment explaining it fails
 
 The item proposed reaching outward for teaching methods rather than fixing a form in advance, on the user's reasoning that researching pedagogy up front cannot work because nobody knows which concept will need explaining. Two things were left open and both closed cleanly.
 

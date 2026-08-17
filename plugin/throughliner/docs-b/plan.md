@@ -166,7 +166,23 @@ Runs alone
 
 ## Step 1: Read state and entry question
 
-**Run the queue digest instead of reading QUEUE.md whole**, then read SPEC.md:
+**Run the queue digest, then read QUEUE.md whole, then read SPEC.md.** Both, in
+that order — the digest for the facts only a script can compute, then the file
+for the reasoning it deliberately omits.
+
+**Why both.** The queue is one file because reasoning across items splits badly
+when they are apart, and a digest of headings restores exactly that split:
+headings together, reasoning apart. Blockers can sit anywhere in the queue, and
+so can the right place to fold something in, so every item bears on any planning
+session. **And half of what the digest prints cannot be got by reading at all** —
+how long an item has been held, where a named blocker sits, which files two items
+both name, whether an item's premise cites work that has shipped. Reading gives
+prose; the script gives computed facts.
+
+**The cost is accepted knowingly**: the whole queue at an opening, falling as the
+word bands bring entry lengths down. A conditional read was offered and refused,
+because a condition would have to predict which items bear on each other — the
+thing the read exists to discover.
 
 ```
 python <plugin-root>/scripts/queue_digest.py <QUEUE.md path>
@@ -178,9 +194,11 @@ It prints one line per queue entry — section, side of the readiness marker, fl
 heading, slug, any `Blocked by:` with the blocker's resolved location, any
 red-flag state, any slug the item's prose cites that already has a LOG entry, and
 the date the item first appeared in the queue. It then prints two blocks: the
-placement contradictions, and every file named by two or more items. That is
-everything this step's queue-wide reasoning consumes; the rationale prose it
-omits is read per item, at the moment Step 2 presents that item.
+placement contradictions, and every file named by two or more items. Those are
+the computed facts. **The rationale prose it omits comes from the read of the
+file** — an instruction one item carries about another's ordering sits in that
+prose and appears on no digest line, which is how a stated ordering was missed
+and the two items processed in the wrong order.
 
 **A cited slug that has a LOG entry means that work shipped**, which is the
 always-loaded instruction "status is re-derived from LOG" performed rather than
@@ -218,10 +236,10 @@ where held work can actually be released.
 entry" is a lookup; "ready to lift" would be an interpretation, and the digest
 does not make one. Read them as inputs to your own judgment.
 
-This is the code-generated digest the page-to-the-end rule prefers, so it
-satisfies that rule rather than dodging it. If the digest fails to run, fall back
-to reading QUEUE.md whole and paging it to the end; if you cannot, say so plainly
-rather than reasoning from a partial view.
+**The digest satisfies the page-to-the-end rule for the fields it computes, and
+for nothing else** — the read of the file is what covers the prose. Where the
+digest fails to run, the read still happens and the computed facts are simply
+absent; say which of the two you have rather than reasoning from a partial view.
 
 **Re-run it whenever the picture needs to be current.** `session_start`'s
 dependency facts fire once and describe the queue as it stood *before* the session
@@ -322,18 +340,15 @@ when it fires, beat 2's ordering question when it doesn't. Beat 1 keeps its own
 reply and is never bundled with beat 2; what it does not do is leave the narration
 above it standing as a message with no ask.
 
-**Route and archive any waiting INBOX mail** [SILENT] when the mailbox is empty;
-[BRIEF] when it isn't. Each message's full text is already in front of you:
-`session_start` delivers the body, not just the filename, so the opening has
-happened before this step runs. What is left is the part delivery cannot do.
-
-The step used to say "open each message", and that instruction is what got
-skipped — mail surfaced every session and read in none, in the project that
-authors the rule, with the rule loaded. Delivery answers that; this answers the
-rest.
+**Read, route and archive any waiting INBOX mail** [SILENT] when the mailbox is
+empty; [BRIEF] when it isn't. `session_start` names each waiting file and directs
+you to read it, with a self-check on the reading; the bodies are not in the
+opening payload, because hook output is capped and a pile of unread mail past the
+cap costs the session everything else the payload carries.
 
 ```
-mail was delivered   ->  fetch ${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md
+mail is waiting      ->  read each named file in full
+                         fetch ${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md
                          route each message through the triage there, then move
                          the file to INBOX/archive/
 INBOX/ empty         ->  nothing, silently
@@ -356,7 +371,7 @@ competes with designed work before anyone knows what is in it.
 Any session may open mail whenever the user asks; opening and routing is filing,
 which every session may do. What /plan adds is the guarantee.
 
-**A message arriving mid-session waits for the next session start**, because that
+**A message arriving mid-chat waits for the next chat's opening**, because that
 is when the mailbox is scanned. Say so if it comes up rather than building a
 watcher — the INBOX design already promises no delivery guarantee.
 
@@ -365,9 +380,15 @@ session's /done: log it under its slug and remove it from Processed. The setting
 that used to toggle a completion sweep here is retired.
 
 **Below-the-line revisit** [SILENT] when nothing lifts; [BRIEF] when
-proposing a lift. Every below-line item names what holds it — `Blocked by:
-[slug]`, or `Not before: YYYY-MM-DD` where the holding fact is a date — so the
-revisit is one check per item:
+proposing a lift. Every below-line item names what holds it — `Blocked by:`
+with one or more slugs, or `Not before: YYYY-MM-DD` where the holding fact is a
+date — so the revisit is one check per item:
+
+**Where the line names several slugs, run the check against every one, and lift
+only when all of them clear.** That is what lets work wait on a group rather
+than on a proxy: a single stand-in slug reports the item liftable the moment
+that one item ships, and because the lift is a clearing move the item then
+reaches the ready region with the rest of its group outstanding.
 
 ```
 `Not before:` date has
@@ -530,6 +551,11 @@ most-unblocking-first?"** One question, not a menu — the only alternative offe
 is the user's own priorities. This absorbs the old "anything to discuss?" opening:
 a user with something on their mind answers it here.
 
+**Where mail is waiting, that question carries it instead: "There's mail waiting
+— process that first, or start most-unblocking-first?"** Still one question, and
+it is what gives the mail step its teeth: a question the user answers, rather
+than a step that can be passed over.
+
 (If Unprocessed is empty there's nothing to order, so offer seeding from SPEC by
 name instead — the step above. If SPEC is thin too, it's an ordinary conversation
 about what they want next; **not** a new session type, mode, or container.)
@@ -561,6 +587,12 @@ Authoring standard). A draft over the ceiling is split into two items; a draft
 over the band is tightened before it is written. Advisory — it names an action
 and never blocks the keep. It rides the scrub's read rather than adding a pass of
 its own, because both look at the same draft at the same moment.
+
+**Read the ITEM AS IT STANDS, not the paragraph being added.** Re-processing an
+item usually appends a settlement paragraph rather than rewriting the block, so
+an author whose own addition is short can still be looking at an over-length
+item — and the item is what gets read at build time. This is the site: the item
+is already in front of you here, and nowhere later is.
 
 **Process order.** Unprocessed top to bottom, then items raised in this session's
 own discussion. State the count upfront, counting both together ("5 items.
@@ -699,6 +731,14 @@ everything up gets processed, or the above-median group empties into rung 4 —
 even though the bottom rung no longer
 runs out.
 
+**A rung can become live again rather than only run out, so re-check reads in
+both directions.** Filing a blocker into Unprocessed is the move that does it: a
+new entry other work cites is unblock-potential where there was none, which makes
+rung 2 live again after the session has already fallen past it. **Re-derive the
+throughput floor at the same moment** — the floor comes from how many blockers
+sit in Unprocessed, so filing one leaves the number stated at the opening quietly
+untrue.
+
 Hanging this on the pick — a step that always runs — is what makes it fire; a
 standing rule with no site does not. Narrating on every item is explicitly not
 proposed: that is the per-item noise the checkpoint was stripped back to avoid.
@@ -783,6 +823,27 @@ is exactly what undesigned work looks like, and items in that shape have reached
 Processed and then stalled a /next run that had a file list and nothing to build
 from. An item that can't pass both limbs gets sharpened further in the interview,
 or skip-to-deferred with its design progress written into its prose — never kept.
+
+**The Files line names only files that change.** A file the item has decided NOT
+to touch is a different statement and goes in its own sentence outside the line.
+The digest reads every backticked path on that line and cannot tell an excluded
+path from an included one, so an exclusion written there returns as a false merge
+candidate — the block that surfaces work two items could settle together, filled
+with pairs that share nothing. Teaching the digest to recognise exclusion phrases
+would fire on honest text, which is the brittleness this project has refused
+before.
+
+**A Files entry whose content depends on a decision not yet made fails the second
+limb**, rather than partly passing it. "Any affordance the link-address question
+settles on" names a file and a purpose and supplies no decision, which is what
+the limb asks for. **Prose that schedules a design decision into the build fails
+the same way, however carefully phrased** — "to be settled at the start of the
+build rather than during it" reads as care about sequencing and does the
+opposite, because the start of the build is still the build.
+
+**The disposal is a split, not a refusal.** The open question becomes its own
+small item and the large one is held against it by slug. Most of such an item is
+usually finished, and rejecting it whole would discard that.
 
 **The second limb also asks whether this is work at all.** Ask what changes inside
 which files and get "nothing" back, and the item is a **finding**, not work — its

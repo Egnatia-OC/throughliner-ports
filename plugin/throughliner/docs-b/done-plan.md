@@ -108,7 +108,8 @@ repealed — do not reinstate:
 ```
 
 Do **not** reintroduce `Blocks:` / `Depends on:` headers. The one dependency
-field that exists is `Blocked by: [slug]`, written on the item that is held, and
+field that exists is `Blocked by:`, written on the item that is held and naming
+one or more slugs — the item lifts only when every one of them resolves — and
 it is lint-checked precisely so it can't go stale the way those headers did.
 Its sibling `Not before: YYYY-MM-DD` holds an item until a date rather than
 until another item, and is lint-checked the same way. Everything else stays
@@ -218,11 +219,12 @@ the item's block, whichever holds it:
 
 ```
 Blocked by: [slug]
+Blocked by: [slug], [slug]      # a group: lifts only when ALL resolve
 Not before: YYYY-MM-DD
 ```
 
-A slug must resolve to a real work item in this queue, and a date must be a real
-`YYYY-MM-DD` — the queue lint checks both. Below the line means held by a named
+Every slug must resolve to a real work item in this queue, and a date must be a
+real `YYYY-MM-DD` — the queue lint checks both. Below the line means held by a named
 queue item or by a date, and nothing else.
 
 ```

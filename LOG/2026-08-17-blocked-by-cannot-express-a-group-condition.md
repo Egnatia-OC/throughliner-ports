@@ -1,4 +1,4 @@
-# [HASH] — the blocker field accepts several slugs, and the fifteen-file ripple was accepted knowingly
+# dc52025 — the blocker field accepts several slugs, and the fifteen-file ripple was accepted knowingly
 
 Work waiting on a *group* of items had no way to say so, so it could not be held at all — and a proxy blocker is worse than none, because a field that resolves early produces a wrong lift, and a lift is a clearing move that sends the item into an unattended run.
 

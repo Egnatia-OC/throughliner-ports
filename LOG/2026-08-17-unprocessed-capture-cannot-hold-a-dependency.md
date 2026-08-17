@@ -1,4 +1,4 @@
-# [HASH] — no dependency field for captures: a known ordering is written on both items instead
+# dc52025 — no dependency field for captures: a known ordering is written on both items instead
 
 Raised by the user on noticing that a dependency Claude had just written into a capture's prose was one that should have been a field. `Blocked by:` is defined for the held region below the readiness line; a capture in Unprocessed has nowhere to put one, so ordering there can only be a sentence. Two instances in one session, from opposite directions: her instruction that one item wait on another was prose and was processed against, and Claude's note that one capture waited on the word-band work was prose and was honoured only by chance.
 

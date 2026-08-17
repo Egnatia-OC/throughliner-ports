@@ -1,4 +1,4 @@
-# [HASH] — the digest stops replacing the queue read, and the whole file is read alongside it
+# dc52025 — the digest stops replacing the queue read, and the whole file is read alongside it
 
 The user noticed Claude seemed not to have read the whole queue, and that the feeling was about a week old. It was corroborated rather than accepted: the digest landed on 2026-08-11, six days earlier. It is not the hook's 10,000-character limit, which carries no queue content at all.
 

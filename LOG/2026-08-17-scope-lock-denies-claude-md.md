@@ -1,4 +1,4 @@
-# [HASH] — the planning scope-lock is right about CLAUDE.md, and the reason gets written down
+# dc52025 — the planning scope-lock is right about CLAUDE.md, and the reason gets written down
 
 Raised three times from the same reading of the same code: a planning session cannot write CLAUDE.md, which is where this project's rules live. The item was honest that it might be intended behaviour and refused to assume.
 

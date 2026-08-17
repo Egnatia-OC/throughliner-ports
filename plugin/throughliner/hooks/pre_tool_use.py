@@ -28,6 +28,10 @@ PreToolUse hook — enforces three rules:
    the spawn must never be silent. Fires wherever the plugin is
    installed, independent of project adoption.
 
+5. A Write whose target is an existing file under LOG/ is refused, naming
+   the next free `-2`, `-3`, … filename. Write only, never Edit: appending
+   to an existing record is legitimate and goes through Edit.
+
 For Task: checks rule 3 (cost ask-gate).
 For Edit/Write/MultiEdit: checks rule 1, and publishes the editing-state
 signal (see write_editing_marker) — not a rule, a side effect that can
@@ -727,6 +731,30 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     # Editing a template changes what every future consumer receives, which is
     # exactly the class of change this gate exists to stop happening in a
     # planning session.
+    #
+    # CLAUDE.md is NOT here either, and that is intended behaviour rather than
+    # an oversight — recorded because the question has now been raised three
+    # times from three separate readings of this same list, and a denial with no
+    # stated reason gets re-litigated by every session that meets it.
+    #
+    # The objection runs: in the method's own repository CLAUDE.md holds the rule
+    # gate, and the gate's whole design argument is that only /plan can refuse a
+    # rule — so a planning session that admits a rule and then cannot write it
+    # has to queue the write as a build, which looks like the placement the gate
+    # rejects.
+    #
+    # It conflates deciding with writing. The gate runs at the keep-step and its
+    # output is a DISPOSITION on the queue item; the rule TEXT is written by the
+    # build that item schedules. What the gate refuses is a build deciding
+    # whether a rule may exist, never a build typing out a rule /plan already
+    # admitted. The session that settled this dispositioned fifteen rule changes
+    # at the keep-step and queued every one as a build, with nothing blocked and
+    # no decision moved downstream.
+    #
+    # It is also genuinely unlike the three exceptions fixed the same day — the
+    # rezip's plugin.json, the close's README.md, and /setup's markers. Each of
+    # those was a required write with no permitted moment anywhere in the method.
+    # This write has a proper home.
     if rel.startswith(os.path.normcase("FAQ") + "/"):
         return True
     # The plugin's own version manifest. HOST-ONLY BY RESIDENCE: this path exists
@@ -756,6 +784,28 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
 
 
 SETUP_MARKER_NAME = ".throughliner-setup-active"
+CLOSE_MARKER_NAME = ".throughliner-close-active"
+
+# The files the method's own CLOSE obligations name. A close is required to write
+# these and a build is not, and the two phases share one working file — so
+# without this a required write had no permitted moment anywhere.
+#
+# README.md is the recorded case. The README feature-list sync rides the
+# SPEC-sync trigger, which fires at the close; /next self-scopes from the items
+# it is about to build, and no item names README.md because the obligation is a
+# consequence of several items TOGETHER. So the file could not have entered the
+# build's list by any correct application of the scoping rule, and three
+# genuinely required corrections were denied — one of them stale text about a
+# permission that had already been withdrawn.
+#
+# THE COST, stated rather than discovered: this is a second list to maintain. A
+# close obligation added later that names a new file must be added here in the
+# same build, or the identical denial recurs one file over.
+#
+# It widens a BUILD's scope not at all — the marker below is written by the close
+# and removed at its end, so during the build these paths are denied exactly as
+# they were.
+CLOSE_PHASE_FILES = ("README.md",)
 
 
 def _setup_marker_present(session_id: str) -> bool:
@@ -782,6 +832,17 @@ def _setup_marker_present(session_id: str) -> bool:
     them for every planning session in every consumer project to fix a condition
     that is only true during setup.
     """
+    return _scratchpad_marker_present(session_id, SETUP_MARKER_NAME)
+
+
+def _scratchpad_marker_present(session_id: str, marker_name: str) -> bool:
+    """True while THIS session's scratchpad carries `marker_name`.
+
+    The shared mechanism behind the /setup marker and the close marker. Matched
+    by path shape under the system temp directory and scoped to this session's
+    own id, so one project's run cannot unlock another's. Never raises: a
+    scratchpad that cannot be read reports no marker, which leaves the lock ON.
+    """
     try:
         import glob
         import tempfile
@@ -791,11 +852,33 @@ def _setup_marker_present(session_id: str) -> bool:
             return False
         pattern = os.path.join(
             tempfile.gettempdir(), "claude", "*", safe_id, "scratchpad",
-            SETUP_MARKER_NAME,
+            marker_name,
         )
         return bool(glob.glob(pattern))
     except Exception:
         return False
+
+
+def _is_close_phase_file(filepath: str, cwd: str, session_id: str) -> bool:
+    """True for a close-obligation file while this session's close is running.
+
+    Two conditions, and both must hold: the close has declared itself with a
+    scratchpad marker, and the path is one the method's close obligations name
+    (CLOSE_PHASE_FILES). Outside the close the marker is absent and these paths
+    are denied exactly as before, so a build's scope is unchanged.
+
+    The marker rather than a standing permission, because the hook has no other
+    way to tell a close from the build that preceded it — they share one working
+    file, and the build's Files list is what denies the write. This copies
+    /setup's declaration mechanism rather than inventing a second one, and it is
+    strictly narrower: /setup's marker permits everything, this one permits a
+    fixed short list.
+    """
+    if not _scratchpad_marker_present(session_id, CLOSE_MARKER_NAME):
+        return False
+    rel = os.path.relpath(os.path.normpath(filepath), os.path.normpath(cwd))
+    rel = os.path.normcase(rel).replace("\\", "/")
+    return rel in tuple(os.path.normcase(n) for n in CLOSE_PHASE_FILES)
 
 
 def _fire_once(cwd: str, session_id: str, marker_name: str) -> bool:
@@ -818,6 +901,49 @@ def _fire_once(cwd: str, session_id: str, marker_name: str) -> bool:
         return True
     except OSError:
         return True
+
+
+def _log_collision_suggestion(filepath: str) -> str:
+    """The next free `-2`, `-3`, … filename beside an existing LOG entry.
+
+    Named rather than merely reported: the close's own rule already says a taken
+    name gets a numeric suffix, so the denial hands back the exact name that rule
+    would have produced.
+    """
+    root, ext = os.path.splitext(filepath)
+    n = 2
+    while os.path.exists(f"{root}-{n}{ext}") and n < 100:
+        n += 1
+    return f"{root}-{n}{ext}"
+
+
+def _is_log_entry_overwrite(tool_name: str, filepath: str, cwd: str) -> bool:
+    """True for a Write whose target is an existing file under LOG/.
+
+    A successful overwrite is indistinguishable from a successful create: the
+    write reports success, the file exists, the index line resolves, and the
+    entry reads correctly because it is the one just written. The only trace is
+    a ` M` where `??` was expected in a list of twenty-odd staged paths. Two
+    committed entries were destroyed that way in a single close and recovered
+    only because the character was noticed by chance.
+
+    WRITE ONLY, never Edit. A close legitimately edits `LOG/index.md` and
+    appends a tail to an existing entry, and both go through Edit — so nothing
+    correct is caught. A genuinely new entry filename does not exist yet, so
+    this never fires on a correct close either.
+
+    The filename derives from the close date plus the session type, so every
+    session of the same kind on one day competes for one name. A consumer
+    running one session a day never meets this; a day with a morning and an
+    afternoon session meets it immediately.
+    """
+    if tool_name != "Write":
+        return False
+    norm = _normalise(filepath)
+    log_dir = _normalise(os.path.join(cwd, "LOG"))
+    if not norm.startswith(log_dir + os.sep):
+        return False
+    return os.path.exists(filepath)
 
 
 def _is_build_file(filepath: str, cwd: str, build_files: list[str]) -> bool:
@@ -1025,6 +1151,23 @@ def main() -> int:
     # SPEC.md gate above, so the signal exists only in adopted projects.
     write_editing_marker(cwd, data.get("session_id", ""), filepath, True)
 
+    # A Write onto an existing LOG entry destroys it silently. Checked ahead of
+    # every scope branch, because LOG/ is editable in all of them — the scope
+    # checks would let this through whatever kind of session is running.
+    if _is_log_entry_overwrite(tool_name, filepath, cwd):
+        return _deny(
+            "[Throughliner] BLOCKED: a session record already exists at this "
+            "name, and writing over it would destroy it with no sign that "
+            "anything went wrong.\n\n"
+            f"Existing: {os.path.basename(filepath)}\n"
+            f"Free name: {os.path.basename(_log_collision_suggestion(filepath))}\n\n"
+            "Records are named from the date and the kind of session, so two "
+            "sessions of the same kind on one day want the same name. Write the "
+            "new record under the free name above.\n\n"
+            "If you meant to add to the existing record rather than replace it, "
+            "use Edit — appending to a record is always allowed."
+        )
+
     # Rule 1: the working file's Files: section governs editability. Tri-state:
     # no section = skip enforcement, present but empty = method docs only,
     # entries listed = enforce the list.
@@ -1068,6 +1211,9 @@ def main() -> int:
             return 0
 
         if _is_inbox_dir(filepath):
+            return 0
+
+        if _is_close_phase_file(filepath, cwd, data.get("session_id", "")):
             return 0
 
         if not build_files:

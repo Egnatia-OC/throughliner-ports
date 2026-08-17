@@ -1,4 +1,4 @@
-# [HASH] — the positioning goes into SPEC, and the rule Claude tried to build from it was refused
+# dc52025 — the positioning goes into SPEC, and the rule Claude tried to build from it was refused
 
 The item held two claims that had only ever lived in a session record, and the routing it called unresolvable resolves once they are separated.
 

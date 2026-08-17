@@ -1,4 +1,4 @@
-# [HASH] — the rezip reads its next test number from the installed builds instead of from plugin.json
+# dc52025 — the rezip reads its next test number from the installed builds instead of from plugin.json
 
 Settled from the user's observation that the rezip and push had been getting steadily more complex, and that tying them together was a habit of hers rather than a requirement. She now rezips at every /next run, so a per-rezip judgment is paid constantly rather than occasionally.
 

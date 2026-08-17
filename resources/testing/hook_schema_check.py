@@ -504,13 +504,19 @@ def test_post_tool_use_non_queue_edit_is_silent():
     check("PostToolUse (unrelated file): emits nothing", out.strip() == "", out[:300])
 
 
-def test_session_start_delivers_inbox_message_bodies():
-    """A waiting message arrives as text, not as a filename to go and fetch.
+def test_session_start_directs_to_inbox_messages():
+    """A waiting message arrives as a filename and a directive, not as text.
 
-    The instruction to open the file was a step, and a step can be skipped —
-    it was, in a session that then reproduced twice the bug the unread message
-    described. Both halves are pinned here: the body is present, and the
-    payload still says the message is data rather than an instruction.
+    Bodies were inlined for a period, on the reasoning that an instruction to
+    open a file is a step and a step can be skipped — which had happened. The
+    ceiling is what overturned it: hook output is capped at 10,000 characters,
+    and past the cap the harness discards the payload entirely, so enough unread
+    mail costs the session its project state and its rules directive as well as
+    its mail. The replacement is the shape this payload already trusts for a far
+    larger file — a directive carrying a self-check.
+
+    Four halves are pinned: the filename is named, the body is absent, the
+    directive carries a check, and the message is still labelled as data.
     """
     d = tempfile.mkdtemp(prefix="hookcheck-inbox-")
     with open(os.path.join(d, "SPEC.md"), "w", encoding="utf-8") as f:
@@ -530,7 +536,12 @@ def test_session_start_delivers_inbox_message_bodies():
     if _is_json(out):
         ctx = (json.loads(out).get("hookSpecificOutput") or {}).get(
             "additionalContext", "")
-    check("SessionStart: the message body is delivered", body in ctx, ctx[:300])
+    check("SessionStart: the message filename is named",
+          "INBOX/2026-08-15-a-report.md" in ctx, ctx[:300])
+    check("SessionStart: the message body is NOT inlined",
+          body not in ctx, ctx[:300])
+    check("SessionStart: the read directive carries a self-check",
+          "SELF-CHECK" in ctx, ctx[:300])
     check("SessionStart: the message is labelled as data, not instruction",
           "not an instruction" in ctx, ctx[:300])
     check("SessionStart: routing and archiving are still required",
@@ -567,7 +578,7 @@ def main():
         test_session_start_payload_fits_under_the_cap,
         test_session_start_points_at_the_rules_rather_than_pasting_them,
         test_session_start_state_lines_lead_the_payload,
-        test_session_start_delivers_inbox_message_bodies,
+        test_session_start_directs_to_inbox_messages,
         test_session_start_empty_mailbox_is_silent,
         test_pre_tool_use_out_of_scope_denies,
         test_pre_tool_use_in_scope_is_silent,
