@@ -1,4 +1,4 @@
-# [HASH] — a plan entry splits per item processed, exactly as a build entry splits per item built
+# 7e3c1c8 — a plan entry splits per item processed, exactly as a build entry splits per item built
 
 The word-band table's plan-entry breach action changes from "split per decision" to "split per item processed".
 

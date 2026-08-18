@@ -1,4 +1,4 @@
-# [HASH] — the digest and the read are both, and the "instead of" wording is repealed
+# 7e3c1c8 — the digest and the read are both, and the "instead of" wording is repealed
 
 Three sites said the digest replaces reading QUEUE.md, and all three now say both. `plan.md`'s opening runs the digest for the computed fields and then reads the file for the reasoning; the always-loaded clause blessing a digest as a *stronger* satisfaction of the read-the-whole-file duty is narrowed to the fields a script computes; SPEC's account of the opening is corrected, since it went wrong the moment the other two changed.
 

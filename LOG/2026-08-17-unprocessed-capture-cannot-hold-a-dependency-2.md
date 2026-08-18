@@ -1,4 +1,4 @@
-# [HASH] — a known ordering is written into both entries, and no field is added
+# 7e3c1c8 — a known ordering is written into both entries, and no field is added
 
 One clause beside the slug-reference rule: where an ordering between two entries is known at the time, write it into **both**, so opening either surfaces it. No format change, nothing for the hooks to parse, no ripple.
 

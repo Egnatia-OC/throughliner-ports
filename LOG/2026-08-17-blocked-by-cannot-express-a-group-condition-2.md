@@ -1,4 +1,4 @@
-# [HASH] — Blocked by: takes several slugs, and the item lifts only when all of them resolve
+# 7e3c1c8 — Blocked by: takes several slugs, and the item lifts only when all of them resolve
 
 `Blocked by:` is widened from one slug to a comma-separated list. An extension of a field that already exists rather than a new mechanism.
 

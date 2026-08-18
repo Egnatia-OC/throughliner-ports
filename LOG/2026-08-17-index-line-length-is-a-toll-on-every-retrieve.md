@@ -1,4 +1,4 @@
-# [HASH] — the index band's real argument, written into the rule
+# 7e3c1c8 — the index band's real argument, written into the rule
 
 `skill-nonspecific-rules.md`'s Index-entries section gains the cost model the band actually rests on: the index is read in full, by Claude, on every retrieve, so its total length is a fixed toll rather than something a reader skims past.
 

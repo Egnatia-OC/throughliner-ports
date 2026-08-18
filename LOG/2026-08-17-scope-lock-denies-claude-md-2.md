@@ -1,4 +1,4 @@
-# [HASH] — the scope-lock's refusal of CLAUDE.md is recorded as intended, and no permission changed
+# 7e3c1c8 — the scope-lock's refusal of CLAUDE.md is recorded as intended, and no permission changed
 
 The disposition here is a **refusal** — of a proposed permission change — plus a clarification of an existing rule's account. A comment beside the standing list in `pre_tool_use.py`, and a clause in `CLAUDE.md`'s gate account.
 

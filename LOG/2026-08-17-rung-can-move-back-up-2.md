@@ -1,4 +1,4 @@
-# [HASH] — a rung can become live again, and the throughput floor goes stale with it
+# 7e3c1c8 — a rung can become live again, and the throughput floor goes stale with it
 
 One clause on `plan.md`'s existing re-check-the-rung sentence: a rung can become live again rather than only run out, filing a blocker into Unprocessed is the move that does it, and the throughput floor is re-derived at the same moment.
 

@@ -1,4 +1,4 @@
-# [HASH] — the LOG-collision refusal is built, and the close that built it proved why it was needed
+# 7e3c1c8 — the LOG-collision refusal is built, and the close that built it proved why it was needed
 
 `pre_tool_use.py` gains a fifth refusal: a Write whose target is an existing file under `LOG/` is denied, naming the collision and the next free `-2` / `-3` filename. Write only, never Edit — a close legitimately edits the index and appends tails to existing entries, and both go through Edit, so nothing correct is caught. A genuinely new entry filename does not exist, so it never fires on a correct close either.
 

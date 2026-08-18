@@ -1,4 +1,4 @@
-# [HASH] — message bodies leave the session briefing, replaced by a directive with a self-check
+# 7e3c1c8 — message bodies leave the session briefing, replaced by a directive with a self-check
 
 `session_start.py` stops inlining INBOX message bodies. It now emits the count, the filenames, an instruction to read each one before the first reply, and a self-check: the one-line mention to the user names what each message is about, and a session that cannot say that says so rather than carrying on.
 

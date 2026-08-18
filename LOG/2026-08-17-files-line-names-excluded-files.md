@@ -1,4 +1,4 @@
-# [HASH] — a Files line names only the files that change, and exclusions move off it
+# 7e3c1c8 — a Files line names only the files that change, and exclusions move off it
 
 `plan.md`'s two-limb keep check gains a clause: the Files line names only files that change, and a file the item has decided *not* to touch is a different statement belonging in its own sentence outside the line.
 

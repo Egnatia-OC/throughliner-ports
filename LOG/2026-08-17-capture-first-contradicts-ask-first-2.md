@@ -1,4 +1,4 @@
-# [HASH] — the /plan carve-out gains the ordering it was missing
+# 7e3c1c8 — the /plan carve-out gains the ordering it was missing
 
 No rule was adjudicated. The disposition is a correction to two existing statements: the /plan carve-out in the mid-skill capture rule gains **before any write**, and the mid-run discovery block gains a pointer to it. `plan.md` is unchanged.
 

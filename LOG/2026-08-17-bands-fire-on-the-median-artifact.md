@@ -1,4 +1,4 @@
-# [HASH] — the word bands say what they are evidence of, and the advisory fires once per run
+# 7e3c1c8 — the word bands say what they are evidence of, and the advisory fires once per run
 
 The bands now state that they mark lengths **demonstrated to be sufficient**, never ideal ones, and the advisory says its piece once per run rather than on every write.
 

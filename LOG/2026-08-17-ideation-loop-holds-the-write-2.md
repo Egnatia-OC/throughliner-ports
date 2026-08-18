@@ -1,4 +1,4 @@
-# [HASH] — the write is held while a design is still being worked out
+# 7e3c1c8 — the write is held while a design is still being worked out
 
 One clause on the write-first rule: while a design or a disposition is still being worked out, offer to capture and hold the write until the user says go. It covers ideation in any skill and the processing of captures in /plan alike, since both are the same shape — text being worked out rather than finished.
 

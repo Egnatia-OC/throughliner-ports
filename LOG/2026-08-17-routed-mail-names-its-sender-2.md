@@ -1,4 +1,4 @@
-# [HASH] — a capture made from a message describes its source generically
+# 7e3c1c8 — a capture made from a message describes its source generically
 
 One clause on `feedback-and-inbox.md`'s inbound routing step: a capture or LOG entry made from a message describes its source generically — "a consumer project running this method" — rather than naming it.
 

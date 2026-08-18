@@ -1,4 +1,4 @@
-# [HASH] — the content stamp ignores plugin.json's version, so a rezip stops reading as stale
+# 7e3c1c8 — the content stamp ignores plugin.json's version, so a rezip stops reading as stale
 
 `content_stamp()` in `session_start.py` now hashes `plugin.json` with its `version` key dropped, through a new `_plugin_json_without_version()`. One function, run on both sides, so the two cannot disagree. Unparseable JSON returns unchanged — a stamp that still moves beats one that raises inside a session start.
 

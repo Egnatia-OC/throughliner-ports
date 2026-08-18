@@ -1,4 +1,4 @@
-# [HASH] — the queue mover can file a capture, and the hook exemption turned out to be unnecessary
+# 7e3c1c8 — the queue mover can file a capture, and the hook exemption turned out to be unnecessary
 
 `reorder_queue.py` gains `--append <Section> --body <path>`, placing a new entry at the bottom of a named section. The body arrives by file rather than on the command line, because a multi-paragraph rationale does not survive shell quoting on this platform — Claude writes it to the session scratchpad with the ordinary editing tools, which is already permitted, and the queue itself is still only ever touched by the script.
 

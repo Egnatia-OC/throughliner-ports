@@ -1,4 +1,4 @@
-# [HASH] — the vocabulary test now asks whether a term is used in passing or explained
+# 7e3c1c8 — the vocabulary test now asks whether a term is used in passing or explained
 
 The shipped rule asked whether a term named something in this user's world that you could show them, and had two answers: say it, or don't. There was no room for a term that names nothing showable and is still worth one explanation — and the alternative to that explanation is a longer sentence in its place, every time, forever.
 

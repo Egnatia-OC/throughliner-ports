@@ -1,4 +1,4 @@
-# [HASH] — the always-loaded rules restyled, with the count held flat and accounted for statement by statement
+# 7e3c1c8 — the always-loaded rules restyled, with the count held flat and accounted for statement by statement
 
 `skill-nonspecific-rules.md` rewritten to the wording standard the rule gate specifies: prohibitions restated as the action required, qualifications carried by structure rather than explanation, main clause first, one idea per provision.
 

@@ -1,4 +1,4 @@
-# [HASH] — the close gets a permitted moment for the files its own obligations name
+# 7e3c1c8 — the close gets a permitted moment for the files its own obligations name
 
 `pre_tool_use.py` gains `CLOSE_PHASE_FILES` — today just `README.md` — permitted only while this session's close has declared itself with a `.throughliner-close-active` marker in the scratchpad. `done.md` gains the step that writes the marker first and deletes it last.
 

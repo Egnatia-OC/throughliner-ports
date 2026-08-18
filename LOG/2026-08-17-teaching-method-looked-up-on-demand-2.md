@@ -1,4 +1,4 @@
-# [HASH] — on a repeat question, look up how that specific thing is taught
+# 7e3c1c8 — on a repeat question, look up how that specific thing is taught
 
 One clause on the research-and-evidence rule, whose *what would answer this?* trigger already covers reaching outward. This points the same question at how something is taught rather than at an external fact, so it costs no new slot.
 

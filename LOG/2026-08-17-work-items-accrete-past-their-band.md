@@ -1,4 +1,4 @@
-# [HASH] — the band applies to the entry as it stands, not to the paragraph being added
+# 7e3c1c8 — the band applies to the entry as it stands, not to the paragraph being added
 
 The word band is restated to govern the item **as it stands** rather than the text being added, and the read is sited at /plan's keep-step, where the item is already in front of you.
 

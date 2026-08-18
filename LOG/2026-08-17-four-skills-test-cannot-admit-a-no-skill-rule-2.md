@@ -1,4 +1,4 @@
-# [HASH] — the admission test gains a no-skill limb, tightening rather than loosening it
+# 7e3c1c8 — the admission test gains a no-skill limb, tightening rather than loosening it
 
 `skill-nonspecific-rules.md`'s opening admission test and `CLAUDE.md`'s distribution clause both gain the same limb: a rule earns the always-loaded file if it fires in all four skills **or** in conversation with no skill running.
 

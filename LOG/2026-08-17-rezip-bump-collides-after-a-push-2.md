@@ -1,4 +1,4 @@
-# [HASH] — the rezip reads its next test number from the plugin cache, not from plugin.json
+# 7e3c1c8 — the rezip reads its next test number from the plugin cache, not from plugin.json
 
 `release-ritual.md`'s rezip step 1 now takes the highest `-testN` present in the installed builds and adds one, listing the cache directory to see them. The start-at-`-test1` branch is deleted outright, surviving only as the narrow case it is actually right for: a release bump starts a new release line, which genuinely has no prior test builds.
 

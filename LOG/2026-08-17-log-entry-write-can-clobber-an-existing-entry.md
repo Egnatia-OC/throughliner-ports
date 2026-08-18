@@ -1,4 +1,4 @@
-# [HASH] — the hook refuses a Write onto an existing log entry, so a collision stops being silent
+# dc52025 — the hook refuses a Write onto an existing log entry, so a collision stops being silent
 
 Processed ahead of its turn on the user's instruction, because the close following this session writes many entries at once — the largest exposure this defect has ever had.
 

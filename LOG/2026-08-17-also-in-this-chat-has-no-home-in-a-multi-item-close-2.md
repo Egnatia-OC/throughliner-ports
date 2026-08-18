@@ -1,4 +1,4 @@
-# [HASH] — the chat-level record gets its own entry when a close writes several
+# 7e3c1c8 — the chat-level record gets its own entry when a close writes several
 
 `done.md`'s LOG entry format gains one condition. A close writing a **single** entry keeps `Also in this chat:` inline, unchanged — every planning close is that case, so that path is untouched. A close writing **several** entries writes the chat-level record as its own entry, named for the chat rather than for a slug, with its own line in `LOG/index.md`.
 

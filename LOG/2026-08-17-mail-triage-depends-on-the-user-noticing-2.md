@@ -1,4 +1,4 @@
-# [HASH] — the close triages waiting mail, which is the one moment that always runs
+# 7e3c1c8 — the close triages waiting mail, which is the one moment that always runs
 
 `done.md` gains a step: read anything still in `INBOX/`, route it through the three-way triage, archive each file. Wired into the commit core's run-before-staging list so what it files rides the same commit.
 

@@ -1,4 +1,4 @@
-# [HASH] — an item that states a design question as open now fails the keep-step's second limb
+# 7e3c1c8 — an item that states a design question as open now fails the keep-step's second limb
 
 `plan.md`'s two-limb keep check gains a clause. A Files entry whose content depends on a decision not yet made fails the second limb rather than partly passing it — "any affordance the link-address question settles on" names a file and a purpose and supplies no decision, which is what the limb asks for. Prose that schedules a design decision into the build fails the same way, however carefully phrased.
 
