@@ -1,4 +1,4 @@
-# [HASH] — Claude attempted to run the close itself, and the search halved the item by confirming the explanation was right
+# 02ec308 — Claude attempted to run the close itself, and the search halved the item by confirming the explanation was right
 
 The user brought a screenshot from another project: Claude wrote "Now closing the session", attempted the close command, got **"Failed to run skill"** in red, and said *"I can't run the close myself — it's reserved for you to invoke."*
 

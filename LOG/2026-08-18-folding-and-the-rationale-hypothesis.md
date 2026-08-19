@@ -1,4 +1,4 @@
-# [HASH] — three captures from the user's observation that the ideation loop fixed accretion at the front and not afterwards
+# 02ec308 — three captures from the user's observation that the ideation loop fixed accretion at the front and not afterwards
 
 The user's starting point: before the ideation loop, a new capture was written to three or four times before anything else was processed, and holding the write until the design settled removed that. Her question was whether the same principle reaches the accretion that happens later.
 

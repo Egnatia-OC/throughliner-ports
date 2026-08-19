@@ -1,4 +1,4 @@
-# [HASH] — the privacy offer splits per document, then is held the same day on a consumer report about the same code path
+# 02ec308 — the privacy offer splits per document, then is held the same day on a consumer report about the same code path
 
 The user's question was whether QUEUE.md should be private by default. Her own objection defeated the default change — someone may want a visible queue for transparency — so the default does not move.
 

@@ -1,4 +1,4 @@
-# [HASH] — one outgoing index absorbs three separate absences, and the mailbox-versus-captures question is refused
+# 02ec308 — one outgoing index absorbs three separate absences, and the mailbox-versus-captures question is refused
 
 Five mailbox captures were taken as one group at the user's direction. They split three ways rather than one.
 

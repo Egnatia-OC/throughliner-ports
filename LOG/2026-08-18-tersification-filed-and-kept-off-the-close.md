@@ -1,4 +1,4 @@
-# [HASH] — the tersification procedure goes on the shelf, and the user's own evidence argues against her proposed placement
+# 02ec308 — the tersification procedure goes on the shelf, and the user's own evidence argues against her proposed placement
 
 The user proposed running a tersify pass over the queue at every close, and offered to recover the principles from the chat that ran the two most recent passes. Claude wrote the prompt; she supplied the write-up, which is now at `resources/research/tersifying-the-queue.md`, verbatim.
 

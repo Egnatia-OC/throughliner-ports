@@ -1,4 +1,4 @@
-# [HASH] — the problem is the queue's total length, and one worked session grew it 15% at constant item count
+# 02ec308 — the problem is the queue's total length, and one worked session grew it 15% at constant item count
 
 The user's reframing, and it supersedes the per-artifact framing the aggregate item was filed under: **it is not item length but overall queue length, of which item length is one term.**
 

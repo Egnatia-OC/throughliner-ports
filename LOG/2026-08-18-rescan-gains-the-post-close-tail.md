@@ -1,4 +1,4 @@
-# [HASH] — /rescan widens to the post-close tail, and the delta close it replaces is deleted as already decided against
+# 02ec308 — /rescan widens to the post-close tail, and the delta close it replaces is deleted as already decided against
 
 The user asked for a lightweight way to bank post-close work without typing the whole request each time. Her first framing was a "done delta" already sitting in the queue from 2026-08-01.
 

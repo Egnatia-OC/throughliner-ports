@@ -1,4 +1,4 @@
-# [HASH] — an outstanding /setup can void a run's top item, narrowed to fire only on the collision
+# 02ec308 — an outstanding /setup can void a run's top item, narrowed to fire only on the collision
 
 Filed from a consumer project's mail and kept on the user's decision, because it is live here rather than hypothetical — [setup-outstanding-here] sits in the cleared region now.
 

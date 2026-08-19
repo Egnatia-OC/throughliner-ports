@@ -1,4 +1,4 @@
-# [HASH] — repealing shipped text gains a grep-traced limb, and its host-only sibling is subordinated rather than left beside it
+# 02ec308 — repealing shipped text gains a grep-traced limb, and its host-only sibling is subordinated rather than left beside it
 
 A repealed sentence had been restated verbatim in three more live places, stopping a run twice in a run whose premise is that it does not stop. The existing rule does not reach it: `CLAUDE.md` requires a grep-traced ripple when an item changes a format or enum the hooks enforce, and a repealed sentence is neither — though the trace is identical and needs no judgment, since a repealed sentence is a literal string.
 

@@ -1,4 +1,4 @@
-# [HASH] — a consumer's line-anchor answer moves to the research shelf and its queue item is deleted
+# 02ec308 — a consumer's line-anchor answer moves to the research shelf and its queue item is deleted
 
 The item carried an INBOX answer to a question this project asked on 2026-08-10: can a reader open a document at a given line? Its own text said the answer changes nothing in the method and that the real work was getting the external evidence onto the shelf. At 485 words against a 265 capture ceiling, the band's breach action pointed the same way.
 

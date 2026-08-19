@@ -1,4 +1,4 @@
-# [HASH] — the restyle continues to the rest of the corpus, which re-holds a terminology audit lifted earlier in the same session
+# 02ec308 — the restyle continues to the rest of the corpus, which re-holds a terminology audit lifted earlier in the same session
 
 [session-occurrence-audit] was lifted at the opening because its blocker had shipped. The user then decided the restyle **continues to the rest of the corpus** — which restores the original holding fact, since the docs that audit reads are still about to be rewritten. The lift was correct on the evidence available and wrong on the evidence that arrived minutes later, and both moves are recorded on the item because the second corrects the first.
 

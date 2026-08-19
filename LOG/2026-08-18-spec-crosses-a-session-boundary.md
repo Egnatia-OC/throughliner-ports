@@ -1,4 +1,4 @@
-# [HASH] — a build stops writing product truth, because the session that made a choice cannot be the one that certifies it
+# 02ec308 — a build stops writing product truth, because the session that made a choice cannot be the one that certifies it
 
 A run stopped in its second minute to ask for one SPEC sentence, and the user objected that the interruption was the wrong part. Claude's first design deferred the write to that same run's close, so the run would not stop.
 

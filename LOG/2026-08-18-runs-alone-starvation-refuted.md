@@ -1,4 +1,4 @@
-# [HASH] — the starvation claim is refuted and the item becomes a digest line, with its own proposed fix rejected
+# 02ec308 — the starvation claim is refuted and the item becomes a digest line, with its own proposed fix rejected
 
 The item said a `Runs alone` item placed last could be overtaken indefinitely and never reached. Checked rather than accepted: it was filed about [rename-to-throughliner] receding, and that shipped three days later. A `Runs alone` item is not deferred indefinitely by work sitting ahead of it either — /next stops **before** it, so the following run reaches it. Genuine starvation needs planning to outpace building forever, which is a throughput problem rather than a placement one. The heading said "never reached" and was rewritten.
 

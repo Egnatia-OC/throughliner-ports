@@ -1,4 +1,4 @@
-# [HASH] — the close-out gate gains a precondition, and the fix is smaller than either option the item offered
+# 02ec308 — the close-out gate gains a precondition, and the fix is smaller than either option the item offered
 
 A session once named three items at the opening, processed them, and then offered to close with thirty-five items still unprocessed — reaching for the neutral end-of-queue gate, which is specified for the case where Unprocessed *empties*. Applied to a full queue it stops being neutral: it silently reclassifies waiting work as nothing left to do.
 

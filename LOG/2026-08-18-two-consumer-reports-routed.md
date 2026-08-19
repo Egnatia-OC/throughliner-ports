@@ -1,4 +1,4 @@
-# [HASH] — two consumer reports arrive mid-chat, one of them verified against this repo before filing
+# 02ec308 — two consumer reports arrive mid-chat, one of them verified against this repo before filing
 
 Both messages landed after the session's opening, so neither was surfaced at session start — the case the close's own mail step exists to catch, reached here because the user asked.
 

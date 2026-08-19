@@ -6,14 +6,127 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### Compress the log index's over-ceiling lines, cutting the retrieve's fixed toll by about 40% [split-action-defeats-the-bands-in-aggregate]
+#### Give the build a derived view of the cleared region, carrying instructions and no decision history [split-the-cleared-region-for-concurrent-sessions]
+**Raised by you 2026-08-18 as a read-cost saving, and redesigned at processing on 2026-08-19 once the rationale hypothesis was tested and confirmed. The slug is unchanged because slugs are immutable. The design is yours;** the projection-rather-than-a-move shape came out of the discussion.
+
+**Why the subject moved.** The build view was filed to stop a run reading 24,800 words to build a handful of items. That saving stands, but it is now the second reason. The first is that a build cannot transcribe rationale it was never given — and it does transcribe it today, confirmed against git in `resources/research/rationale-flows-from-items-into-shipped-docs.md` rather than argued here.
+
+**What changes.** The keep-step authors a delimited **build block** on each item, carrying what changes in which files, the acceptance test, the red-flag state, and **any recorded refusal** — refusals stay, because stripping "X was refused because Y" makes the build re-propose X and stop to ask. A script copies those blocks byte-for-byte, keyed by slug, into a generated view. /next reads that view instead of QUEUE.md. The build's close resolves each slug against QUEUE.md as **one targeted read of one entry**, so the record still carries the history forward.
+
+**The view is read-only and regenerated, which is what removes the merge.** Nothing rejoins because nothing left — the only write-back is deleting the slugs that shipped, which `reorder_queue.py --delete` already does. **Your queue-merge skill is refused on that ground**, not on its merits: a sixth skill is the heaviest answer available, since every skill is loaded, documented and explained to consumers.
+
+**Why the separation is authored and not computed.** Telling history from instruction is judgment, so no script can do it. The keep-step can, with you present — the same siting the rule gate uses, and for the same reason.
+
+**The throughline rule is untouched.** The full queue keeps its rationale inline and whole. What the build reads is a projection, never a deletion.
+
+**Designed for concurrency from the start**, on your point that a semi-autonomous run currently occupies the only session you have and so blocks capture outright: planning writes the full queue and a build never does. The session mechanics are held separately in [concurrent-plan-and-build-sessions].
+
+**Read [build-view-narrows-capture-context] before building this.** A consumer project sent evidence, deliberately, ahead of this change: a capture made mid-run drew on queue-wide knowledge a build view would not have. It does not block this item — the concern narrows to duplicate-detection and cross-item awareness, since SPEC stays available to a build — but it names a cost this item does not, and the cheap mitigation (give the view the queue's headings and slugs, without the history) may belong here rather than in a later item.
+
+**Bumps the format epoch** — every existing project gains a generated file and its items gain a block — so `migrate-checklist.md` is refreshed in the same build.
+
+**Files, traced by grepping `QUEUE.md` across the package rather than written from the discussion:** `plan.md` (the keep-step authors the block), a new `plugin/throughliner/scripts/` generator, `next.md` and `next-build.md` (read the view), `done-build.md` (the targeted read at close), `pre_tool_use.py` (the scope-lock refuses QUEUE.md to a build), `post_tool_use.py` (the lint checks a cleared item carries a block), `session_start.py` (the epoch), `migrate-checklist.md`, `resources/testing/`, plus `faq-template.md` with `FAQ/faq.md` and both index lines. `SPEC.md` is written in this planning session.
+
+**Long, and not split — stated rather than passed over.** The evidence is already relocated to the research file above, which is the move that shortens an item holding one coherent design; dividing what remains would put the same Files line on both halves. **No ceiling is invoked**, since [retire-word-band-caps-keep-measurement] retires them.
+
+Rule gate: run — no freestanding rule. The build block is a clause on the existing two-limb keep check, which already governs what a kept item must state. **The eviction is the always-loaded assumption that a build reads QUEUE.md**, repealed across the readers named above. Failure evidence is two transcription cases confirmed against git, plus the measured proportion in one hunk: eight lines of rule against seventeen of explanation.
+
+Relates to [folding-in-has-no-eviction-step] (the same accretion one level down), [rationale-lens-after-the-build-view] (held until this ships) and [unattended-run-is-not-unattended]. The item that carried the hypothesis was deleted once its test was run and its evidence filed as research — it was a finding, not work.
+
+#### Retire the word-band caps and keep the measurement as a report [retire-word-band-caps-keep-measurement]
+**Your decision 2026-08-19**, in your own words: the numbered caps are *"too arbitrary and we have realer leads now."*
+
+**The argument that settles it comes from the tool itself.** `measure_written_shape_length.py`'s docstring refuses to print a band beside a distribution, because *"a band printed inside the distribution report would be a threshold read off the thing being questioned."* The shipped bands are exactly that — the middle of what this corpus already wrote. The script declines to do the thing the rules did.
+
+**This project has already accepted that argument once, one layer up.** The rule-corpus ceiling was removed on the ground that it had lost its derivation and no defensible replacement threshold existed; `rule_signals.py` still carries the reasoning and now reports growth with no verdict. The word bands are the surviving instance of a pattern already retired.
+
+**Three facts behind it rather than a mood.** The rules' own caveat calls the figures lengths *demonstrated to be sufficient, never ideal*, which describes past behaviour rather than setting a standard. The 2026-08-18 re-derivation had to exclude three shapes of five for want of defensible data, including work items. And acting on a breach has a measured yield of 8%, 3% and 9% across three passes.
+
+**What must not happen, because it is a known failure.** A prose instruction to be concise shipped first and measurably did nothing, which is the recorded reason the bands are figures at all. Retiring figures back to prose walks into that. The replacement is neither: it is structure — the build block and relocation along the seam it creates, in [split-the-cleared-region-for-concurrent-sessions]. That is the first lever aimed at where text lives rather than how it is worded, and it is untried.
+
+**What changes.** Bands, ceilings, floors and breach actions come out of the always-loaded authoring standard, out of the keep-step read and out of the close. The measurement script stays and still ships, printing distributions and no thresholds — the shape this project already trusts everywhere else, stated in the queue-growth hook's own output as *bare facts, no threshold, no judgment, and none is implied*.
+
+**What stays is the position, not the arithmetic.** SPEC keeps the stance that both failures are real: a record too thin to rebuild intent from fails as surely as one too long to get through. That is a stance you hold; only the numbers claiming to locate it go.
+
+**Files, traced by grepping `band` and `ceiling` across the package:** `skill-nonspecific-rules.md` (the authoring standard's table and the paragraphs deriving it), `plan.md` (the keep-step read), `done.md` (the entry and index-line reads, and the index-line band reference further down), `resources/measure_written_shape_length.py` and its shipped copy (the band mode goes, the distribution report stays), plus `faq-template.md` with `FAQ/faq.md` and both index lines for "how long should my queue items be?". **Checked and out of scope:** `next-build.md`'s ceilings are the retired runner's iteration and spend limits, `session_start.py`'s is the hook output cap, and `rule_signals.py`'s is the already-removed rule-corpus ceiling. `SPEC.md` is rewritten in this planning session.
+
+Rule gate: run — **the disposition is an eviction and nothing is authored.** Five figures and their breach actions are repealed across four live files, along with the derivation paragraphs defending them; no rule replaces them, and the replacement is a structural item already in the queue. Failure evidence is the tool's own refusal to self-derive, three shapes left unmeasurable at the last re-derivation, and three passes yielding 8%, 3% and 9%.
+
+Relates to [word-band-script-does-not-ship], [split-action-defeats-the-bands-in-aggregate] and [tersify-on-request-not-at-the-close], each of which rested on a band and was amended alongside this. A fourth, which existed only to derive figures for the three unmeasured shapes, was deleted in the same session — there were no figures left to derive.
+
+#### Name the two operations that fold into a work item, and require the merge to rewrite [folding-in-has-no-eviction-step]
+**Raised by you 2026-08-18** from the ideation loop's effect on new captures: holding the write until the design settled stopped a capture being written to three or four times. **Your question was whether the same principle reaches the accretion that happens afterwards, and folding was your example. Designed at processing on 2026-08-19.**
+
+**Your first point is confirmed by grep and is the whole reason there are no controls.** Folding a capture into an existing item is described in no procedure doc. `done.md`'s "fold it in" is a different operation — uncommitted work folding into the close — so nothing anywhere governs the one you named.
+
+**What the design adds is that two operations wear that one name.** A **merge** takes two accounts of the same thing; a **supersession** records that a decision changed. They want opposite treatments, and conflating them is the measured failure: [send-record-lacks-destination-and-intent] carries its original framing paragraph *and* a later paragraph covering the same ground, because a merge was performed as an append.
+
+**So the rule is to say which one you are doing, and each has its own move.** A merge **rewrites the host item** and states what came out, which is the rule gate's eviction step applied one level down — adding names what it replaces. A supersession **appends, dated, naming what it overturns and why the old reasoning lost**, because the throughline requires a defeated alternative and its reason to survive; rewriting one away is how a settled decision gets relitigated.
+
+**Live evidence from the session that designed this, recorded because it cuts both ways.** Nine items were edited in one planning session: eight grew, by 1,285 words between them, and one shrank. Most of the growth was dated supersession — decisions that changed hours apart — which this rule says is correct. The accretion is not appending. It is appending where the two accounts describe one thing.
+
+**The open measurement this item filed has its first answer, from the one item that shrank.** [law-prose-restyle-heavy-docs] had been given a lens and then had it taken away by an appended paragraph, leaving the item describing the lens as both in scope and removed — the failure this rule names, committed in the same session that wrote the rule. Merging it properly collapsed four paragraphs into one and took **63 words off**, against an item that would otherwise have kept growing. **One data point, in the predicted direction, and no rate is claimed from it** — but it is the only measurement anyone has that a rewrite comes out shorter than an append, and it was produced by a contradiction the digest could not see and a person asked for.
+
+**The taxonomy objection, answered rather than left for a later session to raise.** The throughline rules ban forcing rationale into a typed taxonomy. This types the *edit being made*, not the reason being carried, and the test is binary with an observable answer: are these two accounts of one thing, or is one overturning the other?
+
+**No FAQ entry:** Claude performs the fold, so nothing the user does changes.
+
+**Files:** `plugin/throughliner/docs-b/plan.md` — the keep-step, where an item's rationale is authored and where folds happen. **Checked and excluded:** `done.md`, whose folds are a different operation, and the always-loaded rules, which fail the four-skills test here since /setup and /next never fold into an item.
+
+Rule gate: run — admitted as a clause on the keep-step's existing authoring of an item's rationale, subordinate rather than freestanding, and sited in a fetched doc so no always-loaded slot is spent. **Nothing is evicted, and that is stated plainly rather than dressed up: folding was undescribed, so there was nothing there to replace.** Failure evidence is one measured duplication plus four folds in one session that each grew their host. **A hook was considered and refused** — merge versus supersession is a judgment about whether two paragraphs describe the same thing, which nothing mechanical can read.
+
+Relates to [split-the-cleared-region-for-concurrent-sessions], whose build block gives a fold a defined target once it ships, and to [split-action-defeats-the-bands-in-aggregate], which measures the same accretion at whole-queue scale.
+
+#### Correct the claim that a run is unattended, and keep the true half it is doing all the work with [unattended-run-is-not-unattended]
+**Captured by you 2026-08-11**, in substance: an unattended run is not actually unattended — it stops for `[user]` items and does not run /done on itself. **Designed at processing 2026-08-19, and the design is narrower than the item expected.**
+
+**The grep is what narrowed it.** "Unattended" appears at 23 sites, and almost all of them are *justifications* — do not stop the run to ask, do not narrate a passing check, do not block on adjacent work. Every one of those leans on something true: the run does not confirm each item and moves faster than a person can follow, so a stop costs disproportionately. **The item feared that settled decisions rest on an overstatement. They rest on the true half**, so end-preferred placement and the readiness line as the run's bound are both sound and are not reopened.
+
+**What is false is the description, and there are four ways it fails rather than the two captured.** The run stops to walk a `[user]` item live; it halts outright on `[freeform]`; it never closes itself, because /done is yours to run, so a run left alone finishes and sits uncommitted; and — **your point 2026-08-19** — it occupies the only session there is, so for as long as it runs you cannot capture anything at all.
+
+**What changes.** SPEC's claim that the run is "unattended in practice — the autonomous build mode the Principles name", and the Principle that execution stops "only for what genuinely needs the user", are corrected to say what happens: a run clears vetted work without confirming each item, and pauses at the three points above. `next.md` states that definition once, so the twenty justificatory uses read against something that no longer over-claims. **Rewriting all 23 is refused** — the phrase is correct wherever it means "do not interrupt this", and mass rewording would spend a large pass to change nothing.
+
+**The fourth failure is fixed by other work rather than by wording.** [concurrent-plan-and-build-sessions] gives you a planning session alongside the run, which is what makes ideation-at-any-point true instead of aspirational.
+
+**Self-closing is refused outright and recorded so it is not re-proposed.** A run that ran /done on itself would commit with nobody present, and a commit message is one of only two things the method still shows before it happens, precisely because a commit is hard to unwind and never becomes file content. Auto-closing overrides that guard or invents a version of it that survives nobody being there. Neither is worth the saving of one command.
+
+**No new session type and no second meaning for the readiness line**, the item's other two options. Both invent a container, which this method has refused repeatedly, and the walk-through problem they were solving is answered by concurrency instead.
+
+**Files:** `SPEC.md` (the multi-item /next paragraph and the execution Principle) — **rewritten in this planning session**; `plugin/throughliner/docs-b/next.md` (the definition, stated once), `done-plan.md` (the end-preferred rationale, re-grounded on the true half), and `plugin/throughliner/templates/faq-template.md` plus `FAQ/faq.md` and both index lines. **The FAQ entry is required rather than optional:** a user who reads "unattended" and walks away comes back to a finished run sitting uncommitted, which changes what they do.
+
+Rule gate: run — no rule is authored. **The disposition is a correction plus two refusals**: self-closing and a new walk-through session type, both rejected on the record above with their reasons, so a later session meets the argument rather than the conclusion. Nothing is evicted; the justificatory uses stand. Failure evidence is four ways the description is false, three of them observable in any run.
+
+Relates to [concurrent-plan-and-build-sessions] (which fixes the fourth), [arbitrary-run-length-capping] and [processed-reorder-mostly-unnecessary].
+
+#### Detect which core docs are untracked and state the consequences, rather than treating it as a fault [gitignored-core-docs]
+Filed 2026-08-18 from INBOX mail sent by a consumer project. **Reframed at processing on 2026-08-19, against the sender's own reading, after checking the source.**
+
+**What happened there.** A planning session ran to completion — a red flag cleared, three SPEC edits, eight work items, nine captures — and staging at the close revealed `.gitignore` carried `SPEC.md`, `QUEUE.md` and `LOG/`. The adoption commit's message says it wrote SPEC.md as product truth; that commit contains no SPEC.md.
+
+**The reframe, and it changes the whole design: this is not a fault, it is an offer.** `setup.md` already offers to add exactly those three paths to `.gitignore`, and [queue-privacy-default] widens that offer per document. So a check asserting the state is wrong would fire on a configuration the method itself creates on request — and would fire hardest right after the user chose it. **What was actually missing is that nobody was ever told what follows.**
+
+**Three rules go quietly false, and one of them already knows how to handle it.** Write-first's own test is *"is the previous version recoverable without the user's help?"* — and for an untracked file the answer is no. The rule has always had the right test and never had the fact. So **where a doc is untracked, its writes become show-first**, by the existing test rather than by a new rule. The other two are stated rather than repaired: a deleted queue item is not kept by git history, and `done-plan.md`'s `git diff HEAD -- QUEUE.md` returns nothing, so the close's mechanical record of its own work falls back to memory.
+
+**Detection goes in `session_start`, not in setup.** Setup fires once; the reporting project was already adopted, so a setup-only check would have missed the very case that produced this. `session_start` already runs git in seven places, and `git check-ignore` answers this in one call with no judgment.
+
+**And that timing dissolves the deadlock the sender hit.** Their close could not fix it — the planning scope-lock refuses `.gitignore`, correctly, and the close marker's permitted list omits it — so it became a `[user]` line asking a non-coder to hand-edit `.gitignore` mid-close. **No permission change is needed.** Detected at the session's opening, before any work, the same walkthrough costs nothing and interrupts nothing. **Their third suggestion, adding `.gitignore` to the close marker's list, is therefore refused** — it widens a deliberate refusal to solve a problem that timing solves.
+
+**Files:** `plugin/throughliner/hooks/session_start.py` (the check and the plain-words consequences), `plugin/throughliner/docs-b/skill-nonspecific-rules.md` (write-first's untracked branch), `plugin/throughliner/docs-b/setup.md` (the offer states the consequences at the moment of choosing), `resources/testing/` (a case per ignored path), and `plugin/throughliner/templates/faq-template.md` plus `FAQ/faq.md` and both index lines. `SPEC.md` is rewritten in this planning session. **No epoch bump** — no file changes shape.
+
+**[queue-privacy-default] lifts when this ships** and is held against it for that reason; both edit the same privacy offer, so the consequences and the per-document choice land in the right order rather than the second contradicting the first.
+
+Rule gate: run — **no new rule.** Write-first gains a branch from a fact it can now read, which is its existing test applied rather than amended; the rest is a hook check and honest wording. Nothing evicted. **One refusal on the record:** widening the close marker's permitted list, rejected because the deadlock is caused by late detection rather than by the refusal. Failure evidence is one consumer instance in which three always-loaded rules were false for a whole session and the red flag's informed-consent trail went into an untracked file.
+
+#### Compress the log index's longest lines, cutting the retrieve's fixed toll by about 40% [split-action-defeats-the-bands-in-aggregate]
 **Subject replaced at processing 2026-08-17; the slug is unchanged because slugs are immutable.** Raised by you at the close that first applied the plan-entry split: *"That was almost 17k tokens. I am concerned that the bands won't reach this new record keeping model."*
 
 **The aggregate half was measured and refuted, and that finding is in this session's record rather than here.** Per-entry cost *fell* after the split — 518 words per entry before it, then 329 and 316, against July's own 341. The 17k came from recording 26 items, so a per-close band would measure run size, which is your decision and not a length defect.
 
-**What survives is the index toll, larger than the item claimed.** `LOG/index.md` is 817 lines and 48,165 words, read in full on every retrieve. 351 lines sit at or above 61 words — over the ceiling — and carry 32,408 of those words. 265 of the 351 are August's.
+**What survives is the index toll, larger than the item claimed.** `LOG/index.md` is 817 lines and 48,165 words, read in full on every retrieve. 351 lines sit at or above 61 words and carry 32,408 of those words. 265 of the 351 are August's. **That 61 is a measured cut-off marking this item's work list, not a limit anyone must write to** — it selects which lines to look at, and each one is then judged against the index line's own contract rather than against a number.
 
-**What changes.** Each of the 351 is rewritten to the artifact touched, the nature of the change and the entry filename, inside the 20–40 band, working from the line's own text only: an over-ceiling line is over because it restates the entry it points at, so no entry needs re-reading. Commit hashes are preserved — the digest and the hash backfill read them.
+**What changes.** Each of the 351 is rewritten to the artifact touched, the nature of the change and the entry filename, working from the line's own text only: a long line is long because it restates the entry it points at, so no entry needs re-reading. Commit hashes are preserved — the digest and the hash backfill read them.
+
+**The band is no longer the reason, revised 2026-08-19 by [retire-word-band-caps-keep-measurement], and this item survives that intact.** The 20–40 figure goes with every other cap. What justified this work was never the figure: it is that `LOG/index.md` is read **in full, by Claude, on every retrieve**, so its length is a fixed toll rather than something a reader skims past — 48,165 words to point at entries, with one 337-word line pointing at a 1,710-word entry. The test is the index line's own stated contract, that it carries enough to decide open-or-skip and does not restate the entry. That is a judgment, applied line by line, and it was always the real test; the number was standing in front of it.
 
 **This edits a pointer, not the record.** Every entry file stays byte-for-byte and no claim changes, which is what separates it from editing a session record to agree with a later decision.
 
@@ -23,7 +136,7 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 **Files:** `LOG/index.md` only. The ripple was traced by grep — `session_start.py`, `queue_digest.py`, `rule_signals.py` and `measure_written_shape_length.py` all read the file, none reads line length.
 
-Rule gate: not needed — no rule authored and no always-loaded text touched. This applies the existing index-line band to a backlog that mostly predates it.
+Rule gate: not needed — no rule authored and no always-loaded text touched. This rewrites a backlog of index lines against the index line's own stated contract: carry enough to decide open-or-skip, and do not restate the entry. **Reworded 2026-08-19** — it previously invoked the index-line band, which [retire-word-band-caps-keep-measurement] retires.
 
 **The measurement this item asked for was run 2026-08-18, and it moves the subject: the problem is the queue's TOTAL length, of which item length is one term.** Across one full planning session the file went **21,512 words to 24,771 — up 15% — with the item count unchanged at 58**, and words per item rising 370 to 427. Twelve items were processed, four deleted and three folded away, and it still grew, because **processing an item is what lengthens it**: every keep adds a settlement, a Files line and a gate disposition. Only building an item out or deleting it shrinks the file. **This is the user's framing and it supersedes the per-artifact one this item was filed under.**
 
@@ -31,7 +144,7 @@ Rule gate: not needed — no rule authored and no always-loaded text touched. Th
 
 **And the ceiling those passes were measured against is derived from a shape that no longer exists.** 45 of 54 entries breach it, the worst at 1,347, 1,102 and 805 words — corpus-wide rather than one session's authoring, so **an earlier claim on this item that the over-length was newly written text is withdrawn as false.** The band is July's median; dispositions moved onto the item on 2026-08-13, and the ripple-trace and SPEC-question limbs on 2026-08-17. A July item carried none of them. Re-derived figures without multipliers are in [word-band-script-does-not-ship]'s discussion.
 
-**One narrower finding survives intact.** The breach action "split into two items" worked where an entry genuinely held two pieces of work and failed where it held one clause plus a long narrative — there the remedy was relocating the narrative to the record and citing it, 558 to 407 and 571 to 442, reaching the ceiling in neither case. **The action needs a second limb: for a one-clause item, relocation rather than division.**
+**One narrower finding survives, though what it now feeds has changed.** Splitting an entry in two worked where it genuinely held two pieces of work and failed where it held one clause plus a long narrative — there the remedy was relocating the narrative to the record and citing it, 558 words to 407 and 571 to 442. **This no longer amends a breach action, because there is no breach to act on**: relocation-not-division is instead the measured precedent behind the build block's seam in [split-the-cleared-region-for-concurrent-sessions], which is where it does its work now. Both figures are also the only evidence anyone has that relocation moves the totals at all, and neither reached what was then the ceiling.
 
 **The accretion mechanism is now filed separately** as [folding-in-has-no-eviction-step] — folding content into an item requires naming nothing that comes out, and appends rather than merges.
 
@@ -272,24 +385,13 @@ Filed 2026-08-18 from INBOX mail sent by a consumer project running this method.
 
 **And the shift supports the model hypothesis over the discipline one.** Captures and build records both moved by roughly 1.9× across the boundary. A discipline collapse would be patchy; a uniform shift across independent shapes looks like the writer changed. Recorded as support, not proof.
 
-**Files:** `resources/measure_written_shape_length.py` moved to `plugin/throughliner/scripts/`, `plugin/throughliner/docs-b/skill-nonspecific-rules.md` (the two bands, the pointer, the transfer clause), `plugin/throughliner/templates/faq-template.md` plus `FAQ/faq.md` and both index lines. `SPEC.md` describes the bands and their derivation and is rewritten in this planning session.
+**Superseded in part by [retire-word-band-caps-keep-measurement], your decision on 2026-08-19, the day after this was settled: the caps go and the measurement stays.** What survives here is the shipping defect this item was filed for — the always-loaded rules point every consumer at a script their project does not have, and that is fixed by moving the script into the plugin package. **What falls is the second half:** the re-derived figures are not shipped as bands, because the argument that retired every cap retires these two as well. The re-derivation's finding is not wasted — it is what showed the old ceiling to be tighter than the era it came from, which is part of why the caps went at all — but it lands as a record rather than as a rule.
+
+**Files:** `resources/measure_written_shape_length.py` moved to `plugin/throughliner/scripts/`, `plugin/throughliner/docs-b/skill-nonspecific-rules.md` (the pointer only — the band table and the transfer clause are removed by the retirement item rather than rewritten here), `plugin/throughliner/templates/faq-template.md` plus `FAQ/faq.md` and both index lines. `SPEC.md` is rewritten in this planning session.
 
 Rule gate: run — no new rule; two figures replaced and one clause added to the existing authoring standard, with the invented multipliers evicted. **The eviction is the 0.5 and 1.5 multipliers**, replaced by measurements. Failure evidence is a consumer report plus 88% and 73% breach rates measured here.
 
 **They also report the growth-by-addition trap working as designed** — the rules already carried the proposal to exempt later additions and the reasoning against it, which resolved that conversation in one exchange.
-
-#### Teach the measurement script the regime cut, and measure the three shapes still on invented figures [measurement-audits-for-the-remaining-shapes]
-**Filed 2026-08-18 on your instruction** — "we need to plan the audits that measure" — after two shapes were re-derived and three were left on numbers nobody can defend.
-
-**What is unmeasured, and why each resisted.** Planning records: the docset B side is 42 entries with a tail starting at 1,834 words, too few and too extreme to derive from. Index lines: the script returns them in a shape the regime cut could not consume, so they were never cut at all. Work items: an item filed under one docset and enriched under the next belongs to neither, so the cut is not merely missing but ill-defined.
-
-**What changes.** The script gains the regime cut as a mode — a boundary date rather than calendar months, defaulting to 2026-08-02 — reporting each shape's floor, middle and ceiling as the midpoint of the two regimes' 10th, 50th and 90th percentiles, which is how the two adopted figures were produced. It also gains index lines, which today it can only report by month. **For work items it reports the ambiguity rather than a figure**: how many items span the boundary, so the size of the ill-defined group is known instead of assumed.
-
-**What it does not do.** It cannot say the resulting figures are right. It replaces invented multipliers with measurements of what was written, which is a different and smaller claim — the two readings the always-loaded rule names both stay open.
-
-**Files:** `plugin/throughliner/scripts/measure_written_shape_length.py` after [word-band-script-does-not-ship] moves it there, and `resources/testing/` for a case on the regime cut. Follows that item; the ordering is written into both.
-
-Rule gate: run — no rule authored; a tool gains a mode. **Nothing evicted.** Failure evidence is three shapes currently carrying figures with no derivation.
 
 #### Tersification runs on request, never at the close, with the procedure on the shelf [tersify-on-request-not-at-the-close]
 **Raised by you 2026-08-18** as a step at the close, and **filed against that placement on the evidence you then supplied.** The write-up of the two passes is at `resources/research/tersifying-the-queue.md`, reproduced verbatim.
@@ -298,7 +400,7 @@ Rule gate: run — no rule authored; a tool gains a mode. **Nothing evicted.** F
 
 **What changes.** `CLAUDE.md` gains a short entry saying a tersify pass exists, runs when you ask for it, and points at the write-up. **The pass-2 method is mandatory when it runs** — item-level splice keyed by slug, unchanged blocks carried byte-identical, slug-uniqueness assertion, per-block deltas so nothing grows silently — and pass 1's rewrite-from-memory is named as the method not to repeat. **Fenced blocks are untouchable**, on the write-up's §8d and [two-column-fences-wrap-unreadably].
 
-**What the close does instead, at no rewriting cost:** report which entries breach the ceilings, which is a measurement and needs no invented threshold now that the figures are derived.
+**The close reports nothing about length, revised 2026-08-19 by [retire-word-band-caps-keep-measurement].** This item had given the close a breach report in place of the pass; with the ceilings retired there is no breach to report, and a distribution printed at every close would be a measurement nobody asked for at the moment they are least able to act on it. The on-request pass is the whole of what this item ships.
 
 **Files:** `CLAUDE.md`. Host-only — the write-up is a dev artifact and consumers have no such pass.
 
@@ -348,11 +450,7 @@ Filed 2026-08-17 **on your decision that the restyle continues to the rest of th
 
 **And the gap the fold would otherwise leave, closed here.** The known instance — at least three separate statements about how long something should be, none referencing the others — is in `skill-nonspecific-rules.md`, which was restyled this morning **without** this lens. So that file is in this item's scope for the lens alone, not for a second restyle.
 
-**A third lens, folded in from [rationale-audit-fetched-docs-gap] 2026-08-17 — and only onto these two files, which is that item's own recommendation.** The per-paragraph **delete-and-reread** test runs on every paragraph of `done.md` and `plan.md`: delete the sentence and read what remains, where a complete instruction means what you deleted was rationale and an unfinished one means it was operative.
-
-It folds rather than auditing first because this pass cannot restyle a paragraph without already deciding which half is rationale, so a separate audit would make the same decision twice. **What that gives up is the user seeing findings before the text moves, so the record carries each rationale removal and where it went**, site by site.
-
-**Test [rationale-in-items-flows-into-shipped-docs] before running this lens.** It asks whether the rationale in these docs arrives from the work items builds transcribe — and if it does, this lens removes text the items keep putting back, so the pass has to run again. The test costs a read; this pass is per-paragraph judgement over the two largest docs. **The distinction that item carries binds here too:** operational rationale, needed to apply a rule, stays and is written into the operative sentence; only rationale preserved for the record leaves. The ordering is written into both entries.
+**This pass carries TWO lenses, not three. The per-paragraph rationale lens was folded in on 2026-08-17 and taken back out on 2026-08-19** — do not restore it here; it lives in [rationale-lens-after-the-build-view], held until [split-the-cleared-region-for-concurrent-sessions] ships. What removed it was evidence, not preference: the test that lens was waiting on came back confirmed, in `resources/research/rationale-flows-from-items-into-shipped-docs.md`, showing that reasoning written into a work item reaches the doc a build edits — in the settling case with the clause order intact and the final sentence identical, where the item had directed nothing. So the rationale in these two docs arrives from upstream, and a per-paragraph pass would strip text the next build writes back. **The other two lenses are untouched and this item is otherwise unchanged**: the wording restyle and the subordination lens read the docs as they stand and owe nothing to where the text came from.
 
 **Files:** `plugin/throughliner/docs-b/done.md`, `plugin/throughliner/docs-b/plan.md`, and `plugin/throughliner/docs-b/skill-nonspecific-rules.md` for the subordination lens only.
 
@@ -373,7 +471,7 @@ Filed 2026-08-17 on the same decision of yours. **Follows [law-prose-restyle-hea
 
 **Carries the subordination lens too**, folded in from [freestanding-rules-that-should-be-subordinate] on your instruction 2026-08-17: look for two or more rules governing one subject, stated at the same level with no declared relationship, and land them as a parent with subordinate units. Its terms and its interaction with the count are stated once in [law-prose-restyle-heavy-docs] rather than repeated here — including that a **fall** in the statement count must be attributed to a merge or to a deletion, since subordination reduces the count without evicting anything.
 
-**What this item deliberately does NOT carry, stated so it reads as a decision rather than an omission.** The per-paragraph rationale test folded into [law-prose-restyle-heavy-docs] stops there. These ten docs keep the **signature-phrase** criterion for rationale, which is what they have had. The reason is measured rather than guessed: extending per-paragraph judgement across the fetched docs was costed at roughly 42,000 words of it, and that figure is why the earlier extension was refused. [rationale-audit-fetched-docs-gap] recommended the two-file limit for exactly this reason, and folding the lens everywhere would quietly overturn its own recommendation while claiming to honour it.
+**What this item deliberately does NOT carry, stated so it reads as a decision rather than an omission.** The per-paragraph rationale test does not run here — and as of 2026-08-19 it does not run in the heavy-docs pass either, having moved to [rationale-lens-after-the-build-view]. These ten docs keep the **signature-phrase** criterion for rationale, which is what they have had, and that is unaffected by the move. The reason is measured rather than guessed: extending per-paragraph judgement across the fetched docs was costed at roughly 42,000 words of it, and that figure is why the earlier extension was refused. [rationale-audit-fetched-docs-gap] recommended the two-file limit for exactly this reason, and folding the lens everywhere would quietly overturn its own recommendation while claiming to honour it.
 
 Rule gate: run — no rule authored, amended or evicted; an extension of an already-admitted standard to the remaining files, carrying the same silent-authoring caution as its sibling and the same lens.
 
@@ -407,7 +505,11 @@ Captured by you 2026-08-12; the angle is yours — the ladder and how much it im
 
 **Your assessment of the draft, which is the live problem with this item.** It swung from hard marketing to substantially explaining why the competition is better. You sent it to the other project for polishing rather than continuing here, because you wanted to move on — so the draft is out of this project's hands and the item covers what comes back.
 
-**What it waited on: [digest-reports-computed-fields-not-summaries].** The article's honest weak points — manual curation, a 56,000-token queue read — are answered by that item and nothing else queued. Naming it rather than a vague "the digest work" matters, because a reference to something not yet filed is the failure this session hit twice.
+**The queue-read weakness is NOT answered, corrected 2026-08-19, and this must be right before the article goes out.** It once read that the article's weak points — manual curation and a 56,000-token queue read — were answered by [digest-reports-computed-fields-not-summaries]. That became false on 2026-08-17, when the digest was expressly stopped from replacing the read: a planning session now runs the digest **and** reads the whole file, because the digest computes facts and the file carries the reasoning. So the full read is still paid, deliberately.
+
+**What actually addresses it is unbuilt.** [split-the-cleared-region-for-concurrent-sessions] gives a build a derived view and stops it reading the queue at all. **Under the shipped-only rule the article cannot claim that until it ships**, and the honest line if it goes out sooner is that planning still reads everything and the reason is that reasoning across items is what planning is for.
+
+**Read this paragraph before drafting.** A `[user]` item sitting cleared to run, producing public text, is exactly how [discord-post-context-adjacency] was nearly posted about a mechanism that no longer existed.
 
 **The substance, drafted in discussion and to be rewritten rather than pasted.** *Stronger:* typed documents with defined roles versus an undifferentiated note graph, so product truth, pending work and history each have a home; memory coupled to execution, since /next builds from the queue rather than merely reading it; the throughline carrying *why* rather than only what; deletion as a user-approved fate decision rather than an automatic prune; and everything as plain markdown in git, reversible and auditable. *Weaker:* curation is manual, which is dreaming's entire job — sixty unprocessed items with duplicates accumulated over weeks, seven merges by hand, six items found behind already-shipped blockers; scale, where graph retrieval never needs to read everything; and one-way links, where backlinks are derived for free.
 
@@ -547,16 +649,35 @@ Blocked by: [discord-post-session-start-strength]
 
 **Files:** none — the artifact is a Discord post. Relates to [self-authoring-rules].
 
+#### Allow a plan session and a build run at the same time, so ideation is never shut off [concurrent-plan-and-build-sessions]
+**Split from [split-the-cleared-region-for-concurrent-sessions] at processing 2026-08-19**, which carries the single-writer split this depends on. **Raised by you, and the case is yours.**
+
+**Your two reasons, and the second is the stronger one.** You already switch every minute or so because of wait times — today between whole *projects*, losing the context each time, where switching within one project would be a straight focus win. And a semi-autonomous run occupies the only session you have, so for the whole time it runs you cannot capture anything. **SPEC's first principle — that the user must be able to ideate at any point in the build cycle — is therefore false today**, and this is what makes it true.
+
+**What it repeals.** The always-loaded rule says work on a project from one chat at a time, because a capture filed in one chat is invisible to the other and the two disagree about the queue from the moment either writes. The build view answers exactly that: one writer, and a view regenerated rather than merged. The old objection does not reach this shape — but it was settled after the arrangement "fell over every time it was tried", so the repeal is written as a repeal, naming what changed rather than quietly dropping it.
+
+**What is still to design, and it is the whole of this item.** Two sessions committing to one working tree is a git problem no file split touches. The plumbing exists — `session_start` already detects worktrees, reports commits a checkout does not have, and offers the merge back — so the choice is whether a build runs in its own worktree or both share the tree with a single committer. Then the shipped-slug cleanup at the next /plan opening, and the guard against resurrecting finished work, which rests on status being re-derived from LOG.
+
+**Files (rough, settled once the git question is):** `skill-nonspecific-rules.md` (the one-chat rule), `plan.md` (the cleanup at the opening), `session_start.py`, `faq-template.md` plus `FAQ/faq.md` and both index lines, and `SPEC.md`.
+
+Blocked by: [split-the-cleared-region-for-concurrent-sessions]
+
+Rule gate: not needed at processing — the repeal is decided here but its wording waits on the git question, so the rule text is authored when this is next processed rather than at the build.
+
+#### Run the per-paragraph rationale lens over `done.md` and `plan.md`, once the transcription is stopped at source [rationale-lens-after-the-build-view]
+**Split out of [law-prose-restyle-heavy-docs] on 2026-08-19**, when the test that item was waiting on came back confirmed. The other two lenses in that pass are unaffected and stay with it; only this one moves.
+
+**Why it moved rather than staying folded in.** The lens deletes a paragraph, reads what remains, and keeps the sentence only where the instruction is left incomplete without it. That works on text that is going to stay put. It does not work while the work items are still feeding rationale into these docs at every build — the pass would strip text the next build writes back, and have to run again. The evidence that this is actually happening is `resources/research/rationale-flows-from-items-into-shipped-docs.md`, tested against git rather than argued.
+
+**What changes when it runs.** Every paragraph of `done.md` and `plan.md` gets the delete-and-reread test: a complete instruction after the deletion means what came out was history and it goes to the record; an unfinished one means it was operative and is written into the rule. The record carries each removal and where it went, site by site — which is what this pass gives up by folding judgement into the rewrite rather than auditing first.
+
+**Files:** `plugin/throughliner/docs-b/done.md` and `plan.md`, plus `LOG/` for the site-by-site record of what moved.
+
+Blocked by: [split-the-cleared-region-for-concurrent-sessions]
+
+Rule gate: not needed — no rule is authored or amended. A pass that relocates rationale out of operative statements applies a standard already admitted, and the operational-versus-historical distinction it uses is the method's own delete-and-reread test.
+
 ## Unprocessed
-
-#### Last session advises testing [rationale-in-items-flows-into-shipped-docs] before the restyle builds [forward-advisory]
-The test costs a read of git: take items whose prose carried heavy reasoning into a build, and check whether that reasoning turns up in the doc the build edited. If it does, the rationale accumulating in the always-loaded rules arrives from the items rather than from authoring discipline.
-
-**Why before rather than after.** [law-prose-restyle-heavy-docs] carries a per-paragraph rationale lens over the two largest rule-bearing docs. If the cause is upstream, that lens removes text the items keep putting back and the pass has to run again. Both entries carry the ordering.
-
-Also worth taking early: [plan-entry-split-wording-disagrees], because the two statements it names govern how every planning close is written, including the next one.
-
-Four captures arrived after the last processing pass — two consumer reports and three from the ideation-loop discussion — and none has been weighed.
 
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
@@ -565,6 +686,12 @@ Captured by you (2026-08-01) while reviewing your Claude Code feature request an
 **Why it is not buildable yet.** The saving needs the harness to surface an already-produced Write's content verbatim with no second model pass — issue #77134, which hasn't landed. Until it does there's no build to describe. Re-examine when the issue ships.
 **Two things settled, not to be re-opened here.** The write-first ordering flip is decided and shipped. The convergence note about view-in-doc machinery is spent — working-mode field, Editor field and line-anchored-link promise all retired 2026-08-09.
 External dependency: anthropics/claude-code#77134.
+
+**Checked 2026-08-19 and still open** — filed 2026-07-13, labelled `enhancement`, `area:cost`, `area:tools`, `area:core`, no maintainer response and no close date. The disposition is unchanged: nothing to build, re-examine when it ships. **What the check buys is that the next session reads a date rather than re-running the lookup**, which is the whole reason it is written here.
+
+**Two things in the discussion are worth having when this does become buildable.** A comment dated 2026-08-01 sets out the mirror direction — author-in-chat, approve, then write — and argues it needs no second primitive, because a workflow that can show a Write's content verbatim can adopt write-first ordering and get the same saving so long as rejection reverts. That is this project's shipped model described from the outside. **It looks like yours, on the date and the reasoning, but nothing in the record here says so — worth confirming rather than assuming.** A later comment proposes generalising the primitive to `show_file(path, range?)`, which would also let Claude surface parts of *existing* files without re-emitting them — that reaches the view-in-doc pointer and the inline-text offer, not just the three show-first cases, so it would widen this item rather than merely unblocking it.
+
+**Surfaced 2026-08-19 by the decay rung, on its first firing since the interleave was adopted.** It had been the oldest entry in the queue at 17 days and nothing in the ladder had ever reached it.
 
 #### Routing communication feedback to memory masks the method defect that produced it — the memory-boundaries rule needs the exception [memory-masks-method-defects]
 Captured by you — raised 2026-08-09 at a /done close, filed after `115f851`. Your point, rendered in Claude's words rather than quoted: if Claude's replies are affected by memory, then the method can't truly be tested.
@@ -585,14 +712,6 @@ Filed 2026-08-10 during /plan; rides this session's /done commit. Mixed authorsh
 Both need a rezip and an application restart, so the experiment is Claude's work and the restart the user's — already decomposed as [statusline-test-script] plus [statusline-restart-test]. Don't build that structure until the prior question is answered: whether enforcement is wanted at all. That belongs with [rule-lifecycle-system]'s born stage.
 **The ordering established when this was filed, kept as the frame for that decision:** a filename steers weakest, a first-line admission test steers better, a required close-time artifact leaves a trace, and a hook denial is the only one that cannot be skipped. Costs run the other way — a transcript scan on every tool call is the most expensive.
 Relates to [extract-skill-nonspecific-rules] (whose new doc inherits the same unenforced directive), [rule-lifecycle-system] (whose "born" stage carries the same visible-but-unenforced gate problem) and [restore-plan-file-gate].
-
-#### An "unattended" /next run is not unattended: it stops for [user] items and never closes itself [unattended-run-is-not-unattended]
-Captured by you 2026-08-11 in the post-close tail. Your point, rendered in Claude's words rather than quoted: an unattended run is not actually unattended — it stops for user items and doesn't automatically run /done on itself; we can design that, but it needs consideration of where user items land.
-**The claim as it stands.** `SPEC.md` calls multi-item /next "unattended in practice — the autonomous build mode the Principles name", and the Principles say execution sessions trend toward pure execution, "stopping only for what genuinely needs the user". In practice a run stops at least three ways: a `[user]` item is walked through live one step at a time; a `[freeform]` item halts it outright; and at the end it simply stops, because **/done is a command the user runs**. So a run left alone finishes its builds and sits there uncommitted until someone returns.
-**Why this is worth more than a wording fix.** The word shapes real decisions. `[user]` and `[audit]` lines are placed end-preferred *because* a stop inside a contiguous build run interrupts an otherwise unattended sequence — that rule only makes sense if the run is meant to be left alone. The readiness line was made the run's sole bound on the same reasoning. If "unattended" is aspirational, several settled decisions rest on an overstatement.
-**What a design has to settle, and your condition is the hard part.** Where `[user]` items land. End-preferred placement batches them at the end of the cleared region, the right instinct but only a tie-adjustment — a genuine dependency still puts a `[user]` item mid-run. Options: whether a truly unattended run must exclude `[user]` items entirely and leave them to a separate walk-through session; whether the readiness line grows a second meaning (build up to here unattended, then stop for the human); or whether the honest answer is to stop calling it unattended and describe it as a run that clears vetted work and pauses where a person is genuinely needed.
-**The self-closing half carries a real tension.** A run that ran /done on itself would commit without the user present, and the commit message is one of only two things the method still shows before it happens — precisely because a commit is hard to unwind and never becomes file content. So auto-closing either overrides that rule or needs a form of it that survives nobody being there. Settle that before, not after.
-**Files (rough):** `SPEC.md` (the Multi-item /next paragraph and the Principles), `plugin/throughliner/docs-b/next.md` (stopping behaviour), `docs-b/done-plan.md` (end-preferred placement, whose rationale rests on this), plus an FAQ entry — a user reading "unattended" and walking away is exactly who this misleads. Relates to [arbitrary-run-length-capping] and [processed-reorder-mostly-unnecessary].
 
 #### The filing-claim hook fires on a slug that was only cited, not filed [stop-hook-fires-on-cited-slugs]
 Filed 2026-08-13 by Claude from a live instance in this /plan session, after the last committed close, so it belongs to no committed session record.
@@ -860,68 +979,6 @@ Filed 2026-08-17 by Claude at its own close, from the reconcile against memory t
 
 **One thing not claimed:** nothing was lost this time. The entries were written from a chat that still held the run, so the record is accurate — this is a defect in what the file would carry for someone else, found because the reconcile asked.
 
-#### /setup can leave SPEC, QUEUE and LOG gitignored, and three rules resting on git recoverability go silently false [gitignored-core-docs]
-Filed 2026-08-18 from INBOX mail sent by a consumer project running this method.
-
-**What happened there.** A planning session ran to completion — a red flag cleared, three SPEC edits, eight work items, nine captures — and staging at the close revealed `.gitignore` carried `SPEC.md`, `QUEUE.md` and `LOG/`. The adoption commit's own message says it wrote SPEC.md as product truth; that commit contains no SPEC.md.
-
-**The check that misses it.** Setup tests that a present `.gitignore` carries a `.throughliner/` line, and `setup.md` already admits "an existing `.gitignore` counts as present however little it contains". Nothing checks the inverse — that it does not contain something fatal.
-
-**Three rules were false for that whole session.** Write-first, whose stated test is whether the previous version is recoverable without the user. The queue-states rule that a deleted item is kept by git history. And `done-plan.md`'s `git diff HEAD -- QUEUE.md`, which returns nothing, so the close's mechanical record of its own work is empty and falls back to memory — the exact substitution that command was chosen to prevent. Sharpest instance: a red flag's clearance and its informed-consent trail went into an untracked file.
-
-**And the close deadlocks.** Removing the lines is the fix and a planning session cannot do it: the scope-lock refuses `.gitignore`, correctly by its own rule, and the close marker's permitted list omits it too. It became a `[user]` line — a non-coder hand-editing `.gitignore` mid-close.
-
-**Their suggestions, offered as a consumer rather than a designer:** assert the negative at setup, notice before the close rather than at staging, and weigh `.gitignore` for the close marker's list on the argument that already put `README.md` there.
-
-**[queue-privacy-default] is held against this item**, on the user's decision 2026-08-18. It splits setup's bundled gitignore offer per document — the same code path — so the two are settled together rather than shipping a second question into the moment the first one is already going wrong. The ordering is written into both entries.
-
-#### Folding in is undescribed, appends rather than merges, and is the session's main accretion mechanism [folding-in-has-no-eviction-step]
-**Raised by you 2026-08-18**, from the ideation loop's effect on new captures: before it, a capture was written to three or four times before anything else was processed, and holding the write until the design settled removed that. **Your question is whether the same principle reaches the accretion that happens afterwards, and your example is folding.**
-
-**Your first point stands on its own: folding is native Claude behaviour the method leans on constantly and describes nowhere.** Nothing can be examined, measured or disciplined while it has no name in the docs, which is why it has no controls.
-
-**Folding is admission without eviction.** Adding a rule to the corpus requires naming what comes out; folding content into an item requires nothing. Same asymmetry the rule gate exists to correct, one level down.
-
-**And the transferable principle from the ideation loop is settle-first-then-write-once, which for a fold means rewriting the host item rather than appending to it.** Today's folds appended: [send-record-lacks-destination-and-intent] still carries its original framing paragraph and a later paragraph covering the same ground, because both accounts survived the merge. The accretion is the duplication, not the folded content.
-
-**Measured in this session.** Four items absorbed content — [send-record-lacks-destination-and-intent] +255 words, [law-prose-restyle-heavy-docs] to 640, [missed-spec-write-interrupts-the-run], [stop-hook-fires-on-cited-slugs] +121. Every one grew; none shrank anything.
-
-**Open question, and it is a measurement rather than a design.** Whether a fold that rewrites the host comes out shorter than one that appends. Testable from git by re-doing one of today's folds properly and comparing.
-
-Relates to [work-items-accrete-past-their-band] and [split-action-defeats-the-bands-in-aggregate], which measures the same problem at whole-queue scale.
-
-#### Rationale inside a work item may be read at build time as content to be built, and flow into the shipped docs [rationale-in-items-flows-into-shipped-docs]
-**Raised by you 2026-08-18**, from the observation that decision history sits in items because the throughline preserves it at every step — but a build reads that item as its instructions.
-
-**The hypothesis.** /next transcribes what an item carries. An item carrying three paragraphs of why offers no marker separating *what to build* from *what was preserved for the record*, so a build plausibly writes the reasoning into the doc it is editing. If that is happening, the rationale accumulating in the always-loaded rules is not an authoring slip — it is the throughline discharging itself into the wrong artifact.
-
-**Why it is worth testing rather than assuming.** Two live efforts treat that accumulation as a discipline problem: the rationale audit, and the restyle's per-paragraph delete-and-reread lens now folded into [law-prose-restyle-heavy-docs]. Both remove rationale after the fact. **If the cause is upstream, both are chasing a symptom and will keep having to run.**
-
-**The test, and it is cheap because both artifacts are in git.** Take items whose prose carried heavy reasoning into a build, read what that build actually wrote into the doc, and check whether the item's reasoning appears there in recognisable form. A match across several items supports it; reasoning that stayed in the item and never reached the doc refutes it.
-
-**What it would change if confirmed.** The fix moves to the item: what a build reads carries the operative content and the recorded refusals, and points at the record for the rest. **Refusals stay** — strip "this alternative was refused because X" and the build re-proposes X and stops to ask, which is a failure two other items already cover.
-
-**Your refinement, and the fix is wrong without it: some items need their rationale because the rationale IS the work.** An audit testing a hypothesis carries that hypothesis as its content — strip the reasoning and there is no audit left to run. So the distinction is not rationale versus none, but **operational rationale, needed to do the work, against historical rationale, preserved for the record.** The method already owns the test that separates them, stated for rules rather than items: delete the sentence and read what remains — a complete instruction means what you deleted was history, an unfinished one means it was operative. Applying it to items is the move; inventing a new test is not.
-
-**Runs before [law-prose-restyle-heavy-docs]'s rationale lens**, because if this holds, that lens removes rationale the items keep putting back and has to run again. The ordering is written into both entries.
-
-Relates to [folding-in-has-no-eviction-step] and [split-action-defeats-the-bands-in-aggregate], both filed the same day about where text accumulates rather than why.
-
-#### Give the cleared region its own file so a build stops reading the whole queue, and see whether that reaches concurrent sessions [split-the-cleared-region-for-concurrent-sessions]
-**Raised by you 2026-08-18**, including the merge mechanism below. **Your framing: separate the processed region off for building, and merge what is left back into the full queue for planning.**
-
-**What it buys, measured.** QUEUE.md stands at roughly 24,800 words and a build reads it to work a handful of cleared items. Splitting the cleared region into its own file makes a run read only what it will build.
-
-**Where it breaks, and this is the part to design.** **Planning's keep-step writes into that same build file** — a keep moves an item into the cleared region — so the collision the split was meant to remove returns at the one step that crosses the boundary. Keeps would have to land somewhere else until a merge. And underneath the file question is a git one: two sessions committing to the same repository is a separate problem no file split touches.
-
-**A second hazard, named because it is the classic one.** If planning holds a merged copy while a build consumes an item out of the build file, merging back can resurrect an item that has already shipped.
-
-**Your proposed mechanism is a queue merge skill.** **Weigh a cheaper route first:** `reorder_queue.py` already moves blocks byte-for-byte keyed by slug, which is what a merge is. A mode on the existing script may do it without a sixth skill — and a skill is the heaviest available answer, since every skill is loaded, documented and explained to consumers.
-
-**The counterweight, which is yours and is real.** The one-file decision is on the record: reasoning across items splits badly when they are apart. **The distinction that may save this: the multi-file arrangement scattered items, while this scatters regions and leaves every item whole** — and planning merges them back before reasoning over them, so the split only ever binds a build. Different failure surface, not the same one.
-
-**Not settled here** — raised at the end of a long session and filed rather than designed.
-
 #### The rules disagree on how a planning record splits — "per item processed" against "per decision" [plan-entry-split-wording-disagrees]
 Filed 2026-08-18 at the close that had to choose between them.
 
@@ -934,4 +991,43 @@ Filed 2026-08-18 at the close that had to choose between them.
 **To settle at processing:** which wording is right, and then make the other match. Worth weighing that "per decision" is the one that survives a session where several items are settled together — and that "per item processed" is the wording in the always-loaded file, which is the one a session actually reads at the moment it decides.
 
 Relates to [split-action-defeats-the-bands-in-aggregate], which measures what the split costs, and [plan-entry-split-action-underspecified], shipped.
+
+#### The decay rung terminates in theory and is unreachable in practice, so nothing old is ever taken [decay-rung-unreachable-in-practice]
+**Raised by you 2026-08-19**, in your own words: *"you can stay stuck on size forever, never reaching the decay rung by the end of any plan session."*
+
+**You are right, and the arithmetic is the argument.** Rung 3 was partitioned at the section's median line count so that it terminates — a finite group that shrinks as it is worked. That fixed the formal defect, which was a rung that ranked every entry and so could never yield. It did not fix the practical one: the above-median group is by construction **half the section**, roughly 16 items in Unprocessed today, and reaching rung 4 means processing all of them in one session. This session processed four. So the decay rung is reachable in principle and, at any realistic session length, never.
+
+**Your proposed fix does not work, and the reason is worth recording.** Combining the two rungs as "date by size" or "size by date" is a lexicographic order — one key dominates and the other only breaks ties. Whichever goes first, the second starves exactly as rung 4 starves now. The ordering is relabelled rather than repaired.
+
+**Two fixes do work, and only one avoids inventing a figure.** A single composite score mixing age and size needs weights, and a weight is a bare number with no derivation, which this project bans; the same objection kills any ageing rate. **Interleaving needs neither: alternate between the above-median group and the oldest-filed item, one from each in turn.** Starvation becomes impossible by construction rather than merely unlikely, every pick still reads a field the digest already computes, and no figure is written into the method's text.
+
+**What interleaving costs, stated because it is real.** Longest-first rests on cost-of-reading — taking long entries first shortens the queue fastest — and alternating halves that rate. The trade is half the benefit of a rung that works against the full benefit of a rung that is never reached, which is what rung 4 currently is.
+
+**Not settled here.** Raised at the end of a long session, and it needs the interleave checked against a real queue before it is kept.
+
+Relates to the ladder's history: the decay rung was deleted once and restored, its deletion recorded as a forced choice rather than a finding against it, so this is the second time it has come close to being lost.
+
+#### The build view may degrade capture quality during a run, and a consumer sent evidence before the change [build-view-narrows-capture-context]
+Filed 2026-08-19 from INBOX mail sent by a consumer project running 1.20.0-test12. **Sent deliberately as evidence ahead of the change, by you, in that project — the concern is yours and the worked example is theirs.**
+
+**Their evidence.** A run had finished six build items and moved into a `[user]` walk-through. Instead of answering step 1, you went sideways into a long aside. The run filed two captures out of it, split because they had different dispositions, and answered the question you had actually asked. Their claim is that none of what made those captures good came from the build.
+
+**Four things they say it drew on. Two of them our design removes, one it keeps, and one is untouched — checked rather than accepted.**
+
+- Knowing the two captures were not already filed **required reading the whole queue**. The build view removes that.
+- Recognising which detail was consequential **required knowing what a queued item depends on**. Queue knowledge, also removed.
+- Knowing the spec was silent on that product area, so a stated wish was recorded without becoming a scope claim, **required reading SPEC**. Not affected: /next reads SPEC at run start and the build view does not change that.
+- Splitting one aside into two items **required knowing how items get processed**. Not affected: the procedure docs are loaded either way.
+
+**So the concern is real but narrower than sent — it is specifically queue-wide knowledge, not context in general.**
+
+**Their sharpest point is the timing, and it survives the narrowing.** The aside happened during a `[user]` walk-through, which is the phase where the user is working and talking freely and unprompted material arrives most. Context narrowing applied uniformly across a run bites hardest exactly where the raw material is richest.
+
+**What partly answers it, and why it does not fully.** [concurrent-plan-and-build-sessions] puts a planning session alongside the run, holding the whole queue — so a capture has somewhere well-informed to go. But **the session hearing the aside is the build session**, and it is the one without queue context, so either the user repeats themselves in the other window or something carries it across. That friction lands at the richest moment.
+
+**Options to weigh, none designed.** Give the build view the queue's headings and slugs only, which is cheap and restores duplicate-detection without restoring the history. Or route walk-throughs to the planning session, which reaches the phase they identify and nothing else. Or accept the cost and record it.
+
+**What this evidence does not show**, in their own framing: what the change actually restricts, since they cannot see it. It shows one good capture drawing on queue-wide context.
+
+Relates to [split-the-cleared-region-for-concurrent-sessions] (which this bears on and which is cleared to run) and [concurrent-plan-and-build-sessions].
 

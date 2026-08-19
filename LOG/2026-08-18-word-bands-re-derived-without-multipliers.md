@@ -1,4 +1,4 @@
-# [HASH] — the word bands re-derived from measured percentiles, with the invented multipliers evicted
+# 02ec308 — the word bands re-derived from measured percentiles, with the invented multipliers evicted
 
 A consumer project reported that the always-loaded rules tell every user to run `resources/measure_written_shape_length.py --bands`, and that no such file exists in a consumer project. Verified here: it sits in this project only, a `find` over the plugin package returns nothing, and line 711 of the shipped rules names it. The script's own docstring says "host-only dev artifact", so this is a shipped rule citing a deliberately unshipped tool rather than an oversight.
 

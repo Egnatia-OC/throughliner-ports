@@ -1,4 +1,4 @@
-# [HASH] — the chip-reply finding moves to the research shelf and the item keeps only the containment test
+# 02ec308 — the chip-reply finding moves to the research shelf and the item keeps only the containment test
 
 At 656 words against a 345 ceiling, this item split along a real seam: most of it was evidence, not work.
 

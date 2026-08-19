@@ -1,4 +1,4 @@
-# [HASH] — a hook change is verified by driving the new code, never by performing the guarded action in the live project
+# 02ec308 — a hook change is verified by driving the new code, never by performing the guarded action in the live project
 
 Having just built the guard that refuses a Write onto an existing file under `LOG/`, a run deliberately performed that write to watch the guard refuse it — and overwrote a committed entry, recovered whole from git. The hook that actually runs is the installed host, a frozen snapshot, so the guard never fired.
 

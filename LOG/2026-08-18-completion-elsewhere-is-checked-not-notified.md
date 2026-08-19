@@ -1,4 +1,4 @@
-# [HASH] — work finishing in another project is learned by checking, and the notification branch is refused
+# 02ec308 — work finishing in another project is learned by checking, and the notification branch is refused
 
 An item can sit ready here long after the work it waits on has finished elsewhere. [report-url-404] was the recorded instance: the page had been live for some time and nothing here learned it until a walk-through fetched the URL.
 

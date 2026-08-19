@@ -1,4 +1,4 @@
-# [HASH] — the version clean moves from the push to the release, reversing a refusal made the same day on a premise that is now gone
+# 02ec308 — the version clean moves from the push to the release, reversing a refusal made the same day on a premise that is now gone
 
 The user rezips at every run, so a clean paid at every push is paid constantly. Her framing: decouple the test rezip from the push.
 
