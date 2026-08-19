@@ -1,4 +1,4 @@
-# [HASH] — folding into a work item named at last, and split into two operations: a merge rewrites the host, a supersession appends
+# cb50e2b — folding into a work item named at last, and split into two operations: a merge rewrites the host, a supersession appends
 
 Raised by the user the day before, from the ideation loop's effect on new captures — holding the write until the design settled stopped a capture being written to three or four times — and her question was whether the same principle reaches the accretion that happens afterwards. Folding was her example.
 

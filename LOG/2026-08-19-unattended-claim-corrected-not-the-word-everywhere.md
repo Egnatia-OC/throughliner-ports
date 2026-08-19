@@ -1,4 +1,4 @@
-# [HASH] — "unattended" is doing two jobs; the false one corrected, the twenty justificatory uses left alone
+# cb50e2b — "unattended" is doing two jobs; the false one corrected, the twenty justificatory uses left alone
 
 Captured 2026-08-11 and pulled forward on the user's agreement, because her point about a run occupying the only session was a third way the word is wrong that the item did not have.
 

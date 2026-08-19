@@ -1,4 +1,4 @@
-# [HASH] — a plan session alongside a build run: the one-chat-at-a-time rule repealed, on the ground that a run currently blocks ideation outright
+# cb50e2b — a plan session alongside a build run: the one-chat-at-a-time rule repealed, on the ground that a run currently blocks ideation outright
 
 Split out of the build-view design as its own item, because the single-writer file split is buildable on its own and the session mechanics are not.
 

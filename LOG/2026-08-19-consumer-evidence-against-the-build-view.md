@@ -1,4 +1,4 @@
-# [HASH] — a consumer project sent evidence against the build view before it was built, and two of its four limbs land
+# cb50e2b — a consumer project sent evidence against the build view before it was built, and two of its four limbs land
 
 Mail from SimplySew, running 1.20.0-test12, sent deliberately ahead of the change as evidence of what it might cost. The user is the same person in both projects; the concern is hers, the worked example is that project's.
 

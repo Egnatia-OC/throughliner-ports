@@ -1,4 +1,4 @@
-# [HASH] — a work item's rationale does reach the shipped docs, tested against git; the build gets a derived view carrying instructions and no history
+# cb50e2b — a work item's rationale does reach the shipped docs, tested against git; the build gets a derived view carrying instructions and no history
 
 The hypothesis had been filed the day before and pointed at by the forward advisory: /next transcribes what an item carries, and an item carrying three paragraphs of why offers no marker separating what to build from what was preserved for the record — so a build plausibly writes the reasoning into the doc it is editing. Two live efforts were treating that accumulation as an authoring-discipline problem, which made the test worth running before either of them ran again.
 

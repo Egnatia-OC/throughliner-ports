@@ -1,5 +1,22 @@
 # Can a hook force the behaviour rules to be read?
 
+**Decision recorded 2026-08-19: the findings below stand, and enforcement was
+put to the user and refused.** Nothing here is superseded — a `PreToolUse` hook
+can still do what §2 describes. What was answered is whether it is worth doing,
+and the answer is no. A read-gate enforces that the file was *opened*, and every
+recorded failure in this corpus is a read-and-not-followed failure: the
+provenance rule shipped, sharpened and still not holding; the file-the-blocker
+rule explained five to ten times in a month; the INBOX-opening step skipped in
+the session that authored it. There is no recorded instance of the rules going
+unread. So the gate would pay the most expensive option in this document's own
+cost ordering — a transcript scan on every tool call — to close a hole nobody
+has observed, one layer above the hole everyone has. The rule board is the same
+experiment already run: built so the rules could watch themselves, it reported
+clean while five real rule defects shipped in one session. The queue item
+carrying this question, `[behaviour-rules-read-is-enforceable]`, was deleted in
+the same move. **Re-propose only against new evidence that the rules are going
+unread**, which is the specific thing nobody has yet seen.
+
 Fetched 2026-08-10 from the Claude Code hooks reference
 (`https://code.claude.com/docs/en/hooks`, reached via a 301 from the older
 `docs.claude.com/en/docs/claude-code/hooks`). Run because `session_start.py`'s

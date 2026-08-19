@@ -1,4 +1,4 @@
-# [HASH] — every word-band cap retired, the measurement kept as a report, and four cleared items stripped of the figures they rested on
+# cb50e2b — every word-band cap retired, the measurement kept as a report, and four cleared items stripped of the figures they rested on
 
 The user's decision, in her own words: the numbered caps are "too arbitrary and we have realer leads now". She had said a few turns earlier that she was disillusioned with ceilings on item size, and the disillusionment turned out to have harder support than either of us had stated.
 

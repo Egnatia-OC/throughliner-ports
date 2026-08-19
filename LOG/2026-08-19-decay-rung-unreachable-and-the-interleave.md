@@ -1,4 +1,4 @@
-# [HASH] — the decay rung reaches nothing in practice; interleaving adopted for the rest of the session, and it surfaced a 17-day-old item on its first pick
+# cb50e2b — the decay rung reaches nothing in practice; interleaving adopted for the rest of the session, and it surfaced a 17-day-old item on its first pick
 
 Raised by the user at the end of a long session, in her own words: "you can stay stuck on size forever, never reaching the decay rung by the end of any plan session." She said the thought had been complete earlier and she was running on empty by the time she got to share it. It landed on a real defect anyway.
 

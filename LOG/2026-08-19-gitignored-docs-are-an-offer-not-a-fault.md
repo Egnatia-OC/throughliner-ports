@@ -1,4 +1,4 @@
-# [HASH] — untracked core docs reframed against the sender's own reading: not a fault to detect but an offer whose consequences were never stated
+# cb50e2b — untracked core docs reframed against the sender's own reading: not a fault to detect but an offer whose consequences were never stated
 
 Filed the day before from a consumer project's mail. A planning session there ran to completion — a red flag cleared, three SPEC edits, eight work items, nine captures — and staging at the close revealed `.gitignore` carried `SPEC.md`, `QUEUE.md` and `LOG/`. The adoption commit's own message says it wrote SPEC.md as product truth; that commit contains no SPEC.md.
 

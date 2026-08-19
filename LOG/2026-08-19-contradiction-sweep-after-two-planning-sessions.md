@@ -1,4 +1,4 @@
-# [HASH] — the user asked for a contradiction sweep of Processed and it found six, one of them written an hour earlier by the session doing the sweeping
+# cb50e2b — the user asked for a contradiction sweep of Processed and it found six, one of them written an hour earlier by the session doing the sweeping
 
 Her request, and her reasoning with it: it is an oddity of two planning sessions with no /next between them that this becomes much more likely, though she said she was not sure. She was right, and the mechanism is slightly different from the one she named. **/next is what removes items from the queue.** Without a build in between, every decision lands as an edit to an item that stays, so each new decision meets a larger surface of unbuilt items to contradict. Two planning sessions back to back is how that surface gets big; the cause is the missing consumption rather than the doubled planning. This session compounded it, because retiring a whole rule family touches far more items than an ordinary keep does.
 
