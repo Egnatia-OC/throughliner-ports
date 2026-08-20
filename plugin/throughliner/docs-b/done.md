@@ -164,10 +164,11 @@ situation is where a name or a case detail arrives without anyone noticing. Fix
 what you find at the same level of usefulness rather than dropping the fact — and
 don't tell the user the entry is clean afterwards, because you can't know that.
 
-**Read the entry and its index line against their word bands too**
-(skill-nonspecific-rules.md, Authoring standard). A build entry over its ceiling
-splits per item built, a planning entry splits per decision, and an index line
-over its ceiling is restating the entry it points at. Advisory — it names an
+**Read the entry and its index line for whether they carry their own weight**
+(skill-nonspecific-rules.md, Authoring standard). A build entry splits per item
+built and a planning entry splits per item processed, whatever their length; an
+index line is wrong where it restates the entry it points at rather than saying
+enough to decide open-or-skip. No figure decides any of it. Advisory — it names an
 action and never blocks the write. It rides the scrub's read, since both look at
 the same text at the same moment.
 
@@ -240,11 +241,13 @@ next session or one plan session, it is for wrapping up ONE CHAT — that's why 
 is stupid that logs only record what was built or planned, and not everything that
 happened in the chat.*
 
-**Why this is not covered by /rescan.** That converts chat into **work** — things
-decided, noticed or asked for become captures. Nothing converts chat into
-**record.** A correction the user gives that changes shipped text is not future
-work; it is already done, and it was never a queue item, so it lands nowhere. That
-is precisely the class a capture cannot catch.
+**How this relates to /rescan, which now covers part of it.** /rescan routes what
+it finds by the standard three-way triage: work still to do becomes a capture, and
+what already **happened** is appended to this chat's entry as a marked tail. So a
+correction the user gives that changes shipped text — already done, never a queue
+item — does have a home, and `/rescan` is the one-word way to put it there. What
+this section covers is the same class arriving at the close rather than on demand:
+the close always runs, and /rescan only runs when asked.
 
 **The post-commit tail is the precedent and the proof of shape** — a marked
 section in the entry that is not about any work item, already defined and already
@@ -314,10 +317,11 @@ Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 **The 20% proportional cap that used to sit here was repealed on 2026-08-12**,
 after measurement showed it fired on short entries rather than on long lines. Do
 not restore it: a figure proportional to the entry's length is what made it fire
-on the wrong lines. What the line must carry is in the behaviour rules' Index
-entries section, and what length it is written to is the index-line band in the
-same file — an absolute word figure derived from July's median, with an advisory
-action on breach rather than a block.
+on the wrong lines. **The absolute word figure that replaced it was itself
+repealed on 2026-08-19, along with every other length cap**, so there is no
+number here to restore either. What the line must carry is in the behaviour
+rules' Index entries section, and that requirement is the whole bound: enough to
+decide open-or-skip, and never a restatement of the entry.
 
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
 newest-first on a name sort — never appended to a shared log file:
@@ -791,6 +795,12 @@ the post-commit tail     ->  writes files, commits NOTHING:
                                an append to this session's LOG entry
                                a hash the session-start backfill filled in
                              all of it rides into the NEXT close's commit
+/rescan                  ->  the one-word route to the same tail. Files by the
+                             three-way triage — work to Unprocessed, what
+                             HAPPENED to this session's entry as a marked tail
+                             — and commits nothing, so it is not a second close
+                             under another name. Repeatable, so nothing has to
+                             judge when the tail has ended.
 ```
 
 **The cost, stated rather than discovered: the tree is dirty between one close

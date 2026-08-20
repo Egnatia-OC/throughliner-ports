@@ -388,6 +388,81 @@ def test_age_prints_in_this_repository():
     )
 
 
+def test_runs_alone_reports_what_is_ahead_of_it():
+    """A correctly placed `Runs alone` item recedes as the queue is worked.
+
+    /next stops BEFORE it, so it is reached only once everything ahead is built
+    — and every planning session adds newly ready work ahead of it. Nothing in
+    the queue shows that happening, and it was noticed once only because someone
+    happened to say it out loud.
+
+    A count is reportable where an age is not: how long something has been ready
+    would need a threshold nobody can derive.
+    """
+    root = project(
+        processed=(
+            "#### First [a]\nProse.\n"
+            "\n"
+            "#### Second [b]\nProse.\n"
+            "\n"
+            "#### The one that runs alone [c]\nProse.\nRuns alone\n"
+        ),
+    )
+    _, out = run(root)
+    check("the runs-alone block appears",
+          "Runs-alone work" in out, out[-400:])
+    check("it counts the two cleared items ahead",
+          "[c]: 2 cleared item(s) ahead" in out, out[-400:])
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_no_runs_alone_work_says_none():
+    """A computed zero must not look like a check that never ran."""
+    root = project(processed="#### Ordinary [a]\nProse.\n")
+    _, out = run(root)
+    block = out.split("Runs-alone work")[1]
+    check("no runs-alone work reports none", "- none" in block, block[:200])
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_median_age_is_computed_not_judged():
+    """Rung 3 is an intersection of two medians, so BOTH must be printed.
+
+    The length half was already computed. The age half was not, and the rung
+    cannot read a field the digest does not print — working the median date out
+    by hand is the judgment the ladder exists to remove.
+
+    Run against the real repository, because a median age needs real commit
+    dates. Skipped rather than failed where there is no history, exactly as the
+    first-seen test above is.
+    """
+    dates = digest.first_seen(ROOT, os.path.join(ROOT, "QUEUE.md"))
+    if not dates:
+        print("  skip median age (no git history for QUEUE.md here)")
+        return
+    queue = os.path.join(ROOT, "QUEUE.md")
+    out = digest.render(digest.parse(queue), ROOT, queue)
+    text = "\n".join(out) if isinstance(out, list) else out
+    check("the section median age prints", "median first seen:" in text, text[:400])
+    check("at least one entry is marked at/above median age",
+          "(at/above median age)" in text, text[:400])
+
+
+def test_median_age_absent_without_dates():
+    """No git history means no dates, so no median age may be invented.
+
+    The length median still prints — it needs no history — which is what makes
+    this worth pinning separately: the two medians degrade independently.
+    """
+    root = project(processed="#### Do the thing [alpha]\nProse.\nProse.\n")
+    _, out = run(root)
+    check("no median age line without git history",
+          "median first seen:" not in out, out)
+    check("the length median still prints",
+          "median entry length:" in out, out)
+    shutil.rmtree(root, ignore_errors=True)
+
+
 def test_held_since_degrades_without_git():
     """No repository, no date — and no error, exactly as first_seen degrades.
 
@@ -522,6 +597,10 @@ if __name__ == "__main__":
     test_do_not_build_still_fires()
     test_no_git_degrades_quietly()
     test_age_prints_in_this_repository()
+    test_runs_alone_reports_what_is_ahead_of_it()
+    test_no_runs_alone_work_says_none()
+    test_median_age_is_computed_not_judged()
+    test_median_age_absent_without_dates()
     test_held_since_degrades_without_git()
     test_held_since_attributes_within_one_commit()
     test_not_before_prints_with_its_state()

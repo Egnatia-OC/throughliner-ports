@@ -1,4 +1,4 @@
-# [HASH] — the ordering ladder rebuilt so decay is reachable, with length deciding membership and never order
+# 8330209 — the ordering ladder rebuilt so decay is reachable, with length deciding membership and never order
 
 The interleave had been adopted for one session as a live trial, and the capture said it needed checking against a real queue before it could be kept. This session was the second check and reproduced the defect from the other direction: unblock-potential was worked to exhaustion, the order fell to longest-first, and the decay rung was never approached — the above-median group stood at roughly fifteen entries and a handful were processed. The oldest entry was reached, and not by the ladder: it surfaced because a pattern was noticed across three deferrals, which is the siteless-noticing failure recorded five times here. It worked, and it is not repeatable.
 

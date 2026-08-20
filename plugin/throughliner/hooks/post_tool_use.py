@@ -333,6 +333,13 @@ def _check_blocked_by(annotated, blocks, warnings):
     and an Unprocessed blocker is the rule's own recommended shape. So above-ness
     is checked only where it means something: within Processed, where position
     is build order. A blocker in Unprocessed is fine by construction.
+
+    One part of this check spans BOTH sections: the malformed-date warning.
+    `Not before:` is available on a capture too, where it means "do not offer
+    this again before this date" rather than "do not build this yet" — so an
+    unparseable date holds an Unprocessed entry out of view forever, with nothing
+    else here that would ever look at it. The above/below warnings stay scoped to
+    Processed, because position relative to the marker means nothing outside it.
     """
     marker_idx = next(
         (i for i, line, _h2, _ih in annotated if line == CLEARED_MARKER), None
@@ -349,8 +356,6 @@ def _check_blocked_by(annotated, blocks, warnings):
             known[m.group(1)] = b
 
     for b in blocks:
-        if b["section"] != "Processed":
-            continue
         below = b["idx"] > marker_idx
         refs = []
         dates = []
@@ -367,13 +372,23 @@ def _check_blocked_by(annotated, blocks, warnings):
                 else:
                     dates.append(parsed)
 
+        # The malformed-date check runs in BOTH sections, because `Not before:`
+        # is available in both: on a work item it means do not build before the
+        # date, on a capture it means do not offer it again before the date. An
+        # unparseable date holds the entry forever either way, and an Unprocessed
+        # entry is the case nothing else here would ever look at.
         for raw in bad_dates:
             warnings.append(
                 f"line {b['idx'] + 1}: {b['heading'][:60]!r} carries "
                 f"'Not before: {raw}', which is not a date in YYYY-MM-DD form. "
-                "A date nobody can read holds the item forever, because nothing "
+                "A date nobody can read holds the entry forever, because nothing "
                 "can ever tell that it has passed."
             )
+
+        # Everything below is about position relative to the cleared-to-run
+        # marker, which only means something inside Processed.
+        if b["section"] != "Processed":
+            continue
 
         if not below:
             if refs:
@@ -548,6 +563,63 @@ def _check_quote_claim_without_quote(blocks, warnings):
         )
 
 
+BUILD_BLOCK_OPEN = "--- Build block ---"
+BUILD_BLOCK_CLOSE = "--- End build block ---"
+
+
+def _check_build_blocks(annotated, blocks, warnings):
+    """Check 8: a cleared item carries the instructions a run builds from.
+
+    A run reads the generated view, not this file, and the view is built from
+    each cleared item's build block. An item without one reaches the run with no
+    instructions at all — the run halts on it as underspecified, having already
+    presented it as ready work.
+
+    Flagged here rather than left to the run, because the gap is created at the
+    keep-step and the keep-step is where it is cheap to fix. A run meeting it has
+    already locked scope.
+
+    Scoped to CLEARED items only. Held work is not built until it lifts, and a
+    capture is not work at all — demanding a block from either would fire on the
+    normal state of most of the queue, which is the cry-wolf shape this project
+    has repealed measures for twice.
+
+    `[user]` and `[freeform]` items are exempt: neither is built from a block.
+    One is walked through live and the other halts the run by design.
+    """
+    marker_idx = next(
+        (i for i, line, _h2, _ih in annotated if line == CLEARED_MARKER), None
+    )
+    if marker_idx is None:
+        return
+
+    for b in blocks:
+        if b["section"] != "Processed" or b["idx"] > marker_idx:
+            continue
+        heading = b["heading"]
+        if "[user]" in heading or "[freeform]" in heading:
+            continue
+        body = "\n".join(b["lines"][1:])
+        has_open = BUILD_BLOCK_OPEN in body
+        has_close = BUILD_BLOCK_CLOSE in body
+        if has_open and has_close:
+            continue
+        if has_open or has_close:
+            warnings.append(
+                f"line {b['idx'] + 1}: {heading[:60]!r} has half a build block — "
+                f"one of {BUILD_BLOCK_OPEN!r} / {BUILD_BLOCK_CLOSE!r} is missing. "
+                "The generator copies the delimited region byte-for-byte, so an "
+                "unterminated one is reported and never repaired."
+            )
+            continue
+        warnings.append(
+            f"line {b['idx'] + 1}: {heading[:60]!r} is cleared to run but carries "
+            "no build block, so the generated view has no instructions for it and "
+            "a run would halt on it as underspecified. Add one at the keep-step: "
+            f"{BUILD_BLOCK_OPEN} / Changes / Acceptance / {BUILD_BLOCK_CLOSE}."
+        )
+
+
 def lint(content: str) -> list[str]:
     annotated = _annotate(content)
     blocks = _workline_blocks(annotated)
@@ -559,6 +631,7 @@ def lint(content: str) -> list[str]:
     _check_blocked_by(annotated, blocks, warnings)
     _check_orphaned_prose(annotated, warnings)
     _check_quote_claim_without_quote(blocks, warnings)
+    _check_build_blocks(annotated, blocks, warnings)
     return warnings
 
 

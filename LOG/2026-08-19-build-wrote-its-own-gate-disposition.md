@@ -1,4 +1,4 @@
-# [HASH] — the gate's build-time gap turned out to be closed already, leaving a correctly worded rule that did not fire
+# 8330209 — the gate's build-time gap turned out to be closed already, leaving a correctly worded rule that did not fire
 
 The item recorded a build authoring a shipped rule and writing its own gate disposition, and asked which of two fixes the gap wanted: splitting such items in two, or giving the gate a build-time branch honestly labelled description rather than admission.
 

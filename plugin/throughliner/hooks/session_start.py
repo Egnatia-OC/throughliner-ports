@@ -50,7 +50,13 @@ import sys
 #   3  the Sovereign Implementer -> Throughliner identity rename: a project's
 #      two marker files are renamed `.si-version` -> `.throughliner-version`
 #      and `.si-format-epoch` -> `.throughliner-format-epoch`
-FORMAT_EPOCH = 3
+#   4  build blocks: every item cleared to run carries a delimited
+#      `--- Build block ---` region holding what changes in which files, how to
+#      tell it worked, its red-flag state and any refused option. A run reads a
+#      generated view built from those blocks instead of reading QUEUE.md, so an
+#      existing project's cleared items are structurally wrong until each gains
+#      one — a run against them halts on every item as underspecified.
+FORMAT_EPOCH = 4
 
 # The project records its own epoch here, written by /setup on completion.
 FORMAT_EPOCH_FILE = ".throughliner-format-epoch"
@@ -313,7 +319,8 @@ def _plugin_json_without_version(raw):
     """The plugin manifest's bytes with the `version` key dropped.
 
     The version string is the one field the two packaging rituals deliberately
-    disagree about — the rezip sets a `-testN` suffix, the push resets it — and
+    disagree about — the rezip sets a `-testN` suffix and the release bump strips
+    it, while neither changes what the plugin does — and
     neither changes what the plugin does. Left in, it made the stamp report the
     host as stale immediately after every rezip: measured at `b4bb37b9c1b6` on
     both sides right after installing, then `654c88680de8` against
@@ -922,6 +929,47 @@ def _behaviour_rules_directive(plugin_root):
     )
 
 
+CORE_DOCS = ("SPEC.md", "QUEUE.md", "LOG/")
+
+
+def _untracked_core_docs(cwd: str) -> list:
+    """Which of SPEC.md, QUEUE.md and LOG/ git has been told to ignore.
+
+    Detected at every session opening rather than at /setup, and that timing is
+    the design. /setup fires once, and the project that reported this was
+    already adopted — so a setup-only check would have missed the very case that
+    produced it. It is also what dissolves the deadlock that project hit: their
+    close could not repair it, because the planning scope-lock refuses
+    `.gitignore` and the close marker's permitted list omits it, so the fix
+    became a request that a non-coder hand-edit `.gitignore` mid-close. Read at
+    the opening, before any work, the same walkthrough costs nothing and
+    interrupts nothing.
+
+    `git check-ignore` answers this in one call with no judgment involved.
+
+    This is NOT reported as a fault. `setup.md` offers to ignore exactly these
+    three paths, so a check asserting the state is wrong would fire on a
+    configuration the method itself creates on request — and would fire hardest
+    immediately after the user chose it. What was actually missing is that
+    nobody was ever told what follows.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "check-ignore"] + list(CORE_DOCS),
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return []
+    # check-ignore exits 1 when nothing matches, which is not an error here.
+    if result.returncode not in (0, 1):
+        return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
 def main() -> int:
     try:
         data = json.load(sys.stdin)
@@ -1263,6 +1311,25 @@ def main() -> int:
     # carry real information with no other home, which is why only the framing
     # and the coaching clauses came out.
     isolation = _isolation_model(cwd)
+    # Which core docs git has been told to ignore, and what follows from it.
+    # Unconditional, and outside the isolation branches: the consequences hold
+    # whatever kind of checkout this is. Stated as consequences and never as a
+    # fault, because setup.md offers exactly this configuration.
+    ignored = _untracked_core_docs(cwd)
+    if ignored:
+        context_parts.append(
+            "[Throughliner] Not tracked by git: %s. This is a choice the method "
+            "offers at setup, so nothing is wrong — but three things work "
+            "differently and are easy to miss.\n"
+            "  1. Claude normally writes to these and then tells you what "
+            "landed, because git would let you undo it. It cannot here, so text "
+            "going into them is SHOWN to you first instead.\n"
+            "  2. A deleted queue item is gone. Git is not keeping a copy.\n"
+            "  3. The close cannot read back its own work from the file's "
+            "history, so it records from what it remembers of the session."
+            % ", ".join(ignored)
+        )
+
     if isolation == "clone":
         # A cloud session is not a second chat running alongside another; it is
         # the only chat, running somewhere else. Almost all of this survives.

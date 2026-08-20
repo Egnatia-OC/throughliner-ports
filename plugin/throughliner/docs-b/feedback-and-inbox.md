@@ -127,6 +127,45 @@ wording and approved it. Sending is outward-facing and both mailboxes may sit
 in repositories that get published, so draft, show, wait — the same guarantee
 the feedback reports keep.
 
+**Work finishing in another project is never learned by notification, and that is
+a decision rather than a gap.** Nothing here is told when work handed elsewhere is
+done. A notice would have to travel as mail, and mail is fire-and-forget in both
+directions — nobody is obliged to read it — so a notification moves the problem
+rather than closing it.
+
+**What replaces it is checking.** An item waiting on something outside this
+project names what would show it done — a page that would load, a file that would
+appear, a branch that would be gone — and that is checked when the item is
+reached. Where nothing observable exists, the item says so and waits until the
+user mentions it. Authored at /plan's keep-step; see plan.md.
+
+**Every approved send writes one line into `INBOX/sent.md`, in the same turn as
+the send.** Mail, a method report, a GitHub issue, a public post, a draft handed
+to another project — anything that leaves this machine.
+
+```
+- YYYY-MM-DD — <destination> — <for completion | for continuation> —
+  <what it claimed, in one clause> — <pointer to the text that already exists>
+```
+
+**Written in the same turn, because the exact wording exists at that moment and
+nothing later reconstructs it.** No second copy of the content: the line points at
+the text, exactly as `LOG/index.md` points at entries.
+
+**The intent field is what lets a send close work.** Handing an item to another
+project **for completion** can clear that item; handing it over **for
+continuation** leaves it in the queue for a later capture to wake.
+
+**Two questions were otherwise unanswerable**, which is why this exists: what did
+we send that project, and did we ever announce the behaviour this change has just
+replaced. A mailbox holding only received messages records half a correspondence
+— twenty-two inbound archived here and nothing outbound.
+
+**It lives inside `INBOX/` because that folder is gitignored on every path and
+these lines name correspondent projects** — the same reason the address book is
+there. The cost is the same too, and is stated rather than discovered: it is not
+version-controlled, so it can be lost.
+
 **Name the sending project twice — in the message's filename and in its opening
 line — and give its RETURN PATH.** The filename carries the name as
 `<date>-from-<sending project>-<subject>.md`; the body opens by saying which

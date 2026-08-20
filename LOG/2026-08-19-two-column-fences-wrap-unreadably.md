@@ -1,4 +1,4 @@
-# [HASH] — the shipped render rule already answers the wrapping fences and stops one sentence short
+# 8330209 — the shipped render rule already answers the wrapping fences and stops one sentence short
 
 The capture instructed the processing session to check a sibling item first, and that instruction is what caught the thing. [fences-wrap-so-prose-rule-reason-is-false] was filed 2026-08-07, grew to roughly 1,500 words, and has left the queue — it survives only as a line in a length-growth research file. Its subject was a prose rule whose stated *reason* was false, an argument about a justification rather than about what Claude emits, so there was no fold target and the capture's own suspicion about that was right.
 

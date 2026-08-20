@@ -1,4 +1,4 @@
-# [HASH] — communication feedback routed by the reporting discriminator instead of absorbed into memory, and made general rather than host-only
+# 8330209 — communication feedback routed by the reporting discriminator instead of absorbed into memory, and made general rather than host-only
 
 The always-loaded memory-boundaries rule lists what memory is free for, and communication feedback is on that list. This project's own instructions say any moment memory covers for something the docs should carry is a mandatory capture. The two disagree, and the capture's diagnosis holds: saving *you are using too much text* to memory makes Claude behave better here while the shipped defect survives for everyone else.
 

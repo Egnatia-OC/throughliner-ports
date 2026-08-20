@@ -47,9 +47,12 @@ release-line base plus `-test` and a number incremented each rezip-for-testing (
 `1.12.0-test1`, then `-test2`). Honest framing: the suffix is not what makes a
 reinstalled host load — the full app restart is. `-testN`'s job is to keep each test
 build a distinct, clearly-labeled version never mistaken for a release, and to force
-the CLI to re-snapshot (see the bump rule below). The suffix lives in the working
-tree's `plugin.json` only, and the **Push** step resets it to a clean version, so it
-never reaches the remote.
+the CLI to re-snapshot (see the bump rule below). **The suffix is committed and
+does reach the remote**, where it sits between releases; the release bump is what
+strips it, so it never reaches a published release. The push's version-clean step
+was repealed on 2026-08-19 — the owner of the repository judged a suffixed version
+on the remote untidy rather than harmful, and the clean was running at every rezip
+to prevent it.
 
 **The bump rule — the one sentence whose absence caused a whole session to run on
 the wrong plugin.** `claude plugin update` matches on the **version string**.
@@ -190,8 +193,12 @@ outright here.
    `git log -S "<entry title>"` match, never the newest commit touching the file.
 2. Bump version in `plugin/throughliner/.claude-plugin/plugin.json` to a clean
    patch/minor — patch for fixes/incremental, minor for new capabilities (`1.20.0` →
-   `1.20.1` or `1.21.0`). If a `-testN` suffix is still present the Push step was
-   skipped; drop it here as well. The release bump lives here, not in rezip — rezip
+   `1.20.1` or `1.21.0`). **Strip any `-testN` suffix as part of this bump —
+   expect one to be present rather than treating it as a sign something was
+   skipped.** The push commits the suffix as it stands (the version-clean step
+   there was repealed 2026-08-19), so the committed version between releases
+   normally carries one. This is the only place it comes off, which is what
+   keeps a test suffix out of every published release. The release bump lives here, not in rezip — rezip
    only ever touches the `-testN` test suffix, never the release line, because
    bumping the release version on every private test build would make Alex's own
    projects nag "version changed, re-run /setup" each time she tests.

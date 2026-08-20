@@ -10,15 +10,37 @@ note: >
 # /rescan procedure
 
 Look back over the conversation for things decided, noticed or asked for that
-were never written into a file, and file them as captures.
+were never written into a file, and file them.
 
 ## What it does, and the one thing it does not
 
+**Route what it finds by the standard three-way triage**, rather than filing
+everything as a capture:
+
 ```
-/rescan  ->  FILES what it finds, as captures in Unprocessed
-         ->  never ROUTES them (keep / delete / where it sits)
-         ->  never BUILDS them
+reveals work still to do          ->  a capture in QUEUE.md Unprocessed
+what already HAPPENED             ->  appended to THIS chat's LOG entry, as a
+    — including work done after       marked tail
+    the close
+evidence a future chat must       ->  a durable file under resources/
+    re-read word for word
 ```
+
+```
+/rescan  ->  FILES what it finds, by that triage
+         ->  never ROUTES it (keep / delete / where it sits)
+         ->  never BUILDS it
+         ->  never COMMITS. The tail rides the next close's commit.
+```
+
+**The tail is what makes this the one-word route for post-close work**, which is
+common and otherwise has to be asked for in prose every time. Mark it as a tail
+rather than blending it in, so what was recorded at the close stays visible as
+what the close recorded.
+
+**Committing nothing is what keeps this from being a second close under another
+name**, and it is also why nothing has to judge when the tail has ended: the skill
+can be run as many times as the tail has parts.
 
 Filing is capture-making and is open to every skill. Routing and building are
 /plan's and /next's, and this skill stays on the filing side of that line.
@@ -55,14 +77,37 @@ re-reading it is re-reading, not duplicate items.
 
 ## Step 2: File what you find  [BRIEF]
 
-Write every candidate to Unprocessed first, then report them as ONE numbered
-set. Nothing waits on approval before reaching disk: a capture in a git-tracked
-QUEUE.md is recoverable without the user's help, which is the write-first test.
-The user contests by number, and a contested item is reverted or reworked one at
-a time.
+**Sort each candidate by the triage above before writing anything** — work still
+to do, or something that already happened. Both get written; they go to different
+files.
+
+**Work still to do → Unprocessed.** Write every candidate first, then report them
+as ONE numbered set. Nothing waits on approval before reaching disk: a capture in
+a git-tracked QUEUE.md is recoverable without the user's help, which is the
+write-first test. The user contests by number, and a contested item is reverted or
+reworked one at a time.
 
 Placement is the standing one — appended to the bottom of Unprocessed, no
 judgment, no narration of the mechanics.
+
+**What already happened → this chat's LOG entry, as a marked tail.** Append rather
+than rewrite, under a heading that says what it is:
+
+```
+## After the close
+
+<what was done, and why — the same authoring standard as the entry above it>
+```
+
+**Where this chat has no LOG entry yet**, there is nothing to append to: the work
+is recorded by the close when it runs, so say that and file only the captures.
+
+**Nothing is committed here.** The tail rides the next close's commit. Say so when
+reporting, so the user is not left thinking the record is saved.
+
+**Where a candidate is genuinely both** — work that was done AND revealed more to
+do — write both: the tail records what happened, the capture records what is left.
+Do not make one stand in for the other.
 
 **State this sentence, as written:**
 

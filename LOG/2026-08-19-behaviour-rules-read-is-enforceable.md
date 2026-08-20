@@ -1,4 +1,4 @@
-# [HASH] — hook-enforcing the behaviour-rules read put to the user and refused, with the research kept and annotated
+# 8330209 — hook-enforcing the behaviour-rules read put to the user and refused, with the research kept and annotated
 
 The item had been parked since 10 August behind a question nobody had asked: whether enforcement is wanted at all. Everything else in it — the transcript scan, the two measurements, the rezip-and-restart experiment — was explicitly held behind that. Leaving it parked a third time would be the failure plan.md names, an entry enriched across sessions while the one available question goes unput.
 

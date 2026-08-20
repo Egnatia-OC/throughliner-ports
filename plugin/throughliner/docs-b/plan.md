@@ -44,10 +44,23 @@ gets built first — through discussion, not silently.
   commit; the /plan-close spec-sync gate enforces that atomicity, and it is now
   the **only** sync gate — a build close checks its work against SPEC instead of
   editing SPEC to match. When a change touches no SPEC sentence, none of this
-  applies. Two other routes exist: a build that discovers it needs a SPEC change
-  asks, adds SPEC.md to its Files, and edits it inline (next-build.md); and a
-  large SPEC rework is its own piece of work, naming SPEC.md among its files like
-  any other build.
+  applies. One other route exists: a large SPEC rework is its own piece of work,
+  naming SPEC.md among its files like any other build.
+
+  **A build never writes product truth, and the reason is a session boundary
+  rather than a scope rule.** The session that made a choice is not the session
+  that certifies it in SPEC — one instance of Claude describing its own work in
+  product truth is justification, not specification. So the sentence is written
+  here, ahead of the build, and the build-asks-and-edits-inline route is repealed.
+
+  **So the keep-step asks, on every item: does this change what SPEC says?** If
+  yes, write the sentence now, with the user present. That is what makes SPEC lead
+  the build rather than trail it, which is what reading it at build time requires.
+
+  **Where this step misses one, the build files it rather than writing it.** The
+  build records the sentence it thinks SPEC owes and leaves SPEC alone; the next
+  planning session writes it. The cost, stated: SPEC lags that one sentence until
+  then — visibly, as a queue item, rather than in silence.
 
   **SPEC is read at build time, not only here.** /next reads it at run start, so
   it is the truth each item is built against rather than a document only planning
@@ -179,8 +192,9 @@ how long an item has been held, where a named blocker sits, which files two item
 both name, whether an item's premise cites work that has shipped. Reading gives
 prose; the script gives computed facts.
 
-**The cost is accepted knowingly**: the whole queue at an opening, falling as the
-word bands bring entry lengths down. A conditional read was offered and refused,
+**The cost is accepted knowingly**: the whole queue at an opening, falling as
+decision history is relocated out of items and into the record. A conditional
+read was offered and refused,
 because a condition would have to predict which items bear on each other — the
 thing the read exists to discover.
 
@@ -193,9 +207,17 @@ python <plugin-root>/scripts/queue_digest.py <QUEUE.md path>
 It prints one line per queue entry — section, side of the readiness marker, flavor,
 heading, slug, any `Blocked by:` with the blocker's resolved location, any
 red-flag state, any slug the item's prose cites that already has a LOG entry, and
-the date the item first appeared in the queue. It then prints two blocks: the
-placement contradictions, and every file named by two or more items. Those are
-the computed facts. **The rationale prose it omits comes from the read of the
+the date the item first appeared in the queue. It then prints three blocks: the
+placement contradictions, every file named by two or more items, and **how many
+cleared items sit ahead of each `Runs alone` item**. Those are the computed facts.
+
+**Read the runs-alone count as recession, not as staleness.** /next stops *before*
+such an item, so it is reached only once everything ahead of it is built — and
+every planning session adds newly ready work ahead of it. A correctly placed item
+therefore recedes each time the queue is worked, silently. A count is reportable
+where an age is not: how long something has been ready would need a threshold
+nobody can derive, while what sits in front of it is arithmetic. It is a fact like
+every other digest line, and moving the item is the user's decision. **The rationale prose it omits comes from the read of the
 file** — an instruction one item carries about another's ordering sits in that
 prose and appears on no digest line, which is how a stated ordering was missed
 and the two items processed in the wrong order.
@@ -551,6 +573,11 @@ most-unblocking-first?"** One question, not a menu — the only alternative offe
 is the user's own priorities. This absorbs the old "anything to discuss?" opening:
 a user with something on their mind answers it here.
 
+**A subset the user names sets the ORDER, not the length of the session.** When
+those items are done, the checkpoint simply presents the next item, exactly as it
+does after any other item. Naming three things to start with is not a statement
+that the session ends after three.
+
 **Where mail is waiting, that question carries it instead: "There's mail waiting
 — process that first, or start most-unblocking-first?"** Still one question, and
 it is what gives the mail step its teeth: a question the user answers, rather
@@ -582,17 +609,19 @@ Scrub before writing). Keeping an item is where a capture's rough wording become
 the version that ships into a committed doc, so it is the last cheap moment to
 rewrite a real name or a case detail out of it.
 
-**Read the same text against the work item's word band** (skill-nonspecific-rules.md,
-Authoring standard). A draft over the ceiling is split into two items; a draft
-over the band is tightened before it is written. Advisory — it names an action
-and never blocks the keep. It rides the scrub's read rather than adding a pass of
-its own, because both look at the same draft at the same moment.
+**Read the same text for whether a person will get through it**
+(skill-nonspecific-rules.md, Authoring standard). No figure decides this and none
+is available: an item long because it holds two pieces of work splits into two; an
+item long because it carries a narrative relocates that to the record and cites
+it. Advisory — it names an action and never blocks the keep. It rides the scrub's
+read rather than adding a pass of its own, because both look at the same draft at
+the same moment.
 
 **Read the ITEM AS IT STANDS, not the paragraph being added.** Re-processing an
-item usually appends a settlement paragraph rather than rewriting the block, so
-an author whose own addition is short can still be looking at an over-length
-item — and the item is what gets read at build time. This is the site: the item
-is already in front of you here, and nowhere later is.
+item usually appends a settlement paragraph rather than rewriting the block, so an
+author whose own addition is short can still be looking at an item nobody will
+read — and the item is what gets read at build time. This is the site: the item is
+already in front of you here, and nowhere later is.
 
 **Process order.** Unprocessed top to bottom, then items raised in this session's
 own discussion. State the count upfront, counting both together ("5 items.
@@ -607,6 +636,13 @@ user chose at beat 2 — their own priorities if they named any, otherwise the
 default, **unblock-potential**: the item whose processing would let the most other
 work move forward goes first. Then narrate the session's shape in one line.
 
+**Pass over any Unprocessed entry carrying a `Not before:` date still ahead**
+[SILENT], whatever the order would otherwise do with it. On a capture the field
+means do not offer this again before the date, so such an entry is not ranked, not
+presented and not counted toward the session's floor. Take it up in the ordinary
+way once the date has passed — the digest prints `Not before: <date> ->
+passed/ahead` on every entry, so this reads a computed field and needs no judgment.
+
 **The fallback ladder — internal, applied, never offered.** When nothing meaningfully
 unblocks anything else, don't fall through to file order silently. Work down:
 
@@ -614,31 +650,82 @@ unblocks anything else, don't fall through to file order silently. Work down:
 1. an uncleared red flag in Unprocessed   a breach outranks a delay
 2. unblock-potential                      order by how many other items cite
                                           this one's slug, most-cited first
-3. ABOVE-MEDIAN longest first             among entries at or above the
-     by LINE COUNT                        section's median line count, order
-                                          by line count descending
-4. oldest first by DATE FILED             order by the digest's First seen
-                                          date, oldest first — the decay rung
+3. LONG AND OLD, oldest first             among entries at or above BOTH the
+                                          section's median line count and its
+                                          median age, order by date filed,
+                                          oldest first
+4. ALTERNATING, oldest first              oldest first across the whole
+                                          section, with every other pick
+                                          required to be one of the long half
+                                          — the decay rung
 ```
 
 Every rung either reads a digest field or subtracts two line numbers. Rung 1 is
 the red-flag state. Rung 2 is the incoming arrow — the count of other entries
-citing this one's slug — so it ranks the whole section, not one item. Rung 3 is
-each entry's line count, against the median the digest prints. Rung 4 is the
-digest's First seen date.
+citing this one's slug — so it ranks the whole section, not one item. Rungs 3 and
+4 read the digest's First seen date for order, and each entry's line count against
+the median the digest prints for membership.
+
+**Length decides membership and never order.** Line count is not a stable key: an
+entry grows while it is being processed, so ranking by it means the entry ranked
+last can overtake the one ranked first with nobody touching the ladder. The date
+an entry was filed cannot change. So length survives only as which half an entry
+is in, which is where its cost-of-reading justification actually sits.
 
 **Line count means the arithmetic, and that is the whole reason it is here.** An
 entry's last line number minus its first: one subtraction, off numbers already
 in front of you. Nothing counts words, nothing weighs how finished an item looks,
 and nothing has to be read to produce the order.
 
-**Rung 3 is partitioned at the median so that it terminates.** It orders only the
-entries at or above the section's median line count — a finite group that shrinks
-as it is worked — so the rung genuinely yields and what sits beneath it is
-reachable. The median is computed at the opening and fixed for that pass; the
-digest prints it. **No figure is ever written into this text:** a bare number like
-"twelve lines and over" is a limit with no derivation, which the method bans,
-while a proportion of the thing it governs is expressly admissible.
+**Rung 3 is an intersection of two medians, and it is bounded because of it.**
+Above the median line count AND above the median age — two overlapping halves make
+roughly a quarter of the section, small enough to finish inside one session, which
+is the whole reason it may sit above the alternation without starving it. A rung
+partitioned at one median alone is half the section, which was never once drained
+in any session, so it was reachable in principle and never in practice.
+
+**Both medians are computed at the opening and fixed for that pass; the digest
+prints them.** Recomputing membership mid-session would be wrong rather than
+merely expensive: an entry could swell past the median and re-enter a group
+already worked past, so the group stops shrinking and the termination defect
+returns.
+
+**No figure is ever written into this text:** a bare number like "twelve lines and
+over" is a limit with no derivation, which the method bans, while a proportion of
+the thing it governs is expressly admissible. Both medians are proportions.
+
+**What rung 3 actually reaches, stated against the hope it was built on.** An
+entry both long and old is one that has been enriched across many sessions without
+resolving — so this rung reaches the work that keeps coming back and bleeds
+sessions, not the best-designed work. An earlier ladder rested on the second claim
+and the evidence ran the other way: the longest entry in this corpus was also one
+of the oldest and was the single entry that provably could not be kept. One
+counter-example refutes nothing and none is claimed; it is recorded so a later
+session testing the hypothesis has both halves.
+
+**Rung 3 depends on captures being able to bow out.** An entry that cannot yet be
+built would otherwise be handed to the user first every session while remaining
+un-keepable, which is why a capture may carry a `Not before:` date. The two
+interlock and neither is sound alone: this rung surfaces the contested entries,
+and the date is what lets one genuinely bow out.
+
+**Rung 4 alternates, and that is what makes decay reachable at all.** Age-ordering
+within the long half alone would still never reach a short old entry, and ordering
+the two concerns one after the other — by size then date, or date then size — is a
+lexicographic order: one key dominates and the other starves under a new name.
+Alternation makes starvation impossible by construction rather than merely
+unlikely, and it needs no weighting. **A composite score is refused for that
+reason** — mixing age and size needs weights, and a weight is a bare number with
+no derivation. The same objection kills any ageing rate.
+
+**Both arms of the alternation are needed**, checked rather than assumed: with the
+long arm ordered by age it is tempting to think the whole-section arm is
+redundant, but it is the only one that ever reaches a **short** old entry.
+
+**What alternating costs, stated because it is real.** Taking long entries first
+shortens the queue fastest, and alternating halves that rate. The trade is half
+the benefit of a rung that works, against the full benefit of a rung that was
+never reached.
 
 **Why the partition was needed at all, recorded because the fault was invisible.**
 Rungs 1 and 2 are *selectors* — each picks a subset and runs out. Rung 3 was a
@@ -661,13 +748,14 @@ record framed it as a decision that staleness stops being an ordering concern.
 That was not the reason: no way to terminate the line-count rung was available at
 the time, and that rung was judged more important. The constraint is now removed.
 
-**Longest-first rests on cost-of-reading, not on design completeness.** Long
-entries are what make the queue expensive to reason across, and processing them
-first is what shortens it fastest — a benefit that does not depend on length
+**Length's place in the ladder rests on cost-of-reading, not on design
+completeness.** Long entries are what make the queue expensive to reason across,
+so working them shortens it fastest — a benefit that does not depend on length
 predicting anything about an entry's readiness. It does not predict it: in the
 session that settled this, the two longest of eight were the two that could not
 be kept at all, because at the top of the distribution length tracks repeated
-enrichment without resolution.
+enrichment without resolution. **Longest-first as an ORDER is retired** on the
+stability argument above; what survives is length as membership in rungs 3 and 4.
 
 **Unblock-potential is kept deliberately.** It is reasoning, but of the kind
 Claude is reliably good at — following citations between items is running a
@@ -727,7 +815,7 @@ a change once processing was under way. A session once opened on one rung,
 exhausted the work that rung selected about ten items later, moved to another
 with no narration at all, and the user had to ask outright what order was in
 force. A rung can still change mid-session — a red flag arrives, the item holding
-everything up gets processed, or the above-median group empties into rung 4 —
+everything up gets processed, or the long-and-old group empties into rung 4 —
 even though the bottom rung no longer
 runs out.
 
@@ -823,6 +911,121 @@ is exactly what undesigned work looks like, and items in that shape have reached
 Processed and then stalled a /next run that had a file list and nothing to build
 from. An item that can't pass both limbs gets sharpened further in the interview,
 or skip-to-deferred with its design progress written into its prose — never kept.
+
+**Third limb: where an item repeals or rewords a specific sentence or value, grep
+its distinctive words across the project before writing the Files line.** A
+repealed sentence is a literal string, so this needs no judgment — the item either
+grepped for it or did not.
+
+```
+the Files line is derived FROM the grep, not from the discussion
+    -> the grep names every doc, template and FAQ entry carrying the string
+    -> anything the grep finds and the item does not want changed is stated
+       as an exclusion, in its own sentence outside the Files line
+```
+
+**Why it belongs here rather than in the run.** An item once repealed one sentence
+from the always-loaded rules and named that one file, stating in its own prose that
+the defect was there and not elsewhere. The sentence was in fact restated verbatim
+in three more live places, so the run stopped twice to grow scope — in a run whose
+whole premise is that it does not stop. Plan-time tracing is what shrinks the
+ripples a run has to catch.
+
+**An item whose completion happens outside this project names what would show it
+done — or states plainly that nothing observable exists.** A URL that would
+respond, a file that would appear, a branch that would be gone.
+
+```
+something observable exists   ->  name it. A later session checks the world
+                                  instead of asking whether it happened.
+nothing observable exists     ->  say so, in the item. The item then waits
+                                  until the user mentions it.
+```
+
+**The second half carries as much weight as the first**, and is the part that gets
+left out. It is what tells a later run to ask rather than check, instead of
+leaving it to guess which case it is in — and it makes "waits for the user to
+mention it" a stated design rather than something that looks like an oversight.
+
+**The checking side already works; the gap was upstream of it.** A walk-through
+already checks the world where an item names an observable result — that is what
+caught a `[user]` line waiting on a page that had been live for some time.
+Nothing required an item to *carry* one when one existed.
+
+**Notification is refused, not merely unbuilt.** Nothing tells this project that
+work handed to another one has finished, and a message nobody is obliged to read
+moves that problem rather than closing it — mail is fire-and-forget in both
+directions, by design.
+
+**Folding something into an existing item is two different operations. Say which
+one you are doing, because they want opposite treatments:**
+
+```
+a MERGE          two accounts of the SAME thing
+                 ->  REWRITE the host item, and state what came out.
+                     Adding names what it replaces — the rule gate's eviction
+                     step, one level down.
+
+a SUPERSESSION   one account OVERTURNS the other
+                 ->  APPEND, dated, naming what it overturns and why the old
+                     reasoning lost. The throughline requires a defeated
+                     alternative and its reason to survive; rewriting one away
+                     is how a settled decision gets relitigated.
+```
+
+**The test is binary and has an observable answer:** are these two accounts of one
+thing, or is one overturning the other?
+
+**Performing a merge as an append is the measured failure**, and it is the common
+one — an item carried its original framing paragraph *and* a later paragraph
+covering the same ground, because nobody named which operation was happening.
+Appending is not the defect; appending where the two accounts describe one thing
+is.
+
+**A merge is expected to come out shorter, and that is the only evidence anyone
+has that a rewrite helps.** One measured case: an item whose lens had been given
+and then taken away by an appended paragraph, so the item described the lens as
+both in scope and removed. Merging it properly collapsed four paragraphs into one
+and took 63 words off an item that would otherwise have kept growing. One data
+point, in the predicted direction, and no rate is claimed from it.
+
+**This types the EDIT being made, not the reason being carried.** The throughline
+rules ban forcing rationale into a typed taxonomy, and that ban is untouched: the
+reasoning stays prose, and what gets named here is which of two operations the
+author is performing on it.
+
+**An item that passes both limbs is given a build block, written here.** The
+block is what a run actually builds from — a run never reads the queue — so it is
+authored at the same moment the two limbs are settled, with the user present:
+
+````
+--- Build block ---
+Changes: <what changes, in which files>
+Acceptance: <how to tell it worked>
+Red flag: <cleared | uncleared>          # only where the item carries one
+Refused: <the option, and why it lost>   # one line per refusal, or omit
+--- End build block ---
+````
+
+**Write it inside the item, beneath the rationale.** `generate_build_view.py`
+copies the delimited region byte-for-byte, keyed by slug, into the generated view
+the run reads. Nothing reformats it in passing, which is what stops the
+instructions drifting between what was approved and what gets built.
+
+**Refusals go in the block and the rest of the history does not.** A build that
+cannot see why an option was rejected proposes it again and stops to ask, which is
+the one interruption the separation would otherwise buy. Everything else — why the
+work is worth doing, what it grew out of, which concerns were raised and answered
+— stays in the item and is read back at the close, one entry at a time.
+
+**Telling instruction from history is judgment, which is why it is authored here
+and not computed.** No script can make the split, and the keep-step is the one
+moment the user is in the room to disagree with it — the same siting the rule gate
+uses, for the same reason.
+
+**A cleared item with no block cannot be built**, and the run halts on it as
+underspecified rather than reading the queue for the missing detail. The queue
+lint flags one, so the gap is visible before a run meets it.
 
 **The Files line names only files that change.** A file the item has decided NOT
 to touch is a different statement and goes in its own sentence outside the line.
@@ -1249,6 +1452,27 @@ finally put to the user she answered it in a sentence. The naming had worked;
 nobody had asked. Enrichment is not the defect — enrichment **substituting** for
 a decision that was available for the asking is.
 
+**Where an item is skipped because it waits on something outside the project
+entirely, propose a `Not before:` date and write it on the user's approval**
+[PROMPT]. This is the one place a capture gains one. The trigger is that nothing
+in the queue can do what the item waits for — another project's reply, a feature
+shipping in a tool nobody here controls — so it can name no blocker and cannot be
+held below the readiness line either, since being held there requires work
+specific enough to build. Without a date it comes back to the top every session
+and is set aside again.
+
+```
+name what it waits on, propose a date by when there is plausibly
+news, and say plainly it will not be offered again before then
+    user approves   ->  write `Not before: YYYY-MM-DD` on the capture
+    user declines   ->  ordinary skip; it returns next session
+```
+
+**Never write one silently.** A date on a capture is the one hold that removes an
+item from view without anything resolving, so the user decides how long they are
+content not to see it. Waiting on someone's attention is not this — that is an
+ordinary skip.
+
 **View-in-doc applies here too** — by default lead with a one-line pointer to the
 next item in place of its verbatim, off-ramps below it unchanged.
 
@@ -1308,9 +1532,20 @@ first is not the safer order either.
 Unprocessed should be empty except items skipped this session; Processed holds the
 kept work in order; section headers intact.
 
-**Neutral end-of-queue gate** [PROMPT]. When the queue empties, do **not** presume
-the session is over and do not slide toward the close. An
-empty Unprocessed is a resting state, not a stop signal. Ask one neutral question
+**Neutral end-of-queue gate** [PROMPT]. **Its precondition: it may fire only where
+Unprocessed holds nothing but items skipped this session.** Anything else and this
+gate is unavailable — with a full queue the only thing left to reach for is the
+checkpoint, which presents the next item, and that is the correct behaviour.
+
+**The precondition is the whole fix, because reaching for this gate early is worse
+than a neutral miss.** Its wording is carefully balanced not to lean toward
+closing *given an empty queue*; applied to a full one it stops being neutral and
+silently reclassifies everything still waiting as nothing left to do. That
+happened with thirty-five items outstanding, when a user-named subset ran out and
+this was the nearest gate to hand.
+
+When the queue empties, do **not** presume the session is over and do not slide
+toward the close. An empty Unprocessed is a resting state, not a stop signal. Ask one neutral question
 — "we can close the session and record it, or is there anything else to capture
 or discuss?" — and wait. The command is named in words and does not end the
 sentence: the app lifts a trailing slash command into the composer, so an ask

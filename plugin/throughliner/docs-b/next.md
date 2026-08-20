@@ -13,11 +13,82 @@ You are building the cleared work from the queue. /next works the Processed
 section top-down — building Claude-work items, walking the user through user-work
 — scope-locked to the files that work touches.
 
+## What a run is, stated once
+
+**A run clears vetted work without confirming each item, and it does not run to
+completion by itself.** Both halves are load-bearing, and the second is the one
+this document used to get wrong by calling a run "unattended".
+
+```
+TRUE, and what every "do not interrupt this" rule below rests on:
+    a run does not confirm each item, and moves faster than a person can
+    follow — so stopping it to ask costs far more than the question is worth
+
+FALSE, and no longer claimed anywhere:
+    that it finishes on its own. A run pauses at three points and occupies
+    the session while it goes:
+      - a `[user]` item, walked through live, one step at a time
+      - a `[freeform]` item, which halts it outright
+      - the close, which is the user's command to run — so a run left alone
+        finishes its builds and sits there uncommitted
+```
+
+**The person this misleads is the one who reads "unattended" and walks away.**
+They come back to a finished run that recorded nothing, because /done was never
+invoked. Say what happens instead of reaching for the shorter word.
+
+**"Unattended" stays correct wherever it means "do not interrupt this"**, which is
+almost everywhere it appears below. Those uses lean on the true half, so
+end-preferred placement, the readiness line as the run's bound, and the
+no-blocking-ask rules are all sound and are not reopened.
+
+**A run also occupies the only session there is**, so for as long as it runs the
+user cannot capture anything. That is a real cost of the current shape rather than
+a wording problem, and it is answered by concurrency work rather than here.
+
+**Self-closing is refused, recorded so it is not re-proposed.** A run that ran
+/done on itself would commit with nobody present, and a commit message is one of
+the few things this method still shows before it happens — precisely because a
+commit is hard to unwind and never becomes file content. Auto-closing either
+overrides that guard or invents a version of it that survives nobody being there.
+Neither is worth saving one command.
+
 ## What /next runs on
 
-QUEUE.md holds two sections: **Unprocessed** (captured, not yet processed) and
-**Processed** (agreed, ready). /next builds only from Processed, and only from
-above the cleared-to-run marker.
+**A run reads the generated build view, never QUEUE.md.** Regenerate it first —
+
+```
+python <plugin-root>/scripts/generate_build_view.py <QUEUE.md path>
+# writes BUILD-VIEW.md beside the queue. The plugin root is the grandparent of
+# the running skill's base directory — derive it, never hardcode a path.
+```
+
+— then read that file. It carries each cleared item's build block: what changes
+in which files, how to tell it worked, any risk it carries, and any option
+already refused. It also lists every entry in both sections by heading and slug
+alone, so a capture filed mid-run can still be checked against what is already
+in the queue.
+
+**It carries no decision history, and that is the mechanism rather than a
+saving.** A build transcribes what it reads, and rationale written into work
+items was measured reaching this method's own shipped documents in near-verbatim
+form. A build cannot copy what it was never given. The reasoning is not lost:
+QUEUE.md keeps it inline and whole, and the close resolves each built slug back
+against the queue as one targeted read of one entry.
+
+**Refusals are the exception that travels**, carried inside the block, because a
+build that cannot see why an option was rejected proposes it again and stops to
+ask.
+
+**What the view costs, stated rather than discovered.** A heading tells you an
+item exists and nothing about what depends on it, so a capture filed during a run
+is weaker at spotting which detail matters to work already queued. Duplicate
+detection is restored; cross-item awareness is not.
+
+QUEUE.md itself holds two sections: **Unprocessed** (captured, not yet processed)
+and **Processed** (agreed, ready). /next builds only from Processed, and only from
+above the cleared-to-run marker — which is the region the view's cleared section
+reproduces.
 
 ```
 run       = Processed[ top .. `--- Cleared to run above this line ---` )
@@ -90,7 +161,9 @@ each item is built against, and a build that never reads it cannot be checked
 against it. Reading it once per run is what makes the per-item check below cost
 almost nothing.
 
-Then read Processed top-down and take everything above the marker.
+Then regenerate the build view and read its cleared section top-down. That is the
+run. **Do not open QUEUE.md** — the scope-lock refuses a build's reads of it, and
+the view is what the run is built from.
 
 ```
 early exits:
@@ -202,12 +275,37 @@ the first few, and don't inherit such a suggestion from a previous session's
 advisory. If a run should stop early, that is decided by observed behaviour — the
 no-progress halt — not by a number chosen up front.
 
-**The one thing that may drop an item from the run is waiting mail** [BRIEF].
-Where a message read at the step above bears on an item in the cleared region,
-name it here and recommend dropping that item from **this run only** — the queue
-is left untouched and /plan decides its fate. That is not the softer cap this
-rule forbids: it rests on something a message actually said, not on a guess
-about how large a run should be.
+**Two things may drop an item from the run, and neither is a cap** [BRIEF]. Both
+rest on something specific and checkable rather than on a guess about how large a
+run should be. In each case, recommend dropping that item from **this run only** —
+the queue is left untouched and /plan decides its fate.
+
+```
+1. WAITING MAIL bearing on a cleared item
+       a message read at the step above says something about work in this run
+       -> name it and recommend dropping that item
+
+2. /setup OUTSTANDING and an item it would overtake
+       session_start says the project's recorded plugin version is behind the
+       installed one, AND an item in this run names a file /setup rewrites
+       from a template
+       -> name it and recommend dropping that item
+```
+
+**The second trigger is a read of the item's Files line, not a judgment about
+what counts as plugin-managed content.** Does this item name a file /setup
+rewrites? That is all it asks.
+
+**It fires only on that collision, never on every run in a behind project.** A
+warning that appears whether or not it applies is one people learn to read past.
+The case is real: a project elsewhere ran a whole build and close whose top item
+was void before it started — a fix to a stale description inside CLAUDE.md's
+plugin-managed block, which /setup rewrites from a template already carrying the
+correct text. The run then had to be closed with nothing built, to free /setup.
+
+**Pointing the user at /setup is safe**, and the objection that it would send them
+into a denial is dead: /setup refuses cleanly while a build is in progress rather
+than failing file by file against the scope-lock.
 
 **If the user took the inline offer, advise on the large items here** [BRIEF].
 Inline display is settled by the session's opening offer, not by a question of
@@ -263,8 +361,10 @@ Unprocessed, not folded in.
 
 Once the user confirms:
 
-**1. Self-scope.** Read each Claude-work item's description and rationale, work
-out which files it will change, and list them. `[audit]` items name no files —
+**1. Self-scope.** Read each Claude-work item's build block in the view — its
+`Changes:` line names what changes in which files — and list those files. The
+block is the whole instruction set; there is no rationale to consult, and an item
+whose block does not say what changes inside its files is underspecified below. `[audit]` items name no files —
 an audit reads and reports — so a run of only audit items gets an empty Files
 list, locking the session to method docs.
 
@@ -350,15 +450,13 @@ bare paths** — the hook matches each line as an exact path, so any annotation
 becomes part of the path and silently breaks the match. Make sure no other line
 in the file starts with `Files:`.
 
-**Rationale is pointed at, not copied, and the safety that governs the pointer.**
-Each item's reasoning stays in QUEUE.md and is read from there when the item is
-built. The reason not to copy it: on a fifteen-item run the copy came to roughly
-eight thousand tokens, all of it text read from QUEUE.md minutes earlier, and it
-is re-paid on every run touching those items. The reason the pointer is *safe* is
-step 3 below — each item stays in QUEUE.md until the moment it is ticked, so no
-item's only copy ever sits in a file scheduled for deletion. **If that copy-per-item
-ordering is ever changed, this pointer must be revisited with it**; the two
-together are what replaced copying every item's prose in.
+**Rationale is neither copied here nor read during the build.** Each item's
+reasoning stays in QUEUE.md, where the close reads it back one entry at a time.
+What the build works from is the build block in the view, which carries
+instructions and any recorded refusal and nothing else. **The safety that governs
+this is step 3 below** — each item stays in QUEUE.md until the moment it is
+ticked, so no item's only copy ever sits in a file scheduled for deletion. **If
+that copy-per-item ordering is ever changed, this must be revisited with it.**
 
 **3. Leave QUEUE.md alone. Copy, never cut.**
 

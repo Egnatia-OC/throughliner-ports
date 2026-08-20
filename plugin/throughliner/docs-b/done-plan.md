@@ -118,9 +118,15 @@ prose slug-references.
 **Place `[user]` and `[audit]` lines end-preferred**, after
 contiguous blocks of build work. Both flavors force /next to stop for the user — a
 step they must run, an audit whose findings they must approve — so one sitting
-*inside* a contiguous build run interrupts an otherwise-unattended sequence.
-Position them at the **end** of the block so the human-in-the-loop stops batch
-together.
+*inside* a contiguous build run interrupts a sequence that would otherwise never
+stop to ask. Position them at the **end** of the block so the stops that need the
+user batch together.
+
+**The rationale rests on the run not confirming each item, which is true**, rather
+than on a run finishing by itself, which is not — a run pauses at `[user]` work,
+halts on `[freeform]` work, and never closes itself (next.md, What a run is). The
+placement rule is unaffected either way: a stop in the middle of a build block is
+worse than the same stop at its end whatever else the run does.
 
 **Don't move a `[user]` or `[audit]` line past a build item that genuinely depends
 on its outcome** — a real dependency wins; end-preferred is the default only
@@ -194,9 +200,9 @@ dependency BUILT only            ->  NOT enough. Keep the dependent below.
 dependency BUILT and VERIFIED    ->  no hold; it may clear.
 ```
 
-The why is autonomy: a cleared item can be built unattended with no user in the
-loop, so clearing one that rests on built-but-unverified work would let the run
-stack committed work on a foundation that might later fail its check. Narrate it
+The why is that a cleared item is built without anyone confirming it, so clearing
+one that rests on built-but-unverified work would let the run stack work on a
+foundation that might later fail its check. Narrate it
 when it holds an item back — one line naming which item waits on which.
 
 **Re-derive prerequisite state from LOG, not from memory, by reading the

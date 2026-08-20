@@ -1,4 +1,4 @@
-# [HASH] — the consumer's build-view objection settled into the design it bears on, and the capture deleted into it
+# 8330209 — the consumer's build-view objection settled into the design it bears on, and the capture deleted into it
 
 A consumer project sent evidence deliberately ahead of the change: during a `[user]` walk-through a long aside produced two good captures, and their claim was that none of what made them good came from the build. The capture had already narrowed that claim honestly, and the narrowing was checked rather than accepted. Two of their four limbs land — knowing the captures were not already filed, and knowing what queued work depends on the detail — and both are queue-wide knowledge. Reading SPEC and knowing how items get processed are unaffected, since /next reads SPEC at run start and the procedure docs load either way.
 

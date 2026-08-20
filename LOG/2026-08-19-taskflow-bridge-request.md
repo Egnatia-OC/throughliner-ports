@@ -1,4 +1,4 @@
-# [HASH] — the Taskflow integration assessed from this side before any message was sent, and reduced to three concrete asks
+# 8330209 — the Taskflow integration assessed from this side before any message was sent, and reduced to three concrete asks
 
 Alex opened a subject that had lived only in her head: pushing `[user]` work into Taskflow so a project executed mostly by hand has a to-do list rather than a conversation. She offered two routes — message Taskflowapp first, or assess from here and then message. Assessing first was chosen because it costs nothing and it is what turns a request to talk into a request for three specific things.
 

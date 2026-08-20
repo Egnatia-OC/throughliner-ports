@@ -65,8 +65,14 @@ The work cycle. Every piece of work travels the same loop.
 - Write in plain language, using a term of art only after the user has used it.
 - Say so where an approach is wrong, rather than agreeing.
 - State a regression in the same plain terms as a success, and move on.
-- Run every command you can run yourself, handing one over only in the two cases
-  the rules below name.
+- Run every command you can run yourself, handing one over only in the cases the
+  rules below name.
+- **The method's own skills are one of those cases — name the command and hand it
+  over, never attempt it.** `/setup`, `/plan`, `/next`, `/rescan` and `/done` all
+  ship with model-invocation disabled, so an attempt fails and shows the user a
+  red error at the moment they have least context for it. This has happened at a
+  close, where the failure landed between "now closing the session" and any
+  explanation.
 - **Name the environment a step needs and let the user say whether it fits** —
   "This step needs a terminal open separately from the app, do you have one?"
   rather than "Run this in your terminal:". Users here are non-coders who may
@@ -138,6 +144,15 @@ NO  -> show it, then wait         a commit message · anything that LEAVES THE
                                   already owns, where git does not yet hold it
 ```
 
+  **An untracked doc answers the test with a no, so its writes are show-first.**
+  Where `SPEC.md`, `QUEUE.md` or `LOG/` is gitignored — a configuration /setup
+  offers — git holds no previous version, so nothing can be reverted without the
+  user's help. This is the existing test applied to a fact it can now read, not a
+  new rule: session_start reports which of the three are untracked at every
+  opening. Two further consequences are stated rather than repaired: a deleted
+  queue item is genuinely gone, and the close cannot read its own work back from
+  the file's history, so it records from what it remembers.
+
 - **Show-first, on request.** The user can ask to see doc-resident text before
   it is written, for the rest of the chat.
 
@@ -166,7 +181,7 @@ floor:     the show-first cases above stay show-first regardless. The switch
   This method's control model is that the user reads and approves the record; a
   report written to be sufficient on its own is a workaround for that not
   happening, and it makes the workaround the design. What keeps the reading
-  affordable is the artifact's own word band, not a longer report.
+  affordable is the artifact's own length, not a longer report.
 - **When text IS shown — the show-first cases above — the View-in-doc rendering
   section below says how.** End the message with an explicit ask naming the
   decision needed.
@@ -485,15 +500,37 @@ Blocked by: [slug], [slug]                     # one OR MORE slugs; the item
                                                # lifts only when every one
                                                # resolves. Only below the
                                                # cleared-to-run line, where one
-                                               # of these two is required
-Not before: YYYY-MM-DD                         # a date the item must not be
-                                               # built before; it lifts itself
+                                               # of it or `Not before:` is
+                                               # required
+Not before: YYYY-MM-DD                         # a date. Available in EITHER
+                                               # section, meaning something
+                                               # different in each — see below.
+                                               # It lifts itself
 ```
 
 **A date holds an item on its own, with no blocker item standing in for it.**
 Every other blocker needs a human or a build to resolve, which is why blockers
 are queue items — a date resolves itself and is read off the calendar by the
 hooks, so nobody confirms anything and no wake-up capture is filed.
+
+**`Not before:` means one thing on a work item and another on a capture:**
+
+```
+on a work item (Processed)  ->  do not BUILD this before the date
+on a capture (Unprocessed)  ->  do not OFFER this again before the date
+```
+
+**A capture carries one only with the user's approval, and only where it waits on
+something outside the project entirely** — another project's reply, a feature
+shipping in a tool nobody here controls. Such a capture can name no blocker,
+because nothing in the queue can do what it waits for, and it cannot be held below
+the cleared-to-run line either, since being held there requires work specific
+enough to build. Without the date it returns to the top of the queue every session
+and is set aside again.
+
+**It stays a capture throughout and gains no state of its own.** Two sections and
+one readiness line, unchanged — this is one existing field appearing in one more
+place.
 
 **Write `Blocked by:` plain, not bolded.** The lint tolerates the emphasis, but
 the plain form is what this block shows.
@@ -538,6 +575,19 @@ a QUOTE claim     "your words", "in her own words", quotation marks
   **Approval is not authorship, for either claim.** Agreeing to a proposal
   Claude reasoned out makes the reasoning Claude's. When in doubt about origin,
   leave the item unmarked, which reads as Claude's.
+
+  **The containment test tells agreement from authorship: a reply wholly
+  contained in Claude's preceding message cannot evidence an origin claim.**
+  Without it the rule above has no way to judge a one-word answer — and a
+  one-word answer is often a tap on a suggested reply, which is Claude's own
+  wording returned. Where the reply adds nothing Claude did not just write, the
+  decision is Claude's and the item stays unmarked.
+
+  **Existing credits are not audited in bulk, and not disclaimed in bulk
+  either.** The test needs the message that preceded each credit, which is not
+  recoverable item by item. Declaring past credits unreliable wholesale would be
+  an unverifiable claim about the record that degrades every honest credit
+  alongside the doubtful ones. Check a specific credit when it is challenged.
 
   **Mixed authorship is written as mixed**, naming who did which part — *"Bundling
   by hand was rejected on Claude's recommendation and the user's agreement."*
@@ -650,27 +700,18 @@ this text: **unreadable is unapprovable.**
 
 ```
 the RECORD — a capture, a queue item, a LOG entry, a SPEC edit
-    keep the facts, references, conditions and reasoning that led here, and
-    write them within the shape's word band below.
+    keep the facts, references, conditions and reasoning that led here.
 
 a DELIVERABLE written to disk — a report, a summary, a document for a reader
     its length matches what the task needs. Out comes a filler section, a
     summary of what the document already said, boilerplate.
 ```
 
-**Each written shape has a word band and a ceiling, and a breach names an action
-rather than blocking the write.** Words, not characters. Each band's top is this
-project's July median for that shape, its floor half of that, its ceiling one and
-a half times it.
-
-```
-shape         band       ceiling   on breach
-capture        90-177      265     file the reasoning as research, cite it
-work item     115-229      345     split into two items
-build entry   115-229      345     split per item built
-plan entry    160-323      485     split per item processed
-index line     20-40        60     the line is restating its entry
-```
+**No written shape carries a length cap.** Both failures are real — a record too
+thin to rebuild intent from fails as surely as one too long to get through, and
+the second is the one this method has actually produced at scale. Length is still
+the thing that has to be earned. What is gone is any claim to have located the
+line to within a word count.
 
 **A plan entry splits per item processed, exactly as a build entry splits per
 item built.** A planning decision IS a disposition on a queue item, and that item
@@ -679,37 +720,18 @@ applies unchanged and nothing new is defined. What is genuinely chat-level — a
 correction given, an error found and fixed, a decision belonging to no item — has
 its own home in the `Also in this chat:` section.
 
-**These figures mark lengths DEMONSTRATED TO BE SUFFICIENT, never ideal ones.**
-They are a median of what this project used to write, so they are evidence the
-work can be done at that length and evidence of nothing else. A stated derivation
-makes a limit traceable and revisable rather than correct.
+**The lever is where text lives, not how it is worded.** A prose instruction to
+be brief was tried first and measurably did nothing, which is why figures were
+introduced at all — so the answer to a failed number is not a return to a failed
+adjective. What replaces both is structure: a work item is divided into the
+instructions a build reads and the decision history a person reads, and history is
+relocated to the record and cited from the item rather than carried inside it.
 
-**The advisory says its piece once per run, not on every write.** These bands
-currently fire on the typical artifact rather than on an outlier, so a per-write
-advisory would fire on nearly every write for as long as the corpus takes to come
-down — the cry-wolf shape this project has repealed measures for twice.
-
-**A band firing on the typical artifact is equally consistent with a bloated
-corpus and with a band set too tight, and nothing in the firing rate separates
-them.** What pushes against the too-tight reading is a second population: 157
-entries from the project's earlier life measured a median of 183 words, inside
-the build-entry band. Two independent samples agreeing is the strongest evidence
-available short of an outcome measure — sufficiency shown twice, never optimality.
-
-**A shape under its floor is read for what the record is missing, and lengthened
-only where reasoning is genuinely absent.** A record too thin to rebuild intent
-from fails as surely as one too long to get through, and the floor is what keeps
-the ceiling from being read as a target.
-
-**A band applies to the ENTRY AS IT STANDS, never to the text being added**, and
-it is read at /plan's keep-step where the item is already in front of you. An
-item can pass its band at capture, gain a paragraph at each of five planning
-sessions, and reach the build at three times its ceiling with no single write
-having breached anything — every author in band, the artifact not. Appending is
-the common move, and the item is what gets read.
-
-**Run `resources/measure_written_shape_length.py . --bands` to report the whole
-project against these figures.**
+**Run `<plugin-root>/scripts/measure_written_shape_length.py .` to report this
+project's own distributions.** It prints how long your captures, work items,
+session records and index lines actually run, and it prints no threshold of any
+kind — the same posture the queue digest and the growth reports take: state the
+fact, never the verdict.
 
 **Placement: append to the bottom of Unprocessed, always.** No judgment call, no
 narration line. **A capture filed mid-run follows the same rule and gets no
@@ -925,14 +947,13 @@ each entry must carry:
 
 **The index is read in full, by Claude, on every retrieve, so its total length is
 a fixed toll rather than something a reader skims past.** That, and not
-scannability, is what the index line's word band is for. The extreme case is the
-argument in one line: a 337-word line pointing at a 1,710-word entry, where
+scannability, is why an index line's length matters at all. The extreme case is
+the argument in one line: a 337-word line pointing at a 1,710-word entry, where
 reading the pointer costs a fifth of opening the thing it exists to save you
 opening.
 
 **No length cap of any kind — not absolute, not proportional.** Length follows
-from the content requirement above, and the band is what the line costs the
-retrieve rather than a cap on what it may say. The bound is the requirement
+from the content requirement above. The bound is the requirement
 itself: an index line must carry enough to support the open/skip decision, and
 must not restate the entry. An entry too short to support that decision fails
 even at one line; a line that reproduces its entry fails at any length.

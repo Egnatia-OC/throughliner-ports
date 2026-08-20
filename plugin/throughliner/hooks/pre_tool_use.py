@@ -1136,6 +1136,34 @@ def main() -> int:
         return 0
 
     # --- Edit/Write/MultiEdit: file-scope enforcement ---
+    # A build must not READ QUEUE.md, which is the whole mechanism rather than a
+    # saving. A build transcribes what it reads, and rationale written into work
+    # items was measured reaching this method's own shipped documents in
+    # near-verbatim form — so the separation only holds if the history never
+    # reaches the build at all. The run reads the generated view instead, which
+    # carries each cleared item's instructions and any refusal, and lists every
+    # entry by name so a mid-run capture can still be checked for duplicates.
+    #
+    # The reasoning is not lost: the close reads it back from `git show
+    # HEAD:QUEUE.md`, one entry at a time, before the run commits.
+    if (tool_name == "Read"
+            and has_active_build
+            and _normalise(tool_input.get("file_path", ""))
+            == _normalise(os.path.join(cwd, "QUEUE.md"))):
+        return _deny(
+            "[Throughliner] BLOCKED: a build reads the generated view, not the "
+            "queue.\n\n"
+            "The view carries what each cleared item changes, how to tell it "
+            "worked, and any option already refused — everything a build needs "
+            "— and none of the decision history, which a build has been "
+            "measured copying into shipped documents.\n\n"
+            "Regenerate and read it:\n\n"
+            "  python <plugin-root>/scripts/generate_build_view.py QUEUE.md\n\n"
+            "If an item's instructions are missing from the view, that item is "
+            "underspecified and the run halts on it. The missing detail is not "
+            "in the queue to be found — it was never written."
+        )
+
     if tool_name not in ("Edit", "Write", "MultiEdit"):
         return 0
 
@@ -1189,6 +1217,36 @@ def main() -> int:
                     "Proceed, or stop and give the build a file list first?"
                 )
             return 0
+
+        # A build does not edit QUEUE.md by hand. It builds from the generated
+        # view, and the only queue writes a run makes — removing a ticked item,
+        # appending a capture — go through reorder_queue.py, which the shell
+        # guard permits by name. A direct Edit or Write here is either a build
+        # rewriting an item's rationale, or the awkward hand-editing the mover
+        # exists to replace.
+        #
+        # Narrowed deliberately. The item that asked for this said the
+        # scope-lock should "refuse QUEUE.md to a build", which taken flat would
+        # have broken three shipped mechanisms: the per-item removal at each
+        # tick, capture-and-continue, and abort-and-requeue. What the separation
+        # is actually for is that a build never READS the decision history — so
+        # reads are refused (above) and mover writes are left alone.
+        if _normalise(filepath) == _normalise(os.path.join(cwd, "QUEUE.md")):
+            return _deny(
+                "[Throughliner] BLOCKED: a build does not edit the queue "
+                "directly.\n\n"
+                "A run builds from the generated view, not from QUEUE.md. The "
+                "two queue writes a run legitimately makes both go through the "
+                "queue tool instead:\n\n"
+                "  - removing an item once it is built\n"
+                "  - appending something noticed mid-run to Unprocessed\n\n"
+                "Use reorder_queue.py, which ships under the plugin root's "
+                "scripts/ folder — search for the filename rather than assuming "
+                "a path. It moves, deletes and appends whole entries "
+                "byte-for-byte, addressed by slug.\n\n"
+                "If this is neither of those, it is work on the queue's own "
+                "contents, which is planning rather than building."
+            )
 
         # The session id must be passed: _is_method_doc resolves this session's
         # working files by name, and without the id it looks for

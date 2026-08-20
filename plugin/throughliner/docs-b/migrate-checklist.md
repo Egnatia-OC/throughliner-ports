@@ -106,6 +106,54 @@ verbatim re-copy was correct.)
 **5. Drop empty section placeholders.** An empty old Red-flags / Deferred-tests /
 Parked block just disappears — nothing carries over.
 
+## Epoch 4 — build blocks on cleared work
+
+**Every item cleared to run needs a build block before a run can build it.** A
+run reads a generated view assembled from those blocks and never reads QUEUE.md,
+so a cleared item without one reaches the run with no instructions and halts it
+as underspecified.
+
+````
+--- Build block ---
+Changes: <what changes, in which files>
+Acceptance: <how to tell it worked>
+Red flag: <cleared | uncleared>          # only where the item carries one
+Refused: <the option, and why it lost>   # one line per refusal, or omit
+--- End build block ---
+````
+
+```
+a cleared item's own prose already    ->  lift those sentences into the block.
+  says what changes and where             The prose stays where it is; the
+                                          block is a projection of it, never
+                                          a move.
+a cleared item that does NOT say      ->  it never passed the keep check. Move
+  what changes inside its files           it below the readiness line and
+                                          process it at the next /plan, rather
+                                          than inventing instructions for it.
+a held item, or a capture             ->  nothing. Neither is built until it is
+                                          cleared, and the lint asks nothing of
+                                          them.
+a `[user]` or `[freeform]` item       ->  nothing. Neither is built from a block.
+```
+
+**Write the blocks with the user, not for them.** Telling instruction from
+decision history is a judgment, which is the whole reason the split is authored
+at the keep-step rather than computed by a script. A migration doing it silently
+would make exactly the call the design reserves for a moment the user is present.
+
+**Only refusals travel out of the history.** A recorded "X was rejected because
+Y" goes into the block; everything else stays in the item. A build that cannot
+see why an option was rejected proposes it again and stops to ask.
+
+**Nothing is deleted.** The block sits beneath the item's rationale, which stays
+inline and whole — that is what the throughline requires, and the generated view
+is regenerated rather than merged, so nothing is ever reconciled back.
+
+**Check it landed:** run the generator and read its summary line — it prints how
+many cleared items it found and how many carried a block. Equal numbers mean the
+migration is complete.
+
 ## Preserve everything real
 
 **Migration must lose no content the user wants kept.**

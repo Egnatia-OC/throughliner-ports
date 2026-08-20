@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Measure how long this project's written shapes have grown over time.
 
-Host-only dev artifact — not shipped in the plugin package.
+Ships with the plugin. It used to be a host-only dev artifact while the
+always-loaded rules told every consumer to run it, so every consumer was pointed
+at a path their project did not have — and the rules presented their figures as
+"traceable and revisable", which they could not be without this.
 
-Run:  py resources/measure_written_shape_length.py .
-      py resources/measure_written_shape_length.py . --bands
+Run:  py <plugin-root>/scripts/measure_written_shape_length.py .
+      py <plugin-root>/scripts/measure_written_shape_length.py . --history
 
 Four shapes, each reported as a LENGTH AGAINST A DATE and nothing more:
 
@@ -27,16 +30,22 @@ Four shapes, each reported as a LENGTH AGAINST A DATE and nothing more:
                       path the user named: a longer index line implies a longer
                       entry
 
-The default report invents no threshold and passes no judgment on any figure. It
-prints a distribution, and no band may be read off the middle of it: this corpus
-is the bloated one, so its typical length is not a target.
+Both modes invent no threshold and pass no judgment on any figure. The default
+prints this project's current distributions; `--history` prints the same shapes
+against dates, replayed from git.
 
-`--bands` is the separate mode, added once the bands existed. It reports the
-project's current written shapes against the bands shipped in
-`skill-nonspecific-rules.md`, which were derived from JULY's medians — the
-measured record before the August doubling — and not from this corpus's middle.
-The two modes must stay separate: a band printed inside the distribution report
-would be a threshold read off the thing being questioned.
+**`--bands` is retired and now exits with an error naming why.** It reported the
+project against the length caps in `skill-nonspecific-rules.md`, and those caps
+were repealed on 2026-08-19 — on an argument that came from this file. A band
+printed inside a distribution report is a threshold read off the thing being
+questioned, so it can only tell you what you already do; the shipped bands were
+exactly that, the middle of what this corpus had already written. The script
+declined to do what the rules did, and the rules have now stopped.
+
+**No band may be read off the middle of either report**, and none is printed. Do
+not reinstate one here: this corpus is the bloated one, so its typical length is
+not a target, and a figure re-derived from it would carry the same circularity
+with the objection deleted.
 
 Method: the queue's own patch history is replayed from git, one blob per commit
 that touched QUEUE.md, through a single `git cat-file --batch` rather than a
@@ -377,34 +386,20 @@ def report(root):
     return "\n".join(lines)
 
 
-# --- bands --------------------------------------------------------------------
+# --- current shapes -----------------------------------------------------------
 
-# Floor at half July's median, band top at July's median, ceiling at 1.5x.
-# July is the measured record before the August doubling; the three multipliers
-# are the one judgment. Canonical statement: docs-b/skill-nonspecific-rules.md.
-BANDS = {
-    "capture":     (90, 177, 265, "file the reasoning as research, cite it"),
-    "work item":   (115, 229, 345, "split into two items"),
-    "build entry": (115, 229, 345, "split per item built"),
-    "plan entry":  (160, 323, 485, "split per decision"),
-    "index line":  (20, 40, 60, "the line is restating its entry"),
-}
-
-
-def band_status(count, shape):
-    floor, top, ceiling, _action = BANDS[shape]
-    if count > ceiling:
-        return "OVER CEILING"
-    if count > top:
-        return "over band"
-    if count < floor:
-        return "under band"
-    return "in band"
+# The five written shapes this reports on. There is deliberately no band, floor
+# or ceiling beside them: the caps were retired on 2026-08-19, and the argument
+# that retired them came from this file — a band printed inside a distribution
+# report is a threshold read off the thing being questioned, so it can only tell
+# you what you already do. Reinstating one here would be that circularity with
+# the objection deleted.
+SHAPES = ("capture", "work item", "build entry", "plan entry", "index line")
 
 
 def current_shapes(root):
     """{shape: [(name, word_count)]} for the project as it stands today."""
-    out = {shape: [] for shape in BANDS}
+    out = {shape: [] for shape in SHAPES}
 
     try:
         with open(os.path.join(root, "QUEUE.md"), "r", encoding="utf-8") as f:
@@ -427,35 +422,34 @@ def current_shapes(root):
     return out
 
 
-def bands_report(root):
-    lines = ["# Written shapes against their bands", "",
-             "**Bands are the ones shipped in `docs-b/skill-nonspecific-rules.md`**, "
-             "derived from July's medians. This reports the project as it stands "
-             "today. Advisory: a breach names an action, it blocks nothing.", ""]
+def current_report(root):
+    """This project's own distributions, with no threshold of any kind."""
+    lines = ["# Written shapes as they stand today", "",
+             "How long this project's captures, work items, session records and "
+             "index lines actually run. **No band, floor or ceiling is printed, "
+             "and none is implied** — these are facts about what you write, not a "
+             "standard to write to.", ""]
 
     shapes = current_shapes(root)
-    for shape in ("capture", "work item", "build entry", "plan entry", "index line"):
-        floor, top, ceiling, action = BANDS[shape]
+    for shape in SHAPES:
         rows = sorted(shapes[shape], key=lambda r: -r[1])
-        lines += [f"## {shape} — band {floor}-{top}, ceiling {ceiling}", "",
-                  f"On breach: {action}.", ""]
+        lines += [f"## {shape}", ""]
         if not rows:
             lines += ["Nothing found.", ""]
             continue
-        counts = [c for _n, c in rows]
-        counts_sorted = sorted(counts)
+        counts_sorted = sorted(c for _n, c in rows)
         n = len(counts_sorted)
         median = (counts_sorted[n // 2] if n % 2
                   else (counts_sorted[n // 2 - 1] + counts_sorted[n // 2]) // 2)
-        over = [r for r in rows if r[1] > ceiling]
-        above = [r for r in rows if top < r[1] <= ceiling]
-        lines += [f"{n} measured, median {median}. "
-                  f"{len(over)} over ceiling, {len(above)} over band.", ""]
-        for name, count in rows:
-            status = band_status(count, shape)
-            if status in ("in band", "under band"):
-                continue
-            lines.append(f"- {status}: {count} words — {name}")
+        lines += [f"{n} measured. Median {median} words, "
+                  f"shortest {counts_sorted[0]}, longest {counts_sorted[-1]}.", ""]
+        # The ten longest, so the distribution's tail is visible without
+        # printing every row. Naming them is not a finding against them: a long
+        # entry is often long because it holds a lot, which is the judgment the
+        # retired ceilings were making on nobody's behalf.
+        lines.append("Longest:")
+        for name, count in rows[:10]:
+            lines.append(f"- {count} words — {name}")
         lines.append("")
 
     return "\n".join(lines)
@@ -468,7 +462,16 @@ def main(argv):
     if not os.path.isfile(os.path.join(root, "QUEUE.md")):
         print(f"measure_written_shape_length: no QUEUE.md under {root}", file=sys.stderr)
         return 1
-    print(bands_report(root) if "--bands" in flags else report(root))
+    if "--bands" in flags:
+        # Named rather than ignored. A flag that silently does something else is
+        # worse than one that says it is gone.
+        print("measure_written_shape_length: --bands is retired. The length caps "
+              "it reported against were repealed on 2026-08-19; this script "
+              "reports distributions and no thresholds.", file=sys.stderr)
+        return 1
+    # `--current` kept as an accepted no-op spelling of the default, since the
+    # historical report below is the other half of what this script does.
+    print(report(root) if "--history" in flags else current_report(root))
     return 0
 
 

@@ -606,15 +606,51 @@ def median_lines(items):
 
     A proportion of the thing it governs, which is what the derivation rule
     admits; a bare figure like "twelve lines and over" is what it bans. The
-    ladder partitions its longest-first rung here so that the rung terminates.
+    ladder partitions its long-and-old rung here so that the rung terminates.
     """
-    spans = sorted(entry_lines(i) for i in items)
-    if not spans:
+    return _median(sorted(entry_lines(i) for i in items))
+
+
+def _median(values):
+    """The middle value of a sorted list, or None when it is empty."""
+    if not values:
         return None
-    mid = len(spans) // 2
-    if len(spans) % 2:
-        return spans[mid]
-    return (spans[mid - 1] + spans[mid]) // 2
+    mid = len(values) // 2
+    if len(values) % 2:
+        return values[mid]
+    return values[mid - 1] + (values[mid] - values[mid - 1]) // 2
+
+
+def median_first_seen(items, ages):
+    """The section's median first-seen date, or None when it cannot be had.
+
+    The ladder's rung 3 is an intersection of two medians — at or above the
+    section's median line count AND at or above its median age — so the age half
+    needs a computed field exactly as the length half does. Without it the rung
+    reads a date per entry and nothing to compare it against, which puts the
+    median back in someone's head; the whole point of the ladder is that every
+    rung reads a field or subtracts two numbers.
+
+    Both are proportions of the section they govern, which is what the
+    derivation rule admits. A bare cut-off like "filed before March" is what it
+    bans.
+
+    Entries whose first-seen date could not be attributed are left out of the
+    calculation rather than defaulted, so an unattributable date never drags the
+    median in either direction.
+    """
+    dates = sorted(
+        ages[i["slug"]] for i in items
+        if i["slug"] and i["slug"] in ages
+    )
+    if not dates:
+        return None
+    # Dates are ISO strings, so the middle element is the median for an odd
+    # count. For an even count the lower of the two middles is taken rather
+    # than a midpoint invented between them: a date halfway between two real
+    # dates is not a date anything here filed, and "at or above" only needs a
+    # boundary that partitions, not one that averages.
+    return dates[(len(dates) - 1) // 2]
 
 
 def locate(slug, items):
@@ -646,6 +682,14 @@ def render(items, root="", queue_path="QUEUE.md"):
         med = median_lines(in_section)
         if med is not None:
             out.append(f"   median entry length: {med} lines")
+        # The section's median age, the other half of rung 3's intersection.
+        # An entry at or above BOTH medians is one that has been enriched across
+        # many sessions without resolving, and that intersection is roughly a
+        # quarter of the section — small enough to finish in one session, which
+        # is what lets the rung sit above the alternation without starving it.
+        med_age = median_first_seen(in_section, ages)
+        if med_age is not None:
+            out.append(f"   median first seen: {med_age}")
         for item in in_section:
             bits = []
             if section == "Processed":
@@ -693,6 +737,12 @@ def render(items, root="", queue_path="QUEUE.md"):
                 line += " (at/above median)"
             if item["slug"] and item["slug"] in ages:
                 line += f"  | First seen: {ages[item['slug']]}"
+                # Tagged the same way the line count is, so rung 3 reads two
+                # computed flags rather than comparing dates by hand. "At/above
+                # median age" means filed on or before the median date — older,
+                # not later.
+                if med_age is not None and ages[item["slug"]] <= med_age:
+                    line += " (at/above median age)"
             # Held-since prints only on a held item, and only where the date
             # could be attributed. A count of held items reads as background;
             # a date is what makes a stuck item visible as stuck.
@@ -735,6 +785,32 @@ def render(items, root="", queue_path="QUEUE.md"):
     if shared:
         for path, slugs in shared.items():
             out.append(f"- {path}: " + ", ".join(f"[{s}]" for s in slugs))
+    else:
+        out.append("- none")
+    out.append("")
+
+    # How much ready work sits in front of each `Runs alone` item.
+    #
+    # /next stops BEFORE such an item, so it is reached only once everything
+    # ahead of it has been built — and every planning session adds newly ready
+    # work ahead of it. So a correctly placed item quietly recedes each time the
+    # queue is worked, and nothing in the queue shows that happening.
+    #
+    # A COUNT is reportable where an age is not: how long something has been
+    # ready would need a threshold nobody can derive, while what sits in front of
+    # it is arithmetic. A fact, like every other line here, never a verdict —
+    # moving the item is the user's decision.
+    alone = [i for i in items
+             if i["section"] == "Processed" and i["cleared"] and i["runs_alone"]]
+    out.append(f"## Runs-alone work, and what is ahead of it — {len(alone)}")
+    if alone:
+        cleared_order = [i for i in items
+                         if i["section"] == "Processed" and i["cleared"]]
+        for item in alone:
+            ahead = cleared_order.index(item)
+            out.append(
+                f"- [{item['slug'] or 'NO-SLUG'}]: {ahead} cleared item(s) ahead of it"
+            )
     else:
         out.append("- none")
     out.append("")

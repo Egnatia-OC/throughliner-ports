@@ -56,6 +56,11 @@ CLEAN = """# QUEUE
 #### A perfectly ordinary work item [alpha]
 Filed by Claude. Rationale for alpha.
 
+--- Build block ---
+Changes: `somefile.md` — the thing the item describes.
+Acceptance: the suite passes.
+--- End build block ---
+
 --- Cleared to run above this line ---
 
 ## Unprocessed
@@ -167,6 +172,82 @@ def test_date_above_the_line_is_flagged():
     check("a date on a cleared item is flagged", hit, f"got: {warnings}")
 
 
+def test_cleared_item_without_a_build_block_is_flagged():
+    """A run builds from the block, so a cleared item without one has nothing.
+
+    Caught at the keep-step, where it is a wording fix, rather than at the run,
+    which has already locked scope and presented the item as ready work.
+    """
+    lint = load_lint()
+    bad = CLEAN.replace(
+        "--- Build block ---\n"
+        "Changes: `somefile.md` — the thing the item describes.\n"
+        "Acceptance: the suite passes.\n"
+        "--- End build block ---\n", "")
+    warnings = lint(bad)
+    hit = any("no build block" in w for w in warnings)
+    check("a cleared item with no build block is flagged", hit, f"got: {warnings}")
+
+
+def test_half_a_build_block_is_flagged():
+    """An unterminated block is reported and never repaired.
+
+    The block is the instruction set the user approved. Anything that tidies one
+    is something that can change what the run builds.
+    """
+    lint = load_lint()
+    bad = CLEAN.replace("--- End build block ---\n", "")
+    warnings = lint(bad)
+    hit = any("half a build block" in w for w in warnings)
+    check("half a build block is flagged", hit, f"got: {warnings}")
+
+
+def test_held_work_and_captures_are_not_asked_for_a_block():
+    """Only cleared work is built, so only cleared work owes instructions.
+
+    Demanding a block from held work or a capture would fire on the normal state
+    of most of the queue — the cry-wolf shape this project has repealed twice.
+    """
+    lint = load_lint()
+    warnings = lint(CLEAN)
+    check("the unprocessed capture is not asked for a block",
+          not any("beta" in w and "build block" in w for w in warnings),
+          f"got: {warnings}")
+
+
+def test_malformed_date_on_a_capture_is_flagged():
+    """`Not before:` reaches Unprocessed, so its date check must too.
+
+    On a capture the field means "do not offer this again before this date", so
+    a date nothing can parse holds the entry out of view forever — and nothing
+    else in this check looks at Unprocessed at all.
+    """
+    lint = load_lint()
+    bad = CLEAN.replace("Filed by Claude. Rationale for beta.",
+                        "Filed by Claude. Rationale for beta.\n"
+                        "Not before: sometime next spring")
+    warnings = lint(bad)
+    hit = any("not a date in YYYY-MM-DD form" in w for w in warnings)
+    check("an unreadable date on a capture is flagged", hit, f"got: {warnings}")
+
+
+def test_good_date_on_a_capture_is_silent():
+    """A capture may carry a date, so a well-formed one draws no warning.
+
+    This is the half that would break if the above/below warnings had been
+    widened along with the date check: an Unprocessed entry sits below the
+    marker in file order, so a position check applied there would fire on
+    every dated capture.
+    """
+    lint = load_lint()
+    ok = CLEAN.replace("Filed by Claude. Rationale for beta.",
+                       "Filed by Claude. Rationale for beta.\n"
+                       "Not before: 2099-01-01")
+    warnings = lint(ok)
+    check("a well-formed date on a capture is silent", not warnings,
+          f"got: {warnings}")
+
+
 def test_credit_without_a_quote_is_flagged():
     """A credit to the user rests on words they actually said.
 
@@ -249,6 +330,11 @@ if __name__ == "__main__":
     test_held_item_with_neither_is_flagged()
     test_malformed_date_is_flagged()
     test_date_above_the_line_is_flagged()
+    test_cleared_item_without_a_build_block_is_flagged()
+    test_half_a_build_block_is_flagged()
+    test_held_work_and_captures_are_not_asked_for_a_block()
+    test_malformed_date_on_a_capture_is_flagged()
+    test_good_date_on_a_capture_is_silent()
     test_credit_without_a_quote_is_flagged()
     test_credit_with_a_quote_is_not_flagged()
     test_blockquote_counts_as_showing_the_words()

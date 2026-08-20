@@ -1,4 +1,4 @@
-# [HASH] — the self-resolving date hold extended to captures, so work waiting on the world stops being re-offered every session
+# 8330209 — the self-resolving date hold extended to captures, so work waiting on the world stops being re-offered every session
 
 Noticed while processing the third item in a row whose only fault was waiting on something outside this project, and worked immediately on Alex's instruction rather than filed for later.
 

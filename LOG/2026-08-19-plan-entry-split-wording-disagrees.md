@@ -1,4 +1,4 @@
-# [HASH] — the planning record splits per item processed, settled by reading the code rather than weighing the wordings
+# 8330209 — the planning record splits per item processed, settled by reading the code rather than weighing the wordings
 
 Two statements disagreed: the always-loaded authoring standard says a plan entry splits per item processed, and `done.md` says per decision. The entry leaned toward per decision, on the ground that it survives a session settling several items together. Reading the code settled it the other way.
 

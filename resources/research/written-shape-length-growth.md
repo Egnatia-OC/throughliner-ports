@@ -1,6 +1,6 @@
 # Written-shape length growth
 
-**Measured**, by `resources/measure_written_shape_length.py`. Every figure is a word count against a date. No threshold is stated here and none may be read off the middle of these distributions — this is the corpus the measurement exists to question, so its typical length is not a target.
+**Measured**, by `plugin/throughliner/scripts/measure_written_shape_length.py` (moved there 2026-08-20 when the script began shipping; it was `resources/measure_written_shape_length.py` when this was written). Every figure is a word count against a date. No threshold is stated here and none may be read off the middle of these distributions — this is the corpus the measurement exists to question, so its typical length is not a target.
 
 ## Captures — length when first filed
 

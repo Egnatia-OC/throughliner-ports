@@ -61,6 +61,20 @@ worked — routes out via Scope management below.
 
 ## Build the item
 
+**What this item's instructions are.** Its build block in the generated view —
+`Changes:`, `Acceptance:`, any `Red flag:` and any `Refused:` lines. That is the
+whole brief. **Do not open QUEUE.md to fill it out**: the scope-lock refuses a
+build's reads of it, and the missing detail is not there to be found — an item
+whose block does not say what changes inside its files is underspecified and
+halts, per next.md's self-scoping step.
+
+**Treat a `Refused:` line as settled.** It names an option already rejected and
+why it lost. Proposing it again, or stopping to ask about it, is the interruption
+that line exists to prevent.
+
+**Check the work against `Acceptance:` before ticking**, and let it decide which
+of the two tick forms is true.
+
 ```
 1. read relevant existing code or context
 2. make the changes                        # no point-form preview first
@@ -113,8 +127,9 @@ built work CONTRADICTS SPEC        ->  [PROMPT] stop and name which SPEC sentenc
                                        it contradicts, in plain words. The user
                                        decides whether the build is wrong or
                                        SPEC is.
-build establishes NEW product      ->  the ordinary scope-grow route below: ask,
-  truth SPEC doesn't yet carry         add SPEC.md to Files, edit inline
+build establishes NEW product      ->  FILE the sentence SPEC owes as a capture
+  truth SPEC doesn't yet carry         and carry on. Never edit SPEC — see the
+                                       scope-grow section below.
 ```
 
 **A check Claude can run is part of building, not a separate test.** Run whatever
@@ -244,25 +259,36 @@ significant  ->  propose splitting. Finish what's scoped, /done to close, then
  uncertainty)
 ```
 
-**A SPEC change the build discovers it needs is a legitimate scope-grow.** Name
-the change and ask, then append SPEC.md to `Files:` before editing. Safe in-build
-because spec-driven development wants the spec to move in the same commit as the
-behaviour change, and the /done-build spec-sync gate backstops it. **A SPEC
-change is product truth, so it always gets the explicit ask** — it never rides in
-silently.
+**A SPEC change the build discovers it needs is FILED, never written.** Record the
+sentence you think SPEC owes, file it as a capture, and leave SPEC alone. Don't
+ask to add SPEC.md to scope — that route is repealed.
 
-**The ask names itself as the normal route**, in the same breath as the change:
-this is the standard path when a build establishes product truth the spec does
-not yet carry, and it always asks first. Say it as something routine, not as a
-request for an exception — e.g. *"This adds behaviour the spec doesn't describe
-yet. When that happens the build asks before touching SPEC, which is what I'm
-doing now: I'd add the sentence 'X' to SPEC. Add SPEC.md to scope?"*
+```
+build finds SPEC owes a sentence
+    ->  write the sentence into a capture in Unprocessed, naming this item's slug
+    ->  say in one line what was filed and that SPEC lags until the next /plan
+    ->  carry on building. The run does not stop.
+```
 
-Read cold, an unexpected request to edit product truth mid-build looks like a run
-asking permission to break a rule rather than a run following one — **the method's
-own author read it that way.** An external non-coder has strictly less context, so
-the likely consequence is worse than confusion: they say no to a change the method
-wanted, and SPEC silently falls behind the behaviour.
+**The reason is a session boundary, not a scope rule**, and it survives every
+argument from convenience: the session that made a choice is not the session that
+certifies it in product truth, because one instance of Claude describing its own
+work in SPEC is justification rather than specification. **Deferring the write to
+this run's own close was proposed and refused on exactly that ground** — the close
+is the same session, so it moves the self-certification later without crossing
+anything.
+
+**Planning is supposed to have written it already.** The keep-step asks, of every
+item, whether it changes what SPEC says, and writes the sentence there with the
+user present. Reaching this branch means that question was missed, which is why
+the fallback is cheap: one capture, no stop.
+
+**The cost, stated rather than discovered:** SPEC lags that one sentence until the
+next planning session. It lags visibly, as a queue item, rather than in silence.
+
+**The evidence the fallback is safe** is that deferring SPEC writes inside a run
+was tried live — four sentences held back and written in one pass, nothing lost,
+and the run never stopped again.
 
 **The SPEC-contradiction halt above is not this and must not be softened to
 match.** That branch is a genuine "something is wrong here" and stays alarming.

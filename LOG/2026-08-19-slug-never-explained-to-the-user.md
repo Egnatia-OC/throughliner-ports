@@ -1,4 +1,4 @@
-# [HASH] — the slug explained once in the queue header and glossed every time one is shown, merged from two ends of one subject
+# 8330209 — the slug explained once in the queue header and glossed every time one is shown, merged from two ends of one subject
 
 This arrived out of the reading-position item rather than from the ladder. Asked what her position was on the person who will not read the record, Alex answered something different and better: there was the promise of a rule ensuring that the way captures are presented at the start of processing does not assume full knowledge of the capture's content, and at minimum a referent should be given not by name but also by its purpose.
 

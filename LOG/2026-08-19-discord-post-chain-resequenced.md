@@ -1,4 +1,4 @@
-# [HASH] — the Discord chain resequenced so the post at its head is not one this session had already decided to falsify
+# 8330209 — the Discord chain resequenced so the post at its head is not one this session had already decided to falsify
 
 Alex asked to pick a post for next session. The one at the head of the chain could not be it, and the reason was made by this session an hour earlier.
 

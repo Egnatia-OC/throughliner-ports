@@ -1,4 +1,4 @@
-# [HASH] — the parent-folder rule about Taskflow found duplicated, stale in both copies, and needing the INBOX exception
+# 8330209 — the parent-folder rule about Taskflow found duplicated, stale in both copies, and needing the INBOX exception
 
 Filed out of the Taskflow bridge conversation recorded in `2026-08-19-taskflow-bridge-request.md`, which is where the reasoning behind the exception itself sits. This entry covers the rule text.
 

@@ -808,3 +808,182 @@ So the check now compares against your last commit. Anything new gets the full e
 
 - **Nothing is hidden.** A long-standing flag is still counted, and still appears in full the moment its item is edited.
 - **The word-count report is quieter too.** It now appears only after something actually writes to your queue, rather than after any command at all.
+
+## Why wasn't I credited with that decision? I agreed to it.
+
+Because agreeing to something Claude worked out is not the same as having thought of it — and the records only credit you with what was actually yours.
+
+Your project's queue and session records note where an idea came from. Anything unmarked is Claude's. Something you raised says so. This is not bookkeeping for its own sake: the whole point of these records is that you can read them back later and trust them, and a record that credits you with reasoning you never did is one you cannot trust.
+
+**So the line is drawn at authorship, not approval.** If Claude proposed something, laid out why, and you said yes — the reasoning is Claude's. You made the call, and that gets recorded as your decision, but the thinking behind it is not attributed to you.
+
+**There is a specific case this covers.** If you reply by tapping one of the suggested replies, or answering in a word or two, that reply is often Claude's own wording handed back. Claude cannot treat that as evidence you originated the idea, because there is nothing in it that Claude did not just write. The test is simple: if your reply is entirely contained in what Claude just said, it does not establish that the idea was yours.
+
+**Quoting you is stricter still.** Quotation marks, or a phrase like "in your words", mean you actually said those words. Where Claude has put your point in its own words, it says so rather than dressing a paraphrase as a quote.
+
+**When it is genuinely mixed, the record says so** — naming which part was yours and which was Claude's, rather than picking one.
+
+**If you think a credit is wrong, say so and it gets checked.** What Claude will not do is go through every past credit and mark them all as doubtful — that would be an unverifiable claim about your own records, and it would damage the honest credits along with the questionable ones.
+
+## Claude suggested dropping one item from a build because `/setup` is waiting. What does that mean?
+
+It means that one piece of work is probably already done, and building it would be wasted effort.
+
+When the plugin is updated, your project's own documents can fall behind what the new version scaffolds. `/setup` brings them up to date, and it wants a session to itself. Claude tells you that at the start of every session until you run it.
+
+Here's the trap. Some of your project's documents have a section that `/setup` **rewrites from a template**. If a piece of ready work is a fix to something inside one of those sections, then running `/setup` would replace that text anyway — very likely with the corrected version already. Building it first does the work twice, and the second time wins.
+
+So when both things are true — `/setup` is outstanding, **and** a piece of work in this run touches a file `/setup` rewrites — Claude names that item and suggests leaving it out of this run.
+
+**Three things worth knowing:**
+
+- **Only that item is dropped, and only from this run.** It stays in your queue exactly as it was. Nothing is deleted and nothing is decided about it.
+- **You can say no.** It is a recommendation. If you want it built, it gets built.
+- **It only appears when it actually applies.** Claude does not warn you on every run just because `/setup` is pending — a warning that shows up whether or not it is relevant is one you learn to ignore.
+
+**This came from a real session** in another project: a whole build ran and closed with its top item already void before it started, and the session had to end with nothing built so that `/setup` could run.
+
+**What to do about it:** finish or close the current session, then run `/setup` on its own.
+
+## We kept working after the close. Is there a quicker way than explaining it every time?
+
+Yes — say **`/rescan`**. It looks back over what has happened since it last ran, works out what each thing is, and files it in the right place.
+
+This used to be a longer conversation. Work carries on after the session was closed, and getting it recorded meant explaining what had happened and asking for it to be added — every time. `/rescan` is that request in one word.
+
+**It sorts what it finds three ways:**
+
+- **Something still to do** goes to your queue as a new idea, exactly as before.
+- **Something that already happened** — including work done after the close — gets added to this session's record, marked as a tail so it is clear it came afterwards.
+- **Evidence someone will need to re-read word for word** goes into a file of its own.
+
+**It saves nothing to your project's history.** The tail sits there waiting and rides along with your next close. That is deliberate: it stops this being a second close wearing another name, and it is why you can run it as many times as you like. You never have to decide "is this the last bit?" — just run it again when there is more.
+
+**It never decides anything.** It writes things down and stops there. Whether a new idea is worth doing, and when it gets built, is still settled at planning.
+
+**One honest limit**, which Claude will say out loud when you run it: if the earlier part of your conversation has dropped out of view, Claude cannot tell. What you get is what it could still see, not a guarantee it caught everything.
+
+## What is `INBOX/sent.md`?
+
+A one-line record of everything this project has sent out — so you can answer "what did we send them?" without digging.
+
+Your `INBOX/` folder holds messages other projects sent *you*. `sent.md` is the other half: one line for each thing that left, whether that was a message to another project, a problem report, a bug filed against Claude Code, something posted publicly, or a draft handed over for someone else to finish.
+
+**Each line carries five things:** the date, where it went, whether you handed the work over **for completion** or only **for continuation**, what it claimed in a single clause, and a pointer to the text itself. No second copy of the content — just enough to find it.
+
+**"For completion" versus "for continuation" is the one that does real work.** If you hand a piece of work to another project to *finish*, that item can come off your queue. If you handed it over for them to *carry on with*, it stays — it's still yours. Recording which one it was is what lets Claude close the item out correctly later instead of guessing.
+
+**Why this was needed.** Two questions had no answer. *What did we send that project?* — and *did we ever announce the thing we've just changed?* That second one matters: if you posted publicly that your tool behaves a certain way, and then changed it, nothing would have caught that. Now there's something to check against.
+
+**The line is written the moment you approve the send**, not later, because the exact wording exists right then and nobody can reconstruct it afterwards.
+
+**One limitation worth knowing:** `sent.md` lives inside `INBOX/`, which is deliberately kept out of your repository — those lines name other projects and where they live. So it isn't version-controlled and it can be lost. That is the same trade the method makes for your address book, for the same reason.
+
+## A build told me my SPEC is missing a sentence, but wrote a queue item instead of just adding it. Why?
+
+Because the session that made a decision is not allowed to be the session that writes it up as product truth.
+
+`SPEC.md` is what your project *is* — what it does, who it's for, how it works. A build session has just spent its time making things. If that same session then wrote a sentence into SPEC describing what it made, that sentence would be the build justifying itself, not a description you agreed to. So the build writes the sentence down as a new item in your queue and carries on.
+
+**What happens next.** At your next planning session, that item comes up, and Claude writes the sentence into SPEC with you there to agree or change it.
+
+**Meanwhile SPEC is behind by one sentence**, which is worth being plain about. That is the real cost. What makes it acceptable is that it is behind *visibly* — there is an item sitting in your queue saying exactly what is missing — rather than behind silently, which is what used to happen.
+
+**Normally this doesn't come up at all.** When work is planned, Claude asks of each piece: does this change what SPEC says? If yes, the sentence gets written then, before anything is built. You only see this fallback when that question was missed.
+
+**A build stopping to ask you mid-run was tried and dropped.** It interrupted runs for a single sentence, and read — even to the person who wrote the method — like the run asking permission to break a rule. Deferring it to the end of the same run was also considered and rejected, because the end of a build session is still that build session.
+
+**One thing this is not:** if the work you just built *contradicts* something SPEC already says, that is different and more serious. Claude stops, shows you the sentence, and asks which one is wrong. It never quietly rewrites SPEC to match what it did.
+
+## Claude said some of my project documents "are not tracked by git". Have I broken something?
+
+No. That is a setting you were offered, and it is doing exactly what it says. Claude mentions it at the start of every session because three things behave differently as a result, and none of them announces itself.
+
+When your project was set up, you were offered the option of keeping `SPEC.md`, `QUEUE.md` and `LOG/` out of your repository — they hold your plans, your reasoning and your session history, which is the most personal material this method produces, so keeping them out is the only complete protection if the repository is ever published. If you took that option, or added those lines yourself later, this is what you are seeing.
+
+**The three things that change:**
+
+- **Claude shows you text before writing it, instead of writing and then telling you.** Normally it writes straight into these documents and tells you what landed, because if you disliked it, undoing it would cost nothing. Without git there is no previous version to go back to — so the safer order applies and you see things first.
+- **A deleted queue item is really gone.** Normally your project's history keeps a copy of anything removed from the queue. Not here.
+- **The close records from memory.** Normally the session close can look at exactly what changed in your queue and describe it. It cannot, so it writes the record from what happened in the conversation.
+
+**Why you're told at every session opening, not once.** This state does not only come from the setup question — you might have written the ignore lines yourself, or chosen it weeks ago in a project you haven't opened since. In one real project it went unnoticed until a full planning session's record turned out never to have been saved at all.
+
+**If you want to change it**, the fix is editing your `.gitignore` file to remove those lines. That is a one-line change and the start of a session is the right moment for it — ask Claude and it will walk you through.
+
+**And if you keep it as it is, nothing is wrong.** This is a supported choice, and Claude will not call it a mistake or keep pushing you.
+
+## Can I start a build and walk away?
+
+No — and if you have been told otherwise, that was wrong and has been corrected.
+
+A build run does go through your ready work without stopping to confirm each piece, and it moves faster than you can read. That part is real, and it is why Claude does not interrupt it to ask you things. But it does not finish by itself. **It stops three times, and one of those stops is at the very end.**
+
+- **A step that is yours to do.** Claude walks you through it live, one instruction at a time, and waits for you between each. Nothing moves until you answer.
+- **Work marked as needing its own session.** The run halts on it and says so, rather than skipping past.
+- **The close.** Recording what happened and committing it is a command you run. Claude cannot run it for you.
+
+That last one is the one that catches people. **If you walk away, you come back to finished work that has not been recorded or saved anywhere permanent.** Nothing is lost — the files are changed and sitting there — but until you run the close, there is no session record and nothing is committed.
+
+**Why Claude can't just close it for you.** Committing is one of the very few things Claude shows you before doing, because a commit is genuinely awkward to undo and the message never ends up in a file you could edit afterwards. A run that closed itself would either skip that or invent a version of it with nobody there to read it. Neither is worth saving you one command.
+
+**There is one other thing worth knowing.** While a run is going, it is using your session — so you cannot capture a passing thought at the same time. Mention it and Claude will write it down as it goes, but you cannot be planning in parallel.
+
+**So: stay nearby.** You will not be asked much, and possibly nothing at all until the end. But the end needs you.
+
+## How long should my queue items and session records be?
+
+There is no answer, and that is deliberate — the method used to give one and it was withdrawn.
+
+For a while each kind of writing had a target length and a limit: so many words for an idea, so many for a piece of work, so many for a session record. Those are gone. What replaced them is not a vaguer version of the same thing — Claude is not asked to "be concise" instead — because that was tried first, measured, and did nothing at all.
+
+**Why the numbers went:**
+
+- **They were read off your own writing.** The limits were the middle of what this method's own project had already written. A limit derived from what you already do can only ever tell you that you do what you do.
+- **They fired on almost everything.** At one point the limit was exceeded by nearly nine out of ten ideas and three-quarters of work items. Something that flags nearly everything cannot tell you which ones are actually a problem — and people learn to click past it.
+- **Acting on a breach barely helped.** Three separate passes at tightening the writing removed 8%, 3% and 9%. The conclusion of those passes was that the text was not padded: its length was accumulated decision-making.
+
+**What you get instead.** A tool that reports your project's own distributions — how long your ideas, work items, session records and index lines actually run, longest first — and prints no threshold of any kind. It tells you the facts and leaves the verdict to you. That is the same posture as everything else the method measures.
+
+**What has not changed.** Both failures are still real, and Claude still watches for them: something too short to reconstruct why you did it is as broken as something too long to read. The method's actual lever now is *where text lives* rather than how it is worded — the reasoning behind a decision gets moved into your session records and pointed at from the work item, instead of piling up inside it.
+
+**If an item is getting unwieldy**, Claude has two moves, and neither is a word count: split it, if it is really two pieces of work; or move the long narrative into the record and cite it, if it is one piece of work with a history.
+
+## There's a BUILD-VIEW.md in my project now, and my queue items have a "build block". What are they?
+
+The build block is the short set of instructions attached to a piece of ready work. BUILD-VIEW.md is the file Claude builds from — assembled from those blocks, and refreshed every time a build starts.
+
+Each piece of work in your queue has two halves. There's **why** you want it — the discussion, what you rejected, what changed your mind — and there's **what to actually do**: which files change, and how you'd tell it worked. The second half is now written into a marked-off block at the bottom of the item, agreed with you when the work is planned.
+
+When a build starts, Claude generates BUILD-VIEW.md from those blocks and works from that instead of reading your queue.
+
+**Why it's split that way**, because it isn't about speed:
+
+- **Claude copies what it reads.** The reasoning written into queue items was found turning up, almost word for word, inside the method's own rulebook — reasoning quietly becoming rules. Claude can't copy what it was never shown.
+- **Your reasoning is not deleted, or moved.** Your queue keeps every item's discussion exactly where it was. The view is a copy of one part, thrown away and rebuilt each time.
+- **It still reaches your records.** When the session closes, Claude reads each finished item's reasoning back out of your queue and writes it into that session's record — so the why survives, it just arrives later.
+- **Rejected options travel with the work.** If you already ruled something out, that goes in the block. Otherwise Claude would suggest it again and stop to ask you a question you'd already answered.
+
+**What it costs you, which is worth knowing.** During a build, Claude can see a list of everything in your queue by name, so it can tell whether something it noticed is already written down. What it can't see is what depends on what. So if you mention something mid-build, Claude may not spot that it matters to a different item you have queued.
+
+**You never write a block yourself.** They're written during planning, with you there, because deciding which half of an item is an instruction and which half is history is a judgement — no script can do it.
+
+**If a ready item has no block**, the build stops on it and says so rather than guessing. That means it was never fully worked out, and it goes back for planning.
+
+**Don't edit BUILD-VIEW.md** — it's overwritten every time. Change the queue item instead.
+
+## Claude asked to put a date on one of my unprocessed ideas, so it stops coming up. What is that?
+
+It is a way of saying "come back to this in March" about an idea that cannot go anywhere until something outside your project happens.
+
+Planning normally works through your unprocessed ideas one at a time, and anything you don't settle comes back to the top next session. That is usually right — it is how an idea stays visible instead of quietly rotting. But some ideas are waiting on something nobody here controls: a reply from someone, a feature shipping in a tool you use, an answer from another one of your projects. Those cannot be settled however many times they are offered, so they get set aside again every single session.
+
+A date fixes that. Claude names what the idea is waiting on, suggests a date by which there is plausibly news, and asks. If you say yes, a line saying `Not before:` and that date goes on the idea, and planning skips past it until the date passes. After that it comes up normally again.
+
+**Three things worth knowing:**
+
+- **You always get asked.** Claude never puts a date on an idea by itself, because a date takes something out of your sight without anything actually being resolved — how long you are content not to see it is your call, not Claude's.
+- **Nothing else changes about the idea.** It stays an ordinary unprocessed idea. It has not been approved, rejected, or moved anywhere.
+- **This is not for "I'll get to it later".** Something you simply haven't decided yet just gets set aside the ordinary way and comes back next session. The date is only for waiting on the outside world.
+
+You can also just say no. Then it comes back next session as usual, which costs you one word to skip.

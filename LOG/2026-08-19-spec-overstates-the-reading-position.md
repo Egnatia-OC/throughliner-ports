@@ -1,4 +1,4 @@
-# [HASH] — an unsupported positioning clause struck from SPEC rather than replaced with a guess
+# 8330209 — an unsupported positioning clause struck from SPEC rather than replaced with a guess
 
 SPEC said someone who will not read the record is considered, is not the target, and that the design is never lowered to them. Alex had recorded that the last clause is a widening of what she expressed at the time, and the item asked her to supply the right sentence.
 

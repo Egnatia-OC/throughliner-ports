@@ -8,9 +8,10 @@ note: >
 
 # Build close-out
 
-A build that changed SPEC.md — because it grew scope mid-build, or a build item
-listed it — closes here like any other build. There is no separate spec-edit
-close.
+A build that changed SPEC.md — because a build item listed it as a large SPEC
+rework — closes here like any other build. There is no separate spec-edit close.
+A build cannot reach SPEC any other way: the grow-scope-and-edit-inline route is
+repealed, and a build that finds SPEC owes a sentence files it instead.
 
 ```
 a run may contain SEVERAL build items:
@@ -66,10 +67,15 @@ run CONTRADICTS SPEC   ->  name the SPEC sentence and the work that contradicts
                            wrong. Do NOT rewrite SPEC to fit what was built.
 ```
 
-**Where a build genuinely established new product truth, that route is unchanged
-and is not this step:** it asks mid-build, adds SPEC.md to the working file's
-`Files:` list, and edits SPEC inline in the same commit (next-build.md, Scope
-management). This step exists for the contradictions that route did not catch.
+**Where the build found that SPEC owes a sentence, it filed a capture and wrote
+nothing** (next-build.md, Scope management). Confirm the capture exists and say
+in one line that SPEC lags that sentence until the next planning session. **Do
+not write it here:** the close is the same session as the build, so writing it
+now moves the self-certification later rather than crossing the session boundary
+the rule exists for.
+
+This step exists for contradictions between the built work and SPEC as it
+stands — a different thing from a sentence SPEC does not yet carry.
 
 ### 1.4 Red-flag close  [SILENT] when no flag; [PROMPT] when an item carries one
 
@@ -98,6 +104,34 @@ deletes it.
 Write **one LOG entry file per built item**, each named after that item's slug.
 Follow done.md's **LOG entry files** section, using its **Build** body fields
 (`Files touched` from the build working file Changes; `Routed to Captures`).
+
+**Read each built item's reasoning back, one entry at a time** [SILENT]. The run
+built from the view, which carries instructions and no decision history, so the
+*why* has not been in front of anyone since planning. This is where it reaches the
+record.
+
+**Read it from the queue as it stood before the run**, because the run has already
+removed each item as it ticked:
+
+```
+git show HEAD:QUEUE.md
+```
+
+The run has not committed yet — the close is what commits — so every item this run
+built is still in the last commit's copy, whole. Take the one entry the slug names
+and nothing else; a read of the whole file is what the view exists to avoid, and it
+is not needed to answer one slug.
+
+**This is what keeps the throughline intact across the split.** Withholding the
+history from the build is a projection, not a deletion: it stops a build
+transcribing rationale into shipped rules, and it must not stop the reasoning
+reaching the record.
+
+**Where QUEUE.md is untracked, git holds no copy and this route is closed.** Say
+so plainly in the entry rather than implying the reasoning was carried: write the
+entry from the working file's Changes and the item's own build block, and record
+that the decision history could not be recovered. That is one of the consequences
+of an untracked queue, and it is stated rather than discovered.
 
 **One entry per built item is unconditional**, however long the run. A work item's
 queue text is *consumed* when it builds — /next removes it — so after the build the

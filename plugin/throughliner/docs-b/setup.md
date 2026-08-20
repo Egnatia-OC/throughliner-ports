@@ -428,9 +428,26 @@ and `LOG/` — to `.gitignore` so they never enter the repository at all.
 Say what it costs and what it buys, in one short exchange: these documents hold
 the project's plans, its reasoning and its session history, which is the most
 personal material the method produces; keeping them out of the repository is the
-only complete protection if it is ever published. The cost is that they are not
-version-controlled, so an unwanted change cannot be undone by reverting, and they
-do not travel with a clone.
+only complete protection if it is ever published.
+
+**State the cost as the three things that change, not as "you lose undo".** It is
+larger than that, and the moment of choosing is the one moment it can be said:
+
+```
+1. Claude normally writes to these first and reports what landed, because a
+   revert costs nothing. Untracked, it cannot — so text going into them is
+   SHOWN before it is written instead.
+2. A deleted queue item is genuinely gone. Git is not keeping a copy.
+3. The close cannot read its own work back from the file's history, so it
+   records the session from what it remembers.
+```
+
+They also do not travel with a clone.
+
+**Nothing here is asserted again later as a fault.** Every session opening
+reports which of the three are untracked and what follows, because this state
+can also arrive from an ignore file the user wrote themselves, or from a choice
+made weeks ago in a project nobody has looked at since.
 
 ```
 user says yes  ->  add the three paths to `.gitignore`, say so in one line
