@@ -1,4 +1,4 @@
-# [HASH] — The measurement script ships, and its re-derived figures do not become bands
+# b485ee3 — The measurement script ships, and its re-derived figures do not become bands
 
 Filed from INBOX mail sent by a consumer project. Verified here before filing: `measure_written_shape_length.py` existed in this project only, a `find` over `plugin/throughliner/` returned nothing, and the shipped `skill-nonspecific-rules.md` told every consumer to run it. Every consumer was directed at a path their project does not have.
 

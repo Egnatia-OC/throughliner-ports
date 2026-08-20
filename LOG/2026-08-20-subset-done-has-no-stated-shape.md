@@ -1,4 +1,4 @@
-# [HASH] — The end-of-queue gate gains its precondition, and a named subset sets the order not the length
+# b485ee3 — The end-of-queue gate gains its precondition, and a named subset sets the order not the length
 
 Filed by Claude from a live instance in a /plan session, caught by the user.
 

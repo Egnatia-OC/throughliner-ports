@@ -1,4 +1,4 @@
-# [HASH] — "Unattended" corrected to what actually happens, and the true half kept
+# b485ee3 — "Unattended" corrected to what actually happens, and the true half kept
 
 Captured by the user: an unattended run is not actually unattended — it stops for `[user]` items and does not run /done on itself. The design that came out of processing is narrower than the item expected, and the grep is what narrowed it.
 

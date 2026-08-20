@@ -1,4 +1,4 @@
-# [HASH] — `Not before:` reaches captures, so work waiting on the world stops being re-offered
+# b485ee3 — `Not before:` reaches captures, so work waiting on the world stops being re-offered
 
 `Not before: YYYY-MM-DD` is the one hold that resolves itself — nobody confirms it and the hooks read it off the calendar. It was available only to an item in Processed, and Processed requires passing the keep check, which an entry with nothing to build cannot pass. So the hold designed for "come back later, nobody needs to think about it" was out of reach for exactly the entries that wanted it, and they were offered again every session.
 

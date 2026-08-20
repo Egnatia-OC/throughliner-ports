@@ -1,4 +1,4 @@
-# [HASH] — Every written-shape length cap retired; the measurement stays and now ships
+# b485ee3 — Every written-shape length cap retired; the measurement stays and now ships
 
 The user's decision, in her own words: the numbered caps are *"too arbitrary and we have realer leads now."*
 

@@ -1,4 +1,4 @@
-# [HASH] — The ordering ladder's bottom two rungs merged into one that can actually be reached
+# b485ee3 — The ordering ladder's bottom two rungs merged into one that can actually be reached
 
 Raised by the user, in her own words: *"you can stay stuck on size forever, never reaching the decay rung by the end of any plan session."* The arithmetic is the argument. Rung 3 had been partitioned at the section's median line count so that it terminates, which fixed the formal defect — a rung that ranked every entry and so never yielded. It did not fix the practical one: the above-median group is by construction **half the section**, and reaching rung 4 meant processing all of it in one session. Sessions process a handful. So the decay rung was reachable in principle and, at any realistic session length, never.
 

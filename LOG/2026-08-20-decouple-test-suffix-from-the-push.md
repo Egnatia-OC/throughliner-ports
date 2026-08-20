@@ -1,4 +1,4 @@
-# [HASH] — The push's version-clean step repealed; the release bump strips the test suffix instead
+# b485ee3 — The push's version-clean step repealed; the release bump strips the test suffix instead
 
 Raised by the user at a close, in her own words: *"I'm trying to decouple the concept of test rezip from push because I am just rezipping so much."*
 

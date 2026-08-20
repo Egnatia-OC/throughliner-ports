@@ -1,4 +1,4 @@
-# [HASH] — /rescan widened to route by the three-way triage, so a post-close tail needs one word
+# b485ee3 — /rescan widened to route by the three-way triage, so a post-close tail needs one word
 
 Captured by the user immediately after [done-delta-close] was deleted — and it is not that item. Her framing: a skill so she does not have to type the whole request and the reasoning behind it every time; it picks up the post-close work, logs it, and it rides the next commit.
 

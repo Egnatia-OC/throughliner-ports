@@ -1,4 +1,4 @@
-# [HASH] — Untracked core docs detected at every session opening, with their consequences stated
+# b485ee3 — Untracked core docs detected at every session opening, with their consequences stated
 
 Filed from INBOX mail sent by a consumer project, and **reframed at processing against the sender's own reading** after checking the source.
 

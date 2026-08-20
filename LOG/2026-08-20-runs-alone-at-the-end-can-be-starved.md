@@ -1,4 +1,4 @@
-# [HASH] — The digest now reports how many cleared items sit ahead of each `Runs alone` item
+# b485ee3 — The digest now reports how many cleared items sit ahead of each `Runs alone` item
 
 Filed by Claude from the user's question about why the `docs-b` rename had not happened. The design is Claude's, deferred to in her words: "as you recommend."
 

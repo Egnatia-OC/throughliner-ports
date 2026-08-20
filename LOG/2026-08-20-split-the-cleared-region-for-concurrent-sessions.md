@@ -1,4 +1,4 @@
-# [HASH] — A build now reads a generated view carrying instructions and no decision history
+# b485ee3 — A build now reads a generated view carrying instructions and no decision history
 
 Raised by the user as a read-cost saving and redesigned at processing once the rationale hypothesis was tested. The saving stands and is now the *second* reason. The first is that a build cannot transcribe rationale it was never given — and it does transcribe it, confirmed against git in `resources/research/rationale-flows-from-items-into-shipped-docs.md` rather than argued.
 

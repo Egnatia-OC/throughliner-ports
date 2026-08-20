@@ -1,4 +1,4 @@
-# [HASH] — The method's own skills are named as a hand-over case, so a close stops showing a red error
+# b485ee3 — The method's own skills are named as a hand-over case, so a close stops showing a red error
 
 Captured by the user from a screenshot of another project running this method, at the end of a planning session.
 

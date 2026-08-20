@@ -1,4 +1,4 @@
-# [HASH] — The provenance rule gains the containment test, so a one-word agreement stops reading as authorship
+# b485ee3 — The provenance rule gains the containment test, so a one-word agreement stops reading as authorship
 
 Captured by the user; split at processing, with the evidence relocated to `resources/research/chip-replies-and-provenance-evidence.md` and cited rather than restated. Her objection is what produced it, in her own words: *"those are ALL chip answers, i don't write like that."*
 

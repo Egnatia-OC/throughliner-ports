@@ -1,4 +1,4 @@
-# [HASH] — Three asks sent to Taskflow, so the bridge design has something to talk to
+# b485ee3 — Three asks sent to Taskflow, so the bridge design has something to talk to
 
 [taskflow-personal-bridge] cannot state what it would build until Taskflow answers three questions, so this item existed to ask them rather than to build anything here. The asks were kept deliberately concrete rather than opening a conversation: whether Claude acting on the user's behalf breaches Taskflow's local-first principle — their SPEC says the app "does not import from, sync to, or export to any external task app", and the reading offered was that Throughliner is not a task app being synced but Claude, which their paid tier sanctions; whether an **additive** import is possible, adding named tasks and leaving the rest of the database alone, as distinct from the whole-database restore that already exists; and whether completions are readable from an export, so a parent task's roll-up state is visible from outside.
 

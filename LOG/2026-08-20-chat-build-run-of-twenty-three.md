@@ -1,4 +1,4 @@
-# [HASH] — Also in this chat: the run's own decisions, corrections and course changes
+# b485ee3 — Also in this chat: the run's own decisions, corrections and course changes
 
 This close writes twenty-four entries, so the chat-level record gets its own file rather than being attached to an item it does not belong to. The twenty-three item entries are named for their slugs; this one is named for the chat.
 
@@ -44,7 +44,9 @@ Writing `done-build.md` for item 5 surfaced a second problem the item had not an
 
 All nine suites under `resources/testing/` pass, including three added this session — `test_build_view.py` (16 cases, new), `test_session_start_untracked_docs.py` (7 cases, new), and seven cases added across `test_queue_lint_flags.py` and `test_queue_digest.py`.
 
-`py resources/rule_signals.py .` — four checks run, nothing found. That means those four things were checked and nothing was found. It is not evidence the rules are correct or that they made anything better; no check there asks those questions.
+`py resources/rule_signals.py .` — run twice. Before the commit: four checks, nothing found. **Re-run after the commit, it flagged `b485ee3` as carrying no gate disposition — a false positive**, because it matches a commit's entries by the hash in the entry heading, and a close writes its entries before the commit exists, so every heading still reads as an unfilled placeholder until the next session's backfill. 23 of this close's 24 entries carry a plain `Rule gate:` line; the 24th is this chat-level record, which is not an item and owes none. Filed as [rule-gate-dispositions-missing] under the slug the check itself prints — it fires this way at *every* rule-bearing close, which is the cry-wolf shape this project has repealed measures for twice.
+
+The pre-commit reading stands on its own terms: four checks run, nothing found. That means those four things were checked and nothing was found. It is not evidence the rules are correct or that they made anything better; no check there asks those questions.
 
 ## Standing state at the close
 
@@ -52,6 +54,30 @@ Format epoch moved 3 → 4, so every existing project's cleared items are struct
 
 /setup remains outstanding on this project (recorded 1.12.0 against installed 1.20.0-test12), and [setup-outstanding-here] sits in the cleared region as `[freeform]` work — /next will halt on it rather than build it.
 
-**Routed to Captures:** [mail-send-should-not-need-a-queue-item] (raised by the user mid-run), [parent-claude-md-version-claim-stale] (adjacent discovery), [claims-need-a-claude-code-delta-test] (from the mail triage), [revisit-depends-on-a-log-that-the-close-writes] (from the wind-down re-scan). The forward-advisory was replaced: the previous one, advising a build starting from [taskflow-bridge-request], was spent by this run and never cleared because no /plan session read it.
+**Routed to Captures:** [mail-send-should-not-need-a-queue-item] (raised by the user mid-run), [parent-claude-md-version-claim-stale] (adjacent discovery), [claims-need-a-claude-code-delta-test] (from the mail triage), [revisit-depends-on-a-log-that-the-close-writes] (from the wind-down re-scan), and [rule-gate-dispositions-missing] (filed in the post-commit tail, so it rides the next close's commit along with this amendment). The forward-advisory was replaced: the previous one, advising a build starting from [taskflow-bridge-request], was spent by this run and never cleared because no /plan session read it.
 
 Nothing has been rezipped or released. The host still runs 1.20.0-test12, so none of this session's twenty-three items is live in this project's own sessions yet.
+
+*(That last paragraph was true at the close and was overtaken an hour later — see the tail below.)*
+
+## After the close — the rezip
+
+This session ran across 2026-08-20 and 2026-08-21.
+
+**Asked for after the close, on the reasoning that running `/setup` before a rezip would migrate this project to format 3 — the epoch the installed host declared — and leave it needing a second migration to 4 once the new plugin landed.** The recommendation was to rezip first, then run `/setup` in a fresh chat, so one migration does both jobs. She took it.
+
+**What the rezip did**, per `resources/release-ritual.md`:
+
+- Version `1.20.0-test12` → `-test13`. **The number came from the plugin cache, not `plugin.json`** — the cache is what `claude plugin update` matches against, and reading `plugin.json` is the branch that misfired twice by naming a build that already existed.
+- Compiled bytecode cleared from under `plugin/throughliner/`.
+- The three hook suites run and passing: `hook_schema_check`, `test_reorder_queue`, `test_pre_tool_use_shell_writes`.
+- Cache pruned from four builds to four — `test9` removed, `test10`–`test12` kept alongside the incoming `test13`.
+- Installed via the CLI at its full path, which is not on PATH in the desktop app's shell tools: *"updated from 1.20.0-test12 to 1.20.0-test13"*.
+- **Content stamps compared immediately after installing and before saying anything about restarting: `33d69225ed4b` on both source and cache, identical.** That is the step that catches the silent-no-op, and it passed.
+- CLI at 2.1.220. The desktop app's build was not checked, so a behaviour difference between them stays a live suspect rather than something ruled out.
+
+**The gate-check false positive filed an hour earlier was confirmed by observation during this tail, and the capture was updated to say so.** The session-start backfill ran, resolving every `[HASH]` placeholder in these twenty-four entries to `b485ee3`. Re-running `rule_signals.py` immediately afterwards with nothing else changed: `0 of 4 found something`, and the gate check reports all eleven rule-bearing commits carrying a disposition. So the diagnosis is pinned rather than inferred — the false window is exactly between a close and the next session's backfill.
+
+**Not committed.** The rezip's `plugin.json` bump, the backfilled hashes, the strengthened capture and this tail all sit in the working tree and ride the next close's commit, which is the one-commit-per-session shape working as designed.
+
+**What the next session should expect**, and it is not a fault: this project is on format epoch 3 and the newly installed host declares 4, so `session_start` will halt and point at `/setup`. That halt *is* the build-block migration prompt, and it is the reason the rezip came first.

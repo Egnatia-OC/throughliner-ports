@@ -1,4 +1,4 @@
-# [HASH] — A hook change is verified by driving the new code, never by performing the guarded action live
+# b485ee3 — A hook change is verified by driving the new code, never by performing the guarded action live
 
 Filed by Claude at its own close, from a data-destroying mistake made minutes earlier and recovered from git. The full account is in `LOG/2026-08-17-chat-2.md` and is cited rather than restated.
 

@@ -1,4 +1,4 @@
-# [HASH] — Planning writes the SPEC sentence ahead of the build; a build that finds one missing files it
+# b485ee3 — Planning writes the SPEC sentence ahead of the build; a build that finds one missing files it
 
 Raised by the user when a run stopped in its second minute to ask for one SPEC sentence.
 

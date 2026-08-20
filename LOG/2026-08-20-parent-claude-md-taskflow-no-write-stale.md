@@ -1,4 +1,4 @@
-# [HASH] — The parent-folder Taskflow rule: one owner, the right path, and the INBOX exception written in
+# b485ee3 — The parent-folder Taskflow rule: one owner, the right path, and the INBOX exception written in
 
 Three faults sat in one paragraph, found by reading both copies rather than the version pasted into a session. The rule — "Read Taskflowapp freely from here to answer questions or check state. Do not write to it" — lived word for word in `My Drive/CLAUDE.md` and in `Taskflow Planning/CLAUDE.md`, and both load into every session opened in this project. It needed the user's INBOX exception written into it, or every future session would read a flat prohibition and stop exactly where this one did. Both copies named a path that is not this machine's — one a `C:\Users\Alex\Desktop\...` layout, the other a `G:` drive. And two copies of one rule with no declared relationship means an edit to either can silently diverge.
 

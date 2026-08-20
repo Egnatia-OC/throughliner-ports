@@ -1,4 +1,4 @@
-# [HASH] — /next can now drop an item /setup would overtake, and no longer claims mail is the only trigger
+# b485ee3 — /next can now drop an item /setup would overtake, and no longer claims mail is the only trigger
 
 Filed from INBOX mail sent by a consumer project, which flagged it as the less clear-cut of their two findings and possibly working as designed.
 

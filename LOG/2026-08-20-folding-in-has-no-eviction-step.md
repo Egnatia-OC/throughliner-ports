@@ -1,4 +1,4 @@
-# [HASH] — Folding into a work item named as two operations, and the merge required to rewrite
+# b485ee3 — Folding into a work item named as two operations, and the merge required to rewrite
 
 Raised by the user from the ideation loop's effect on new captures: holding the write until the design settled stopped a capture being written to three or four times. Her question was whether the same principle reaches the accretion that happens *afterwards*, and folding was her example.
 

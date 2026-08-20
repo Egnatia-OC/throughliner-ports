@@ -1,4 +1,4 @@
-# [HASH] — The tersify pass runs on request, never at a close, with its procedure on the shelf
+# b485ee3 — The tersify pass runs on request, never at a close, with its procedure on the shelf
 
 Raised by the user as a step at the close, and filed against that placement on the evidence she then supplied. The write-up of the two passes is at `resources/research/tersifying-the-queue.md`, reproduced verbatim.
 

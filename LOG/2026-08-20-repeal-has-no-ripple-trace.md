@@ -1,4 +1,4 @@
-# [HASH] — A repealed sentence is grep-traced before its Files line is written
+# b485ee3 — A repealed sentence is grep-traced before its Files line is written
 
 Filed by Claude from a failure observed twice in one run rather than reasoned about.
 

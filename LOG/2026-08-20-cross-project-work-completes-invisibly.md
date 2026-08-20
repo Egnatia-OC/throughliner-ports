@@ -1,4 +1,4 @@
-# [HASH] — An item finishing outside this project must name what would show it done, or say nothing does
+# b485ee3 — An item finishing outside this project must name what would show it done, or say nothing does
 
 Filed during a /next walk-through at the user's instruction. Mixed authorship: she raised the question that found it — why the site was being edited from here when it belongs to another project — and the diagnosis is Claude's.
 

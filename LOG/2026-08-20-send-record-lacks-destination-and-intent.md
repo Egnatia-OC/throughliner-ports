@@ -1,4 +1,4 @@
-# [HASH] — `INBOX/sent.md`: one line per outbound artifact, carrying destination, intent and what was claimed
+# b485ee3 — `INBOX/sent.md`: one line per outbound artifact, carrying destination, intent and what was claimed
 
 Widened at processing to absorb two other items, both deleted once their content landed here. Raised by the user while asking whether an article had been passed to another project — checked rather than assumed, and the LOG entry said only *"she approved the exact text before it was sent"*. The design is Claude's, deferred to in her words: "as you recommend."
 
