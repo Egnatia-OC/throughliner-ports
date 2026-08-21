@@ -1,4 +1,4 @@
-# [HASH] — The close files its forward advisory about half the time, measured from git after Alex reported it had stopped
+# 35261b5 — The close files its forward advisory about half the time, measured from git after Alex reported it had stopped
 
 Alex reported that forward advisories seemed to have stopped over the last couple of days and that she had been having to ask for them, where Claude used to file them unprompted. Checked rather than taken, and it holds — but what stopped is narrower than the report, and the difference is the finding.
 

@@ -1,4 +1,4 @@
-# [HASH] — Two held items dispositioned and the item that recorded them deleted; the general fix it suspected was refused on its own evidence
+# 35261b5 — Two held items dispositioned and the item that recorded them deleted; the general fix it suspected was refused on its own evidence
 
 Yesterday's session found five held items whose blockers had shipped, lifted three, and deliberately held two back on grounds that were real but were not the revisit's test. The reasoning existed only in that chat, so it filed [two-held-items-await-a-disposition] to carry it forward. This session spent it.
 

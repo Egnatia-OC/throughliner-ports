@@ -1,4 +1,4 @@
-# [HASH] — A consumer's unguarded-send report cut to two clauses, with half of it already shipped and its central claim overturned
+# 35261b5 — A consumer's unguarded-send report cut to two clauses, with half of it already shipped and its central claim overturned
 
 A consumer project reported that its planning session drafted a substantive letter to an external professional which the user then sent, with nothing gating it, while the scope-lock twice refused a four-line correction to that project's own CLAUDE.md she had already approved. Processing overturned two parts of that account and left a much smaller build than the item implied. Both fallen parts are kept in the item, because the reasoning that fell is what stops the same conclusions being reached again.
 

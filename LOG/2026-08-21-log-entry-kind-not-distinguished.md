@@ -1,4 +1,4 @@
-# [HASH] — The digest reads a planning record as work shipped, and the same signal decides what lifts out of the held region
+# 35261b5 — The digest reads a planning record as work shipped, and the same signal decides what lifts out of the held region
 
 Found while verifying an unrelated placement: the digest reported a newly filed item as citing [setup-migration-gate-is-epoch-3-shaped] and [convert-cleared-items-to-build-blocks] as **shipped**, while both sat cleared and unbuilt a few lines above in the same output.
 
