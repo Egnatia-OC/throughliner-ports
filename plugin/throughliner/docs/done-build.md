@@ -187,9 +187,9 @@ Run the commit core in done.md.
 Run done.md's **Recommend next** and apply its **Build close** delta: the shared
 overlap scan + queue-state ladder are the whole recommendation.
 
-**No size judgment about the next run.** Don't advise how many items the next /next
-should take, and don't write one into the forward advisory. The cleared-to-run line
-already *is* the run bound and the user sets it at /plan; a second, softer cap
-downstream of it is a guess with no measurement behind it, since Claude has no gauge
-of context filling at all. Where a run genuinely needs to stop early, that is a
-behaviour-based stop — the no-progress halt — never a number.
+**Leave the next run's size to the cleared-to-run line**, in the recommendation
+and in the forward advisory alike. That line already *is* the run bound and the
+user sets it at /plan; a second, softer cap downstream of it is a guess with no
+measurement behind it, since Claude has no gauge of context filling at all.
+Where a run genuinely needs to stop early, the no-progress halt is what stops
+it — a behaviour-based stop rather than a number.

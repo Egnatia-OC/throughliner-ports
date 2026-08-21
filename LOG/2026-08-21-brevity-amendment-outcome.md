@@ -1,4 +1,4 @@
-# [HASH] — the audit that reads the brevity measurement, filed in the same session as the tool and held on a host-side dependency
+# 746608f — the audit that reads the brevity measurement, filed in the same session as the tool and held on a host-side dependency
 
 Filed alongside [transcript-output-measurement] because `plan.md` requires it: where an item's build produces a tool that measures or reports, the audit that runs it is filed in the same planning session, placed immediately after. A measuring build that ships alone completes, leaves nothing outstanding, and the step that reads its output is never written down.
 

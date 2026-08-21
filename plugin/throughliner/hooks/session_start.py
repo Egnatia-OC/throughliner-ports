@@ -1031,12 +1031,14 @@ def main() -> int:
         except OSError:
             pass
 
-    # Version comparison is retained only for the separate "a plugin update just
-    # happened" signal (a future consumer). It is NOT the user-facing "your project
-    # is behind" warning anymore — that is now presence-based (see missing_scaffold
-    # below), because the version bumps on every release and most releases add
-    # nothing a project needs, so a version check cries wolf.
-    version_mismatch = has_spec and plugin_version and project_version != plugin_version
+    # No version comparison is made. A version difference on its own means
+    # nothing a project has to act on: the version bumps at every release and
+    # most releases change no format and scaffold no new file. What /setup being
+    # outstanding actually looks like is a stale format epoch, or a document or
+    # setting reported missing — each computed below and each saying so when it
+    # fires. The installed version is still reported at every opening.
+    # `project_version` is read above only so a missing marker file can be
+    # listed in missing_scaffold.
 
     # --- Stale format epoch ---
     #
@@ -1524,21 +1526,6 @@ def main() -> int:
         )
         for instruction in missing_settings:
             context_parts.append("- " + instruction)
-
-    # Version-change report: the retained "a plugin update just happened" signal
-    # (see version_mismatch above). This is NOT the drift warning — that is
-    # presence-based above. Kept as a plain line: the old queue-inspecting
-    # confirm nudge is gone, so the report no longer scans the queue.
-    if version_mismatch:
-        context_parts.append("")
-        context_parts.append(
-            "[Throughliner] Plugin version changed since this project was "
-            f"last set up ({project_version} → {plugin_version}) — an update has been "
-            "installed. /setup wants a session of its own: it refuses to run "
-            "while a build is in progress, and it rewrites enough of the "
-            "project's files that mid-session is the wrong moment even when "
-            "nothing blocks it. Finish and close what is running first."
-        )
 
     if has_active_build:
         context_parts.append("")

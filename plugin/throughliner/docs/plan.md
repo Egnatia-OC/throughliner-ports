@@ -183,20 +183,15 @@ Runs alone
 that order — the digest for the facts only a script can compute, then the file
 for the reasoning it deliberately omits.
 
-**Why both.** The queue is one file because reasoning across items splits badly
-when they are apart, and a digest of headings restores exactly that split:
-headings together, reasoning apart. Blockers can sit anywhere in the queue, and
-so can the right place to fold something in, so every item bears on any planning
-session. **And half of what the digest prints cannot be got by reading at all** —
+**Why both.** Half of what the digest prints cannot be got by reading at all —
 how long an item has been held, where a named blocker sits, which files two items
 both name, whether an item's premise cites work that has shipped. Reading gives
-prose; the script gives computed facts.
+prose; the script gives computed facts. Blockers can sit anywhere in the queue,
+and so can the right place to fold something in, so every item bears on any
+planning session.
 
 **The cost is accepted knowingly**: the whole queue at an opening, falling as
-decision history is relocated out of items and into the record. A conditional
-read was offered and refused,
-because a condition would have to predict which items bear on each other — the
-thing the read exists to discover.
+decision history is relocated out of items and into the record.
 
 ```
 python <plugin-root>/scripts/queue_digest.py <QUEUE.md path>
@@ -325,14 +320,8 @@ python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
     --delete forward-advisory Unprocessed
 ```
 
-Narrate the clear in one line. The session reading it is the one that can tell it is spent, so the
-clear lives where the knowledge is. It used to happen at the /plan close, and a
-build session passing between two planning sessions therefore left a consumed note
-behind: a /plan files an advisory, a /next builds the very thing it points at, the
-build close clears nothing, and the next /plan opens on advice about work that
-already shipped. Giving the build close its own clear step was rejected — it would
-put the deletion in a session that never read the note and cannot judge whether it
-was used.
+Narrate the clear in one line. The session reading it is the one that can tell it
+is spent, so the clear lives where the knowledge is.
 
 **One consequence, stated here rather than discovered later.** Clearing at the
 read means the advisory is gone even if the planning session then ends without
@@ -525,14 +514,9 @@ stays the user's, so these are surfaced for them and nothing else. That is the
 one thing this differs from the revisit above in: lifting is narrated and
 performed, a contradiction is narrated and left.
 
-The four-way classifier this replaces — mechanically-checkable / Claude-downstream
-/ user-only / still-waiting — existed because a blocker used to be a prose
-sentence that had to be interpreted before it could be acted on, and the
-consolidated user-only question existed to stop that interpretation nagging. Both
-are gone with the sentences. So is the downstream-action test: an item can only be
-blocked by a queue item now, and a thing in the world becomes a queue item before
-anything blocks on it, so a condition waiting on an action nobody filed can no
-longer be written.
+An item can only be blocked by a queue item, and a thing in the world becomes a
+queue item before anything blocks on it, so a condition waiting on an action
+nobody filed can no longer be written.
 
 **Seed the queue from SPEC** [SILENT] when the trigger state is absent;
 [BRIEF, PROMPT] when it fires. A rich SPEC can describe buildable features with
@@ -631,15 +615,19 @@ rewrite a real name or a case detail out of it.
 (skill-nonspecific-rules.md, Authoring standard). No figure decides this and none
 is available: an item long because it holds two pieces of work splits into two; an
 item long because it carries a narrative relocates that to the record and cites
-it. Advisory — it names an action and never blocks the keep. It rides the scrub's
-read rather than adding a pass of its own, because both look at the same draft at
-the same moment.
+it. It rides the scrub's read rather than adding a pass of its own, because both
+look at the same draft at the same moment.
 
-**Read the ITEM AS IT STANDS, not the paragraph being added.** Re-processing an
-item usually appends a settlement paragraph rather than rewriting the block, so an
-author whose own addition is short can still be looking at an item nobody will
-read — and the item is what gets read at build time. This is the site: the item is
-already in front of you here, and nowhere later is.
+**Read the ITEM AS IT STANDS, not the paragraph being added, and where the entry
+already carries a dated settlement or skip paragraph from an earlier session,
+rewrite the entry whole rather than appending to it** — carrying forward every
+defeated alternative with the reason it lost, and never upgrading a paraphrase
+into a quotation claim. Where the entry carries no such paragraph, author it as
+now. Re-processing an item otherwise appends a settlement paragraph rather than
+rewriting the block, so an author whose own addition is short can still be
+looking at an item nobody will read — and the item is what gets read at build
+time. This is the site: the item is already in front of you here, and nowhere
+later is.
 
 **Process order.** Unprocessed top to bottom, then items raised in this session's
 own discussion. State the count upfront, counting both together ("5 items.
@@ -745,12 +733,9 @@ shortens the queue fastest, and alternating halves that rate. The trade is half
 the benefit of a rung that works, against the full benefit of a rung that was
 never reached.
 
-**Why the partition was needed at all, recorded because the fault was invisible.**
-Rungs 1 and 2 are *selectors* — each picks a subset and runs out. Rung 3 was a
-*total order*: it ranked every entry, so it never yielded, and any rung placed
-beneath it could never fire. This document used to present that as a feature,
-saying nothing could sit beneath it. That sentence is what hid the fault, and it
-is deleted rather than reworded.
+**Every rung must yield, so each is a selector rather than a total order.** Rungs
+1 and 2 each pick a subset and run out. A rung that ranks every entry never
+yields, and any rung beneath it can never fire.
 
 **Rung 4 is decay, and it reads the date filed rather than file order.** A user
 can ask for the queue to be reordered however they like, which would silently
@@ -758,22 +743,12 @@ render a file-order decay rung useless — it would still run, ranking by someth
 the user had just overwritten. The date an entry first appeared cannot be
 overwritten by a reorder, and the digest already computes it. The case it serves,
 in the user's words: someone with a very long queue who does not get through the
-full set for many sessions. For that person entries genuinely rot, and nothing in
-the three-rung ladder ever reached them.
+full set for many sessions.
 
-**Decay's earlier deletion was a forced choice, not a finding against it.** The
-record framed it as a decision that staleness stops being an ordering concern.
-That was not the reason: no way to terminate the line-count rung was available at
-the time, and that rung was judged more important. The constraint is now removed.
-
-**Length's place in the ladder rests on cost-of-reading, not on design
-completeness.** Long entries are what make the queue expensive to reason across,
-so working them shortens it fastest — a benefit that does not depend on length
-predicting anything about an entry's readiness. It does not predict it: in the
-session that settled this, the two longest of eight were the two that could not
-be kept at all, because at the top of the distribution length tracks repeated
-enrichment without resolution. **Longest-first as an ORDER is retired** on the
-stability argument above; what survives is length as membership in rungs 3 and 4.
+**Length decides membership in rungs 3 and 4 and never decides order.** Long
+entries are what make the queue expensive to reason across, so working them
+shortens it fastest — a benefit that does not depend on length predicting
+anything about an entry's readiness, which it does not.
 
 **Unblock-potential is kept deliberately.** It is reasoning, but of the kind
 Claude is reliably good at — following citations between items is running a
@@ -942,12 +917,24 @@ the Files line is derived FROM the grep, not from the discussion
        as an exclusion, in its own sentence outside the Files line
 ```
 
-**Why it belongs here rather than in the run.** An item once repealed one sentence
-from the always-loaded rules and named that one file, stating in its own prose that
-the defect was there and not elsewhere. The sentence was in fact restated verbatim
-in three more live places, so the run stopped twice to grow scope — in a run whose
-whole premise is that it does not stop. Plan-time tracing is what shrinks the
-ripples a run has to catch.
+**Where the item repeals SHIPPED behaviour, run the same grep over
+`INBOX/sent.md`** — the record of what this project has announced. A repeal can
+falsify a claim already made in public, and the repealed sentence's distinctive
+words are what find it.
+
+```
+a match in INBOX/sent.md
+    -> file a correction post as its own [user] line, naming what was
+       announced and what is no longer true
+no match
+    -> nothing further
+```
+
+**File the correction line rather than assuming one will be written.** The
+announcement went out under the user's own account, so only they can correct it.
+
+**Trace the ripple here rather than in the run**, which is what shrinks the
+ripples a run has to catch and stop for.
 
 **An item whose completion happens outside this project names what would show it
 done — or states plainly that nothing observable exists.** A URL that would
@@ -1000,12 +987,9 @@ covering the same ground, because nobody named which operation was happening.
 Appending is not the defect; appending where the two accounts describe one thing
 is.
 
-**A merge is expected to come out shorter, and that is the only evidence anyone
-has that a rewrite helps.** One measured case: an item whose lens had been given
-and then taken away by an appended paragraph, so the item described the lens as
-both in scope and removed. Merging it properly collapsed four paragraphs into one
-and took 63 words off an item that would otherwise have kept growing. One data
-point, in the predicted direction, and no rate is claimed from it.
+**A merge is expected to come out shorter**, which is the only evidence anyone
+has that a rewrite helps. One data point supports it, in the predicted direction,
+and no rate is claimed from it.
 
 **This types the EDIT being made, not the reason being carried.** The throughline
 rules ban forcing rationale into a typed taxonomy, and that ban is untouched: the
@@ -1045,14 +1029,10 @@ uses, for the same reason.
 underspecified rather than reading the queue for the missing detail. The queue
 lint flags one, so the gap is visible before a run meets it.
 
-**The Files line names only files that change.** A file the item has decided NOT
-to touch is a different statement and goes in its own sentence outside the line.
-The digest reads every backticked path on that line and cannot tell an excluded
-path from an included one, so an exclusion written there returns as a false merge
-candidate — the block that surfaces work two items could settle together, filled
-with pairs that share nothing. Teaching the digest to recognise exclusion phrases
-would fire on honest text, which is the brittleness this project has refused
-before.
+**The Files line names only files that change**, with a file the item has decided
+NOT to touch stated in its own sentence outside the line. The digest reads every
+backticked path on that line and cannot tell an excluded path from an included
+one, so an exclusion written there returns as a false merge candidate.
 
 **A Files entry whose content depends on a decision not yet made fails the second
 limb**, rather than partly passing it. "Any affordance the link-address question
@@ -1091,16 +1071,11 @@ in the item's prose:**
 
 The index is one line per finding, so the look is nearly free, and it is the
 look that makes the citation possible — a session designing from what it
-believes it already knows never goes to the shelf. A restatement reads as
-complete, so a later session takes the item's account for the finding and can
-propose exactly what the research already refused.
+believes it already knows never goes to the shelf.
 
 The level question has no detector and cannot have one, since whether an item
-fixes an instance of a general problem is a judgment. Asking it here is what
-makes the choice deliberate rather than whatever the author reached for first,
-which is the instance. The answer then shows up in the Files line, which already
-names a doc for a rule and a hook file for a hook — what was missing was the
-question, not a field.
+fixes an instance of a general problem is a judgment. Its answer shows up in the
+Files line, which already names a doc for a rule and a hook file for a hook.
 
 **Nothing detects an uncited dependency, and this must not be described as
 closing that.** The queue digest prints each item's `Cites research:` line, which
@@ -1205,15 +1180,16 @@ question as *what would answer this?* **before** searching, then name the tool
 that would do the work and confirm it is absent or unauthenticated. Trying a tool
 is allowed where trying is quick: the user is in the room, which is what makes
 this the heavy site. Where no tool plausibly exists, that is itself the answer.
-Don't enumerate everything available — an inventory sweep is expensive, stale by
-the next session, and was rejected; the check is aimed at one job or it is not
-worth running. /next runs a light version of this at its pre-hand-off, but the
-user is not in the room there, so depth belongs here.
+**Aim the check at the one job in hand.** An inventory sweep of everything
+available is expensive, stale by the next session, and was rejected. /next runs
+a light version of this at its pre-hand-off, but the user is not in the room
+there, so depth belongs here.
 
-Two failures this catches, each a different one. **Don't reason from what the
-task *sounds* like** — "create a GitHub repo" sounded browser-shaped and went to
-the user when `gh` would have done it in seconds. **And don't mistake a thorough
-search for a correct one** — a `[user]` line was once filed after an honest,
+Two failures this catches, each a different one. **Reason from what the task
+would actually take, not from what it sounds like** — "create a GitHub repo"
+sounded browser-shaped and went to the user when `gh` would have done it in
+seconds. **And judge the search by whether it named the right tool, not by how
+thorough it was** — a `[user]` line was once filed after an honest,
 diligent search that returned only binaries and caches, and deleted hours later
 when one command answered the question. That search asked *where is the setting
 stored*, which is correct for the question as posed, and never asked *what would
@@ -1451,28 +1427,31 @@ on the command itself. An empty Unprocessed is not a signal the session is over.
 Skip isn't only the user's to pick. When you can't yet describe what an item's
 build would change, or the design keeps opening more questions than it closes,
 propose sharpening what you can and then skipping it to the bottom — rather than
-reaching for a phantom "give it its own dedicated pass" container. **There is no
-dedicated-pass state; the only defer is this skip.** The sharpen-first is part of
-the move: capture whatever design progress was made into the item's prose so the
-next /plan starts further along.
+reaching for a phantom "give it its own dedicated pass" container.
 
-**An item skipped because it will not design out names what would settle it, and
-who owns that** — a decision the user owns, a fact to be looked up, or a build
-that must ship first. Naming the blocker-in-kind is what turns an open item into
-an answerable one; without it, each session adds reasoning and none of them
-converges.
+**What a skip must do — one subject, five provisions.** Skip to the bottom of
+Unprocessed, and:
 
-**Where the answer is a decision the user owns, ask before skipping.** /plan is
-the one moment they are present, and the cost of asking is a sentence. This is
-the load-bearing clause: an item here had been skipped and enriched twice, its
-two open questions named cleanly in its own prose, and when one of them was
+- treat that skip as the only defer there is; there is no dedicated-pass state;
+- capture whatever design progress was made into the item's prose, so the next
+  /plan starts further along;
+- name what would settle the item and who owns that, where it was skipped for
+  not designing out — a decision the user owns, a fact to be looked up, or a
+  build that must ship first;
+- ask before skipping, where that answer is a decision the user owns;
+- propose a `Not before:` date, where it waits on something outside the project
+  entirely, subject to the date provisions below.
+
+Naming the blocker-in-kind is what turns an open item into an answerable one;
+without it, each session adds reasoning and none of them converges. The ask is
+the load-bearing provision: an item here had been skipped and enriched twice,
+its two open questions named cleanly in its own prose, and when one of them was
 finally put to the user she answered it in a sentence. The naming had worked;
 nobody had asked. Enrichment is not the defect — enrichment **substituting** for
 a decision that was available for the asking is.
 
-**Where an item is skipped because it waits on something outside the project
-entirely, propose a `Not before:` date and write it on the user's approval**
-[PROMPT]. This is the one place a capture gains one. The trigger is that nothing
+**The `Not before:` date** [PROMPT]. This is the one place a capture gains one.
+The trigger is that nothing
 in the queue can do what the item waits for — another project's reply, a feature
 shipping in a tool nobody here controls — so it can name no blocker and cannot be
 held below the readiness line either, since being held there requires work
@@ -1486,26 +1465,32 @@ news, and say plainly it will not be offered again before then
     user declines   ->  ordinary skip; it returns next session
 ```
 
-**Never write one silently.** A date on a capture is the one hold that removes an
-item from view without anything resolving, so the user decides how long they are
-content not to see it. Waiting on someone's attention is not this — that is an
-ordinary skip.
+**Write a date only on the user's approval, asked for in the moment.** A date on
+a capture is the one hold that removes an item from view without anything
+resolving, so the user decides how long they are content not to see it. Waiting
+on someone's attention is not this — that is an ordinary skip.
 
 **View-in-doc applies here too** — by default lead with a one-line pointer to the
 next item in place of its verbatim, off-ramps below it unchanged.
 
-### Process-now offer after a user-filed capture  [PROMPT]
+### Process-now offer after a user raises something  [PROMPT]
 
-When the *user* files a fresh capture mid-/plan, don't close on a bare "anything
-else?" — that can read as parking their idea. File it first, then offer the
-branch:
+When the *user* raises something fresh mid-/plan, offer the branch **before
+writing anything** — and close on the offer rather than on a bare "anything
+else?", which can read as parking their idea:
 
 ```
 process it now   ->  RECOMMEND THIS. Loops straight into the present-and-
-                     interview loop.
-carry on         ->  leaves it in Unprocessed for its turn
+                     interview loop. NO capture is written: the item goes
+                     into present-and-interview and is written once, as a
+                     work item.
+carry on         ->  write the capture; it waits in Unprocessed for its turn
 (either way: anything else to add first?)
 ```
+
+**Asking first is what saves the write.** A capture answered "process it now" is
+immediately rewritten as a work item, so filing it first spends a write that is
+thrown away — and by the user's own estimate that is the common answer.
 
 **Lead with the recommendation rather than a flat menu.** The user's words:
 *Claude should always recommend processing it now — it's just good context use.*

@@ -1,4 +1,4 @@
-# [HASH] — one clause in the always-loaded rules licenses any length, and removing it is the lever the current-model research names
+# 746608f — one clause in the always-loaded rules licenses any length, and removing it is the lever the current-model research names
 
 The user's position, which is what makes this urgent rather than tidy: Claude's verbosity is the single thing stopping her promoting the plugin anywhere but GitHub, and the YouTube channel waits on it. She had been hoping the law-prose restyle would fix it as a side effect. It will not — that pass rewrites what Claude reads, and its acceptance test is a rule-statement count that cannot see a line of output.
 

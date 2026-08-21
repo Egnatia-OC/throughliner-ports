@@ -1,4 +1,4 @@
-# [HASH] — the keep-step's rewrite instruction was already there and marked advisory, so the fix is an eviction rather than a new rule
+# 746608f — the keep-step's rewrite instruction was already there and marked advisory, so the fix is an eviction rather than a new rule
 
 The user raised this by asking whether a decision had landed: after the ideation loop was made to hold its write until complete, she had asked that all planning work the same way, with the item under discussion rewritten in full at the end of each loop, because it appeared to yield denser writing. It half landed. The ideation loop shipped on the 17th and folding shipped on the 20th as two typed operations, but the general rule was never built.
 

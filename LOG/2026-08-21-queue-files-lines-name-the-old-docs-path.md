@@ -1,4 +1,4 @@
-# [HASH] — 47 stale `docs-b/` paths rewritten across 13 ready items, and the item deleted rather than kept, because the work was planning's
+# 746608f — 47 stale `docs-b/` paths rewritten across 13 ready items, and the item deleted rather than kept, because the work was planning's
 
 Filed mid-run the previous day, when the build of [rename-docs-b-folder] was refused by the scope-lock: a build does not edit the contents of a queue item, and the queue tool moves whole entries byte-for-byte rather than rewriting text inside one. So the rename completed everywhere except in the queue's own instructions to future builds.
 

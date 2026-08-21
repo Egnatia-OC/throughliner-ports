@@ -48,8 +48,9 @@ consistently than re-deciding every criterion afresh for each artifact, and it
 groups findings by criterion ready for the compile step. Reading each artifact
 once against everything tends to collapse into a per-artifact skim.
 
-Don't skim; an audit's value is reading what's there. Accumulate observations in
-the build working file Changes with precise references (file:line) so the user can verify each.
+Read each artifact through, since an audit's value is reading what is there.
+Accumulate observations in the build working file Changes with precise references
+(file:line) so the user can verify each.
 
 ## Compile findings  [SILENT]
 

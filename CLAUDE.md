@@ -320,6 +320,8 @@ Claude drafts and Alex posts, because Claude has no route to Discord. The draft 
 
 **A posted draft gets its line in `INBOX/sent.md` like any other outbound artifact** — date, destination, whether it was handed over for completion or continuation, what it claimed in one clause, and a pointer to the text. Written in the same turn as the approval, because the wording exists then and nothing later reconstructs it. The reason this matters here specifically: a post makes a claim about how Throughliner behaves, and a later change can falsify it with nobody noticing. The record is what a repeal can be checked against. Full mechanics in `docs/feedback-and-inbox.md`.
 
+**Where a repeal falsifies something already announced, file a correction post as its own `[user]` line.** The check runs at /plan's keep-step, on the repeal limb's existing grep, extended to `INBOX/sent.md` — so the trigger is the grep already being run and needs no separate detection. The line names what was announced and what is no longer true; the user posts it, as they post everything here. **This is the whole reason `INBOX/sent.md` records what a post claimed** rather than merely that one happened: a claim nobody wrote down cannot be checked against a repeal, so earlier cases are unfindable and this reaches only posts made from now on. Say that rather than describing the record as covering the channel's history.
+
 
 ## Handoff-claim provenance
 

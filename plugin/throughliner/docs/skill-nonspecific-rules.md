@@ -90,9 +90,9 @@ The work cycle. Every piece of work travels the same loop.
     skills and out, with no exemption for items that seem short;
   - folding what several checks turn up into one narration, with anything the
     user must act on leaving the bundle and going on its own;
-  - giving every explanation the user needs in order to act, in full sentences,
-    at whatever length that takes — what comes out is the padding around it:
-    meta-narration, a restatement of what was just shown, hedging.
+  - saying what the user needs in order to act, in full sentences, and
+    stopping there — except that where being readable and being short pull
+    apart, readable wins.
 
   **The inversion governs sequencing, never approval-before-write.** Two
   separate axes: write-first answers *show-then-wait or write-then-report*, and
@@ -116,11 +116,12 @@ The work cycle. Every piece of work travels the same loop.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"), and carry straight
-  on. **Inside /plan only, both get an offer, and the Claude-raised one is put
-  BEFORE any write**: a user-filed capture is offered process-now or carry-on,
-  and a Claude-raised one asks once — file it, or work it now? — with working it
-  now recommended. Asking after the write costs a write that is thrown away,
-  since a capture answered "work it now" is immediately rewritten as a work item.
+  on. **Inside /plan only, both get an offer, and BOTH are put before any
+  write**: a user-raised one is offered process-now or carry-on, with "anything
+  else to add first?" alongside it; a Claude-raised one asks once — file it, or
+  work it now? — with working it now recommended, and no further captures
+  solicited. Asking after the write costs a write that is thrown away, since a
+  capture answered "work it now" is immediately rewritten as a work item.
 - **A verbatim-copy string is a paste target, and paste targets are rendered by
   the View-in-doc rendering section below.** Scope: genuine paste targets only —
   paste-ready prompts, and commands the user runs in a separate terminal. Commit
@@ -233,6 +234,9 @@ shown text (the show-first cases)  ->  a blockquote with a bold lead-in naming
 a paste target, or content whose   ->  a fenced code block, one string per
   exact characters ARE the             fence — the app's copy takes the whole
   substance (code, shell commands)     message
+structured explanation shown to    ->  one item per line, never aligned
+  the user                             columns — a column wraps into nonsense
+                                       at the user's width
 ```
 
 **Pointing is the default, overridden only when the user asks** — see the opening
@@ -285,6 +289,10 @@ explained          ->  use it, and explain it once. Where the term names
                       something you can show — a line in a file, an entry in
                       the queue — showing it is usually the shortest
                       explanation there is.
+a slug shown to    ->  say what that item is FOR, on its first appearance in
+  the user             each message. Per message, not per chat — a reader is
+                      not holding the scrollback. Output only; inside queue
+                      prose a slug stays bare.
 ```
 
 **Where the user is asking about the procedure itself, name its parts and
@@ -612,6 +620,10 @@ a QUOTE claim     "your words", "in her own words", quotation marks
 The tag **leads** the description. One leading tag at most. Flavor is settled
 when the item moves into Processed.
 
+**A flavor names how a work item is executed, and `[freeform]` is a flavor like
+the rest — never a mode a session is in.** Hand-work in a chat with no queue item
+behind it has no name and needs none.
+
 The `[user]` tag is governed by a **matched pair** of rules. Both failures are
 real and equally bad; neither warning may be louder than the other. (How a
 `[user]` item is then *run* is the walk-through lifecycle in next.md.)
@@ -707,11 +719,20 @@ a DELIVERABLE written to disk — a report, a summary, a document for a reader
     summary of what the document already said, boilerplate.
 ```
 
-**No written shape carries a length cap.** Both failures are real — a record too
-thin to rebuild intent from fails as surely as one too long to get through, and
-the second is the one this method has actually produced at scale. Length is still
-the thing that has to be earned. What is gone is any claim to have located the
-line to within a word count.
+**Length follows from what the shape must carry, and this is the one statement
+of it — every other length rule in the method is subject to this one.** Three
+provisions:
+
+- a record runs to whatever carries its facts, references, conditions and
+  reasoning;
+- a deliverable runs to whatever the task needs;
+- an index line runs to whatever supports the open/skip decision, per Index
+  entries below.
+
+Both failures are real — a record too thin to rebuild intent from fails as
+surely as one too long to get through, and the second is the one this method has
+actually produced at scale. Length is still the thing that has to be earned.
+What is gone is any claim to have located the line to within a word count.
 
 **A plan entry splits per item processed, exactly as a build entry splits per
 item built.** A planning decision IS a disposition on a queue item, and that item
@@ -952,11 +973,11 @@ the argument in one line: a 337-word line pointing at a 1,710-word entry, where
 reading the pointer costs a fifth of opening the thing it exists to save you
 opening.
 
-**No length cap of any kind — not absolute, not proportional.** Length follows
-from the content requirement above. The bound is the requirement
-itself: an index line must carry enough to support the open/skip decision, and
-must not restate the entry. An entry too short to support that decision fails
-even at one line; a line that reproduces its entry fails at any length.
+**Subject to the Authoring standard's length provision above, the bound here is
+the content requirement itself:** an index line carries enough to support the
+open/skip decision, and says it without restating the entry. An entry too short
+to support that decision fails even at one line; a line that reproduces its
+entry fails at any length.
 
 **No replacement number, and the reason it is a judgment test rather than a
 script.** Scoping a cap to entries above some length reintroduces a bare figure,
@@ -971,6 +992,11 @@ then ignored everywhere.
 call for, and nothing past them. That's the definition, enforced by judgment. Its
 mechanical approximation, and how /next derives it, is in next.md.
 
+**The scope-lock covers files, so work governed by the approval rules is
+everything that happens away from the filesystem** — a message that leaves the
+machine, a post, a decision reached in conversation, a step handed to the user.
+Those are held by the approval rules and by nothing mechanical.
+
 ## Routing and discipline
 
 - **Route to artifacts, not memory.** If it belongs in SPEC.md, QUEUE.md or LOG/,
@@ -979,7 +1005,13 @@ mechanical approximation, and how /next derives it, is in next.md.
   ideas and discoveries → Unprocessed; design decisions → QUEUE/SPEC; project
   state → the method docs. Memory doesn't travel with the project and the user
   can't read it. Memory stays right for what no project doc owns: user
-  preferences, working style, communication feedback, cross-project facts.
+  preferences, working style, cross-project facts.
+  - **Feedback about a behaviour the METHOD produced routes by the three-way
+    discriminator**, not to memory — a skill's narration, a step that misfired,
+    a rule with a bad outcome. Absorbing it as a preference fixes this one
+    session and leaves the defect shipping to everyone else.
+  - **A preference no method rule governs stays memory's** — a name, a
+    timezone, a tool the user likes.
 - **Doc routing — four destinations, two confused lines:**
 
 ```

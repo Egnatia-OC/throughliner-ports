@@ -99,8 +99,9 @@ flavor(item):
     [freeform]  ->  HALT — needs a session of its own; never built here
 ```
 
-**Never pick an item from past the marker.** This is a standing rule, not a
-branch condition — it holds at every step, on every path through /next.
+**Pick every item from above the marker, and only from there.** This is a
+standing rule, not a branch condition — it holds at every step, on every path
+through /next.
 
 **A `Runs alone` line on an item is the run's second bound.** Walking the
 cleared region top-down:
@@ -251,10 +252,9 @@ cannot be denied.
 Put the run in front of the user and invite a last-glance change **in the same
 message** — presenting and offering the off-ramp are one beat, not two.
 
-**Don't ask "Ready?"** Invoking /next already signalled readiness, so a
-permission-to-start question is redundant. What the pause is *for* is the one
-deliberate human checkpoint before /next runs unattended-in-practice: a last
-chance to change scope or reorder. Frame it as that.
+**Frame the pause as what it is for: a last chance to change scope or reorder**
+before /next runs unattended-in-practice. Invoking /next already signalled
+readiness, so a permission-to-start question asks for something already given.
 
 ```
 render(run):                        # full rule: skill-nonspecific-rules.md, view-in-doc
@@ -286,9 +286,9 @@ the queue is left untouched and /plan decides its fate.
        -> name it and recommend dropping that item
 
 2. /setup OUTSTANDING and an item it would overtake
-       session_start says the project's recorded plugin version is behind the
-       installed one, AND an item in this run names a file /setup rewrites
-       from a template
+       session_start reports the project's format epoch behind the plugin's,
+       or names a document or setting the project is missing, AND an item in
+       this run names a file /setup rewrites from a template
        -> name it and recommend dropping that item
 ```
 
@@ -615,8 +615,9 @@ whatever parts you can, give the **first** concrete step the item records, and
 **stop and wait** for the user to report back. Then the next step, and so on —
 walking beside them, not dumping a list for them to work alone.
 
-Never say "want me to walk you through it?", and never satisfy this branch with
-"it stays open until you've done it".
+Open with the first step itself, and satisfy this branch only by driving the
+steps — an offer to walk the user through it, or a statement that the item stays
+open until they have done it, leaves the branch unrun.
 
 **Where the user volunteers that an item is done, take them at their word:** skip
 the walk-through and recommend /done to record it.

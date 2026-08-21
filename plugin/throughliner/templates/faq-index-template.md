@@ -108,3 +108,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [How long should my queue items and session records be?](faq.md#how-long-should-my-queue-items-and-session-records-be)
 - [There's a BUILD-VIEW.md in my project now, and my queue items have a "build block". What are they?](faq.md#theres-a-build-viewmd-in-my-project-now-and-my-queue-items-have-a-build-block-what-are-they)
 - [Claude asked to put a date on one of my unprocessed ideas, so it stops coming up. What is that?](faq.md#claude-asked-to-put-a-date-on-one-of-my-unprocessed-ideas-so-it-stops-coming-up-what-is-that)
+- [If I run /rescan in the middle of something, do I lose what I was doing?](faq.md#if-i-run-rescan-in-the-middle-of-something-do-i-lose-what-i-was-doing)
+- [I complained about how Claude was talking to me, and now it wants to send a report. Why?](faq.md#i-complained-about-how-claude-was-talking-to-me-and-now-it-wants-to-send-a-report-why)
+- [What is the short name in square brackets at the end of each queue item?](faq.md#what-is-the-short-name-in-square-brackets-at-the-end-of-each-queue-item)
+- [The plugin updated to a new version. Do I need to do anything?](faq.md#the-plugin-updated-to-a-new-version-do-i-need-to-do-anything)

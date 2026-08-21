@@ -306,7 +306,7 @@ If nothing in your queue unblocks anything else, Claude falls back through a few
 
 Yes, both, and it's built to keep you moving rather than grinding through every item in order. The session opens with the drop list and the ordering question (see [the previous answer](#why-does-a-planning-session-open-by-asking-what-i-want-to-prioritise)), then it puts the items that would unblock the most other work first and suggests roughly how many to get through this session.
 
-After that it goes through the rest one at a time. At each step you can carry on to the next item, **skip** the next one to the bottom of the queue for a later session (it's not dropped — just set aside), close out, or raise something new. And if you toss in a fresh idea mid-session, Claude files it and asks whether you want to dig into it now or keep going through the queue — so a new thought never feels like it got parked and forgotten.
+After that it goes through the rest one at a time. At each step you can carry on to the next item, **skip** the next one to the bottom of the queue for a later session (it's not dropped — just set aside), close out, or raise something new. And if you toss in a fresh idea mid-session, Claude asks first whether you want to dig into it now or keep going through the queue, and only writes it down if you say keep going — so a new thought never feels like it got parked and forgotten, and nothing gets written twice when you'd rather just get on with it.
 
 Claude may also *suggest* skipping an item itself: if a piece of work turns out to be too big or too unsettled to pin down into something buildable this session, it'll propose noting down whatever you worked out and setting the item aside for a later planning session, rather than grinding on it. There's no special "give this its own session" mode — setting it aside to the bottom of the queue *is* how something gets deferred, and next time it comes back up as an ordinary item.
 
@@ -548,7 +548,9 @@ A lot gets said in a working conversation that never lands in a file — an idea
 
 **It only looks back as far as the last time you ran it.** So running it three times in one conversation doesn't show you the same things three times — each run picks up from where the last one stopped. That's what makes it cheap enough to use mid-conversation.
 
-**It writes things down. It doesn't decide what happens to them.** Everything it finds goes into the unprocessed part of your queue, and a planning session decides what's worth keeping. It never builds anything — partly because that's `/next`'s job, and partly because it couldn't help if it tried: the plugin your conversation is running is a fixed copy, so a fix made now wouldn't reach you until the plugin is reinstalled anyway.
+**It writes things down. It doesn't decide what happens to them.** Everything it finds goes into the unprocessed part of your queue, and planning is what decides what's worth keeping — including the planning session you are already in, if one is running. You don't have to wait for a future session to sort out what was just written down. It never builds anything — partly because that's `/next`'s job, and partly because it couldn't help if it tried: the plugin your conversation is running is a fixed copy, so a fix made now wouldn't reach you until the plugin is reinstalled anyway.
+
+**And it hands back when it's finished.** Whatever you were in the middle of carries on from where it was — running it doesn't end anything or make you start again.
 
 **Why it exists as its own command.** Two reasons, both from real annoyance. Every check added to the closing step made the end of a conversation heavier and pulled the whole thing toward wrapping up. And an earlier version of this check that fired "at a natural pause" had no way to tell what a pause was — it ran three times in one conversation, unasked. Yours is the honest trigger: it runs when you say so.
 
@@ -633,9 +635,11 @@ Two things can be missing:
 
 ## Setup offered to keep my planning documents out of the repository. What does that cover, and can I change my mind?
 
-**It covers three things: `SPEC.md`, `QUEUE.md`, and the whole `LOG/` folder.** Those are your plans, your reasoning and your session history — the most personal material the method produces. Saying yes adds them to `.gitignore`, so they stay on your computer and never enter the repository.
+**It covers three things, and you pick them individually: `SPEC.md`, `QUEUE.md`, and the whole `LOG/` folder.** Those are your plans, your reasoning and your session history — the most personal material the method produces. Saying yes to any of them adds that one to `.gitignore`, so it stays on your computer and never enters the repository.
 
-**What you give up.** They stop being version-controlled. That means an unwanted change can't be undone by going back to a previous version, and they don't come with the project if you clone it somewhere else. Everything else about how they work is unchanged — Claude still reads and writes them exactly as before.
+**You can have any combination.** All three, none, or just the ones you mind about. The common case is wanting the queue private — it's where the half-formed ideas and the reasoning live — while leaving the history and the description of the project public. It's asked as one question, so answering it costs you one reply either way.
+
+**What you give up, for whichever ones you keep out.** They stop being version-controlled. That means an unwanted change can't be undone by going back to a previous version, and they don't come with the project if you clone it somewhere else. Everything else about how they work is unchanged — Claude still reads and writes them exactly as before.
 
 **Yes, you can change your mind, in either direction.** It's a few lines in a file called `.gitignore` at the top of your project. Ask Claude to add them or remove them and it will. Nothing about the decision is locked in.
 
@@ -987,3 +991,63 @@ A date fixes that. Claude names what the idea is waiting on, suggests a date by 
 - **This is not for "I'll get to it later".** Something you simply haven't decided yet just gets set aside the ordinary way and comes back next session. The date is only for waiting on the outside world.
 
 You can also just say no. Then it comes back next session as usual, which costs you one word to skip.
+
+## If I run /rescan in the middle of something, do I lose what I was doing?
+
+No. It hands back when it's done, and whatever was running carries on from where it was.
+
+This is worth saying plainly because the wording used to suggest otherwise. `/rescan` looks back over the conversation for anything you decided, noticed or asked for that never got written into a file, and writes it down. It used to finish by saying a planning session would decide what happens to those things — which read like "this conversation is over, come back later", even when you were in the middle of a planning session that could have sorted them right there.
+
+**Two things follow from that:**
+
+- **Nothing is exited and nothing is restarted.** The instructions for whatever you were running are still in the conversation, so picking back up costs nothing.
+- **If you're already planning, this session can settle what was just written down.** Sorting out captured ideas is exactly what planning does. You don't have to wait for a future session to look at something you noticed five minutes ago.
+
+So you can run it whenever something occurs to you, mid-build or mid-plan, without weighing up whether it's worth the interruption.
+
+## I complained about how Claude was talking to me, and now it wants to send a report. Why?
+
+Because if the thing you disliked came from the method's own rules, then it is doing that to everyone using it — not just to you.
+
+Claude keeps a private memory of your preferences: your name, the tools you like, how you prefer to work. For a long time, feedback about how Claude *talks* went in there too. That quietly did the wrong thing. Your session got better, and the rule that produced the annoyance carried on shipping to every other project, unchanged and unreported.
+
+**So there is now a split:**
+
+- **A preference nothing in the method governs** — you prefer metric, you go by a different name, you like a particular tool — is still just remembered. Nothing leaves your machine.
+- **Something the method itself made Claude do** — a step that asked you the same thing twice, narration that buried the point, a warning that fired when it shouldn't have — becomes a report, because it is a fault in the tool rather than a fact about you.
+
+**You are always asked, and you always see the exact words first.** Nothing is sent otherwise. You can say no, and then it is simply remembered the old way.
+
+**Why this matters more than it sounds.** Very few people ever tell a tool's author that something about it is irritating to use. If your complaint gets quietly absorbed as "this user prefers shorter messages", nobody ever finds out the messages were too long for everyone.
+
+## What is the short name in square brackets at the end of each queue item?
+
+It's a handle — a short nickname for that piece of work, so you and Claude can point at it without retyping the whole description.
+
+Every item in your queue has one, sitting at the end of its heading line, like `[login-screen-copy]`. It never changes, even when the item gets reworded or moved, which is the whole point: it is the one stable way to refer to a piece of work.
+
+**You never have to write one, or use one.** Claude makes it up when the item is filed. "Let's do the login one" works perfectly well.
+
+**Where you'll see it show up:**
+
+- **In your session records.** When work gets built, its record is filed under that name, so you can trace a finished piece of work back to the item that asked for it.
+- **Between items.** If one piece of work has to wait for another, the waiting one names the other by its handle — that's how Claude knows what is holding what.
+- **In chat.** When Claude mentions one, it should also say what that item is about, so you never have to go and look it up.
+
+If Claude ever throws one of these at you without saying what it means, that's Claude getting it wrong, and you can just ask.
+
+## The plugin updated to a new version. Do I need to do anything?
+
+No. A new version on its own asks nothing of you, and Claude will not suggest anything because of it.
+
+Versions go up at every release, and most releases change nothing about your own files — a reworded instruction, a fixed bug, a tightened rule. Your project keeps working exactly as it did.
+
+**There are three things that do ask you to run `/setup` again, and each one says so plainly when it happens:**
+
+- **Your documents are on an older shape than the method now reads.** This one stops the session at the start and tells you so, because otherwise Claude would spend the whole session reasoning over a structure it is misreading.
+- **A document or folder is missing** that the method now creates — a FAQ folder, a queue, a session-record folder.
+- **A setting is missing** that the method has added since your project was set up.
+
+If none of those is mentioned, there is nothing to do. Claude still tells you which version is installed at the start of every session, so you can see what you are on; that line is information, not a prompt.
+
+**This used to work differently, and the change is worth knowing about if you saw the old behaviour.** Any version difference at all produced a line telling you `/setup` wanted a session of its own — and because only `/setup` records the version, that line came back at *every* session until you ran it. So a message that sounded urgent appeared over and over for a reason that was never real. Now the only things that ask are the three above, and each of them is a genuine gap in your project rather than a number that changed.

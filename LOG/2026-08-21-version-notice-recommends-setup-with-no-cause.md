@@ -1,4 +1,4 @@
-# [HASH] — the cry-wolf halt traced to the version check rather than the format epoch, and the notice scheduled for removal rather than rewording
+# 746608f — the cry-wolf halt traced to the version check rather than the format epoch, and the notice scheduled for removal rather than rewording
 
 The user reported that sessions keep halting on a stale-format warning even though the epoch marker is correct, that this happens on every plugin update, and that all her projects were held up by having to run /done, /setup and /plan again mid-session each time. She supplied two screenshots.
 

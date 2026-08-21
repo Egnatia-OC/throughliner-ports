@@ -69,11 +69,11 @@ and passes silently.
 ## Standalone handmade-work close  [BRIEF, PROMPT]
 
 Runs only where the user made ad-hoc edits by hand and wants them recorded.
-**Never required:** hand edits left uncommitted are simply swept into the next
-/done that runs. This exists for when the user wants them logged and committed as
-their own clean record.
+**Runs on request only:** hand edits left uncommitted are simply swept into the
+next /done that runs. This exists for when the user wants them logged and
+committed as their own clean record.
 
-**1. Read the edits as the user's own work — don't panic.** Uncommitted changes
+**1. Read the edits as the user's own expected work.** Uncommitted changes
 the session didn't make are most likely the user's expected work. Run `git status
 --porcelain`, and where what changed isn't self-evident, look. Confirm with the
 user that these are theirs and meant to be saved. **Never report them as a broken
@@ -115,37 +115,38 @@ Its sibling `Not before: YYYY-MM-DD` holds an item until a date rather than
 until another item, and is lint-checked the same way. Everything else stays
 prose slug-references.
 
-**Place `[user]` and `[audit]` lines end-preferred**, after
-contiguous blocks of build work. Both flavors force /next to stop for the user — a
-step they must run, an audit whose findings they must approve — so one sitting
-*inside* a contiguous build run interrupts a sequence that would otherwise never
-stop to ask. Position them at the **end** of the block so the stops that need the
-user batch together.
+**Place `[user]` and `[audit]` lines end-preferred**, after contiguous blocks of
+build work. Both flavors force /next to stop for the user — a step they must run,
+an audit whose findings they must approve — so one sitting *inside* a contiguous
+build run interrupts a sequence that would otherwise never stop to ask. Position
+them at the **end** of the block so the stops that need the user batch together.
 
-**The rationale rests on the run not confirming each item, which is true**, rather
-than on a run finishing by itself, which is not — a run pauses at `[user]` work,
-halts on `[freeform]` work, and never closes itself (next.md, What a run is). The
-placement rule is unaffected either way: a stop in the middle of a build block is
-worse than the same stop at its end whatever else the run does.
+**Two exceptions, and the default holds everywhere else:**
 
-**Don't move a `[user]` or `[audit]` line past a build item that genuinely depends
-on its outcome** — a real dependency wins; end-preferred is the default only
-among items with no such constraint.
+- leave the line where it stands where a build item genuinely depends on its
+  outcome — a real dependency wins;
+- leave an `[audit]` that reads a tool item's output sitting immediately after
+  that item.
 
-**Leave an `[audit]` that reads a tool item's output sitting immediately after
-that item.** The dependency runs the other way from the case above — the audit
-depends on the build — and it carries no `Blocked by:` line, because placement is
-what orders the pair. Moving the audit to the end separates it from the tool it
-runs, and the close happens after /next, so the separation arrives in time to
-break the *next* run rather than this one.
+The second dependency runs the other way from the first — the audit depends on
+the build — and it carries no `Blocked by:` line, because placement is what
+orders the pair. Moving the audit to the end separates it from the tool it runs,
+and the close happens after /next, so the separation arrives in time to break the
+*next* run rather than this one.
+
+**The default's rationale rests on the run not confirming each item, which is
+true**, rather than on a run finishing by itself, which is not — a run pauses at
+`[user]` work, halts on `[freeform]` work, and never closes itself (next.md, What
+a run is). The placement rule is unaffected either way: a stop in the middle of a
+build block is worse than the same stop at its end whatever else the run does.
 
 Order here is low-stakes and reversible, so the narration is the catch-point
 where the user can redirect.
 
-**Use the mechanical mover — don't retype blocks.** Moving an item by hand means
-retyping its whole prose block verbatim, which on a long queue silently degrades
-to a partial sort and can corrupt an item with no error. Only the *decision* — the
-desired order — passes through you; never the prose.
+**Use the mechanical mover, passing it the desired order and nothing else.**
+Moving an item by hand means retyping its whole prose block verbatim, which on a
+long queue silently degrades to a partial sort and can corrupt an item with no
+error. Only the *decision* passes through you; the prose stays in the file.
 
 ```
 locate:  scripts/reorder_queue.py under the PLUGIN ROOT

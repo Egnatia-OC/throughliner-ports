@@ -16,13 +16,9 @@ Close the current session — record what happened, update docs, commit.
 `.throughliner-close-active` into the session scratchpad directory, and delete it
 as the last action before the close finishes.** While it exists the scope-lock
 permits the few files the method's own close obligations name — `README.md`
-today — which a build's file list can never contain, because those obligations
-are consequences of a whole run rather than of any one item. Outside the close
-those paths are denied exactly as before.
-
-Same declaration mechanism /setup uses, and deliberately narrower: /setup's
-marker permits everything for the length of its run, this one permits a fixed
-short list. If the close dies before removing it, the scratchpad clears itself.
+today. Outside the close those paths are denied exactly as before, and a close
+that dies before removing the marker leaves it in the scratchpad, which clears
+itself.
 
 ## Route by session shape  [SILENT]
 
@@ -32,16 +28,14 @@ any other session's, which belongs to a build running in another chat.
 
 **Run every judgment step the routed sub-doc calls for, whatever the user says
 about committing.** "Just commit" asks for the close to be quick, not for its
-checks to be dropped — the steps are what make the commit safe to make, and they
-are the close's whole substance.
+checks to be dropped.
 
-**The read is unconditional.** When it exists, read it in full before
-the close-out runs, *regardless of how much of the session you remember*.
-Conversation memory enriches the LOG entry (tradeoffs, colour the file doesn't
-capture) but never substitutes for the read. A "read it only if you don't
-remember" condition hangs on Claude assessing its own memory, which fails exactly
-post-/clear and post-compaction — when the session *feels* remembered but the
-details are gone.
+**Read the build working file in full before the close-out runs, whatever you
+remember of the session.** Conversation memory enriches the LOG entry — the
+tradeoffs, the colour the file doesn't capture — and never substitutes for the
+read. The condition this replaces would have hung on Claude assessing its own
+memory, which fails exactly post-/clear and post-compaction, when the session
+*feels* remembered but the details are gone.
 
 ```
 the build working file EXISTS  ->  read it, then route by the run's work-item flavors:
@@ -63,23 +57,18 @@ NO build working file          ->  done-plan.md, which carries all three
          session didn't make)
 ```
 
-**The freeform close is this third shape, and naming it is the whole of what the
-`[freeform]` tag buys.** A freeform session is work done by hand rather than by
-/next, because it is large or because it characteristically cannot run inside a
-run — and most of them never pass through /plan at all, so there is no queue item
-and no build working file. The route already existed and worked; it simply had no
-name, so the tag's stated job of telling the close what it is looking at was
-asserted and implemented nowhere. Read the edits as the user's expected work,
-never as a broken repository, and split them across separate log entries by
-judgment where they cover several distinct changes.
+**The freeform close is this third shape.** A freeform session is work done by
+hand rather than by /next, so most never pass through /plan at all and there is
+no queue item and no build working file. **Read the edits as the user's expected
+work, and split them across separate log entries by judgment where they cover
+several distinct changes.**
 
 A no-build close touches QUEUE.md, SPEC.md and LOG/ and nothing else, whichever
-of the three it is — which is why one sub-doc carries all three and a build close
-never reads any of them.
+of the three it is.
 
 Detect a completed `[user]` item from what the session can already see. The
-detection rules and the close itself are in done-plan.md; a completed item can
-coincide with a planning session, and that one sub-doc handles both.
+detection rules and the close itself are in done-plan.md, which handles a
+completed item and a planning session together, since the two can coincide.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit
 core below, then return to the sub-doc for the recommendation.
@@ -103,11 +92,10 @@ some unticked   ->  [PROMPT] ask: finish the rest (/next), or close partial?
                     Wait for the user's call.
 ```
 
-**A partial close restores nothing, and that is the design.** An item is removed
-from QUEUE.md only as it is ticked, so an unticked item is still sitting in
-Processed exactly where it was. Closing partial means deleting the build working file and
-leaving the queue alone — there is no copy-back step, no count to reconcile, and
-nothing that can be lost by getting it wrong.
+**Close partial by deleting the build working file and leaving the queue alone.**
+An item is removed from QUEUE.md only as it is ticked, so an unticked item is
+still sitting in Processed exactly where it was — there is no copy-back step and
+no count to reconcile.
 
 Before deleting the build working file, confirm the two halves agree: every ticked item is
 gone from QUEUE.md, and every unticked one is still there. A mismatch means an
@@ -161,16 +149,29 @@ Every sub-doc's entry-writing step points here.
 **Run the scrub checklist before writing** (skill-nonspecific-rules.md, Scrub before
 writing). A LOG entry gets committed, and a session that ran on someone's real
 situation is where a name or a case detail arrives without anyone noticing. Fix
-what you find at the same level of usefulness rather than dropping the fact — and
-don't tell the user the entry is clean afterwards, because you can't know that.
+what you find at the same level of usefulness rather than dropping the fact.
+Describe the entry afterwards as checked against that checklist and the
+credential scan, and as nothing more.
 
 **Read the entry and its index line for whether they carry their own weight**
-(skill-nonspecific-rules.md, Authoring standard). A build entry splits per item
-built and a planning entry splits per item processed, whatever their length; an
-index line is wrong where it restates the entry it points at rather than saying
-enough to decide open-or-skip. No figure decides any of it. Advisory — it names an
-action and never blocks the write. It rides the scrub's read, since both look at
-the same text at the same moment.
+(skill-nonspecific-rules.md, Authoring standard), subject to the length rules
+below. It rides the scrub's read, since both look at the same text at the same
+moment.
+
+**How long an entry or an index line runs — one subject, four provisions.**
+
+- an entry splits per unit of work, not by length: per item built at a build
+  close, per item processed at a planning close;
+- where one decision settles several items, one entry carries the reasoning and
+  its siblings cite it rather than restating it — each still named for its own
+  slug, so `<date>-<slug>.md` resolves for every one of them;
+- an index line carries enough to decide open-or-skip;
+- an index line that restates the entry it points at is wrong at any length;
+- no figure decides any of it, and none is available to restore — the 20%
+  proportional cap was repealed on 2026-08-12 after measurement showed it firing
+  on short entries rather than on long lines, and the absolute word figure that
+  replaced it was repealed on 2026-08-19 with every other length cap. The
+  requirement in the behaviour rules' Index entries section is the whole bound.
 
 **One text, several positions.** The session authors **two** texts, not four:
 
@@ -224,63 +225,39 @@ The audit's Approval-outcomes line means a decision made at audit time doesn't
 vanish — without it, the only trace of a dropped or reworded finding is its
 absence.
 
-**One field on every flavor: the forward-recommendation disposition.** Written
-into this close's entry, in one of two forms:
+**The forward-recommendation advisory — one field on every flavor, and five
+provisions under it.**
+
+- write the disposition into this close's entry, in one of two forms:
 
 ```
 Advisory: filed — <slug>
 Advisory: not needed — <why>
 ```
 
-**A close does not complete until the line is written.** The label is plain, not
-bolded, matching the other close obligations that produce a recorded line.
-
-**The required artifact is the fix, and the step's position is not.** Filing the
-advisory was a step with no output, so a close that skipped it and a close that
-ran it and found nothing to file looked identical from outside — and it was
-skipped about half the time, silently. A line that says `not needed — <why>` is a
-claim a later reader can disagree with, and a missing line is a gap anyone can
-see. Same shape as the entry fields above, and for the same reason.
-
-**File the forward-recommendation advisory.** Where the Recommend-next step made a
-*concrete* recommendation, file it as a capture at the top of Unprocessed, worded
-as advice, consumed and cleared by the next /plan. A generic recommendation files
-nothing, and the disposition line says so.
+- write the label plain, matching the other close obligations that produce a
+  recorded line;
+- complete the close only once the line is written;
+- file the advisory itself as a capture at the top of Unprocessed, worded as
+  advice, where the Recommend-next step made a *concrete* recommendation — a
+  generic one files nothing, and the disposition line says which;
+- head the capture with the fixed, reserved slug, always that literal string:
 
 ```
 #### Last session advises processing <slug> next [forward-advisory]
 ```
 
-**In the prose beneath, state conditions, not counts.** A condition stays true
-however the queue reorders. Arithmetic against a snapshot does not, because the
-advisory is written at a close and read at the next /plan's opening — and the
-whole point of that interval is that work happens in it. Positions in the
-cleared region are precisely what a build run changes.
+- state conditions in the prose beneath it, rather than counts.
 
 ```
 write:      a /next run will halt on this item and build nothing past it
 never:      it sits ninth, with eight items ahead of it
 ```
 
-This trims nothing worth keeping. The advisory that failed named the right item,
-gave the right reason, and named what to process alongside it — only its numbers
-rotted, and by the time it was read the item it called ninth sat first.
-
-The trailing `[forward-advisory]` is a fixed, reserved slug — always that literal
-string, never the slug of the item it points at. Written any other way the
-advisory is a heading with no slug at its end, which the queue lint flags on
-every later edit and which stops the queue mover dead: it refuses on the whole
-file, so no move or deletion can run at all while the advisory is present.
-
-**The advisory is a transient orientation handoff, not work.** It is read at the
-next /plan's opening to orient where that session starts, and cleared there, at
-that same read (plan.md). Nothing about clearing it is this close's job. It never
-runs through keep/delete and never moves into Processed. It stays in QUEUE.md
-rather than getting a file of its own because it is read at the top of Unprocessed
-anyway, and a separate document would be one more thing for the user to learn
-about for one transient line — what made it misread as unprocessed work was never
-its location but that nothing in it said what it was, which is why the heading
-text carries that now.
+**The advisory is a transient orientation handoff, not work.** It is read and
+cleared at the next /plan's opening (plan.md), so nothing about clearing it is
+this close's job. It never runs through keep/delete, never moves into Processed,
+and stays in QUEUE.md rather than getting a file of its own.
 
 **One more section, on every flavor: what the chat did outside its work items.**
 
@@ -291,30 +268,10 @@ text carries that now.
                          item. Omit the section when there is nothing.
 ```
 
-**The gap it closes.** /done closes a **chat**, not one run of a command — but
-every entry field above is organised around the work items that ran, so anything
-the chat did outside them has no entry to belong to and survives only if someone
-thinks to write it somewhere. The user's words: */done is not for wrapping up one
-next session or one plan session, it is for wrapping up ONE CHAT — that's why it
-is stupid that logs only record what was built or planned, and not everything that
-happened in the chat.*
-
-**How this relates to /rescan, which now covers part of it.** /rescan routes what
-it finds by the standard three-way triage: work still to do becomes a capture, and
-what already **happened** is appended to this chat's entry as a marked tail. So a
-correction the user gives that changes shipped text — already done, never a queue
-item — does have a home, and `/rescan` is the one-word way to put it there. What
-this section covers is the same class arriving at the close rather than on demand:
-the close always runs, and /rescan only runs when asked.
-
-**The post-commit tail is the precedent and the proof of shape** — a marked
-section in the entry that is not about any work item, already defined and already
-working. This is the same move applied one step earlier.
-
-**Written on the entry, not in a separate document**, and this section is added in
-one place because the entry format is shared: adding it to `done-build.md` and
-`done-plan.md` separately would put the same rule in two files that already point
-here.
+/done closes a **chat**, not one run of a command, and every entry field above is
+organised around the work items that ran — so anything the chat did outside them
+has no entry to belong to. `/rescan` covers the same class on demand; this
+section covers it arriving at the close, which always runs.
 
 **Where the section goes depends on how many entries this close writes**, which
 the close already knows:
@@ -327,20 +284,10 @@ close writes SEVERAL        ->  the chat-level record becomes its OWN entry,
                                 its own line in LOG/index.md.
 ```
 
-**The condition falls out of the close's own shape rather than being an
-exception**: it reads off how many entries are being written and needs no
-carve-out. On one entry per built item, the chat-level content belongs to none of
-them — writing it on every entry duplicates one text across twenty-odd files, and
-writing it on one makes a later reader guess which. Its own entry matches what
-the content is, and it is findable the ordinary way, from its own index line.
-
-The two placement conventions were weighed and lost: "the first entry" and "the
-last entry written" both attach chat-level content to an item it does not belong
-to, and then need a convention for a reader to find it. **The cost is one extra
-file and one extra index line per multi-item close.**
-
-It is not a new kind of artifact — a log entry with a different filename — so the
-index format is unchanged.
+Its own entry is findable the ordinary way, from its own index line, and it is
+not a new kind of artifact — a log entry with a different filename — so the index
+format is unchanged. **The cost is one extra file and one extra index line per
+multi-item close.**
 
 **The frame, identical for every flavor.** Write the entry, then report in one
 line what landed and where. A revert undoes a LOG entry, so it doesn't wait on
@@ -372,15 +319,6 @@ Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 - [HASH] — [index entry] → [entry filename]
 ```
 
-**The 20% proportional cap that used to sit here was repealed on 2026-08-12**,
-after measurement showed it fired on short entries rather than on long lines. Do
-not restore it: a figure proportional to the entry's length is what made it fire
-on the wrong lines. **The absolute word figure that replaced it was itself
-repealed on 2026-08-19, along with every other length cap**, so there is no
-number here to restore either. What the line must carry is in the behaviour
-rules' Index entries section, and that requirement is the whole bound: enough to
-decide open-or-skip, and never a restatement of the entry.
-
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
 newest-first on a name sort — never appended to a shared log file:
 
@@ -395,29 +333,22 @@ name already taken            ->  append -2, -3, …
 **Every date written at a close is the close date** — today's date, at the moment
 you are closing. That covers the filename prefix and every date written into the
 words of a session record or a queue item alike ("processed 2026-08-12",
-"cleared 2026-08-12"). One rule, no exceptions, so there is nothing to work out
-in the moment. It is not the commit date, and the filename prefix is not a second
-copy of the hash; its only job is the name sort.
+"cleared 2026-08-12"). It is not the commit date, and the filename prefix is not
+a second copy of the hash; its only job is the name sort.
 
 **Where a session ran across more than one calendar day, say so in one plain
-sentence in its record:**
+sentence in its record, and change no filename or datestamp:**
 
 > This session ran across 2026-08-11 and 2026-08-12.
 
-That is the whole accommodation — no change to any filename or datestamp. A
-session spanning two days is ordinary rather than exotic: it is what happens
-whenever someone stops for the night, or runs out of usage and picks it up in
-the morning.
+**Write the hash into the entry heading and the index line, never into the
+filename** — the commit hash doesn't exist yet when the file is written, which is
+why the placeholder pattern exists.
 
-**The hash lives in the entry heading and the index line, never in the filename** —
-the commit hash doesn't exist yet when the file is written, which is why the
-placeholder pattern exists.
-
-**Entry prose never writes the literal placeholder token.** The token belongs only
-in hash position, where the automatic backfill treats any match mechanically. A
-prose mention is one find-replace away from corrupting the entry. When an entry
-needs to describe the mechanism, say it indirectly ("the placeholder", "the
-unfilled hash").
+**Write the literal placeholder token in hash position only**, where the
+automatic backfill treats any match mechanically, so a prose mention is one
+find-replace away from corrupting the entry. Describe the mechanism indirectly
+where an entry needs to ("the placeholder", "the unfilled hash").
 
 Pre-split entries live in `LOG/log.md` and `LOG/log-v*.md` — untouched, found by
 hash or title search.
@@ -426,8 +357,7 @@ hash or title search.
 tail, the same move that appends it to QUEUE.md also updates this session's
 just-written entry — edit its "Routed to Captures:" line to include it, as a
 working-tree edit with no separate commit. It rides into the next session's
-commit, exactly as the hash backfill does. The entry is the session's record, and
-a capture belongs to the session it came up in.
+commit, exactly as the hash backfill does.
 
 ## The record a routing step sweeps
 
@@ -547,37 +477,21 @@ working-tree edit riding this commit.
 > so this is what I could still see rather than a guarantee I've caught
 > everything.
 
-**Say it as written rather than conveying its sense.** An instruction to
-"explain the limit honestly" invites improvement, and improving it is exactly
-what went wrong: a session once opened with "this has been a long session, so I
-can only re-read what's still in view". Session length is a proxy Claude *can*
-observe, standing in for the thing that actually determines the result — whether
-the conversation has been compacted — and that is not observable at all. There
-is no signal announcing it; a compaction that lands cleanly leaves nothing to
-notice, in the same way a truncated file read looks complete from the inside.
-So the substituted caveat invites the user to discount the result by a factor
-that is fictional.
+**Say it as written rather than conveying its sense**, and **name the limit in
+the sentence's own terms — what was still in view — and stop there.** Session
+length, duration and message count are observable proxies for compaction rather
+than the thing itself, and each invites the user to discount the result by a
+factor that is fictional.
 
 **The limit on the fix, stated rather than implied:** a fixed sentence is harder
 to improve on than an intent, but nothing prevents a session rewording it and no
 check will catch that. This reduces the odds; it does not close the hole.
 
-Never name session length, duration, message count, or any other observable
-proxy for compaction.
-
 One thing to state, not fix: a fresh-chat /done has none of the session's
 thinking in view, so there is nothing to re-scan.
 
-**The only other re-scan in the method is /rescan, and it is coordinated with by
-the look-back window above — nothing else.** /plan has none, and must not gain
-one: a re-scan defined by the position "after every item is processed" never
-reaches that position in a chat that processes in batches at the user's
-direction, so it attached itself to whatever felt like a pause and ran three
-times in one chat, twice at a moment no document names. Each run is a
-stop-and-ask, so an invented cadence spends the user's turns on a beat they did
-not ask for and cannot predict. That failure is precisely why /rescan is invoked
-by the user rather than fired by a position, and it is why no third one is
-added.
+**The only other re-scan in the method is /rescan, coordinated with by the
+look-back window above. /plan has none, and gains none.**
 
 > "Re-read our discussion — nothing came up that isn't already captured."
 
@@ -585,9 +499,7 @@ added.
 
 Commit core points here, so it runs at every close. The build working file is
 deleted by the close already; this generalises that lifecycle to *other* throwaway
-files this session created. (Prevention comes first — temp files should have gone
-to the scratchpad and never reached the project. This catches the ones that landed
-anyway.)
+files this session created.
 
 Offer to delete only files meeting **all** of these:
 
@@ -631,11 +543,8 @@ Processed and confirm it's been removed. A work item is normally removed when
 a shipped slug is still sitting in Processed as active work, surface it in one line
 and remove it (or halt and ask) before committing.
 
-A prior multi-item run shipped fourteen work items but left one in QUEUE.md —
-genuinely built, never removed — so it re-presented the next session as unbuilt.
-Trivial for a single-item close; the net earns its place on multi-item and
-unattended closes. A planning close names no shipped slug, so there's nothing to
-check. **Silent unless a stray slug is found.**
+A planning close names no shipped slug, so there's nothing to check. **Silent
+unless a stray slug is found.**
 
 **1. Stage explicitly — name each path:** files this session changed (from
 the build working file Changes), method docs updated during the session or close-out (QUEUE.md,
@@ -658,28 +567,18 @@ RECOGNISE THE HASH-BACKFILL SIGNATURE TOO — and skip the investigation:
     hash becoming a real hash, in an entry heading or the start of an index line
         -> the session-start hook's automatic backfill, already announced in
            its opening housekeeping line
-        -> DON'T open a git diff. DON'T explain it file-by-file.
-        -> fold it in with at most a one-line note
+        -> fold it in with at most a one-line note, no diff opened
 
 any OTHER out-of-scope dirty path
         -> full treatment: surface it in a one-line summary and offer to stage
            it, investigating where the change isn't self-evident
 ```
 
-This exact dirt appears every session and the answer is always "it's the backfill,
-stage it," so re-investigating it is pure delay for zero decision value.
-
 **Where the staged paths include a method doc, name them in one line before
 committing** — "staging QUEUE.md, SPEC.md and two log entries". One sentence, no
-diff, no file-by-file account.
-
-It exists because the check above is blind to the commonest case. It compares
-dirty paths against the build's file list, so it cannot see anything inside a
-file the session already owns — and QUEUE.md is the file a planning session edits
-by design. A hand edit the user made there during the close, or a line another
-session left in it deliberately, arrives inside a file Claude already considers
-its own and is swept into the commit with no mention. Naming the files makes the
-sweep visible.
+diff, no file-by-file account. The check above compares dirty paths against the
+build's file list, so it cannot see anything inside a file the session already
+owns — and QUEUE.md is the file a planning session edits by design.
 
 **Two limits, and neither may be softened.** Naming the staged files makes a
 swept edit **visible**, not **detected** — nothing cheap will ever tell the user
@@ -687,7 +586,7 @@ that a particular line inside QUEUE.md was theirs rather than Claude's. And
 against the worst case it does almost nothing: where another session has already
 *committed* this session's in-progress work under its own message, this line
 produces the word "QUEUE.md" — true, useless, and silent about whose work is
-inside. Do not describe it as covering that.
+inside. Describe it as making a swept edit visible, and as nothing further.
 
 **3. The commit message is not drafted fresh** — it derives from the LOG entry
 already written at the entry step. It is shown before the commit either way: a
@@ -712,13 +611,11 @@ sweep edits, rolled-in user
 edits from step 2)
 ```
 
-**Show the message itself, verbatim, and nothing else about it.** A description
-of how it was derived ("the rationale as approved, plus an appended line naming
-the backfill…") reads as a third text the user has to check, which defeats the
-nothing-new-to-read point.
+**Show the message itself, verbatim, and nothing else about it.**
 
-**4. No pre-commit ask.** The commit always happens at /done and its message was
-already approved, so there's nothing new to confirm. Only the push is optional.
+**4. Commit without a further ask.** The commit always happens at /done and its
+message was already approved, so there's nothing new to confirm. Only the push is
+optional.
 
 ```
 commit first (the safe, local action), THEN gate the outward push on consent:
@@ -733,13 +630,8 @@ offer push — but these commit-first mechanics stay canonical.
 **5. Pass the message shell-agnostically.** Write it to a file in the session
 scratchpad (e.g. `COMMIT_MSG.tmp` there), commit with
 `git commit -F <scratchpad>/COMMIT_MSG.tmp`, then delete the file. One mechanism
-on every machine — it sidesteps inline-quoting fragility (embedded newlines vary
-by shell, and a PowerShell here-string needs its closing token at column 0).
-
-The scratchpad is on the scope-lock's standing list, so the write passes in every
-session type — a build, a planning close, a freeform close — rather than
-depending on which kind the safety check reads the session as. It is also where
-a file the project never keeps belongs.
+on every machine — it sidesteps inline-quoting fragility, and the scratchpad is
+on the scope-lock's standing list, so the write passes in every session type.
 
 **5a. A staging step that partly failed is a STOP, not something to commit
 around** [BRIEF, PROMPT]. Check that every path this close meant to stage is
@@ -747,19 +639,6 @@ actually staged — `git status --porcelain` and read what is in the index — b
 running the commit. Where anything intended is missing, say plainly what did not
 stage and why, and **do not commit.** Fix the staging and re-check, or let the
 user decide.
-
-The real failure this prevents: a staging command aborted partway when it hit a
-gitignored path, and the commit ran anyway. Nineteen LOG entries describing that
-commit's work were left out of it and had to be added by a second commit — after
-which the session-start backfill correctly resolved each one to that second
-commit, because with the files absent from the first, the second genuinely was
-the oldest commit containing them. Every entry then pointed one commit past its
-own subject.
-
-Note what that rules out as the fix: the backfill rule behaved correctly on
-inputs that were wrong, so nothing is added to it. Wrong hashes were one visible
-symptom; entries missing from the commit they describe is the general failure,
-and it is a partial commit either way.
 
 **6. Commit with `git commit -F`.** No fresh okay needed. Then offer push only
 when a remote exists, and push only if the user accepts.
@@ -772,11 +651,10 @@ worktree, and choosing **remove** at exit deletes the worktree and the branch wi
 all the work in them. Use that word, because it is the word the exit prompt uses
 and a user reads it as tidying up.
 
-Don't try to merge here: git refuses to update a branch checked out in another
-working tree, so an isolated session cannot merge itself into the main line. The
-merge is offered at a main-checkout session's start instead, where session_start
-reports worktrees carrying unmerged commits. Say that too, so the user knows the
-work has somewhere to go.
+**Leave the merge to a main-checkout session's start**, where session_start
+reports worktrees carrying unmerged commits — git refuses to update a branch
+checked out in another working tree. Say that too, so the user knows the work has
+somewhere to go.
 
 The LOG entry keeps its placeholder. The session-start hook backfills it at the
 next session, as a working-tree edit folding into that session's commit — no
@@ -786,9 +664,8 @@ amend, no two-commit flow.
 
 Every sub-doc's final step points here, adding only its flavor delta.
 
-**Plain-language guard.** Narrate the queue situation in everyday words — never
-the background section-bookkeeping phrasing. Keep it accurate: **don't say the
-queue is clear when work is still waiting to be sorted.**
+**Narrate the queue situation in everyday words**, and say how much work is
+waiting to be sorted wherever any is.
 
 **Overlap scan.** Before recommending, scan the still-unprocessed work for overlap
 with the top processed item — work that contradicts, invalidates, or would benefit
@@ -801,9 +678,9 @@ unprocessed but no overlap       ->  name what's waiting, give the plain verdict
 overlap found                    ->  recommend /plan first, and name the overlap
 ```
 
-The clean case is a plain assessment, not a hedge — "Three items are waiting to be
-sorted; none touches the next piece of work, so nothing blocks it," never "there
-may be overlap worth checking."
+Give the clean case as a plain assessment — "Three items are waiting to be
+sorted; none touches the next piece of work, so nothing blocks it" — rather than
+as a hedge.
 
 **Queue-state ladder.** When nothing blocks:
 
@@ -811,8 +688,9 @@ may be overlap worth checking."
 1. captures appended this session that affect the next work
        ->  recommend /plan, name the blocker
 2. work sits ABOVE the readiness marker
-       ->  name the next item as information, and say a build wants a fresh
-           session. No question, and no command string ending the message.
+       ->  name the next item as information, say a build wants a fresh
+           session, and end the message there — a statement, with no command
+           string in it
 2b. Processed holds work but the cleared region is EMPTY (the marker is at
     the top)
        ->  say the next work still needs vetting, and point at planning.
@@ -822,24 +700,13 @@ may be overlap worth checking."
            from.
 ```
 
-**Rung 2 states the next item and stops there.** It used to ask whether the user
-was continuing into another /next now — and a message that ends by asking a
-question whose answer looks like a command is one keystroke from being run by
-accident, because the harness offers the slash command it just saw as a
-tab-completion. A user was caught by exactly that. Rewording the question is not
-enough: the same defect was fixed once before, in plan.md's four-routes recital,
-by removing the named command from that moment rather than by phrasing it more
-carefully.
+**Every rung states its situation and names no command.** A message that ends by
+asking a question whose answer looks like a command is one keystroke from being
+run by accident, because the harness offers the slash command it just saw as a
+tab-completion.
 
-**A build wants a fresh session**, which is the user's decision and is the
-reason rung 2 no longer invites one. A run inheriting a full build plus its
-close is the opposite of the fresh short session everything here is designed
-for.
-
-**Rungs 2b and 3 name no command either.** Rung 2b exists because rung 2 used to
-key only on "Processed work exists", which cannot tell work /next can run from
-work that needs vetting first — so a close that had just emptied the cleared
-region still pointed at /next, straight into a stop.
+**A build wants a fresh session**, which is the user's decision and is why rung 2
+states the next item rather than inviting one.
 
 **A session makes exactly one commit, and the tail makes none.** That is the
 whole shape, and everything below follows from it. The close commits; work
@@ -863,36 +730,19 @@ the post-commit tail     ->  writes files, commits NOTHING:
 
 **The cost, stated rather than discovered: the tree is dirty between one close
 and the next, always.** That is accepted, and it is what makes the dirt
-*legible*. Uncommitted changes at a session's opening now mean one thing — the
-previous session's tail, plus the backfill — so a session recognises the
-signature instead of investigating it, exactly as it already does for the
-backfill alone. Dirt that is always the same shape can be read at a glance;
-dirt that is sometimes tail and sometimes an unexplained commit cannot.
+*legible* — uncommitted changes at a session's opening mean one thing, the
+previous session's tail plus the backfill, so a session recognises the signature
+instead of investigating it.
 
-**What was rejected, and why it is not reopened.** Requiring the close to leave a
-clean tree cannot be done without either forbidding post-close work or committing
-each increment — the first loses the record, the second is the defect. A second
-lightweight close over the tail was weighed and lost for the same reason: it is
-another commit wearing a different name, and it needs the user to decide when the
-tail has ended, which nothing can tell them.
+**Read tail-shaped dirt as the previous session's LOG entry, a capture at the
+bottom of Unprocessed, or a backfilled hash, and give anything else the full
+treatment** — which is what keeps the close's staging check its teeth.
 
-**So the close's staging check keeps its teeth**, because the dirt it must catch
-is now sharply distinguishable: tail-shaped dirt is the previous session's LOG
-entry, a capture at the bottom of Unprocessed, or a backfilled hash. Anything
-else is a user edit and still gets the full treatment.
-
-**In a tail, an urge to run or drive testing or verification is the signal to
-route it into a skill rather than doing it here** — a quick /plan to structure the
-lines, or /next to hand over a `[user]` line that already exists. This fires
-hardest where the verification is *already* a `[user]` item, because then the work
-has a home and the tail is bypassing it.
-
-The recorded instance: a close committed, and the session then initiated a render
-verification informally in conversation — having the user run testing that was
-already sitting as a `[user]` line in Processed. Its findings came back as loose
-captures, and the whole long tail followed from that one move. Same failure family
-as under-filing a `[user]` line, and it blurs the plan/execute boundary from the
-far side: executing structured work with no skill around it.
+**In a tail, route an urge to run or drive testing or verification into a skill
+rather than doing it here** — a quick /plan to structure the lines, or /next to
+hand over a `[user]` line that already exists. This fires hardest where the
+verification is *already* a `[user]` item, because then the work has a home and
+the tail is bypassing it.
 
 **The limit, stated rather than found later:** the urge is not confined to a tail.
 It happened in one, and nothing says it only happens there. Siting the clause here
@@ -920,15 +770,9 @@ only where a file        -> post-close conversation that alters nothing has
                             user to decline.
 ```
 
-The evidence is recurrence rather than one miss: the user has had to ask for this
-amendment repeatedly, which is the same signal that carried the reply-draft
-offer. A thing they keep having to ask for is a thing the method should offer.
-
-**Announce a `[freeform]` item if Processed holds one.** /next will not build it —
-it halts on it — so a close that recommends /next without saying so sends the user
-into a stop. Say plainly what the item is and that it needs a session where the
-work is done by hand rather than run from the queue, so they reach for that instead
-of /next or /plan.
+**Announce a `[freeform]` item if Processed holds one.** /next halts on one rather
+than building it, so say plainly what the item is and that it needs a session
+where the work is done by hand rather than run from the queue.
 
 **Whether this step's recommendation was concrete decides the forward-advisory
 disposition**, which is written in the LOG entry files section above, along with

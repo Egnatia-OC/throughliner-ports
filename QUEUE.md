@@ -6,843 +6,6 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### The version-change notice recommends /setup on every release, and nothing about a version change requires it [version-notice-recommends-setup-with-no-cause]
-**Raised by you 2026-08-21**, with two screenshots of sessions halting after a test12 → test13 update. Your report: the cry-wolf is still happening in every session even though the epoch marker is correct, and **"All my projects are at halt"**, waiting on this so you stop having to run /done, /setup and /plan again midway through sessions on every update. The diagnosis below is Claude's, read from the code rather than inferred.
-
-**The format check is not what fires.** `session_start.py` halts on a stale format only where the project's recorded epoch is below `FORMAT_EPOCH`. This project records 4 and the plugin declares 4, so it stayed silent in both screenshots and in the session that filed this. That mechanism works as designed and is not what changes.
-
-**The version check is what fires, and it goes off on every release.** A separate flag compares `.throughliner-version` against the installed plugin and emits a notice saying an update has been installed, that `/setup` wants a session of its own, and to finish and close what is running first. It says nothing about the documents being wrong — because nothing is wrong. Both screenshots show Claude reading that notice and narrating it as a format emergency, claiming the update "changed the structure it reads your documents in" and that conclusions from the queue "could be confidently wrong". The hook never said either thing.
-
-**Only /setup writes `.throughliner-version`, so the notice repeats at every session opening until /setup is run.** That is the loop: rezip, marker goes stale, every session opens telling you to close what you are running and give /setup a session, you comply, the marker updates, the next rezip starts it again. You rezip at every run, so it is a per-run tax.
-
-**A version change requires nothing.** /setup is genuinely called for when the format epoch is behind, or when a document or setting is missing — both checked separately, both already saying so when they fire. `CLAUDE.md` predicted this when it made the epoch deliberately separate from the version, on the ground that a version check would cry wolf and be learned past. The epoch was built to replace the version check; the version check was left running beside it.
-
-**The notice is removed rather than reworded, and the reason it costs nothing is that the version is already on screen.** `session_start` reports the installed plugin version at every opening unconditionally, so a factual "the version changed" line tells you what the opening already told you. Rewording it was weighed and refused: a line that fires every session until /setup runs is noise whatever it says, and the noise is the defect.
-
-**The ripple was traced by grep and reaches a second site.** `next.md`'s run-presentation guard fires on "session_start says the project's recorded plugin version is behind the installed one, AND an item in this run names a file /setup rewrites from a template". That guard rests on the same false equation — version-behind means /setup-outstanding — so removing the notice without retargeting it would leave a trigger with nothing to read. Its purpose is sound and survives: it is retargeted onto the signals that genuinely mean /setup is outstanding.
-
-**Nothing else reads the flag**, checked rather than assumed: `version_mismatch` is defined once and used once, by the notice alone.
-
-**The level was asked rather than defaulted to.** The fix belongs in the hook and the one procedure doc that reads it, not in a rule — this is a mechanism emitting a recommendation it has no cause for, and no wording added elsewhere reaches that.
-
-**Files:** `plugin/throughliner/hooks/session_start.py`, `plugin/throughliner/docs/next.md`, `resources/testing/`, and `plugin/throughliner/templates/faq-template.md` with its `faq-index-template.md` line, re-copied into `FAQ/faq.md` and `FAQ/index.md`.
-
-**SPEC is not on that line because its two sentences were rewritten in this planning session**, ahead of the build. **No epoch bump** — no project document becomes structurally wrong. Shipped, not host-only: every consumer meets the same notice at every release.
-
-**The FAQ entry fires on its own test**, which is what the user *does*: today they close a session and run /setup on every update, and after this they do not.
-
-Rule gate: not needed — no rule is authored or amended in the method's own rule text. The change removes a hook's unfounded recommendation and retargets one procedure-doc trigger onto signals that already exist.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/hooks/session_start.py` — delete the version-change
-  notice block and the `version_mismatch` flag that gates only it. Nothing
-  else reads the flag; verify with a grep before and after. The installed
-  plugin version stays reported at every opening, unchanged.
-  `plugin/throughliner/docs/next.md`, the run-presentation guard's second
-  trigger — retarget it from "the project's recorded plugin version is behind
-  the installed one" to the signals that actually mean /setup is outstanding:
-  the format epoch behind, or a document or setting reported missing. The
-  guard's second condition (an item in this run names a file /setup rewrites
-  from a template) and its drop-from-this-run-only behaviour are unchanged.
-  `resources/testing/` — cases asserting that a version-only difference, with
-  the epoch current and nothing missing, produces no notice and no /setup
-  recommendation; and that a stale epoch still does.
-  `plugin/throughliner/templates/faq-template.md` plus its
-  `faq-index-template.md` line, then re-copied into `FAQ/faq.md` and
-  `FAQ/index.md` — an entry answering what a plugin update requires of the
-  user, and that a version change on its own requires nothing.
-Acceptance: `grep version_mismatch` in `session_start.py` returns nothing. A
-  session opening with a version-only difference emits no /setup line. The
-  epoch halt and the missing-document checks are untouched and still fire.
-  `next.md`'s guard names the epoch and missing-document signals. The hook
-  suites under `resources/testing/` pass. `FAQ/faq.md` is byte-identical to
-  `faq-template.md`, and the same for the two index files.
-Refused: rewording the notice to say a version change needs no migration — it
-  would still fire at every session until /setup runs, and the repetition is
-  the defect rather than the wording. The version is already reported at every
-  opening, so the line carries nothing new.
-Refused: removing `next.md`'s guard along with the notice — its purpose is
-  sound and only its trigger was wrong.
-Note: only /setup writes `.throughliner-version`, which is why the notice
-  repeated every session rather than once per update. That marker is left in
-  place; whether it still earns its keep once nothing reads it is separate work.
---- End build block ---
-
-#### Nothing measures what Claude actually says, so no verbosity change can be told from no change [transcript-output-measurement]
-**Raised by you 2026-08-21**, when you named Claude's verbosity as the single thing stopping you promoting the plugin anywhere but GitHub, and the YouTube channel as blocked on it. The gap below is Claude's, found by checking every tool in the project.
-
-**What is measured today, and what is not.** `measure_written_shape_length.py` measures written *documents* — captures, work items, session records, index lines. `queue_digest.py` measures the queue, `rule_signals.py` measures rule text. Not one tool reads a line Claude said. Nothing in the project opens a session transcript at all.
-
-**So the thing you care most about is the one thing with no number against it.** Every other lever here reports a distribution and states no verdict; this one reports nothing. A change aimed at output could help, hurt or do nothing and nobody would know — which is exactly the position that let a 4.8-era conclusion about brevity instructions stand unchallenged for a whole model generation.
-
-**The evidence is already on disk.** `CLAUDE.md` records the route: raw transcripts sit at `.claude/projects/<project-slug>/*.jsonl`, the authoritative unedited record, and warns against asking Claude to reconstruct a session instead. What is missing is a script that reads them.
-
-**What it reports, and what it must not.** Words per assistant message, split by whether a skill was running and which one, plus the distribution across a session — the same posture every other tool here takes: state the fact, print no threshold. **No target and no cap**, both because caps are retired here and because the current-model research says a short instruction steers as well as a quantified one, so a figure would buy nothing and would be a bare number.
-
-**Narrowed on your decision 2026-08-21 to a one-off instrument, and this entry is rewritten rather than appended to.** What came out is the standing-measurement framing — the script serving as an ongoing report anyone could run. **Your objection is what removed it: a measurement with no standard becomes a standard the moment a session reads its median as a norm**, which is the circularity SPEC already records against the retired word bands. A single reading of this script tells nobody anything; only the difference between two samples across one known change does.
-
-**So it is scoped as the instrument for [brevity-amendment-outcome] and nothing else.** It is added to no close, no session opening and no check; nothing routine runs it; and no session reads it for guidance about how long to be. **It carries a stated delete-time under the temp-file rule** — removed once that audit has reported, so availability cannot quietly turn it into the standing measurement this narrowing rejected.
-
-**Runs before [brevity-instruction-for-the-5-series]** so there is a baseline to compare against. Placement carries the order and this sentence carries the reason; no `Blocked by:` is written, because the script is useful on its own.
-
-**Files:** `resources/transcript_output_length.py` (new, host-only — a one-off dev instrument, not shipped), **deleted once [brevity-amendment-outcome] has reported.** `resources/research/index.md` is **not** on this line and is excluded deliberately: an index line is how a durable finding is made findable by later sessions, which is the opposite of a tool with a delete-time. **No SPEC sentence is owed:** SPEC describes the shipped tool that measures written shapes and says nothing about transcripts, so no sentence goes wrong or incomplete. **No FAQ entry** — nothing a user does changes; the script does not ship. **No epoch bump.**
-
-Rule gate: not needed — no rule is authored or amended in the method's own text. This adds a host-only measurement script and evicts nothing.
-
---- Build block ---
-Changes:
-  `resources/transcript_output_length.py` — new script, standard library only,
-  reconfiguring stdout/stderr to UTF-8 from `reorder_queue.py`'s canonical
-  block. Reads `.claude/projects/<project-slug>/*.jsonl`, extracts assistant
-  message text only (dropping tool_use, tool_result and thinking blocks), and
-  reports words per assistant message: median, the distribution, and a split
-  by which skill was running where that is readable from the transcript.
-  Prints no threshold, no target and no verdict of any kind.
-  The script's own header states what it is: a one-off instrument for
-  [brevity-amendment-outcome], to be deleted once that audit has reported. It
-  is wired into nothing — no close, no session opening, no check, no other
-  script imports it.
-  `resources/research/index.md` is NOT edited. A tool with a delete-time does
-  not get an index line.
-Acceptance: the script runs against this project's own transcripts and prints a
-  distribution. No figure in its output is presented as a limit, a target or a
-  breach. It reads transcripts only and writes nothing back. Nothing anywhere
-  in the repository calls it, and its header names its delete-time.
-Refused: printing a target or a band — caps are retired here, and the
-  current-model research says a short brevity instruction steers as well as a
-  quantified target, so a figure buys nothing and would be a bare number.
-Refused: keeping it as a standing measurement anyone can run — a measurement
-  with no standard becomes one the moment a session reads its median as a norm,
-  which is the circularity SPEC records against the retired word bands.
-Refused: asking Claude to summarise a session instead of reading the raw file —
-  `CLAUDE.md` records that a reconstruction is lossy and reads Claude-authored
-  content as fact.
-Note: runs before [brevity-instruction-for-the-5-series], so that item has a
-  baseline to be measured against.
---- End build block ---
-
-#### The always-loaded rules license any length, on a model that is verbose by default [brevity-instruction-for-the-5-series]
-**Raised by you 2026-08-21.** Your position: Claude's verbosity is the single thing stopping you promoting the plugin anywhere but GitHub, and the YouTube channel waits on it. **You also corrected the objection that nearly buried this** — Claude cited SPEC's claim that rationale must ride a rule for the rule to be followed, and you identified it as a 4.8-era result. It is.
-
-**The research already answers this and has since 2026-07-31.** `resources/research/opus-5-instruction-compliance.md` and `fable-5-instruction-compatibility.md`, both live and unsuperseded, cited rather than restated. Their finding, from Anthropic's own Opus 5 guide: the 5-series is **verbose by default**, narrates readily, and runs longer per message than 4.8 — and **length is a prompt-side control**. The Fable file adds that a short brevity instruction steers as well as a quantified target, and as well as listing each pattern to kill.
-
-**So the record talked this project out of the one lever its own current-model research recommends.** SPEC says a prose instruction to be brief "was tried first and measurably did nothing", which is why word-count caps were introduced. The caps were later retired and nothing replaced them, because the prose instruction was already marked tried-and-failed. It was tried on 4.8.
-
-**The defect found by sweeping the shipped docs is one clause, and it is the counterweight rather than a missing rule.** `skill-nonspecific-rules.md`'s message-shape bullet ends: *"giving every explanation the user needs in order to act, in full sentences, at whatever length that takes — what comes out is the padding around it: meta-narration, a restatement of what was just shown, hedging."* On a model verbose by default, an explicit licence for any length is the half that wins. Its second half also states the constraint as a list of things not to do, which the wording rule names as the signal that the action was never specified.
-
-**The sweep found little else, which is the useful part of running it.** The only self-verification scaffolding in the whole docset is the write-then-re-read clause before a pointer — **excluded by name**, in its own sentence rather than on the Files line: the Opus 5 guide targets verification that buys no quality, and that clause exists for a recorded instance of pointing at text that was not there. The "however long" phrases in `done-build.md` and `feedback-and-inbox.md` are also excluded: each makes an obligation unconditional and neither licenses length.
-
-**The level was asked rather than defaulted to.** This belongs in the always-loaded rules and nowhere else: it must shape every message in every skill and outside them, so it cannot be fetched, and no hook can reach it — nothing mechanical reads Claude's chat output, found independently by [two-column-fences-wrap-unreadably] and [slug-never-explained-to-the-user].
-
-**The bound that ships with it**, from the Fable research: readable and concise are different things and readability matters more. It is a bound on the fix, not an objection to it, and it matches SPEC's readable-output principle.
-
-**Files:** `plugin/throughliner/docs/skill-nonspecific-rules.md` — the message-shape bullet's final limb.
-
-**SPEC is not on that line because its two 4.8-era sentences were rewritten in this planning session**, ahead of the build. **No FAQ entry** — the user sees shorter replies and does nothing different, which is the FAQ trigger's own test. **No epoch bump.** Shipped: every consumer runs the same model family.
-
-**Runs after [transcript-output-measurement]** so the change has a baseline. Placement carries the order; no `Blocked by:`, since the amendment stands alone.
-
-Rule gate: run — admitted as an amendment replacing one limb of the existing message-shape bullet in the always-loaded rules, subordinate rather than freestanding, so no new slot is spent. **The eviction is "at whatever length that takes"**, repealed outright along with the prohibition list that follows it; the limb is restated as the action required. **No figure is introduced**, because the research says a short instruction steers as well as a quantified one — so the bare-number ban is satisfied by evidence rather than by omission. Failure evidence is the user's sustained report across every context plus the model guide's documented default. **A hook was considered and refused: nothing mechanical reads Claude's chat output.**
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/skill-nonspecific-rules.md`, the Communication
-  section's "Shape every message the same way" bullet, final limb — repeal
-  "at whatever length that takes" and the prohibition list that follows it
-  ("what comes out is the padding around it: meta-narration, a restatement of
-  what was just shown, hedging"). Restate the limb as the action required: say
-  what the user needs in order to act, and stop there. Keep it short — the
-  research finding is that a short brevity instruction steers as well as a
-  quantified target or a list of patterns, so do not reintroduce either.
-  Keep the readability bound in the same limb: readable and concise are
-  different things and readability wins where they conflict.
-Acceptance: the phrase "at whatever length that takes" appears nowhere under
-  `plugin/throughliner/docs/`. The limb reads as one positive instruction with
-  its readability bound, states no word count and lists no patterns. The
-  rule-statement count is accounted for — this replaces a limb rather than
-  adding one.
-Refused: a word count, a band or a list of verbosity patterns to kill — the
-  current-model research says a short instruction is as effective as either,
-  and a bare figure is banned here.
-Refused: removing the write-then-re-read clause before a pointer — the Opus 5
-  guide targets verification that buys no quality, and that clause exists for a
-  recorded instance of pointing at text that was not there.
-Refused: siting this in a fetched doc — it must shape every message in every
-  skill and outside them, so it cannot be fetched.
-Note: runs after [transcript-output-measurement], which supplies the baseline.
---- End build block ---
-
-#### Processing an item rewrites it only when folding — the general rewrite-at-the-end-of-the-loop was never built [processing-appends-where-it-should-rewrite]
-**Raised by you 2026-08-21**, checking whether a decision had landed: you asked, after the ideation loop was made to write only on complete, that all planning work the same way — the item the discussion is aimed at rewritten in full at the end of each loop, because it seemed to yield denser writing. You said you were not sure the discussion landed. **It half did.**
-
-**What the record shows, retrieved rather than recalled.** The ideation loop shipped 2026-08-17 and was sharpened the same day — `LOG/2026-08-17-ideation-loop-holds-the-write.md` and `-2.md`; it lives in `skill-nonspecific-rules.md`'s write-first rule and covers ideation in any skill plus capture-processing in /plan. Folding shipped 2026-08-20 as two typed operations — `LOG/2026-08-20-folding-in-has-no-eviction-step.md`: a **merge** rewrites the host item and names what came out, a **supersession** appends dated with why the old reasoning lost.
-
-**What does not exist is the general rule.** Nothing says that processing an item rewrites it whole. `plan.md` carries *"Read the ITEM AS IT STANDS, not the paragraph being added"*, and its own text marks it advisory — it "names an action and never blocks the keep". So the rewrite is reachable only through the merge branch, which fires only where two paragraphs describe the same thing. **Ordinary re-processing appends and is asked to re-read, not to rewrite.**
-
-**This session is the failure observed live, which is why the evidence is not thin.** Three items lifted from below the readiness line — [queue-privacy-default], [repeal-falsifies-a-posted-claim] and [rationale-lens-after-the-build-view] — each gained a settlement paragraph appended to prose written days earlier, and none was rewritten. [rescan-does-not-hand-back] was rewritten, and only because splitting it triggered the merge branch. **The rule you asked for would have fired four times today and fired once.**
-
-**Why the appended form is the one that degrades.** An item re-processed across several sessions accumulates layers, each written by an author who could see the whole item and chose to add to the end of it. [split-action-defeats-the-bands-in-aggregate] has the measurement: across one planning session the queue grew 15% with the item count unchanged, **because processing an item is what lengthens it** — every keep adds a settlement, a Files line and a disposition. Only building an item out or deleting it shrinks the file.
-
-**The evidence for the fix is one data point and no more is claimed.** The single measured merge came out 63 words shorter. That is the only figure anyone has that rewriting is denser than appending.
-
-**To settle at processing, and the objections are real.** A whole-item rewrite at every keep costs output on every item processed, against a saving nobody has measured at scale — and this project has retired one length lever already for yielding 8% and 3%. It also risks the failure `tersifying-the-queue.md` names as its worst: a rewrite that upgrades a paraphrase into a quotation claim, one instance of which was found live in this queue. **Weigh a narrower trigger** — rewrite where the item is being re-processed rather than processed for the first time, which is exactly the layered case and is visible in the item's own text.
-
-**One thing not to lose.** The throughline requires a defeated alternative and its reason to survive, so a rewrite must not be a compression that drops why something lost. That is precisely what the supersession branch protects, and any general rewrite rule has to sit alongside it rather than over it.
-
-**Settled at processing 2026-08-21, and the narrow trigger is taken rather than the general one.** The rewrite fires where an entry **already carries a dated settlement or skip paragraph from an earlier session** — the layered case, and the only case where there is anything to rewrite. On first processing a capture is authored into a work item, which is a rewrite already, so a general rule would spend output on every item to change nothing on most of them. The trigger reads a literal in the entry's own text and needs no judgment.
-
-**What is evicted is the advisory framing, which is the defect rather than a missing rule.** `plan.md` already says *"Read the ITEM AS IT STANDS, not the paragraph being added"*, and its own text marks it advisory — it "names an action and never blocks the keep". So the step names the right action and requires nothing, which is why four re-processed items in one session produced four appends. It stops being advisory and states the action: rewrite the entry whole.
-
-**The bound from this item's own text is kept in the rule rather than left in the record**, because a rewrite that drops it is worse than an append: a defeated alternative and its reason survive the rewrite, and a paraphrase is never upgraded into a quotation claim. Both are recorded failures — the second was found live in this queue.
-
-**A measurement already fires and nothing reads it, found by watching it fire through this session.** After every queue edit the hooks report each item's word growth since the last commit, as bare facts. So the signal this rule needs already exists at the right moment; what was missing is an instruction that acts on it. **Naming the report in the rule is refused** — it states no threshold by design, and pointing a rule at it would turn a fact into a target, which is the circularity this project retired the word bands over.
-
-**Your addition at processing — offering immediate processing instead of writing at all — is already a cleared item and is not duplicated here.** [ask-before-writing-a-user-raised-capture] states it: where the answer is process-now, nothing is written as a capture, and the item goes straight through present-and-interview to be written once as a work item. **One site is genuinely uncovered**: a capture derived from INBOX mail at a /plan opening is written unconditionally with no such offer, though the session could process it immediately. That is folded into [inbound-replies-not-drafted], which already owns the mail step.
-
-**Files:** `plugin/throughliner/docs/plan.md` — the keep-step's authoring sub-step. **No SPEC sentence is owed, checked rather than assumed:** SPEC describes the processing flow, the ladder and skipping, and says nothing about how an entry's text is revised. **No FAQ entry** — a consumer's items get denser and they do nothing different. **No epoch bump.** Shipped: every consumer processes items the same way.
-
-**This entry is appended to rather than rewritten, which the rule it admits permits.** It was filed today and carries one layer, so there are not two accounts of one thing to merge — the settlement adds a decision the item did not have. Stated so the exception is visible rather than looking like the rule being broken on arrival.
-
-Relates to [folding-in-has-no-eviction-step] (shipped, the merge half), [keep-step-accretes-from-five-items] (the same step already carrying five clauses — this makes six, and that item's one reading of the finished step is now more clearly owed) and [split-action-defeats-the-bands-in-aggregate] (the measurement).
-
-Rule gate: run — admitted as an amendment converting an existing advisory statement at the keep-step into an operative one, subordinate to a step that already exists, sited in a fetched procedure doc so no always-loaded slot is spent. **The eviction is that statement's advisory framing** — "names an action and never blocks the keep" — repealed, with the action specified. **No figure is introduced.** Failure evidence is four re-processed items in one session producing four appends where one rewrite fired only because a merge triggered it, plus a measured 15% queue growth across one session with the item count unchanged. **A hook was considered and refused:** the growth report it would rest on states no threshold by design, and pointing a rule at it would make a fact into a target.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/plan.md`, the keep-step's authoring sub-step —
-  the statement "Read the ITEM AS IT STANDS, not the paragraph being added"
-  stops being advisory and becomes operative. Specify the action: where the
-  entry already carries a dated settlement or skip paragraph from an earlier
-  session, rewrite the entry whole rather than appending to it. Where it does
-  not, author it as now.
-  Same statement — carry two bounds inside the operative sentence, not beside
-  it: a defeated alternative and the reason it lost survive the rewrite, and a
-  paraphrase is never upgraded into a quotation claim.
-  Repeal the words marking it advisory ("names an action and never blocks the
-  keep"). Leave the merge and supersession operations untouched; they are the
-  folding case and this is the ordinary re-processing case.
-Acceptance: the statement reads as a requirement with its trigger and its two
-  bounds inside it. The phrase marking it advisory appears nowhere in
-  `plan.md`. The merge/supersession rule is unchanged. The rule-statement count
-  is accounted for — this converts a statement rather than adding one.
-Refused: firing on every keep — on first processing a capture is authored into
-  a work item, which is a rewrite already, so a general rule spends output on
-  every item to change nothing on most.
-Refused: pointing the rule at the hooks' per-item word-growth report — it
-  states no threshold by design, and a rule aimed at it turns a fact into a
-  target.
-Refused: duplicating the write-versus-process-now offer here — it is already
-  the design of [ask-before-writing-a-user-raised-capture], cleared to run.
---- End build block ---
-
-#### Claude keeps writing two-column fenced blocks that wrap into nonsense on the user's display [two-column-fences-wrap-unreadably]
-Filed 2026-08-15 by Claude at the close's re-scan, from an instance it caused in this session.
-
-**What happened.** The rewritten ladder was presented as a fenced block with a label on the left and its explanation in a right-hand column. On the user's display the right column wrapped underneath the left, so the two ran together and half the rungs appeared to have no title. **Her words: "there's no title on half of them. what do they mean."** The content was fine; the layout destroyed it, and a second message in plain lines fixed it immediately.
-
-**Why this is a capture rather than a one-off slip.** The wrapping behaviour was already known here when the block was written anyway. **The item that recorded it is gone, checked at processing 2026-08-19 rather than assumed:** [fences-wrap-so-prose-rule-reason-is-false] was filed 2026-08-07, grew to roughly 1,500 words, and left the queue — it survives only as a line in `resources/research/written-shape-length-growth.md`. Its subject was a prose rule whose stated *reason* was false, which is an argument about a justification rather than about what Claude emits, so there was nothing to fold into. This item's own instruction to check that first is what caught it. The shipped docs are also full of this format: `skill-nonspecific-rules.md`, `plan.md` and `done.md` all use two-column fenced blocks heavily, and Claude reads them at every session start, which is the likeliest reason it keeps reproducing the shape in chat.
-
-**The distinction that matters, and what a fix has to get right.** A two-column block inside a procedure doc is read by Claude, in a wide view, and works. The same shape emitted *to the user* is read on whatever display they have. So the rule is about output, not about the docs — a fix that reformatted the procedure docs would solve the wrong half.
-
-**Settled at processing 2026-08-19, and the shipped rule already answers this one sentence short of the point.** The always-loaded render rule states what a fence is *for*: a paste target, or content whose exact characters **are** the substance — code, shell commands. A labelled two-column layout is neither; it is explanation wearing a fence. So the block that broke on your display was already outside the rule. What the rule never says is that using a fence for anything else is wrong, and the procedure docs model the wrong shape at scale, which is why it recurs.
-
-**What changes.** One clause on `skill-nonspecific-rules.md`'s "How inline text is formed" block, beside the two entries already there: structured explanation shown to the user goes **one item per line, never in aligned columns**.
-
-**Reformatting the procedure docs is refused, on this item's own reasoning.** A two-column block inside a procedure doc is read by Claude in a wide view and works. The rule governs output; rewriting the docs would fix the half that is not broken.
-
-**Placed before the restyle passes deliberately**, so [law-prose-restyle-heavy-docs]'s subordination lens meets this clause as part of the file rather than after it, and does not have to handle the same text twice.
-
-**Files:** `plugin/throughliner/docs/skill-nonspecific-rules.md` — the View-in-doc rendering section's inline-forming block. **No SPEC sentence is owed**, asked at the keep-step rather than left implicit: SPEC describes pointer-versus-inline rendering and says nothing about what a fence is used for, so nothing there goes wrong or incomplete. **No FAQ entry** — this changes what the user sees, not anything they do.
-
-Rule gate: run — admitted as a subordinate clause on the existing render rule's inline-forming block, so no freestanding rule and no always-loaded slot spent. **Nothing is evicted, stated plainly rather than dressed up as a merge.** Failure evidence is thin by count — one clear instance, your own display — and carries on cost rather than weight: the failure is visible to the user, wastes a whole message, and the fix is a sentence. **A hook was considered and refused: nothing mechanical reads Claude's chat output.**
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/skill-nonspecific-rules.md`, the View-in-doc
-  rendering section's "How inline text is formed" block — add one clause
-  beside the two entries already there: structured explanation shown to the
-  user goes one item per line, never in aligned columns.
-  Write it as a subordinate unit of that block, matching the existing
-  entries' grammar. Nothing is evicted.
-Acceptance: the inline-forming block carries the new clause alongside the two
-  existing entries and reads as a continuation of them, not as a freestanding
-  rule. No procedure doc's own two-column blocks are reformatted.
-Refused: reformatting the procedure docs' own two-column blocks — those are
-  read by Claude in a wide view and work; the rule governs output to the
-  user, so rewriting the docs would fix the half that is not broken.
-Refused: a hook — nothing mechanical reads Claude's chat output.
---- End build block ---
-
-#### Restyle `done.md` and `plan.md` to the law-prose standard [law-prose-restyle-heavy-docs]
-Filed 2026-08-17 **on your decision that the restyle continues to the rest of the corpus.** [law-prose-restyle] shipped this morning covering `skill-nonspecific-rules.md` alone and was consumed by that build, so the continuation had no queue item at all.
-
-**These two first** because they are the largest rule-bearing docs and both are already scheduled for subtraction work, so findings have somewhere to land.
-
-**What changes.** Each doc rewritten to the wording standard the rule gate specifies: prohibitions restated as the action required, qualifications carried by structure rather than explanation, main clause first, one idea per provision, and rationale moved out of operative statements into the record. The shipped pass is the precedent for what that looks like in practice.
-
-**Acceptance test, taken from the pass that worked:** rule-statement count before and after, accounted for statement by statement, with any change composed rather than asserted — `resources/rule_signals.py` reads the count. **Its stated limit is inherited too:** a flat count cannot detect a rewrite that changed a rule's meaning, so the pass claims coverage of what it read and nothing more.
-
-**Ordering, written into both entries.** This runs before [law-prose-restyle-remaining-docs], and both run before [session-occurrence-audit], which reads these same files and would otherwise gather a list the rewrite makes stale — that is why the audit is held.
-
-**A second lens rides this pass, folded in from [freestanding-rules-that-should-be-subordinate] on your instruction 2026-08-17.** While each doc is rewritten, look for the signature that item names: **two or more rules governing the same subject, stated at the same level, with no declared relationship** — and land them as a parent with subordinate units, which is what the admission rule already requires of a rule being authored and which nothing has ever applied backwards to rules already shipped. Candidate subjects it names besides length: what gets written where, when to ask versus proceed, and what counts as evidence.
-
-**One interaction the fold creates, stated so the acceptance test is not misread.** Subordinating two rules under one parent **reduces** the statement count. So a fall in the count is no longer automatically an eviction: each reduction is attributed to either a merge under a parent or a deletion, and named as one or the other. Without that, this lens and the flat-count test contradict each other.
-
-**And the gap the fold would otherwise leave, closed here.** The known instance — at least three separate statements about how long something should be, none referencing the others — is in `skill-nonspecific-rules.md`, which was restyled this morning **without** this lens. So that file is in this item's scope for the lens alone, not for a second restyle.
-
-**This pass carries TWO lenses, not three. The per-paragraph rationale lens was folded in on 2026-08-17 and taken back out on 2026-08-19** — do not restore it here; it lives in [rationale-lens-after-the-build-view], held until [split-the-cleared-region-for-concurrent-sessions] ships. What removed it was evidence, not preference: the test that lens was waiting on came back confirmed, in `resources/research/rationale-flows-from-items-into-shipped-docs.md`, showing that reasoning written into a work item reaches the doc a build edits — in the settling case with the clause order intact and the final sentence identical, where the item had directed nothing. So the rationale in these two docs arrives from upstream, and a per-paragraph pass would strip text the next build writes back. **The other two lenses are untouched and this item is otherwise unchanged**: the wording restyle and the subordination lens read the docs as they stand and owe nothing to where the text came from.
-
-**Files:** `plugin/throughliner/docs/done.md`, `plugin/throughliner/docs/plan.md`, and `plugin/throughliner/docs/skill-nonspecific-rules.md` for the subordination lens only.
-
-Rule gate: run — no rule is authored, amended or evicted; the standard being applied was admitted when the gate was, and this extends it to more files plus one lens the admission rule already contains. **A restyle is the one pass that can silently author a rule by rewriting one**, which is why the acceptance test is a count accounted for statement by statement rather than a reading.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/done.md` and `plugin/throughliner/docs/plan.md`
-  — rewrite each to the law-prose wording standard: prohibitions restated as
-  the action required, qualifications carried by structure rather than
-  explanation, main clause first, one idea per provision, rationale moved out
-  of operative statements into the record. The shipped
-  `skill-nonspecific-rules.md` pass is the precedent for what that looks like.
-  Same two files, second lens — subordination: find two or more rules
-  governing one subject, stated at the same level with no declared
-  relationship, and land them as a parent with subordinate units. Candidate
-  subjects: length, what gets written where, when to ask versus proceed, what
-  counts as evidence.
-  `plugin/throughliner/docs/skill-nonspecific-rules.md` — the subordination
-  lens ONLY, not a second wording restyle. The known instance is there: three
-  separate statements about how long something should be, none referencing the
-  others.
-Acceptance: rule-statement count before and after per file, read with
-  `resources/rule_signals.py`, accounted for statement by statement rather
-  than asserted. Every FALL in the count attributed explicitly to either a
-  merge under a parent or a deletion, and named as one or the other.
-Refused: the per-paragraph rationale lens — folded in 2026-08-17 and taken
-  back out 2026-08-19; it lives in [rationale-lens-after-the-build-view]. The
-  rationale in these docs arrives from upstream work items, so a per-paragraph
-  pass would strip text the next build writes back.
-Note: runs before [law-prose-restyle-remaining-docs], and both before
-  [session-occurrence-audit], which is held for that reason.
-Note: a flat count cannot detect a rewrite that changed a rule's meaning. The
-  pass claims coverage of what it read and nothing more.
---- End build block ---
-
-#### Explain the slug once in the queue header, and say what an item is for every time one is shown to the user [slug-never-explained-to-the-user]
-Captured by you 2026-08-14. Your point, rendered in Claude's words rather than quoted: you have never actually known what the bracketed part of the title is for — it just randomly emerged one day and you didn't have time to deal with it.
-**The gap.** The slug is load-bearing structure: it is what `Blocked by:` resolves against, what the queue lint checks, what a LOG entry names to say which item it built, and what Claude uses to refer to an item exactly in chat. None of that is stated anywhere the user reads. It appeared in their own documents and they worked around it for weeks.
-**Why this is not solved by the slug being harmless to ignore.** It is harmless to ignore only once you know you may. Until then it is unexplained structure in a document the user is asked to read and approve, and the method's own standard is that unreadable is unapprovable.
-**Widened at processing 2026-08-19 to carry a second half you raised in the same session, and this entry is rewritten rather than appended to.** What came out is the original three-way choice between header, FAQ or both, now settled as both. Your point: the way captures are presented at processing must not assume the reader already knows their content, and at minimum **a referent should be given not by name but also by its purpose.** A second item was refused in favour of the merge — two entries on one notation would answer the same question twice.
-
-**Two halves, at opposite ends of the same subject.** The notation is explained **once**, in the queue's own header, where anyone opening the file meets it: what the bracketed name is for, and that the user never has to write one. Then each **use** stops being opaque: a slug shown to the user carries what that item is for on its first appearance in a message.
-
-**Scope is output, never documents**, which is the same split [two-column-fences-wrap-unreadably] settled the same day. Inside queue prose slugs stay bare — the always-loaded rule deliberately requires citing items by slug there, that text is read by Claude, and glossing every citation would inflate the entries this queue already struggles with.
-
-**First use per message, not per chat.** Per chat makes a message readable only to someone holding the scrollback in their head, which is the assumption being objected to. The cost is a clause each time, stated rather than presented as free.
-
-**The parent is the vocabulary rule**, which already asks whether a term is used in passing or explained and already lists a dozen internal terms to translate or omit. **A slug cannot simply join that list**: omitting it loses the one handle the user has on an item. So it is a third arm on an existing table.
-
-**Evidence, unusually strong for this corpus.** Two recorded instances in the user's own words — *"I don't know what 'checkpoints' is"* and *"I don't know what 'fixing on the spot' means"* — this entry's own account of working around the brackets for weeks, and the planning session that settled it, whose every checkpoint named an item by bare slug while several messages cited three or four more.
-
-**One cost stated rather than discovered.** The header clause reaches new projects only: an existing project's queue header is the user's own text, and the method's migration is barred from rewriting user prose. For them the FAQ entry is the whole answer.
-
-**Files:** `plugin/throughliner/docs/setup.md` (the queue header it authors), `plugin/throughliner/docs/skill-nonspecific-rules.md` (the vocabulary rule's third arm), and `plugin/throughliner/templates/faq-template.md` plus `FAQ/faq.md` and both index lines. **No epoch bump** — no existing file becomes structurally wrong.
-
-**No SPEC sentence is owed:** SPEC describes the queue's structure without describing the slug notation, so no sentence there goes wrong or incomplete. Shipped, not host-only — every consumer meets the same unexplained brackets.
-
-Rule gate: run — admitted as a third arm on the always-loaded vocabulary rule's existing in-passing/explained table, subordinate rather than freestanding. **Nothing is evicted, stated plainly rather than dressed up as a merge of rules.** Failure evidence is four instances, two of them the user's verbatim words. **A hook was considered and refused: nothing mechanical reads Claude's chat output** — the same finding reached independently by [two-column-fences-wrap-unreadably] hours earlier, which is what makes it a property of the surface rather than of either item.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/setup.md`, the queue header it authors — add a
-  one-time explanation of the bracketed slug: what it is for, and that the
-  user never has to write one.
-  `plugin/throughliner/docs/skill-nonspecific-rules.md`, the vocabulary
-  rule's in-passing/explained table — add a third arm: a slug shown to the
-  user carries what that item is for on its first appearance in a message.
-  First use per message, not per chat. Scope is output only; inside queue
-  prose slugs stay bare.
-  `plugin/throughliner/templates/faq-template.md` plus its
-  `faq-index-template.md` line — an entry answering what the bracketed name
-  is; then re-copy both into `FAQ/faq.md` and `FAQ/index.md`.
-Acceptance: setup.md's authored header explains the notation. The vocabulary
-  rule's table carries three arms. The FAQ entry and its index line exist in
-  both the template and `FAQ/`, matching.
-Refused: adding the slug to the vocabulary rule's omit-or-translate list —
-  omitting it loses the one handle the user has on an item.
-Refused: first use per chat rather than per message — that is readable only to
-  someone holding the scrollback in their head, which is the assumption being
-  objected to.
-Refused: a second queue item for the presentation half — two entries on one
-  notation would answer the same question twice.
-Refused: a hook — nothing mechanical reads Claude's chat output.
-Note: the header clause reaches new projects only; an existing project's queue
-  header is the user's own text and migration may not rewrite it. For those
-  users the FAQ entry is the whole answer.
---- End build block ---
-
-#### Routing communication feedback to memory masks the method defect that produced it — the memory-boundaries rule needs the exception [memory-masks-method-defects]
-Captured by you — raised 2026-08-09 at a /done close, filed after `115f851`. Your point, rendered in Claude's words rather than quoted: if Claude's replies are affected by memory, then the method can't truly be tested.
-**The conflict the shipped rule does not see.** plugin-behaviour.md's memory-boundaries rule lists what memory is free for: user preferences, working style, **communication feedback**, cross-project facts. Separately, this project's CLAUDE.md states that all use of the plugin to develop the plugin is testing it, and that any moment session memory covers for something the docs should carry is a mandatory capture. Nobody applied that second rule to *persistent* memory, and the two disagree: saving communication feedback to memory is permitted, and doing it here contaminates the only test the method gets.
-**Why it is sharper than a self-hosting quirk.** Communication feedback is very often *evidence about the method's own narration rules*. This session demonstrates it: the user twice said there was too much text — evidence that the /plan checkpoint is too long, filed as [done-invoked-when-user-meant-continue]. Had that also gone to memory, Claude would simply have behaved better, the queue item would have stopped mattering, and the defect would have survived in the shipped docs. Memory would quietly buy a fix for one user while every consumer kept the bug.
-**So the routing test is not "is this a preference?" but "is this evidence about the method?"** A preference no method rule governs — a name, a timezone, a tool the user likes — stays memory's. Feedback that a *method-produced behaviour* was wrong is a testing outcome and belongs in the queue, whether or not it also reads as a preference. The overlap is the problem: it is genuinely both, and the current rule names only the branch that silences it.
-**Settled at processing 2026-08-19, and the scope goes the opposite way to the one this entry proposed.** It asked whether the exception should be scoped to projects testing the method. **Your decision: general.** A consumer's complaint that Claude narrated badly is evidence about the method too, and it is the **only** such signal originating outside this project — routed to memory it makes their Claude quieter and tells the method's author nothing. Scoping the rule to self-hosting would have protected the one project that already has other ways of noticing and left every other project silently absorbing the evidence.
-
-**So the fix needs no new machinery, because the route already exists.** The three-way discriminator already sends "the method is misbehaving" to the feedback channel and "my app" to the queue. The memory-boundaries rule simply never cross-references it: it names communication feedback as memory's and stops there.
-
-**What changes.** The bare term **communication feedback** comes off memory's list and is replaced by the qualified form — feedback about a behaviour the *method* produced routes by the discriminator, while a preference no method rule governs (a name, a timezone, a tool the user likes) stays memory's.
-
-**Files:** `plugin/throughliner/docs/skill-nonspecific-rules.md` — Routing and discipline, the memory-boundaries rule. **The file named when this was captured, `plugin-behaviour.md`, was retired 2026-08-10** and the rule moved; the stale pointer is corrected here rather than left for the build to discover. Plus `plugin/throughliner/templates/faq-template.md` with `FAQ/faq.md` and both index lines — the FAQ fires because what the user *does* changes: feedback that used to be absorbed silently now becomes a report they are asked to approve and send.
-
-**No SPEC sentence is owed, checked rather than assumed:** SPEC describes no memory routing anywhere, so no sentence there goes wrong or incomplete.
-
-Rule gate: run — admitted as a qualification on the existing memory-boundaries rule, subordinate rather than freestanding, so no always-loaded slot is spent. **The eviction is the bare `communication feedback` entry on memory's list**, which is what made the two rules disagree. Failure evidence is one recorded instance here plus the structural argument that the affected signal is the only external evidence the method receives.
-
-Relates to [done-invoked-when-user-meant-continue] (the live instance). It used to be a candidate payload for [self-hosting-auto-detection], deleted 2026-08-14 — the absence of any payload only detection could switch on is what settled that item, and this settlement is the same conclusion reached from the other end: the rule wanted widening, not detecting.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/skill-nonspecific-rules.md`, Routing and
-  discipline, the memory-boundaries rule — take the bare term
-  `communication feedback` off memory's list and replace it with the
-  qualified form: feedback about a behaviour the METHOD produced routes by
-  the three-way discriminator; a preference no method rule governs (a name, a
-  timezone, a tool the user likes) stays memory's. Scope is general, not
-  scoped to projects testing the method.
-  Write it as a qualification on that rule, subordinate rather than
-  freestanding. The route already exists — no new machinery.
-  `plugin/throughliner/templates/faq-template.md` plus its
-  `faq-index-template.md` line, then re-copied into `FAQ/faq.md` and
-  `FAQ/index.md` — feedback that used to be absorbed silently now becomes a
-  report the user is asked to approve and send.
-Acceptance: the memory-boundaries rule no longer lists `communication
-  feedback` bare, and carries the qualified form cross-referencing the
-  discriminator. The FAQ entry and index line exist in both template and
-  `FAQ/`, matching.
-Refused: scoping the exception to projects testing the method — a consumer's
-  complaint about narration is the only such evidence originating outside this
-  project, and scoping would silence it.
-Note: the file named at capture, `plugin-behaviour.md`, was retired
-  2026-08-10 and the rule moved; the corrected path is above.
---- End build block ---
-
-#### The rules disagree on how a planning record splits — "per item processed" against "per decision" [plan-entry-split-wording-disagrees]
-Filed 2026-08-18 at the close that had to choose between them.
-
-**The two statements.** `skill-nonspecific-rules.md`'s authoring standard says a plan entry "splits per item processed", and reasons from there: a planning decision IS a disposition on a queue item, so the build case's machinery applies unchanged. `SPEC.md` and `done.md` both say a planning record "splits per decision".
-
-**Why the difference is not cosmetic.** They diverge whenever one decision settles several items, which is common — this session settled two SPEC items together, five mailbox items as one group, and two restyle items as a pair. Counted per item the close owed roughly 28 entries; per decision it owed 19. At the measured 316–329 words per split entry that is around 3,000 words, plus an index line each on a file read in full at every retrieve.
-
-**What this close did, so the precedent is visible rather than silent.** Split per decision, on SPEC's and `done.md`'s wording, with the choice put to the user and deferred back.
-
-**Settled at processing 2026-08-19 by reading the code, and it goes against the lean recorded above.** `queue_digest.py`'s `shipped_slugs()` resolves shipped-ness from **filenames** — `<date>-<slug>.md`, one directory listing — so a slug has shipped if and only if an entry is named after it.
-
-**"Per decision" therefore breaks two mechanisms rather than merely costing less.** A decision settling three items produces one file named for one of them, and the other two read as never shipped. The digest's shipped-citation flag misses them, and the below-the-line revisit — which reads shipped-ness off LOG to decide what may lift — would leave a held item waiting on a blocker that had in fact been settled. That is the failure this queue has recorded four times, reintroduced by a wording choice.
-
-**So "per item processed" is right and the always-loaded file was already correct**, which matters because it is the wording a session reads at the moment it decides. `SPEC.md` and `done.md` are what change.
-
-**The measured cost is real and is not paid in full.** The instance that filed this owed roughly 28 entries per item against 19 per decision, about 3,000 words plus an index line each. **Where one decision settles several items, one entry carries the reasoning and its siblings cite it rather than restating it** — each still named for its own slug, so every mechanical reader keeps working, and the argument is written once. That is the relocate-and-cite pattern already used for research findings and for narrative moved into a chat entry; nothing new is invented.
-
-**This entry's own premise was half wrong, checked at processing rather than trusted.** It states that `SPEC.md` and `done.md` both say "per decision". **SPEC says no such thing** — it never describes how a planning record splits at all, and grepping it for the wording and for every paraphrase returns nothing. So the repeal is one file rather than two, and no SPEC sentence is owed.
-
-**Files:** `plugin/throughliner/docs/done.md` — the "per decision" wording at the entry-splitting statement, plus the sibling-citation clause, sited there rather than in the always-loaded file because the close is where it is read. **No FAQ entry:** this changes how records are written, not anything the user does.
-
-Rule gate: run — admitted as an amendment reconciling two live statements to the one already in the always-loaded file, plus one clause on `done.md`'s existing entry-writing step; no freestanding rule and no always-loaded slot spent. **The eviction is the "per decision" wording, repealed in two live files.** Failure evidence is one measured divergence and one mechanical dependency, the second of which involves no judgment at all.
-
-Relates to [split-action-defeats-the-bands-in-aggregate], which measures what the split costs, and [plan-entry-split-action-underspecified], shipped.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/done.md`, the entry-splitting statement —
-  repeal the "per decision" wording and state "per item processed", matching
-  the always-loaded file, which is already correct and is not edited.
-  Same file, same step — add the sibling-citation clause: where one decision
-  settles several items, one entry carries the reasoning and its siblings
-  cite it rather than restating it, each still named for its own slug so
-  `<date>-<slug>.md` resolves for every one.
-Acceptance: grep `per decision` in `done.md` returns nothing. The step states
-  the per-item split and the sibling-citation clause. `skill-nonspecific-
-  rules.md` and `SPEC.md` are untouched.
-Refused: "per decision" — `queue_digest.py`'s `shipped_slugs()` resolves
-  shipped-ness from filenames, so a decision settling three items produces one
-  file and the other two read as never shipped; the below-the-line revisit
-  would then hold items against blockers already settled.
-Refused: siting the clause in the always-loaded file — the close is where it
-  is read.
-Note: this item's premise that SPEC also says "per decision" was checked and
-  is false — SPEC never describes the split, so no SPEC sentence is owed and
-  the repeal is one file, not two.
---- End build block ---
-
-#### Restyle the remaining rule-bearing docs to the law-prose standard [law-prose-restyle-remaining-docs]
-Filed 2026-08-17 on the same decision of yours. **Follows [law-prose-restyle-heavy-docs]** — placement carries the order and this sentence carries the reason, since it could be built on its own and so names no `Blocked by:`.
-
-**Why it follows rather than blocks it.** The two heavy docs are where the standard meets the hardest text, so settling those questions once stops this pass answering them ten times over.
-
-**Scope, narrowed deliberately to the rule-bearing docs.** SPEC and the FAQ are out: the law-prose standard is a standard for *rules*, SPEC is product truth governed by its own three maintenance rules, and the FAQ is consumer-facing answers rather than instructions to Claude. Nothing is orphaned by that — "session" occurrences in SPEC and the FAQ are covered by [session-occurrence-audit], a terminology pass rather than a wording one.
-
-**What changes.** The same standard and the same acceptance test as the heavy-docs pass, applied per file — the rule-statement count accounted for statement by statement **for each doc rather than in aggregate**, so one file's growth cannot hide behind another's cut.
-
-**Files:** every doc under `plugin/throughliner/docs/` except the three already restyled — `skill-nonspecific-rules.md`, `done.md` and `plan.md`. Enumerated by listing the folder at build time rather than written out here. The reason has now resolved — [rename-docs-b-folder] shipped 2026-08-21 and the folder is `docs/` — but listing it at build time stays correct, since the set of docs changes as work lands.
-
-**Runs before [session-occurrence-audit]**, which is held against this item for that reason.
-
-**Carries the subordination lens too**, folded in from [freestanding-rules-that-should-be-subordinate] on your instruction 2026-08-17: look for two or more rules governing one subject, stated at the same level with no declared relationship, and land them as a parent with subordinate units. Its terms and its interaction with the count are stated once in [law-prose-restyle-heavy-docs] rather than repeated here — including that a **fall** in the statement count must be attributed to a merge or to a deletion, since subordination reduces the count without evicting anything.
-
-**What this item deliberately does NOT carry, stated so it reads as a decision rather than an omission.** The per-paragraph rationale test does not run here — and as of 2026-08-19 it does not run in the heavy-docs pass either, having moved to [rationale-lens-after-the-build-view]. These ten docs keep the **signature-phrase** criterion for rationale, which is what they have had, and that is unaffected by the move. The reason is measured rather than guessed: extending per-paragraph judgement across the fetched docs was costed at roughly 42,000 words of it, and that figure is why the earlier extension was refused. [rationale-audit-fetched-docs-gap] recommended the two-file limit for exactly this reason, and folding the lens everywhere would quietly overturn its own recommendation while claiming to honour it.
-
-Rule gate: run — no rule authored, amended or evicted; an extension of an already-admitted standard to the remaining files, carrying the same silent-authoring caution as its sibling and the same lens.
-
---- Build block ---
-Changes:
-  Every doc under `plugin/throughliner/docs/` EXCEPT the three already
-  restyled — `skill-nonspecific-rules.md`, `done.md`, `plan.md`. Enumerate by
-  listing the folder at build time rather than from a list written earlier —
-  the set of docs changes as work lands. [rename-docs-b-folder] has shipped
-  and the folder is `docs/`.
-  Apply the same law-prose wording standard as the heavy-docs pass, per file.
-  Carry the subordination lens too — two or more rules governing one subject
-  at the same level with no declared relationship become a parent with
-  subordinate units. Its terms and its interaction with the count are stated
-  in [law-prose-restyle-heavy-docs] and are not restated here.
-  SPEC and the FAQ are out of scope: the standard governs rules, SPEC is
-  product truth with its own maintenance rules, and the FAQ is consumer-facing
-  answers rather than instructions to Claude.
-Acceptance: rule-statement count before and after PER FILE, accounted for
-  statement by statement, so one file's growth cannot hide behind another's
-  cut. Every fall attributed to a merge or a deletion by name.
-Refused: the per-paragraph rationale lens — extending per-paragraph judgement
-  across the fetched docs was costed at roughly 42,000 words, which is why the
-  earlier extension was refused; these docs keep the signature-phrase
-  criterion they already have.
-Note: runs after [law-prose-restyle-heavy-docs] and before
-  [session-occurrence-audit], which is held against this item.
---- End build block ---
-
-#### /rescan reads as ending the run it was invoked inside, and nothing tells it to hand back [rescan-does-not-hand-back]
-**Raised by you 2026-08-21, mid-/plan, from using it before the close on every planning session.** Your report: once /rescan has run you are no longer in /plan and have to run /plan again — which defeats the reason it was made a separate skill. **Your two points, and the second is the sharper one.** It was supposed to be runnable at any time, and it is not, in practice. And what a re-scan turns up is often needed to finish the planning work that just happened, so it should land in the session that still has those items in memory rather than waiting for a planning session that comes after a build.
-
-**Your premise was tested against the documentation and it does not hold — which is what makes this fixable.** `resources/research/skill-content-lifecycle.md` records the finding in full. Claude Code's own words: an invoked skill's content "enters the conversation as a single message and stays there for the rest of the session." So there is no running skill, nothing ends, and `plan.md` was still present and still governing for every turn after /rescan ran. The documentation also names this exact symptom — a skill appearing to stop working — and attributes it to the model choosing other approaches while the content sits there unread.
-
-**So the defect is in how `rescan.md` finishes.** Its last step is headed "Say what happens next", tells the run to name what the captures are waiting for, and then says **"Recommend nothing else"** — with a stated reason, that close machinery accumulating at the end of a chat pulls the whole chat toward ending. That reasoning is sound and is not what is wrong. What is wrong is that a step which says "stop here" and names nothing to go back to reads as the end of the conversation's work, and there is no instruction anywhere in the doc to resume whatever was running.
-
-**Settled at processing 2026-08-21. The final step names the return rather than the close:** where /rescan was invoked while another run was under way, it hands back explicitly and carries on from where that run was. **The anti-close-pull reasoning is untouched and must stay** — returning to /plan is the opposite of leaning toward /done, so this removes the dead end without reintroducing the pull the step exists to prevent.
-
-**The wider half was split out on your decision, as [procedure-docs-cannot-tell-finished-from-interrupted].** Do not fold it back: your own evidence is that a terminal step is usually right, so the general question is whether a doc can tell finished from interrupted, and that has no answer yet. This item fixes the one confirmed instance and claims nothing about the other four docs.
-
-**One genuine platform limit to carry into the design.** Auto-compaction re-attaches only the most recent invocation of each skill, newest-first within a 25,000-token budget, so in a long chat an older skill's content genuinely can be gone. Re-invoking is the documented remedy there — but that case is unrelated to another skill having been invoked, and it must not be used to justify a general "run /plan again" instruction.
-
-**You found a second defect the same day, and it is the stronger of the two.** The final step does not merely fail to hand back — it **positively sends the work away**. Its instruction is to name what the captures are waiting for, and the doc's own wording is *"a planning session decides what happens to each one."* Read inside a planning session that is still running, that sentence is false: **this** one can decide them, and /plan is entitled to, since processing a capture is exactly what /plan does. So the user is told her new captures belong to some future session while the session that could settle them is still open. A missing instruction is an omission; this is a statement that misdirects, and it explains why the effect held even when nothing had ended.
-
-**Your second question — whether the hooks and the enforcement are attached to /plan — was checked in the code, and the answer is that none of it is.** `hooks.json` registers all four hooks against Claude Code's own events (SessionStart, PreToolUse, PostToolUse, Stop) and against tool names. Not one is bound to a skill, so no hook can be lost by invoking another skill or gained by invoking /plan.
-
-**The scope-lock is the one that looks skill-bound and is not.** `pre_tool_use.py` decides a session is a planning one by **the absence of this session's `_build-<session-id>.md` file**, and says so in its own comment: *"Keyed on the build working file being absent rather than on 'a planning session', because absence is what the code can actually see."* /plan creates no working file, so the planning standing list — QUEUE.md, SPEC.md, `LOG/`, `FAQ/`, `resources/research/`, the scratchpad — is in force in **every** chat with no build running, whether or not /plan was ever typed. The one documented exception is /setup, which declares itself with a scratchpad marker for the length of its run.
-
-**So the enforcement was never at risk, and that narrows the fix rather than widening it.** Nothing has to be rebuilt or re-attached; the whole defect is two sentences at the end of one document.
-
-**The ripple was traced by grep at processing, not written from the discussion**, per the keep-step's repeal limb. The repealed string is *"a planning session decides"*. It reaches three live sites: `rescan.md` line 133, `templates/faq-template.md` line 551, and `FAQ/faq.md` line 551, the last being a straight copy of the template. **Two further hits are correct as written and are excluded by name**, stated in their own sentence rather than on the Files line: `faq-template.md` line 142 uses the phrase about how SPEC edits happen, a different subject; and line 168 describes /done's lighter version of the same scan, where leaving the sorting for the next /plan is right, because /done really is closing.
-
-**The level was asked rather than defaulted to, and the fix belongs at the instance.** A rule requiring procedure docs to hand back would be a rule about how rules are written, competing with the whole always-loaded set to correct two sentences, and no hook can read whether a conversation resumed a procedure. The doc that misdirects is the doc that changes.
-
-**Files:** `plugin/throughliner/docs/rescan.md`, `plugin/throughliner/templates/faq-template.md` plus `FAQ/faq.md` and both index lines.
-
-**SPEC is not on that line because its sentence was written in this planning session**, ahead of the build. **No epoch bump** — no existing project's files become structurally wrong. Shipped, not host-only: every consumer meets the same dead end.
-
-**The FAQ entry fires on its own test**, which is what the user *does*: today they re-run /plan after a /rescan, and after this they do not.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/rescan.md`, Step 3 — replace "a planning session
-  decides what happens to each one" with wording that names THIS run where one
-  is under way, and add an explicit hand-back: resume whatever was running and
-  carry on from where it was. Keep the "Recommend nothing else" clause and its
-  anti-close-pull reasoning intact; the hand-back is a return, not a close.
-  `plugin/throughliner/templates/faq-template.md` line 551 — the same repeal:
-  the answer stops telling the reader a future planning session decides, and
-  says the session they are in can, plus one sentence that /rescan hands back.
-  Add the new FAQ entry and its index line for the changed action.
-  `FAQ/faq.md` and `FAQ/index.md` — re-copied from the templates after the
-  template edit lands. The template is canonical; these are straight copies.
-Acceptance: grep "a planning session decides" across the repo outside `LOG/`
-  returns only the two excluded FAQ hits (lines 142 and 168) and this queue
-  item. `rescan.md`'s final step names a return. `FAQ/faq.md` is byte-identical
-  to `faq-template.md`, and the same for the two index files.
-Refused: rewriting all five procedure docs to end conditionally — the user's
-  evidence is that a terminal step is usually correct, and with no readable
-  signal a conditional ending guesses. Split to
-  [procedure-docs-cannot-tell-finished-from-interrupted].
-Refused: a general "re-run /plan afterwards" instruction — the skill content
-  never left context, so re-running is unnecessary; auto-compaction is the only
-  case where it is needed and it is unrelated to another skill being invoked.
---- End build block ---
-
-Rule gate: run — admitted as an amendment to `rescan.md`'s existing final step, subordinate rather than freestanding, and sited in a fetched procedure doc so no always-loaded slot is spent. **The eviction is the "a planning session decides" wording, repealed outright at all three live sites.** Failure evidence is the user's report of the same outcome at every planning session, plus the documented mechanism showing the belief the wording created was false. **A hook was considered and refused:** nothing mechanical can read whether a conversation resumed a procedure.
-
-Relates to [plan-does-not-build-keeps-being-relitigated], which is the same class of fault — a doc's own wording teaching a later session the wrong thing — and to `resources/research/skill-content-lifecycle.md`, which is the evidence this rests on.
-
-#### /setup runs a migration only for a queue shape no live project still has, so every later epoch's conversion is unreachable [setup-migration-gate-is-epoch-3-shaped]
-Filed 2026-08-21 by Claude, **from your question — how did items reach Processed without describing any work?** The question corrected Claude twice: the items do describe their work, and both faults Claude first filed were false. What survived is worse than either.
-
-**Two claims from this item's first version are withdrawn as wrong, recorded so nobody re-derives them.** The format epoch **was** bumped: `FORMAT_EPOCH` is 4 in `session_start.py`, and its history comment defines epoch 4 as the build block exactly. And the migration recipe **does** exist: `migrate-checklist.md` carries an "Epoch 4 — build blocks on cleared work" section, well designed — lift the sentences the item already has, move an item that never said what it changes below the readiness line rather than inventing instructions for it, do nothing to held items, captures, `[user]` or `[freeform]` work, and write the blocks with the user present because telling instruction from history is a judgment.
-
-**The single fault is the gate that decides whether the checklist is opened at all.** `setup.md`'s migration step reads:
-
-```
-existing QUEUE.md uses an old multi-section shape
-    (## Red flags · ## Batches · ### Parked · ## Deferred tests · ## Captures)
-        ->  load migrate-checklist.md and follow it
-already two-section (## Processed / ## Unprocessed)
-        ->  skip
-```
-
-**Two-section is what every project has had since epoch 3.** So the gate tests for a shape no live project still has, and every epoch after 3 — starting with this one — sits behind a condition that can now only fail. The checklist is loaded only by projects that have not been migrated in months.
-
-**The live instance is this session, and it is the whole failure end to end.** /setup ran here today, found a two-section queue, skipped the checklist, and wrote `4` into `.throughliner-format-epoch`. It converted nothing. **The marker is what `session_start`'s halt compares against, so writing it is what silences the warning** — this project now reports itself current while fifteen cleared items sit in format 3's shape, and the close of that run reported a clean migration.
-
-**Why the gate was written this way, which is not carelessness.** At epoch 3 the queue conversion *was* the migration, so "is the queue old-shaped?" and "is this project behind?" were the same question. They came apart the moment an epoch changed something other than the section layout, and nothing revisited the gate.
-
-**What changes.** The gate stops asking about the queue's shape and asks the question it means: is the project's recorded epoch below the plugin's? Where it is, load `migrate-checklist.md` and follow **every** epoch section from the project's recorded number up to the current one, in order. The existing two-section test survives as what the epoch-3 section itself checks, rather than as the door to the whole checklist.
-
-**The marker is written last and only on success, which the doc already requires** and which this run's outcome shows is load-bearing: /setup's own step says to write the epoch "last among the migration edits, once the conversions above have actually landed", precisely so the warning is not silenced while the project is still on the old shape. The gate skipping meant there were no conversions to land, so the instruction was satisfied vacuously.
-
-**Files:** `plugin/throughliner/docs/setup.md` — the migration step's gate, and the sentence introducing the checklist. **`migrate-checklist.md` is NOT listed and is excluded deliberately:** its epoch sections are correct and complete; nothing there is what failed. **No epoch bump** — this changes how a migration is reached, not any project document's shape. Shipped: every consumer project past epoch 3 is in this state.
-
-**This project's own unconverted queue is [convert-cleared-items-to-build-blocks], filed alongside** — the repair here is the recipe, and running it on this queue is separate work.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/setup.md`, the migration step's "Convert an
-  old-format QUEUE.md" gate — replace the queue-shape test with an epoch test:
-  where the project's recorded epoch is below `FORMAT_EPOCH`, load
-  `migrate-checklist.md` and follow every epoch section from the recorded
-  number up to the current one, in order. Reword the step's heading and lead
-  sentence, which both name the queue conversion as though it were the whole
-  migration. Keep the write-first requirement (draft the conversion, show it,
-  get approval) and keep the epoch marker written last, only after the
-  conversions land.
-Acceptance: a project recorded at epoch 3 with an already-two-section queue
-  reaches the epoch-4 section of the checklist. A project already at
-  `FORMAT_EPOCH` opens the checklist not at all. The epoch marker is not
-  written where no conversion ran.
-Refused: adding epoch 4 to the existing gate as a second condition — it leaves
-  the same defect for epoch 5, which is how this one arrived.
-Refused: detecting the shape from the documents instead of the marker —
-  rejected already in `CLAUDE.md`, because it guesses about files users
-  legitimately hand-edit.
---- End build block ---
-
-Rule gate: run — no rule is authored or amended; a condition inside one procedure step is replaced. **The eviction is the queue-shape test**, repealed outright rather than extended, and the refusal to extend it is recorded in the block above because extending is the intuitive move. Failure evidence is one instance, and it is this session's own migration, observed end to end rather than reasoned about.
-
-#### A capture the user raises is written before she is asked whether to process it, throwing the write away most of the time [ask-before-writing-a-user-raised-capture]
-**Raised by you 2026-08-21, from an instance minutes earlier in this session.** Your words for the shape you want: instead of "filing it", *"do you want to capture this now for later, or go straight through to processing?"* And your estimate, which is the evidence this rests on: **you would answer processing about 90% of the time**, because the item is in current memory and there is no time like the present — in which case the write need not happen at all.
-
-**The asymmetry in the shipped rules, which is the defect.** `skill-nonspecific-rules.md`'s /plan carve-out puts the offer **before any write** when *Claude* raises something, and **after the write** when the *user* does. It then gives the reason for the Claude-side placement: *"Asking after the write costs a write that is thrown away, since a capture answered 'work it now' is immediately rewritten as a work item."* **That reasoning does not mention who raised the thing.** It applies to both branches identically, and only one branch was built on it — which reads as something nobody re-examined rather than something anyone chose.
-
-**Your 90% is what turns a symmetry argument into a measured one.** A cost paid rarely is a rounding error; a cost paid nine times in ten is the common path. The two captures written in this session's later stretch were each several hundred words, and on your own estimate most such writes are immediately rewritten as work items.
-
-**A second failure, separate and Claude's.** In the instance that prompted this, the offer was not made at all — the capture was written, reported as "filing it", and the next message asked about closing. The `[PROMPT]` step and the non-optional "anything else to add first?" clause were both skipped. **The rule as written would already have caught most of this**, so the doc defect and the compliance failure are two things and the item fixes only the first.
-
-**What changes.** Both branches ask before the write. A user-raised capture is offered *capture it for later, or process it now* — recommending process-now, which the rule already does — with the "anything else to add first?" clause preserved. Where the answer is process-now, nothing is written as a capture at all: the item goes through the present-and-interview loop and is written once, as a work item.
-
-**The clause gets easier to honour rather than harder, which is why it survives the move.** Asking before the write puts the question at the moment the user is still mid-thought, which is exactly when "anything else to add first?" does its work — the clause was dropped once before and reinstated because it stops an idea being closed off early.
-
-**What is given up, stated rather than discovered.** Write-first exists so text reaches the document where the user reads it in place rather than as a chat paste. Asking first trades a little of that: for the 10% answered "capture for later", the wording is discussed in chat before it lands. **That is not a breach of write-first**, whose test is recoverability and which already carries an ideation clause holding the write while a design is unsettled — this is that clause reaching one more moment, not a new exception to the test.
-
-**Files:** `plugin/throughliner/docs/skill-nonspecific-rules.md` (the /plan carve-out in Communication), `plugin/throughliner/docs/plan.md` (the process-now-offer section), `plugin/throughliner/templates/faq-template.md` plus `FAQ/faq.md` — **the FAQ hit was found by grep and would have been missed**: its answer tells consumers that "Claude files it and asks whether you want to dig into it now", which becomes false. That is a sync of an existing answer rather than a new entry, so no index line changes.
-
-**No SPEC sentence is owed, checked rather than assumed:** its sentence says a mid-session capture "comes with an offer to process it now or carry on" and states no ordering, so no sentence there goes wrong or incomplete.
-
---- Build block ---
-Changes:
-  `docs/skill-nonspecific-rules.md`, the /plan carve-out in Communication —
-  repeal the split placement. Both branches ask BEFORE any write. Keep the
-  thrown-away-write reasoning as the stated reason, now covering both. Keep the
-  Claude-raised branch's bar on soliciting further captures, and keep the
-  user-raised branch's "anything else to add first?" clause.
-  `docs/plan.md`, "Process-now offer after a user-filed capture" — replace
-  "File it first, then offer the branch" with asking first; the two routes and
-  the process-now recommendation are unchanged. Where the answer is process-now,
-  no capture is written: the item goes straight into present-and-interview and
-  is written once as a work item.
-  `templates/faq-template.md` line 309 — "Claude files it and asks whether you
-  want to dig into it now" becomes asks-then-files. Reword of an existing
-  answer; no index line changes.
-  `FAQ/faq.md` — re-copied from the template after that edit.
-Acceptance: grep "File it first" across `docs/` returns nothing. Both branches
-  of the carve-out read as before-the-write. `FAQ/faq.md` is byte-identical to
-  `faq-template.md`.
-Refused: leaving the user branch alone on write-first grounds — write-first's
-  test is recoverability, and its ideation clause already holds writes while a
-  design is unsettled, so this is that clause reaching one more moment.
-Refused: dropping the "anything else to add first?" clause as redundant once the
-  question moves earlier — it was dropped once before and reinstated, and asking
-  earlier is when it does most of its work.
---- End build block ---
-
-Rule gate: run — admitted as an amendment removing a distinction inside an existing always-loaded rule, so no freestanding rule and no slot spent; the rule gets shorter. **The eviction is the file-first ordering on the user-raised branch**, repealed in the always-loaded rules, in `plan.md` and in the FAQ answer that describes it. Failure evidence is one observed instance in this session plus the user's own estimate that the discarded path is the common one. **A hook was considered and refused:** nothing mechanical can tell a capture that was going to be processed anyway from one genuinely being filed for later.
-
-Relates to [processing-appends-where-it-should-rewrite], raised in the same exchange, and to [keep-step-accretes-from-five-items] — this touches the carve-out rather than the keep-step, so it adds nothing to the step that item is watching.
-
-#### Run the per-paragraph rationale lens over `done.md` and `plan.md`, once the transcription is stopped at source [rationale-lens-after-the-build-view]
-**Split out of [law-prose-restyle-heavy-docs] on 2026-08-19**, when the test that item was waiting on came back confirmed. The other two lenses in that pass are unaffected and stay with it; only this one moves.
-
-**Why it moved rather than staying folded in.** The lens deletes a paragraph, reads what remains, and keeps the sentence only where the instruction is left incomplete without it. That works on text that is going to stay put. It does not work while the work items are still feeding rationale into these docs at every build — the pass would strip text the next build writes back, and have to run again. The evidence that this is actually happening is `resources/research/rationale-flows-from-items-into-shipped-docs.md`, tested against git rather than argued.
-
-**What changes when it runs.** Every paragraph of `done.md` and `plan.md` gets the delete-and-reread test: a complete instruction after the deletion means what came out was history and it goes to the record; an unfinished one means it was operative and is written into the rule. The record carries each removal and where it went, site by site — which is what this pass gives up by folding judgement into the rewrite rather than auditing first.
-
-**Files:** `plugin/throughliner/docs/done.md` and `plan.md`, plus `LOG/` for the site-by-site record of what moved.
-
-**Lifted 2026-08-21.** [split-the-cleared-region-for-concurrent-sessions] shipped and was confirmed — `LOG/2026-08-20-split-the-cleared-region-for-concurrent-sessions.md`, five suites passing and the generator run against this live queue. A build now reads a derived view carrying instructions only, so rationale is no longer flowing from work items into these two docs at every build, which is the condition this pass was waiting for.
-
-Rule gate: not needed — no rule is authored or amended. A pass that relocates rationale out of operative statements applies a standard already admitted, and the operational-versus-historical distinction it uses is the method's own delete-and-reread test.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/done.md` and `plugin/throughliner/docs/plan.md`
-  — apply the delete-and-reread test to every paragraph: delete it and read
-  what remains. A complete instruction means what came out was history, and it
-  goes to the record; an unfinished one means it was operative, and it is
-  written into the rule.
-  `LOG/` — the session record carries each removal site by site, and where the
-  text went. That record is what this pass gives in exchange for auditing
-  rather than folding judgement into a rewrite.
-Acceptance: every paragraph of both files has been through the test, and the
-  LOG entry lists each removal with its destination. No paragraph is removed
-  without a recorded destination.
-Refused: running this folded into [law-prose-restyle-heavy-docs] — while work
-  items were still feeding rationale into these docs at every build, the pass
-  would strip text the next build writes back. That condition ended when
-  [split-the-cleared-region-for-concurrent-sessions] shipped.
---- End build block ---
-
-#### A repeal can falsify an already-posted announcement, and the same grep would catch it [repeal-falsifies-a-posted-claim]
-Split from [repeal-has-no-ripple-trace] at processing 2026-08-17, when that item reached 542 words against a 345 ceiling. Kept apart rather than merely trimmed because the two differ in readiness, not only in length: the live-doc trace is buildable now and this is not.
-
-**The instance is your own spec-driven-development post**, which described a build that "asks first, adds SPEC.md to its own file list, and edits it in the same commit". [missed-spec-write-interrupts-the-run] inverts that — a build now hands the sentence back rather than writing it — so a claim that was true when posted became wrong through ordinary work, inside the same conversation that made it.
-
-**The trace is identical to its sibling's.** Grep the distinctive words of the repealed sentence. What differs is only where you grep: a repeal already greps live documents, and this extends the same pass to the record of what was published.
-
-**Why it cannot be built yet.** There is nothing to grep. Posts are not written down anywhere, which is [send-record-lacks-destination-and-intent] — the outgoing index that gives every send a line carrying its destination, its intent and what it claimed. Until that file exists this item has no target, which is why it is held rather than cleared.
-
-**What changes when it lifts.** The repeal limb on the keep-step gains one more place to look: an item repealing shipped behaviour greps `INBOX/sent.md` for the claim, and where it finds one, a correction post is filed as its own `[user]` line rather than assumed.
-
-**Files:** `plugin/throughliner/docs/plan.md` (the repeal limb, extended to the sent record) and `CLAUDE.md` (the Discord section, which is where a correction post's obligation belongs and is host-only).
-
-Rule gate: run — one more site on the repeal limb its sibling item ships, so it is subordinate to a rule that will already exist by the time this builds, and spends no slot. Nothing evicted. Failure evidence is one instance, and it is the only one available: nothing records what was posted, so earlier cases cannot be found at all — which is itself the argument for the record rather than for this rule.
-
-**Lifted 2026-08-21.** [send-record-lacks-destination-and-intent] shipped and was confirmed — `LOG/2026-08-20-send-record-lacks-destination-and-intent.md`; `INBOX/sent.md` exists and already carries its first line. So there is now a record to grep, which is the one thing this item was missing.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/plan.md`, the keep-step's repeal limb — add one
-  more place to look: an item repealing shipped behaviour greps
-  `INBOX/sent.md` for the claim, using the repealed sentence's distinctive
-  words, the same grep the limb already runs over live documents.
-  Same limb — where a match is found, a correction post is filed as its own
-  `[user]` line rather than assumed.
-  `CLAUDE.md`, the Discord section — state the correction-post obligation
-  there, which is where it belongs and is host-only.
-Acceptance: the repeal limb names `INBOX/sent.md` as a grep target and states
-  the `[user]` correction line. The Discord section carries the obligation.
-Refused: folding this back into [repeal-has-no-ripple-trace] — the two differ
-  in readiness, not only in length; that one was buildable and this was not.
-Note: this was unbuildable until `INBOX/sent.md` existed. It does now —
-  [send-record-lacks-destination-and-intent] shipped and was confirmed.
---- End build block ---
-
-#### Split the bundled gitignore offer so a private queue with a public log is reachable [queue-privacy-default]
-**Subject settled at processing 2026-08-17; the slug is unchanged because slugs are immutable.** Raised by you as a consequence of cross-project captures but true today regardless. **The rescope is Claude's, deferred to in your words: "as you recommend."**
-
-**The default does not move, on your own objection to your own proposal:** someone may want a visible queue for transparency.
-
-**The real gap is that the offer is bundled.** Scaffolding offers `SPEC.md`, `QUEUE.md` and `LOG/` as one all-or-nothing choice. So a user who wants their plans and reasoning private while their history stays public cannot have that — the combination is unreachable rather than merely un-defaulted, and it is the combination this project itself runs on in spirit, since LOG is what it publishes and the queue is where the thinking sits.
-
-**What changes.** `setup.md`'s privacy offer becomes per-document rather than one bundle, with the trade stated once rather than three times, and no default changed for anyone. The existing single-question shape is what earns the split: it stays one question with three answers, not three questions.
-
-**Files:** `plugin/throughliner/docs/setup.md` (the privacy offer), `plugin/throughliner/templates/faq-template.md` plus `FAQ/faq.md` and both index lines.
-
-**SPEC is not on that line** — its privacy-posture sentence describes the bundle and was rewritten in the planning session that processed this.
-
-**Held below the line 2026-08-18, on inbound mail rather than on anything wrong with this design.** A consumer project reported that a `.gitignore` can leave `SPEC.md`, `QUEUE.md` and `LOG/` untracked with nothing noticing, which is [gitignored-core-docs] — the same code path this item rewrites. Shipping a per-document offer while the check beside it cannot see a fatal pre-existing entry would put a second question in front of the user at the one moment the first one is already going wrong. Settle them together.
-
-**Lifted 2026-08-21.** [gitignored-core-docs] shipped and was confirmed — `LOG/2026-08-20-gitignored-core-docs.md`, with a new suite passing over each path alone, all three together, no repository at all, and unrelated ignore lines. The check beside this offer can now see a fatal pre-existing entry, so the two can ship in either order.
-
-Rule gate: not needed — no rule authored or amended; this widens an existing offer's answer set and evicts nothing.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/setup.md`, the privacy offer — split the bundled
-  all-or-nothing choice into a per-document one covering `SPEC.md`,
-  `QUEUE.md` and `LOG/` separately, so a private queue with a public log is
-  reachable. Keep it ONE question with three answers, not three questions.
-  State the trade once rather than three times. Change no default.
-  `plugin/throughliner/templates/faq-template.md` plus its
-  `faq-index-template.md` line, then re-copied into `FAQ/faq.md` and
-  `FAQ/index.md` — the user is now answering a differently shaped question.
-Acceptance: setup.md's offer lets each of the three be chosen independently
-  and is still a single question. Defaults are unchanged from before. The FAQ
-  entry and index line exist in both the template and `FAQ/`, matching.
-Refused: changing the default to private — your own objection to your own
-  proposal: someone may want a visible queue for transparency.
-Note: SPEC is not in the file list. Its privacy-posture sentence described the
-  bundle and was rewritten in the planning session that processed this.
-Note: held until [gitignored-core-docs] shipped, so a second question would
-  not land while the first was already going wrong. That shipped and was
-  confirmed; the two can now ship in either order.
---- End build block ---
-
-#### The scope-lock guards files, and work that leaves the machine passes unguarded [scope-lock-guards-files-not-work]
-Filed 2026-08-19 from INBOX mail sent by a private legal-evidence project running 1.20.0-test12. **Their user raised it; the sending project's Claude wrote the diagnosis, and she asked for both halves to be sent.** Identifying details from the message — the correspondent's folder path and the people it names — are deliberately not carried here.
-
-**What happened there.** In one /plan session, that chat drafted a substantive letter to an external professional and the user sent it — the most consequential act of the session by a wide margin — and nothing gated it, because an email is not a file in the project. In the same session the scope-lock twice refused a four-line correction to that project's own CLAUDE.md, which the user had already read and approved.
-
-**The guard fired on the trivial thing and was silent on the serious one, and that is not an argument for loosening it.** "What leaves the machine" and "what files get written" have come apart. The method's own rules already treat the first as the graver category — nothing is sent without the user seeing the exact text — but only the second is mechanically enforced, and the approval rule is a behavioural one that a session can simply not reach for.
-
-**Their user's framing, which is the part worth carrying.** Throughliner governs work wherever it is conducted, not only work touching this machine. Her example: a `[user]` item in another project that involves unpicking a physical dress, nowhere near a filesystem, still work, still governed, still running under /next. The principle exists in the method; the enforcement stops at the file boundary.
-
-**A vocabulary gap they also surfaced.** That session's Claude reached for `[freeform]` to describe what the session was doing, as though it were a mode a /plan session could slip into. It is not — it is a work-item flavour. Their user corrected it, which leaves live unqueued work happening inside a planning session with no name in the method at all.
-
-**To settle at processing, and the obvious fix may be wrong.** A hook cannot see an email. Weigh whether this wants a rule at all, or whether the honest move is to state the limit plainly — the scope-lock covers files and nothing else — rather than implying coverage the mechanism cannot deliver. This project has repeatedly chosen the honest-limit route over a check that over-claims.
-
-**Settled at processing 2026-08-21, and the account above is overturned in two places rather than merely extended.** Both are left standing, because the reasoning that fell is what stops the same conclusions being reached again.
-
-**First: "nothing gated it" does not survive the detail.** Their user read the letter and sent it herself. The never-send-unseen rule was therefore satisfied — Claude drafted, she approved by sending. What was missing was a record, not consent, and the item's framing of a serious act passing unguarded overstates what happened.
-
-**Second: the record half shipped the day after this was filed, so part of this item is already done.** [send-record-lacks-destination-and-intent] landed 2026-08-20 and `feedback-and-inbox.md` now requires a line in `INBOX/sent.md` for *"Mail, a method report, a GitHub issue, a public post, a draft handed to another project — anything that leaves this machine."* A letter to an external professional is squarely inside that wording. Any project on the current version now leaves a trace of exactly the act this item says left none.
-
-**And the reason no hook can reach it is sharper than the one recorded above, which matters because it rules out a whole class of fix rather than one option.** It is not that a hook cannot see an email. It is that **the send was never Claude's action**: no tool call carried it, so there is nothing to intercept by construction. A guard cannot fire on an act performed by the human, outside the session, through a surface the session never touches.
-
-**So what remains is the honest-limit statement, which is the route this item already leaned toward.** Nothing anywhere says the scope-lock covers files and nothing else. Their user's framing is true of the *method* and false of the *mechanism*, and that mismatch is what lets a file-lock read as general coverage.
-
-**The vocabulary half is kept and stays small, deliberately.** `[freeform]` names a work-item flavour and never a mode a session can be in. The fix is not to name the unnamed thing: the always-loaded rules warn that invented states, tags and session containers are a recurring failure here and that the user has caught each one, and live unqueued hand-work in a chat is the ordinary case the method already describes without needing a term. One clause saying flavour-not-mode is the whole of it.
-
-**Files:** `plugin/throughliner/docs/skill-nonspecific-rules.md` — the scope paragraph gains the limit statement, and the `[freeform]` flavour block gains the not-a-mode clause.
-
-**No SPEC sentence is owed, checked rather than assumed.** SPEC's scope-lock paragraph describes what the lock covers without claiming it covers anything else, so no sentence there goes wrong or incomplete. **No FAQ entry** — nothing a user does changes. **No epoch bump.** Shipped, not host-only: the report came from a consumer and both clauses are read by every consumer.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs/skill-nonspecific-rules.md`, the Scope section —
-  add one statement that the scope-lock covers files and nothing else, so work
-  that leaves the machine or happens away from the filesystem is governed by the
-  approval rules and by nothing mechanical. State it as what the mechanism does,
-  not as an apology for what it does not.
-  Same file, the flavour-marker block — one clause: `[freeform]` names how a
-  work item is executed and is never a mode a session is in. Do not add a name
-  for unqueued hand-work in a chat.
-Acceptance: the Scope section states the file boundary explicitly. The flavour
-  block says flavour-not-mode. No new state, tag, mode or session type appears
-  anywhere in the diff. Rule-statement count accounted for, since this adds two.
-Refused: a mechanical guard on outbound work — the send is not Claude's action
-  and passes through no tool, so there is nothing to intercept.
-Refused: naming the unqueued-hand-work case — inventing a state or container is
-  the recurring failure the always-loaded rules already warn against.
-Refused: the record obligation — already shipped by
-  [send-record-lacks-destination-and-intent] on 2026-08-20.
---- End build block ---
-
-Rule gate: run — admitted as two clauses on existing always-loaded statements, the Scope section and the flavour-marker block, subordinate rather than freestanding. **They sit in the always-loaded file and each spends a slot**, stated plainly rather than waved past: the first must fire wherever a session reasons about what the lock protects, and the second wherever a flavour is reached for, so neither can be fetched. **Nothing is evicted.** Failure evidence is one consumer instance for each half, both in a single reported session. **A hook was considered and refused**, on the record in the block above.
-
 #### [user] Discord post: Claude now knows how the work cycle actually fits together [discord-post-cycle-awareness]
 Captured by you 2026-08-12; the angle is yours — awareness of the build cycle.
 **Cannot be written until [cycle-summary-at-every-skill-opening] has shipped.**
@@ -1012,14 +175,16 @@ Blocked by: [discord-post-cycle-awareness]
 
 ## Unprocessed
 
-#### Last session advises a build run, and a rezip after it [forward-advisory]
-**The blocker that stopped the last several runs is gone.** Every path in the cleared region was checked against the disk this session and all resolve; the stale `docs-b/` references that would have sent a run at a folder that no longer exists were rewritten across 13 items. Nothing carries a `Runs alone` marker, so no item ends the run early.
+#### Last session advises a rezip first, then a planning session on the three grep-shaped captures [forward-advisory]
+**This replaces a spent advisory rather than sitting beside one.** The note in this slot advised a build run and then a rezip. The build run happened — seventeen items. **The rezip did not, and that half is still live**, so it is carried forward here rather than lost. This replacement is the branch `[advisory-step-collides-with-a-spent-note]` says the close does not have; that item is still worth processing, and this is a second live instance of it.
 
-**Run /next.** The first four items are small and were placed deliberately: the version-notice fix unblocks work in other projects, and the two brevity items plus the queue-rewrite item are the first real attempt at the verbosity problem. [law-prose-restyle-heavy-docs] sits sixth, which is the closest it has been.
+**Rezip before anything else reaches a session.** This run changed what `session_start.py` emits, and changed the always-loaded rules in five places — the brevity limb, the vocabulary rule's third arm, the memory-routing qualification, the render rule's column clause and the Scope section's file boundary. None of that reaches this project or any other until the plugin is reinstalled and the app restarted. Until then the installed host still emits the version-change notice on every update, which is the thing you raised.
 
-**Then rezip, and this is the part that is easy to miss.** The version-notice fix and the brevity clause both change what a session reads at its opening, so neither reaches this project or any other until the plugin is reinstalled and the app restarted. Building them changes nothing observable on its own.
+**Then a planning session, and there is one subject worth taking as a subject.** Three captures were filed today that are the same defect wearing three faces: `[law-prose-pass-missed-mid-sentence-prohibitions]`, `[rationale-lens-plan-md-coverage-incomplete]`, and the acceptance-test problem recorded inside the second of those. Each is a pass that searched by grep, where a miss leaves no trace — a file with no match reads exactly like a file never searched. The method already has the shape that fixes this, the required-artifact rules that turn a silent omission into a visible one, and none of the three passes had one. Processing them together is likely to produce one repair rather than three.
 
-**One thing to carry rather than rediscover.** [brevity-amendment-outcome] is held below the line waiting on the brevity clause shipping *and* a rezip. Do not lift it on the build alone — the whole point of that audit is measuring the installed behaviour.
+**Two held items name blockers this run shipped**, so the below-the-line revisit has something to lift: `[brevity-amendment-outcome]` waited on `[brevity-instruction-for-the-5-series]`, and `[session-occurrence-audit]` waited on `[law-prose-restyle-remaining-docs]`. Both shipped and both are confirmed. `[brevity-amendment-outcome]` is the audit that reads the before-and-after measurement, and its before-figures are recorded in `LOG/2026-08-21-transcript-output-measurement-2.md` — but it wants transcripts written *after* the rezip, since the amendment is not live until then.
+
+**One item in the cleared region is a `[user]` line deferred to tomorrow.** `[competition-comparison-article]` lifted when the Discord post went out and was held only by your one-post-per-day pacing. Its `Blocked by:` names an item this run removed, so the lint flags it until the revisit settles it.
 
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
@@ -2033,4 +1198,77 @@ Filed 2026-08-21 by Claude at its own close. **The finding is the user's**: told
 **To settle at processing.** Whether this is an audit of SPEC against the two research files, or whether it folds into [claims-need-a-claude-code-delta-test], which already proposes auditing SPEC's claims against what Claude Code alone delivers — a different question over the same sentences, and one pass could serve both. **Weigh folding seriously**: two audits of one document, filed days apart, is the shape this project's near-duplicate check exists to catch.
 
 **Files (rough):** `SPEC.md`. Relates to [claims-need-a-claude-code-delta-test] and to [brevity-instruction-for-the-5-series], which rests on the corrected claim.
+
+#### Both law-prose passes restyled sentence-leading prohibitions only, leaving roughly 150 mid-sentence ones unread [law-prose-pass-missed-mid-sentence-prohibitions]
+
+The wording standard says anything described in terms of what *not* to do means
+the rule of what TO do was never adequately described. Both restyle passes —
+[law-prose-restyle-heavy-docs] and [law-prose-restyle-remaining-docs], built
+2026-08-21 — found their targets by grepping for prohibitions that START a
+sentence or a bold lead-in. That found and fixed thirteen across thirteen files.
+
+A count taken at the end of the second pass puts the remainder at about 151
+occurrences of "don't", "never" and "do not" across the eleven non-heavy docs
+alone, concentrated in `next.md` (47), `setup.md` (26), `feedback-and-inbox.md`
+(20) and `done-plan.md` (18). The heavy docs were not counted the same way, so
+the true total is higher.
+
+**Most of that remainder is legitimate and must not be swept.** Three kinds:
+a typed-block contrast pair, where `write:` / `never:` is the established shape
+and is the clearest form available; an honest-limit statement, which the
+authoring rule's own carve-out protects by name — the test is whether the caveat
+argues against doing something or describes what the thing does; and prose
+describing what a mechanism does not cover, which is required rather than
+tolerated. What is left after those is the real target, and nobody has counted
+it.
+
+**Why this is its own item rather than a defect in the passes.** Applying the
+standard to a mid-sentence prohibition means reading the surrounding provision
+and deciding which of the three protected kinds it is — per occurrence, on
+judgment, with no mechanical test available. That is a different pass from a
+grep-and-restate, and it carries the risk both restyle items already name: a
+rewrite is the one thing that can silently author a rule by changing one.
+
+**What a build would need to settle first**, which is why this is a capture
+rather than a work item: whether the pass runs per file or per doc family, and
+what evidence it leaves that an occurrence was read and judged protected rather
+than missed. Without the second, a later count finds the same 150 and cannot
+tell which were considered.
+
+#### The rationale lens covered done.md whole and plan.md only in part, so plan.md's acceptance test is unmet [rationale-lens-plan-md-coverage-incomplete]
+
+[rationale-lens-after-the-build-view] required every paragraph of `done.md` and
+`plan.md` to go through the delete-and-reread test, with each removal recorded
+against its destination. The build on 2026-08-21 met that for `done.md` and did
+not meet it for `plan.md`.
+
+**What was actually done.** `done.md` was read end to end across four reads and
+worked section by section, so every paragraph was seen and judged: 959 lines
+down to 794, statement count 244 to 235. `plan.md` is 1,594 lines, and the pass
+there worked from targeted identification — grepping for the signatures of
+history paragraphs ("Why both", "recorded because", "was rejected", "used to",
+"weighed and lost") and reading around each hit. Roughly 40% of the file was
+read. Eight sites were reduced; 1,594 lines down to 1,549, statement count 318 to
+322.
+
+**Why the count ROSE while the file shrank**, recorded because it looks wrong: a
+paragraph carrying an operative rule buried in prose was, in several places,
+restated as a bold-led sentence. That is what the pass is supposed to do — an
+operative rule belongs in a countable shape — but it means the statement count is
+not a proxy for how much history came out. Line count is the better signal here.
+
+**What is left.** The unread ~60% of `plan.md`, which is not a list anyone holds:
+the identification was signature-based, so a rationale paragraph phrased without
+one of those openings was never looked at. That is the same class of miss as
+[law-prose-pass-missed-mid-sentence-prohibitions], found the same day, by the
+same shortcut.
+
+**What a build would need to settle.** Whether the remaining pass reads the file
+straight through — the only method that can honestly claim the acceptance test —
+or whether the acceptance test itself should be restated as something a build can
+actually discharge and evidence. The second is worth weighing: "every paragraph
+has been through the test" is unfalsifiable from the artifacts, since a paragraph
+correctly judged operative and left alone looks identical to one never read.
+That is the same defect the required-artifact rules elsewhere in this project
+exist to fix, and it is arguably the more valuable half of this item.
 

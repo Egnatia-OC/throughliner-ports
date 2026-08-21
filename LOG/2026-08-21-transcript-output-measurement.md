@@ -1,4 +1,4 @@
-# [HASH] — nothing in the project reads what Claude says, and the instrument that would was narrowed to a one-off on the user's objection
+# 746608f — nothing in the project reads what Claude says, and the instrument that would was narrowed to a one-off on the user's objection
 
 Filed because the verbosity work processed alongside it ([brevity-instruction-for-the-5-series], which carries the shared reasoning) had no way of being told apart from doing nothing.
 

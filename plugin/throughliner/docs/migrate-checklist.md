@@ -20,9 +20,15 @@ CLAUDE.md is topped up by session_start, and SPEC is format-agnostic — so they
 little or nothing.
 
 ```
-old multi-section shape  ->  convert with this checklist
-    ## Red flags · ## Batches · ### Parked · ## Deferred tests · ## Captures
+recorded epoch below FORMAT_EPOCH  ->  convert with this checklist, running
+                                       every epoch section from the recorded
+                                       number upward
 ```
+
+The oldest shape this reaches is the multi-section queue —
+`## Red flags · ## Batches · ### Parked · ## Deferred tests · ## Captures` — but
+which conversions run is decided by the recorded epoch, not by what the file
+looks like.
 
 **Plain-language guard.** A consumer reads whatever you say while migrating. Say
 "your queue" not "QUEUE.md's parse structure"; "the ready-to-build line" not "the
@@ -31,15 +37,28 @@ narrate.**
 
 ## How to run it
 
+**Run every epoch section from the project's recorded epoch up to the current
+`FORMAT_EPOCH`, in order.** /setup reads the recorded number from
+`.throughliner-format-epoch` and enters here; a project with no marker predates
+it and starts at the beginning. Each section says which epoch it brings the
+project to, so a project already past one skips it.
+
 ```
 1. read the existing QUEUE.md; identify each old section and item
-2. convert each item per the rules below
+2. convert each item per the rules of each epoch section you are running
 3. DRAFT the whole converted queue and show it for approval before writing
    # not a contradiction of write-first: see "Why this shows before it writes"
 4. after writing, the post_tool_use lint confirms the new queue is well-formed
+5. /setup writes the new epoch marker LAST, once the conversions have landed
 ```
 
-## The target shape
+## Epochs 1–3 — the two-section queue
+
+Everything from here to "Preserve everything real" brings a project up to
+**epoch 3**. Run it where the recorded epoch is below 3; a project already at 3
+or above has a two-section queue and starts at Epoch 4 below.
+
+### The target shape
 
 The old sections all collapse into **two**: `## Processed` and `## Unprocessed`.
 
@@ -66,7 +85,7 @@ which section:
 The current header prose for each section is shipped in setup.md's scaffold —
 **re-copy it rather than writing your own** (rule 3).
 
-## The judgment rules a find-and-replace can't make
+### The judgment rules a find-and-replace can't make
 
 **1. Old red flags.**
 

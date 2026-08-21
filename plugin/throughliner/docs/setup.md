@@ -93,10 +93,9 @@ Case B  content, no SPEC.md   the user's own files exist but no method docs.
 Case C  already set up        SPEC.md exists.
 ```
 
-**Don't assume blank-slate on Case B.** If the existing files look like planning or
-spec documents, treat it as a possible migration and follow the migration framing
-below. Recognise a migration **by what the docs do, not by a fixed list of old
-names** — the source could be anything.
+**On Case B, treat existing planning or spec documents as a possible migration**
+and follow the migration framing below. Recognise a migration **by what the docs
+do, not by a fixed list of old names** — the source could be anything.
 
 For Case C, check `.throughliner-version`:
 
@@ -162,24 +161,35 @@ close to a sentence or two.
 **1. Check each doc/folder** from the Step 2 scaffold list. Exists → skip. Missing
 → create from the standard scaffold (empty structure, not interview-filled).
 
-**1a. Convert an old-format QUEUE.md.**
+**1a. Run every document-format conversion the project is behind on.** Read the
+project's recorded epoch from `.throughliner-format-epoch` and compare it against
+`FORMAT_EPOCH` near the top of `${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py`:
 
 ```
-existing QUEUE.md uses an old multi-section shape
-    (## Red flags · ## Batches · ### Parked · ## Deferred tests · ## Captures)
-        ->  load ${CLAUDE_PLUGIN_ROOT}/docs/migrate-checklist.md and follow it,
-            drafting the converted queue and getting approval before writing
-already two-section (## Processed / ## Unprocessed)
-        ->  skip
+recorded epoch < FORMAT_EPOCH
+        ->  load ${CLAUDE_PLUGIN_ROOT}/docs/migrate-checklist.md and follow
+            EVERY epoch section from the recorded number up to the current
+            one, in order, drafting each conversion and getting approval
+            before writing
+recorded epoch == FORMAT_EPOCH
+        ->  skip; open the checklist at all
+no marker file
+        ->  the project predates the marker: treat it as epoch 1 and run the
+            whole checklist from the beginning
 ```
 
-Showing the conversion before writing it is the general write-first test
+**Read the epoch from the marker rather than inferring it from the documents.**
+Inspecting a project's files to guess which shape they are in guesses about
+files users legitimately hand-edit, and it is rejected for that reason wherever
+this comes up.
+
+Showing each conversion before writing it is the general write-first test
 applied, not an exception to it: a project being adopted or migrated may not be
-a committed git repo, so its old queue may not be recoverable once overwritten.
-The checklist states the reasoning where it is used.
+a committed git repo, so its old documents may not be recoverable once
+overwritten. The checklist states the reasoning where it is used.
 
-This is the one project doc that reliably falls behind as the method evolves; the
-checklist encodes judgment a find-and-replace can't make.
+The queue is the one project doc that reliably falls behind as the method
+evolves; the checklist encodes judgment a find-and-replace can't make.
 
 **1b. Reconcile the settings attached to the scaffold list.** Step 1 restores
 missing *files*. It does not re-run the *decisions* attached to them, so a
@@ -324,8 +334,11 @@ Three project docs structure each project:
 ## Processed
 
 > Vetted work, ready to build — worked top to bottom. Each piece of work is one
-> item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and
-> a short rationale beneath. A leading flavor tag names how it runs — none for a
+> item: a `#### ` heading naming it, a short name in square brackets at the end of
+> that heading line, and a short rationale beneath. **That bracketed name is a
+> handle, so you and Claude can refer to a piece of work without retyping its whole
+> description — "let's do the login one" works too, and Claude never asks you to
+> write one.** A leading flavor tag names how it runs — none for a
 > build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only
 > you can do. A security or privacy risk Claude surfaces lives here too, as a work
 > item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks
@@ -421,17 +434,31 @@ never be committed.
 mechanically like the rest of the scaffold. Without a repository there is nothing
 for the close-out to commit to.
 
-**Keep-everything-private option**  [BRIEF, PROMPT]. Offer once, as part of
-scaffolding, to add the project's Throughliner documents — `SPEC.md`, `QUEUE.md`
-and `LOG/` — to `.gitignore` so they never enter the repository at all.
+**Keep-private option**  [BRIEF, PROMPT]. Offer once, as part of scaffolding, to
+add the project's Throughliner documents to `.gitignore` so they never enter the
+repository at all — **and offer the three separately, so any combination of them
+is reachable:**
 
-Say what it costs and what it buys, in one short exchange: these documents hold
-the project's plans, its reasoning and its session history, which is the most
-personal material the method produces; keeping them out of the repository is the
-only complete protection if it is ever published.
+```
+SPEC.md    what the project is
+QUEUE.md   what to work on next, and the reasoning behind each piece
+LOG/       what happened, session by session
+```
+
+**Ask it as ONE question with three answers, not as three questions.** "All of
+them, none, or just some — and if some, which?" A private queue with a public
+history is the combination someone most plausibly wants, and a bundled choice
+makes it unreachable rather than merely un-defaulted.
+
+Say what it costs and what it buys, in one short exchange, and **state the trade
+once rather than once per document**: these documents hold the project's plans,
+its reasoning and its session history, which is the most personal material the
+method produces; keeping them out of the repository is the only complete
+protection if it is ever published.
 
 **State the cost as the three things that change, not as "you lose undo".** It is
-larger than that, and the moment of choosing is the one moment it can be said:
+larger than that, and the moment of choosing is the one moment it can be said.
+Each applies to whichever documents the user keeps out:
 
 ```
 1. Claude normally writes to these first and reports what landed, because a
@@ -450,36 +477,42 @@ can also arrive from an ignore file the user wrote themselves, or from a choice
 made weeks ago in a project nobody has looked at since.
 
 ```
-user says yes  ->  add the three paths to `.gitignore`, say so in one line
-user says no   ->  say nothing further. Not asked again at any later setup run.
+user names some or all  ->  add exactly those paths to `.gitignore`, say in one
+                            line which went in and which stayed tracked
+user says none          ->  say nothing further. Not asked again at any later
+                            setup run.
 ```
+
+**Change no default.** Nothing is ignored unless the user asks for it, whichever
+documents they name.
 
 **This adds no sixth interview question.** It is part of scaffolding, where the
 files are being created, and it is answerable without knowing anything about the
 project.
 
-**Public-repository offer, and it carries the licence question with it**
-[DISCUSS, PROMPT]. Made **only** where the user asks for a public repository —
-never volunteered. When they do:
+**The public-repository offer — one subject, four provisions** [DISCUSS,
+PROMPT]. Make it only where the user asks for a public repository, and then:
+
+- ask what licence the project should carry, and why it is being asked now:
 
 ```
-1. ask what licence the project should carry, and why it is being asked NOW:
-   a licence is what says who may use the code and on what terms, and it only
-   becomes a real question once the code is going somewhere public
-2. set up the repository
+a licence is what says who may use the code and on what terms, and it only
+becomes a real question once the code is going somewhere public
 ```
 
-**Never represent the contents as screened.** The method scans for things shaped
-like credentials and reads its own writing against a checklist, and neither can
-tell whether a sentence quietly identifies a real person. So this offer may set up
-the repository and may **not** say the documents have been checked, are clean, or
-are safe to publish. Say plainly instead: the only complete protection is not
-publishing these documents, which is what the keep-everything-private option
-above does. Any wording implying they have been checked contradicts a shipped
-rule, and it is the sentence most likely to slip in here.
+- set up the repository;
+- describe the contents as unscreened, and say what the only complete protection
+  is — not publishing these documents, which is what the keep-everything-private
+  option above does;
+- treat "not now" as a plain answer that ends it, with the offer not repeated
+  and nothing set aside for later.
 
-**Declining is a plain answer, not a refusal.** "Not now" ends it; the offer is
-not repeated and nothing is set aside for later.
+The method scans for things shaped like credentials and reads its own writing
+against a checklist, and neither can tell whether a sentence quietly identifies
+a real person — so this offer may set up the repository and may say nothing
+about the documents being checked, clean, or safe to publish. Any wording
+implying they have been checked contradicts a shipped rule, and it is the
+sentence most likely to slip in here.
 
 **Two things are deliberately NOT asked, recorded so they are not re-proposed.**
 A standalone licence question in the interview — moved onto this offer, because

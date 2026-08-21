@@ -106,8 +106,8 @@ is recorded by the close when it runs, so say that and file only the captures.
 reporting, so the user is not left thinking the record is saved.
 
 **Where a candidate is genuinely both** — work that was done AND revealed more to
-do — write both: the tail records what happened, the capture records what is left.
-Do not make one stand in for the other.
+do — write both, each carrying its own half: the tail records what happened, the
+capture records what is left.
 
 **State this sentence, as written:**
 
@@ -128,10 +128,17 @@ duration, message count, or any other observable proxy.
 
 > Read back over our discussion — nothing came up that isn't already captured.
 
-## Step 3: Say what happens next  [BRIEF]
+## Step 3: Say what happens next, then hand back  [BRIEF]
 
-Name what the captures are waiting for: a planning session decides what happens
-to each one. Say it once, plainly, and stop.
+Name what the captures are waiting for — **the planning session this chat is in,
+where one is running, and otherwise the next one.** Processing a capture is
+exactly what /plan does, so a session still open can settle what was just filed.
+Say it once, plainly.
+
+**Then resume whatever was running and carry on from where it was.** A scan run
+inside a build or a planning session interrupts that work and returns it; the
+hand-back is a return, not a close, and nothing has to be restarted — the skill's
+instructions are still in the conversation.
 
 **Recommend nothing else.** This skill exists partly because close machinery
 accumulating at the end of a chat pulls the whole chat toward ending. A /rescan

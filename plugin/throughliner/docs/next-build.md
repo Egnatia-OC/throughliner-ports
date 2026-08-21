@@ -313,8 +313,8 @@ already a `[user]` item:
 3. resume the build
 ```
 
-Don't attempt the check inline if it genuinely needs the user, and don't extend
-this item's scope to include it.
+Leave the check to the user where it genuinely needs them, and leave this item's
+scope as it stands.
 
 **Before assuming a device or environment is absent, check.** Ask whether one is
 available rather than assuming none is; a check wrongly skipped on a guess sits
