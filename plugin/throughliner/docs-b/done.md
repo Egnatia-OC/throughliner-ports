@@ -224,6 +224,64 @@ The audit's Approval-outcomes line means a decision made at audit time doesn't
 vanish — without it, the only trace of a dropped or reworded finding is its
 absence.
 
+**One field on every flavor: the forward-recommendation disposition.** Written
+into this close's entry, in one of two forms:
+
+```
+Advisory: filed — <slug>
+Advisory: not needed — <why>
+```
+
+**A close does not complete until the line is written.** The label is plain, not
+bolded, matching the other close obligations that produce a recorded line.
+
+**The required artifact is the fix, and the step's position is not.** Filing the
+advisory was a step with no output, so a close that skipped it and a close that
+ran it and found nothing to file looked identical from outside — and it was
+skipped about half the time, silently. A line that says `not needed — <why>` is a
+claim a later reader can disagree with, and a missing line is a gap anyone can
+see. Same shape as the entry fields above, and for the same reason.
+
+**File the forward-recommendation advisory.** Where the Recommend-next step made a
+*concrete* recommendation, file it as a capture at the top of Unprocessed, worded
+as advice, consumed and cleared by the next /plan. A generic recommendation files
+nothing, and the disposition line says so.
+
+```
+#### Last session advises processing <slug> next [forward-advisory]
+```
+
+**In the prose beneath, state conditions, not counts.** A condition stays true
+however the queue reorders. Arithmetic against a snapshot does not, because the
+advisory is written at a close and read at the next /plan's opening — and the
+whole point of that interval is that work happens in it. Positions in the
+cleared region are precisely what a build run changes.
+
+```
+write:      a /next run will halt on this item and build nothing past it
+never:      it sits ninth, with eight items ahead of it
+```
+
+This trims nothing worth keeping. The advisory that failed named the right item,
+gave the right reason, and named what to process alongside it — only its numbers
+rotted, and by the time it was read the item it called ninth sat first.
+
+The trailing `[forward-advisory]` is a fixed, reserved slug — always that literal
+string, never the slug of the item it points at. Written any other way the
+advisory is a heading with no slug at its end, which the queue lint flags on
+every later edit and which stops the queue mover dead: it refuses on the whole
+file, so no move or deletion can run at all while the advisory is present.
+
+**The advisory is a transient orientation handoff, not work.** It is read at the
+next /plan's opening to orient where that session starts, and cleared there, at
+that same read (plan.md). Nothing about clearing it is this close's job. It never
+runs through keep/delete and never moves into Processed. It stays in QUEUE.md
+rather than getting a file of its own because it is read at the top of Unprocessed
+anyway, and a separate document would be one more thing for the user to learn
+about for one transient line — what made it misread as unprocessed work was never
+its location but that nothing in it said what it was, which is why the heading
+text carries that now.
+
 **One more section, on every flavor: what the chat did outside its work items.**
 
 ```
@@ -872,43 +930,10 @@ into a stop. Say plainly what the item is and that it needs a session where the
 work is done by hand rather than run from the queue, so they reach for that instead
 of /next or /plan.
 
-**File the forward-recommendation advisory.** When this step made a *concrete*
-recommendation, file it as a capture at the top of Unprocessed, worded as advice,
-consumed and cleared by the next /plan. A generic recommendation files nothing.
-
-```
-#### Last session advises processing <slug> next [forward-advisory]
-```
-
-**In the prose beneath, state conditions, not counts.** A condition stays true
-however the queue reorders. Arithmetic against a snapshot does not, because the
-advisory is written at a close and read at the next /plan's opening — and the
-whole point of that interval is that work happens in it. Positions in the
-cleared region are precisely what a build run changes.
-
-```
-write:      a /next run will halt on this item and build nothing past it
-never:      it sits ninth, with eight items ahead of it
-```
-
-This trims nothing worth keeping. The advisory that failed named the right item,
-gave the right reason, and named what to process alongside it — only its numbers
-rotted, and by the time it was read the item it called ninth sat first.
-
-The trailing `[forward-advisory]` is a fixed, reserved slug — always that literal
-string, never the slug of the item it points at. Written any other way the
-advisory is a heading with no slug at its end, which the queue lint flags on
-every later edit and which stops the queue mover dead: it refuses on the whole
-file, so no move or deletion can run at all while the advisory is present.
-
-**The advisory is a transient orientation handoff, not work.** It is read at the
-next /plan's opening to orient where that session starts, and cleared there, at
-that same read (plan.md). Nothing about clearing it is this close's job. It never
-runs through keep/delete and never moves into Processed. It stays in QUEUE.md rather than getting a file of its own
-because it is read at the top of Unprocessed anyway, and a separate document would
-be one more thing for the user to learn about for one transient line — what made it
-misread as unprocessed work was never its location but that nothing in it said what
-it was, which is why the heading text carries that now.
+**Whether this step's recommendation was concrete decides the forward-advisory
+disposition**, which is written in the LOG entry files section above, along with
+the advisory's own wording and reserved slug. A concrete recommendation is filed;
+a generic one is not, and the entry says which.
 
 ```
 flavor deltas:

@@ -222,15 +222,33 @@ file** — an instruction one item carries about another's ordering sits in that
 prose and appears on no digest line, which is how a stated ordering was missed
 and the two items processed in the wrong order.
 
-**A cited slug that has a LOG entry means that work shipped**, which is the
-always-loaded instruction "status is re-derived from LOG" performed rather than
-merely stated. An item whose prose leans on work already done has a premise worth
-re-reading — surfaced here, at the opening, where the user sees it. It orders
-nothing: rung 4 orders by the date an entry was FILED, which is a different fact
-from whether its premise has been overtaken, so this stays a flag to read rather
-than a reason to take an item first. Only shipped
-citations print: an unshipped one is the ordinary state and would appear on
-nearly every line for nothing.
+**A cited slug that has a LOG entry means a record exists, and the record's KIND
+says whether that work was built or only agreed.** This is the always-loaded
+instruction "status is re-derived from LOG" performed rather than merely stated.
+The kinds print separately, and they carry different weight:
+
+```
+Cites shipped:    the record is a build's — that work is done. The citing
+                  item's premise names finished work and is worth re-reading.
+Cites processed:  the record is a planning session's — that work was discussed
+                  and kept, and has not been built. A weaker premise still.
+record kind       an older-format record, carrying neither marker. Reported as
+  unknown         found and unclassified rather than guessed at.
+```
+
+**Both are told apart by reading the record, never by its name.** A planning
+session writes a record for each item it *processes* and a build writes one for
+each item it *builds*, both named `<date>-<slug>.md`, so the filename alone
+cannot separate them. Reading agreed-but-unbuilt work as finished is not
+cosmetic: the same signal decides what may be lifted out of the held region, so
+it would release work whose dependency is still outstanding.
+
+An item whose prose leans on work already done has a premise worth re-reading —
+surfaced here, at the opening, where the user sees it. It orders nothing: rung 4
+orders by the date an entry was FILED, which is a different fact from whether its
+premise has been overtaken, so this stays a flag to read rather than a reason to
+take an item first. Only citations with a record print: one with none is the
+ordinary state and would appear on nearly every line for nothing.
 
 **The files-named block lists merge candidates**, not a per-item field — two
 items naming the same file can often be settled together, and one run then

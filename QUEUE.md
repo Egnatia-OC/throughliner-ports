@@ -6,181 +6,6 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### The close makes its forward recommendation and files it about half the time [advisory-step-does-not-fire]
-**Raised by you 2026-08-21**, from noticing it across the last couple of days: forward advisories "seem to have stopped being a thing" and you have had to ask for them, where Claude used to file them unprompted. The measurement and the diagnosis below are Claude's.
-
-**What has actually stopped is narrower than the report, and the difference is the whole finding: the recommendations are still being made, and they have stopped being written down.** Yesterday's close made a concrete one — the text you carried by hand into the next session, that planning rather than a build is where it should start, naming the overlap between [setup-migration-gate-is-epoch-3-shaped] and [convert-cleared-items-to-build-blocks]. That is exactly what the advisory exists to carry. Nothing reached the queue, so it survived only because you pasted it.
-
-**Measured from git rather than estimated, across the last five closes: three filed nothing.** Each close clears the previous advisory and only sometimes adds a new one — `d9468f3` cleared and filed none, `b485ee3` filed one, `cb50e2b` cleared and filed none, `7e3c1c8` filed one, `dc52025` cleared and filed none.
-
-**The step is intact, which is what rules out the obvious explanation.** Nothing was repealed or reworded: `done.md` still carries "File the forward-recommendation advisory" in full, with the reserved `[forward-advisory]` slug, the write-conditions-not-counts rule and the flavour deltas. So this is not a change that removed something — it is a correctly worded obligation with a stated site that does not fire.
-
-**The likeliest cause is position, and it is measurable.** The step sits at line 880 of a 925-line file — the tail of the largest document in the method, which a close reaches only after reading 7,443 words of it, having already written the record and with the commit in sight. That is the toll [done-md-carries-other-flavours-material] measures.
-
-**This is the sixth instance in this corpus of a correctly worded rule with a stated site failing to fire**, after the provenance rule, the file-the-blocker rule, the INBOX-opening step, the subagent-cost rule and the gate's own halt instruction. The corpus's own conclusion about that class is already recorded: "state the rule again, or state it harder" is not a candidate direction.
-
-**What changes — a required artifact, which is the one shape with teeth here.** `done.md`'s advisory step gains a disposition line the close writes into its session record:
-
-```
-Advisory: filed — <slug>
-Advisory: not needed — the recommendation was generic
-```
-
-**It is an amendment rather than a new mechanism, and the parent is explicit.** The `Rule gate:` obligation was itself authored as "the FAQ-sync rule's shape extended to a second subject, not a new obligation". This is the third subject on that same shape, for the same stated reason: a required artifact converts a silent omission into a visible one. "Not needed because the recommendation was generic" is a claim a later reader can disagree with, and a missing line is a gap anyone can see.
-
-**A mechanical check was considered and refused.** Nothing can detect whether an advisory was *owed*, because the trigger is whether this close made a concrete recommendation, and that lives in the conversation. A check firing on every advisory-less close would fire wrongly every time the recommendation was legitimately generic — the cry-wolf shape this project has repealed measures for twice.
-
-**The step also moves out of the tail in the same edit.** Not as the fix — position is a guess and a step skipped at line 880 can be skipped at line 400 — but because there is no reason to leave it there while the file is open.
-
-**The cost, stated rather than discovered: this one ships.** FAQ-sync and the rule gate are both host-only, so consumers write neither line. This is the first close-line obligation a consumer pays, one line per close in every project. It is admitted anyway because the feature it guards is one consumers have and are silently losing.
-
-**Placed first in the cleared region, which is a non-default placement made deliberately.** [rename-docs-b-folder] sits second and carries `Runs alone`, so /next stops before it and the next run builds exactly one item. This is a shipped feature failing three closes in five; [split-action-defeats-the-bands-in-aggregate], which held first place, is a cost saving that loses nothing by waiting a run.
-
-**Files:** `plugin/throughliner/docs-b/done.md` only — the advisory step and the session-record entry template.
-
-**No SPEC sentence is owed, checked rather than assumed.** SPEC says /done files the note at the top of Unprocessed, which stays true, and a line in a session record is how a mechanism is implemented, which the SPEC admission rule keeps out. **No FAQ entry**, on the FAQ trigger's own test: a consumer sees one more line in their session record and does nothing different. **No epoch bump** — no existing project's documents become structurally wrong.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/docs-b/done.md`, the "File the forward-recommendation
-  advisory" step — add a required disposition line written into this close's
-  session record, in the two forms `Advisory: filed — <slug>` and
-  `Advisory: not needed — <why>`. Word the label plain, not bolded, matching
-  the `Rule gate:` and `FAQ:` lines it sits beside. State in the step that a
-  close cannot complete until the line is written.
-  Same file — the session-record entry template gains the field alongside the
-  existing `FAQ:` line, so the close writes it where it already writes those.
-  Same file — move the advisory step out of the document's tail to sit with the
-  other close obligations that produce a recorded line.
-Acceptance: `done.md`'s advisory step names the required line in both forms.
-  The entry template carries the field. Grep `Advisory:` in `done.md` returns
-  the step and the template and nothing else. The step no longer sits in the
-  final fifty lines of the file.
-Refused: a mechanical check — nothing can detect whether an advisory was owed,
-  since the trigger lives in the conversation, so it would fire wrongly on every
-  legitimately generic close.
-Refused: moving the step earlier as the whole fix — position is a guess, and a
-  step skipped at line 880 can be skipped at line 400.
-Refused: folding into [done-md-carries-other-flavours-material] — that item
-  moves flavour-specific material out and must delete nothing; this step is
-  shared across flavours, so it would not move under that lever.
---- End build block ---
-
-Rule gate: run — admitted as a third subject on the existing close-line obligation shape, subordinate to a mechanism already shipped twice, and sited in a fetched procedure doc so no always-loaded slot is spent. **Nothing is evicted, stated plainly rather than dressed up as a merge.** Failure evidence is three misses in five closes measured from git, plus one instance observed end to end where the recommendation was made in chat and reached the next session only because you carried it by hand. **A hook was considered and refused**, on the record in the block above.
-
-Relates to [dispositions-listing-run-not-surfaced] and [inbound-replies-not-drafted], the two other live instances of an obligation with a site that does not fire, and to [done-md-carries-other-flavours-material], which measures the toll this step sits at the end of.
-
-#### The digest calls an item shipped when a planning session merely processed it [log-entry-kind-not-distinguished]
-Filed 2026-08-21 by Claude, from an instance visible on screen while verifying an unrelated placement: the digest reported [advisory-step-does-not-fire] as citing [setup-migration-gate-is-epoch-3-shaped] and [convert-cleared-items-to-build-blocks] as **shipped**, while both sat cleared and unbuilt in the queue.
-
-**The mechanism, read in the code rather than taken from the observation.** `queue_digest.py`'s `shipped_slugs()` does one directory listing and matches `<date>-<slug>.md`. Nothing opens the file. Its own docstring calls the result *"slugs whose work shipped"*, and that is false for every entry a planning close wrote — because a plan entry splits per item **processed**, which is settled and correct, so a discussed-and-kept item has a record named after it exactly like a built one.
-
-**Why it is worse than a mislabelled line.** The below-the-line revisit decides what may lift by reading shipped-ness off LOG, and its own rule is right — *"blocker BUILT and VERIFIED per LOG"*. What is wrong is the fact fed to it. An item held against a blocker that was only processed reads as ready to lift, and lifting is a clearing move, so unbuilt work reaches the region /next builds from. **That is the failure this queue has recorded four times, arriving through a door nobody was watching.** The rule needs no change; the fact does.
-
-**The two kinds are already mechanically distinguishable, which is what makes this fixable without judgment.** Measured across 747 entries: 541 carry `**Files touched:**`, which a build close writes; 132 carry `**Work processed:**`, which a planning close writes. An entry with the second and not the first records an item being processed. **`Tick:` would be the stronger signal**, since it carries built-versus-confirmed and that is what the revisit's rule actually asks for — but it appears on 23 entries only, being recent, so it cannot classify the history and is not used.
-
-**What changes.** `shipped_slugs()` stops trusting the filename and classifies by reading the entry. The digest then prints `Cites shipped:` and `Cites processed:` as separate facts rather than collapsing them, and a blocker's resolution says which kind of record it found.
-
-**Suppressing the false flag was refused in favour of reporting both.** An item leaning on a sibling that was merely agreed has a weaker premise than one leaning on shipped work, and that is worth seeing rather than hiding — the digest's standing posture is to state a fact and never a verdict.
-
-**Read lazily, because the whole folder is 4.5MB.** Only the entries for slugs actually cited or named as blockers are opened — a few dozen small files per run rather than the directory.
-
-**What it cannot do, and the digest says so where it reports.** 74 of the 747 entries carry neither marker: chat-level records and older formats. Those are reported as a record found whose kind is unknown, never guessed at. Partial coverage stated plainly is this project's standing choice over a check that over-claims.
-
-**The ripple was traced by grep at processing rather than written from the discussion**, per the keep-step's repeal limb. The repealed claim reaches two live sites outside the code: `plan.md` line 225, *"A cited slug that has a LOG entry means that work shipped"*, and `SPEC.md` line 43, which asserted that work is *"recognised by its having a session record"*. **`SPEC.md` was rewritten in this planning session rather than listed here**, ahead of the build, per the rule that a build never writes product truth. The revisit's own table in `plan.md` is excluded by name: its built-and-verified test is correct as written and must not be touched.
-
-**Files:** `plugin/throughliner/scripts/queue_digest.py`, `plugin/throughliner/docs-b/plan.md` (the cited-slug sentence only), `resources/testing/test_queue_digest.py`. **No FAQ entry** — a consumer sees a different label on a line and does nothing different. **No epoch bump** — no project document changes shape. Shipped, not host-only: every consumer's digest and every consumer's revisit run this.
-
---- Build block ---
-Changes:
-  `plugin/throughliner/scripts/queue_digest.py`, `shipped_slugs()` — stop
-  returning a set built from the directory listing alone. Return a mapping of
-  slug to kind: `built` where the entry contains `Files touched:`, `processed`
-  where it contains `Work processed:` and not the first, `unknown` where it
-  contains neither. Open only the entries for slugs that are cited or named as
-  blockers, not the whole folder. Correct the docstring, which currently claims
-  every match is work that shipped.
-  Same file, the per-item line — print `Cites shipped:` and `Cites processed:`
-  as separate lists, and append `(record kind unknown)` for the third case.
-  Same file, blocker resolution — where a blocker resolves to a record, say
-  which kind it is, so the revisit reads built-ness rather than existence.
-  `plugin/throughliner/docs-b/plan.md` line 225 — replace "A cited slug that has
-  a LOG entry means that work shipped" with the distinction: a record exists,
-  and its kind says whether the work was built or only agreed. Leave the
-  below-the-line revisit's built-and-verified table exactly as it stands.
-  `resources/testing/test_queue_digest.py` — one case per kind, plus one
-  asserting a processed-only blocker is NOT reported as shipped.
-Acceptance: against this live queue, [setup-migration-gate-is-epoch-3-shaped]
-  and [convert-cleared-items-to-build-blocks] appear under `Cites processed:`
-  and not under `Cites shipped:`. A built slug still appears under
-  `Cites shipped:`. The new suite passes. Digest runtime stays under a second.
-Refused: suppressing the processed case instead of reporting it — a weaker
-  premise is a fact worth seeing, and the digest states facts rather than
-  hiding them.
-Refused: classifying on `Tick:` — the stronger signal, but present on 23 of 747
-  entries, so it cannot read the history.
-Refused: reading every entry on every run — 4.5MB for a handful of citations.
-Refused: changing the below-the-line revisit's rule — it is correct as written;
-  what was wrong is the fact supplied to it.
---- End build block ---
-
-Rule gate: run — no rule is authored or amended. **The disposition is a correction to a mechanism plus one repealed sentence**, evicted at both live sites where it is stated: `plan.md`'s cited-slug claim and, written in this planning session, SPEC's. Failure evidence is one instance observed directly on screen, plus the structural argument that the same signal governs what lifts out of the held region — a consequence checked in `plan.md`'s revisit rather than assumed. **A hook was considered and refused**: this is a script's own logic, not a thing a hook could watch.
-
-Relates to [plan-entry-split-wording-disagrees], which established that a plan entry splits per item processed and that filenames are what the mechanisms read — this is the cost of that settlement, which nothing weighed at the time. Also to [digest-diamond-read-as-a-loop] and [superseded-flag-has-no-section-granularity], both defects in the same script, and worth settling in one run.
-
-#### Compress the log index's longest lines, cutting the retrieve's fixed toll by about 40% [split-action-defeats-the-bands-in-aggregate]
-**Subject replaced at processing 2026-08-17; the slug is unchanged because slugs are immutable.** Raised by you at the close that first applied the plan-entry split: *"That was almost 17k tokens. I am concerned that the bands won't reach this new record keeping model."*
-
-**The aggregate half was measured and refuted, and that finding is in this session's record rather than here.** Per-entry cost *fell* after the split — 518 words per entry before it, then 329 and 316, against July's own 341. The 17k came from recording 26 items, so a per-close band would measure run size, which is your decision and not a length defect.
-
-**What survives is the index toll, larger than the item claimed.** `LOG/index.md` is 817 lines and 48,165 words, read in full on every retrieve. 351 lines sit at or above 61 words and carry 32,408 of those words. 265 of the 351 are August's. **That 61 is a measured cut-off marking this item's work list, not a limit anyone must write to** — it selects which lines to look at, and each one is then judged against the index line's own contract rather than against a number.
-
-**What changes.** Each of the 351 is rewritten to the artifact touched, the nature of the change and the entry filename, working from the line's own text only: a long line is long because it restates the entry it points at, so no entry needs re-reading. Commit hashes are preserved — the digest and the hash backfill read them.
-
-**The band is no longer the reason, revised 2026-08-19 by [retire-word-band-caps-keep-measurement], and this item survives that intact.** The 20–40 figure goes with every other cap. What justified this work was never the figure: it is that `LOG/index.md` is read **in full, by Claude, on every retrieve**, so its length is a fixed toll rather than something a reader skims past — 48,165 words to point at entries, with one 337-word line pointing at a 1,710-word entry. The test is the index line's own stated contract, that it carries enough to decide open-or-skip and does not restate the entry. That is a judgment, applied line by line, and it was always the real test; the number was standing in front of it.
-
-**This edits a pointer, not the record.** Every entry file stays byte-for-byte and no claim changes, which is what separates it from editing a session record to agree with a later decision.
-
-**The intuitive fix was refused: monthly index files.** Four mechanical readers would each have to glob a directory, and the digest must resolve a slug from any month, so it would read all of them regardless — a format change, an epoch bump and a migration path for a smaller saving.
-
-**Acceptance test:** line count, total words and median line before and after; expect roughly 28,000 words.
-
-**Files:** `LOG/index.md` only. The ripple was traced by grep — `session_start.py`, `queue_digest.py`, `rule_signals.py` and `measure_written_shape_length.py` all read the file, none reads line length.
-
-Rule gate: not needed — no rule authored and no always-loaded text touched. This rewrites a backlog of index lines against the index line's own stated contract: carry enough to decide open-or-skip, and do not restate the entry. **Reworded 2026-08-19** — it previously invoked the index-line band, which [retire-word-band-caps-keep-measurement] retires.
-
-**The measurement this item asked for was run 2026-08-18, and it moves the subject: the problem is the queue's TOTAL length, of which item length is one term.** Across one full planning session the file went **21,512 words to 24,771 — up 15% — with the item count unchanged at 58**, and words per item rising 370 to 427. Twelve items were processed, four deleted and three folded away, and it still grew, because **processing an item is what lengthens it**: every keep adds a settlement, a Files line and a gate disposition. Only building an item out or deleting it shrinks the file. **This is the user's framing and it supersedes the per-artifact one this item was filed under.**
-
-**So a wording pass is not the lever, which is measured rather than argued.** Two tersify passes over this queue yielded 8% and 3%, and their own write-up concludes the file is not verbose — its length is accumulated decision history. A tightening pass over seventeen freshly authored entries the same day cut 9%, 8,343 words to 7,585, leaving fifteen still over ceiling. Both passes removed meta-commentary and barely moved the totals.
-
-**And the ceiling those passes were measured against is derived from a shape that no longer exists.** 45 of 54 entries breach it, the worst at 1,347, 1,102 and 805 words — corpus-wide rather than one session's authoring, so **an earlier claim on this item that the over-length was newly written text is withdrawn as false.** The band is July's median; dispositions moved onto the item on 2026-08-13, and the ripple-trace and SPEC-question limbs on 2026-08-17. A July item carried none of them. Re-derived figures without multipliers are in [word-band-script-does-not-ship]'s discussion.
-
-**One narrower finding survives, though what it now feeds has changed.** Splitting an entry in two worked where it genuinely held two pieces of work and failed where it held one clause plus a long narrative — there the remedy was relocating the narrative to the record and citing it, 558 words to 407 and 571 to 442. **This no longer amends a breach action, because there is no breach to act on**: relocation-not-division is instead the measured precedent behind the build block's seam in [split-the-cleared-region-for-concurrent-sessions], which is where it does its work now. Both figures are also the only evidence anyone has that relocation moves the totals at all, and neither reached what was then the ceiling.
-
-**The accretion mechanism is now filed separately** as [folding-in-has-no-eviction-step] — folding content into an item requires naming nothing that comes out, and appends rather than merges.
-
-Relates to [bands-fire-on-the-median-artifact], [plan-entry-split-action-underspecified] and [index-line-length-is-a-toll-on-every-retrieve].
-
---- Build block ---
-Changes:
-  `LOG/index.md` only — rewrite each of the 351 index lines at or above 61
-  words to the artifact touched, the nature of the change and the entry
-  filename. Work from each line's own text; a long line is long because it
-  restates the entry it points at, so no entry file is re-read. Judge each
-  line against the index line's own contract — carries enough to decide
-  open-or-skip, does not restate the entry — not against a word figure. The 61
-  is a cut-off selecting the work list, not a limit to write to.
-  Preserve every commit hash: the digest and the hash backfill read them.
-  Touch no entry file — every one stays byte-for-byte.
-Acceptance: line count, total words and median line recorded before and after;
-  expect roughly 28,000 words against 48,165. Every commit hash present before
-  is present after. `git status` shows `LOG/index.md` and no entry file.
-Refused: monthly index files — four mechanical readers would each have to glob
-  a directory and the digest must resolve a slug from any month, so it reads
-  all of them regardless; a format change, an epoch bump and a migration path
-  for a smaller saving.
---- End build block ---
-
 #### Rename `docs-b/` to `docs/`, overturning the refusal recorded the day before [rename-docs-b-folder]
 Filed 2026-08-16 by Claude, on the user's decision, after she challenged the refusal during the planning session that had just cited it.
 
@@ -983,12 +808,14 @@ Blocked by: [discord-post-cycle-awareness]
 
 ## Unprocessed
 
-#### Last session advises running the freeform conversion before any build run [forward-advisory]
-Only six of the twenty cleared items carry a build block, and a cleared item without one cannot be built — the run halts on it as underspecified. So a /next run starting now builds the two items filed this session and then stops at the first item lacking a block, which is the next one down.
+#### Last session advises a planning session before the next build run [forward-advisory]
+**Replaces a spent advisory rather than sitting alongside it.** The previous note pointed at the freeform epoch-4 conversion, which shipped at `461c999`, and at a queue where most cleared items lacked a build block, which is no longer the case. It was still there because clearing it is the next /plan's job at the moment it reads it, not a close's — so this close deleted the spent one and filed this in its place, rather than leaving two entries under a slug that is reserved and must be unique.
 
-[convert-cleared-items-to-build-blocks] is the work that fixes it, and it is `[freeform]`: done by hand with you present, not run from the queue. Its first step is yours — open `.throughliner-format-epoch` and change the single character `4` to `3`, because the scope-lock refuses that write to Claude in a freeform session exactly as it did at the last close.
+**The next /next run will build exactly one item and stop.** [rename-docs-b-folder] now sits at the top of the cleared region and carries `Runs alone`, so a run reaches it first, builds it, and ends there. That is correct and deliberate — but it means a build run started now clears one item and the rest wait.
 
-Running it before [setup-migration-gate-is-epoch-3-shaped] ships is deliberate: this queue is the only test the epoch-4 checklist gets before that gate sends it to every consumer project.
+**Planning is the better use of a session, for three specific reasons rather than a general preference.** Three captures filed today bear on how runs and closes work: [build-view-drops-runs-alone], which is why this run had to check the queue by hand to find its own bound; [build-reads-item-through-a-truncated-window], which cost this close a reverted FAQ edit and a withdrawn capture; and [plan-entry-split-refusal-describes-old-mechanism], a stale sentence inside an item that is cleared to run. The first affects every run until it is fixed.
+
+**One thing to decide rather than build:** [spec-silent-on-advisory-disposition] records that SPEC may owe a sentence about the new `Advisory:` line, filed against the built item's own reading that no SPEC sentence is owed. Both readings are on the record and neither is obviously wrong; it wants a decision, not a build.
 
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
@@ -1713,4 +1540,174 @@ Filed 2026-08-21 by Claude, from this session's own opening, which announced *"1
 **The fix is not settled.** Excluding the one filename is the obvious move and may be too narrow — the folder now holds at least one permanent artifact, so the question is whether the scan should key on a naming convention for mail rather than on a deny-list of everything else. Worth deciding once rather than each time something else is filed there.
 
 Relates to [send-record-lacks-destination-and-intent], which created the file, and to [repeal-falsifies-a-posted-claim], which depends on it staying readable.
+
+#### The build view drops `Runs alone`, so a run cannot see its own second bound [build-view-drops-runs-alone]
+
+`next.md` states two bounds on a run: the cleared-to-run line, and a `Runs alone`
+marker on an item, which ends the run before that item. It also states that a run
+reads the generated build view and never QUEUE.md.
+
+`generate_build_view.py` never emits `Runs alone` — the literal does not appear
+anywhere in the script. So the marker exists on the queue item and is invisible to
+the only file the run is allowed to read. A run following next.md as written would
+sweep straight past a `Runs alone` item and build it alongside other work, which is
+the exact failure the marker exists to prevent: the marked work moves file paths
+underneath a run holding stale paths in its scope-lock list.
+
+Found during a /next pre-flight on 2026-08-21, only because the run grepped
+QUEUE.md for the literal rather than trusting the view. [rename-docs-b-folder] is
+live in the cleared region carrying the marker right now, and the queue's own prose
+records that it was placed deliberately so the run would stop before it.
+
+The fix is one of two, to be weighed at a keep-step: emit the marker into each
+cleared item's build block, or emit it in the by-name listing. Related to
+[build-view-strips-the-gate-disposition] and
+[build-view-completeness-test-unreachable] — the same shape, a fact the run needs
+that the projection does not carry.
+
+Filed mid-run, before any build started; commit at filing time is the tip of main
+at `461c999`.
+
+#### SPEC owes a sentence: the close now records whether it filed a forward recommendation [spec-silent-on-advisory-disposition]
+
+[advisory-step-does-not-fire] shipped a required disposition line in every session
+record — `Advisory: filed — <slug>` or `Advisory: not needed — <why>` — and a close
+cannot complete without it. That line appears in the user's own session records, so
+it is user-visible behaviour and belongs in product truth.
+
+SPEC's forward-recommendation advisory paragraph describes the note being filed at
+a close and consumed at the next planning session's opening. It says nothing about
+the disposition, and nothing about the close being unable to complete until the
+line is written. The sentence SPEC owes, roughly:
+
+> The close records whether it filed that note or judged one unnecessary, as an
+> explicit line in the session record, and cannot complete until it has — because
+> a step that produces no artifact when it is skipped is indistinguishable from
+> one that ran and found nothing to file, which is how it came to fire about half
+> the time.
+
+A build never writes product truth, so this is filed rather than written. SPEC lags
+this one sentence until the next planning session.
+
+Filed during the /next run of 2026-08-21; commit at filing time is the tip of main
+at `461c999`.
+
+#### A build read queue items through a grep window shorter than the items, and reasoned from the truncated read twice [build-reads-item-through-a-truncated-window]
+
+The 2026-08-21 run had to transcribe each built item's `Rule gate:` disposition, which
+the build view does not carry (see [build-view-strips-the-gate-disposition]). It went
+to QUEUE.md for them and read each item through a `sed`/`grep` window of about 36
+lines. All three items run past 50. Both the labelled `Rule gate:` line and the
+item's FAQ disposition sit below where the window stopped.
+
+**Two wrong outputs came out of that one read, and neither announced itself.**
+
+First, a capture was filed asserting that [advisory-step-does-not-fire] carried its
+gate reasoning as unlabelled prose with no `Rule gate:` line. The item carries a
+properly labelled line. That capture was deleted at the close on the same day it was
+filed.
+
+Second — and this is the one that reached the user — the close concluded the FAQ gate
+fired on that item, put the question to her, and got approval to add four FAQ files
+and write an entry. The item had already dispositioned it: *"**No FAQ entry**, on the
+FAQ trigger's own test: a consumer sees one more line in their session record and does
+nothing different."* Planning had considered the identical question and answered it
+the other way. The entry was written, then reverted on her instruction once the
+recorded decision was found.
+
+**The rule that would have caught it is already shipped and was not followed.**
+`skill-nonspecific-rules.md`: page the whole file before any queue-wide reasoning, and
+name a read that stopped short rather than reasoning from it quietly — with the reason
+stated in the rule itself, that a truncated read looks like a complete one to whatever
+reasons over it. That is exactly what happened, and it is why nothing downstream
+flagged either error.
+
+**So this is a rule-does-not-fire instance, not a missing rule**, and it joins the
+class this corpus already tracks — the provenance rule, the file-the-blocker rule, the
+INBOX-opening step, the subagent-cost rule, the gate's own halt instruction, and the
+advisory step this very run was built to fix. The corpus's recorded conclusion about
+that class applies: stating the rule again, or harder, is not a candidate direction.
+
+**What is arguably new here is the shape of the trigger.** The paging rule reads as
+being about *whole-file* reasoning — the queue digest, a queue-wide reorder — and a
+build fetching one item's disposition does not feel like queue-wide reasoning. It is
+still reasoning over a unit read short. Whether that is a wording gap in the rule or
+simply an instance of it is the question for the keep-step.
+
+**Two candidate directions, neither designed:** the build view could carry the gate
+disposition and the FAQ disposition, which removes the need to read QUEUE.md at all
+and is what [build-view-strips-the-gate-disposition] already proposes for half of it;
+or the close's fetch could be specified as read-the-whole-item-block, keyed on the
+`####` heading and the next one, rather than left to a hand-written window.
+
+**A third thing this exposes, worth stating separately: a close overrode a recorded
+disposition and the user could not have known.** She was asked a well-formed question
+and answered it. Nothing in the ask told her a decision already existed, because the
+session asking had not read it. Whatever else changes, an ask that re-opens a
+dispositioned question should say that it is doing so.
+
+Filed at the close of 2026-08-21; commit at filing time is the tip of main at
+`461c999`.
+
+#### A cleared item's refusal describes a mechanism this run changed underneath it [plan-entry-split-refusal-describes-old-mechanism]
+
+[plan-entry-split-wording-disagrees] sits cleared to run. Twice in its prose, and once
+inside its build block's `Refused:` line, it states that `queue_digest.py`'s
+`shipped_slugs()` "resolves shipped-ness from **filenames** — `<date>-<slug>.md`, one
+directory listing". That stopped being true at [log-entry-kind-not-distinguished],
+built in the same run: the function now opens each entry and classifies it built,
+processed or unknown by reading the body.
+
+**The refusal's conclusion is untouched, which is why this is a flag and not a
+blocker.** Its argument is that a decision settling three items produces one file named
+for one of them, so the other two read as never shipped. That still holds exactly —
+the change was to how a record's *kind* is read, not to whether a record exists. A
+build reading the `Refused:` line will correctly decline to re-propose "per decision".
+
+**What is wrong is the supporting description**, and it is wrong in a way that matters
+to a reader rather than to a build: someone checking the refusal against the code would
+find the code doing something else and have to work out for themselves whether the
+refusal survived. It does. Saying so is a one-sentence edit to reasoning, which is
+planning work rather than something a close should rewrite.
+
+Found by this run's own staleness sweep, on the mover's citation notice after
+[split-action-defeats-the-bands-in-aggregate] was removed.
+
+Filed at the close of 2026-08-21; commit at filing time is the tip of main at
+`461c999`.
+
+#### The advisory step has no branch for a spent advisory already sitting in the slot [advisory-step-collides-with-a-spent-note]
+
+`done.md`'s forward-recommendation step says to file the advisory as a capture at the
+top of Unprocessed, under the reserved literal slug `[forward-advisory]`. It also says,
+correctly and for good reasons, that clearing a spent advisory is the next /plan's job
+at the moment it reads it — *"Nothing about clearing it is this close's job."*
+
+**Those two hold together only while a planning session runs between every pair of
+closes.** When one build close follows another, the close arrives at its own advisory
+step and finds the slot occupied by a note whose subject has already shipped. Filing
+alongside it would put two entries under a slug that is reserved and must be unique —
+which the queue lint flags and which stops the queue mover dead on the whole file.
+Leaving it alone means this close's recommendation is not written down, which is the
+exact failure [advisory-step-does-not-fire] was built to end.
+
+**Met live at the close of 2026-08-21**, immediately after building that very item. The
+close resolved it by deleting the spent note and filing its own in the freed slot, then
+moving it to the top — three mover calls where the step describes one. That is a
+reasonable resolution and it is not what any doc says to do.
+
+**Two candidate directions, neither designed.** The step could gain an explicit branch:
+where a spent advisory is present, replace it rather than appending, and say in the new
+note that it replaced one. Or the clearing rule could be narrowed from "never the
+close's job" to "never the close's job to clear one it is not replacing", which keeps
+the reason the rule exists — a close should not consume advice aimed at a session that
+has not happened — while letting a close reuse the slot it is about to write to.
+
+**The reason the clearing rule is worded as it is should be preserved through either
+fix.** Clearing at the read, rather than at the previous close, is what stopped a build
+session passing between two planning sessions from leaving a consumed note behind. That
+is a different problem from this one and the fix must not reintroduce it.
+
+Filed at the close of 2026-08-21; commit at filing time is the tip of main at
+`461c999`.
 

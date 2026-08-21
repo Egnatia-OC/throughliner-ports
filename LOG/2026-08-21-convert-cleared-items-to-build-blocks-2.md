@@ -1,4 +1,4 @@
-# [HASH] — Eleven cleared items converted to build blocks by hand, and the epoch-4 marker made true
+# 461c999 — Eleven cleared items converted to build blocks by hand, and the epoch-4 marker made true
 
 The run of [convert-cleared-items-to-build-blocks]. The planning entry under the same slug — `2026-08-21-convert-cleared-items-to-build-blocks.md` — records the item being processed; this one records it being done.
 
@@ -27,3 +27,12 @@ Rule gate: not needed — no rule authored or amended, and no rule-bearing file 
 FAQ: not needed because nothing shipped changed. This was a migration of one project's own queue, and no consumer does anything differently.
 
 **Also in this chat:** the conversion ran one item per message with an explicit yes on each, per the item's own requirement that the blocks be written with the user rather than for them. No block was contested or reworded.
+
+---
+
+**Tail, appended 2026-08-21 from the planning chat running alongside this one.** This commit also carries two edits to [freeform-close-gives-no-opening-prompt] that were made in that chat and were sitting uncommitted in QUEUE.md when this close staged the file. Nothing was lost and nothing here is wrong — the text is intact — but this entry describes the migration only, so the edits were committed without being described. Recorded here rather than in the other chat's next close, because a commit's own record is where a reader looks for what the commit contains.
+
+**What they added.** First, that the opening prompt this close's predecessor handed over was amended before use — *"the freeform item at the end of the cleared region **in QUEUE**"* — with the correction that Claude does know `QUEUE.md` exists at session start and does not have its contents, so a prompt must name the file rather than assume a term like "the cleared region" resolves. Second, that the prompt should say the session ends with /done, marked as the weaker half since the run asked for it anyway and it earns its place only on an interrupted or abandoned session. Also settled in passing: every `[freeform]` item implies a session of its own, and not every freeform session comes from an item.
+
+**Why this is worth a tail rather than a shrug.** Two chats were open on one working tree, which the always-loaded rules say not to do, and the outcome was exactly the documented one — the two disagree about the queue from the moment either writes, and a commit ends up containing changes its record does not describe. The rule held; nobody was following it. Filed as an observation rather than a capture, because the rule already exists and needs nothing added to it.
+

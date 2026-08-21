@@ -46,12 +46,23 @@ def check(name, condition, detail=""):
         _failures.append(name)
 
 
+BUILT_BODY = "An entry.\n\n**Files touched:** `docs/a.md`\n"
+PROCESSED_BODY = "An entry.\n\n**Work processed:** kept [alpha]\n"
+OLD_FORMAT_BODY = "An entry from before the per-flavor fields existed.\n"
+
+
 def project(processed="", unprocessed="", log_entries=()):
     """Write a temp project and return its root. Never a git repository.
 
     Not being a repo is deliberate for most cases — it exercises the quiet
     degrade of the age field on every run rather than only in the case written
     for it.
+
+    A `log_entries` element is either a filename — which gets a BUILT body, the
+    ordinary case — or a `(filename, body)` pair where the record's KIND is what
+    the case is about. The body matters because the digest classifies a record by
+    reading it: the filename cannot tell a build's record from a planning
+    session's.
     """
     d = tempfile.mkdtemp(prefix="digest-test-")
     with open(os.path.join(d, "QUEUE.md"), "w", encoding="utf-8") as f:
@@ -63,9 +74,10 @@ def project(processed="", unprocessed="", log_entries=()):
         )
     if log_entries:
         os.mkdir(os.path.join(d, "LOG"))
-        for name in log_entries:
+        for entry in log_entries:
+            name, body = entry if isinstance(entry, tuple) else (entry, BUILT_BODY)
             with open(os.path.join(d, "LOG", name), "w", encoding="utf-8") as f:
-                f.write("An entry.\n")
+                f.write(body)
     return d
 
 
@@ -166,6 +178,99 @@ def test_shipped_citation_prints():
     check(
         "a citation with a LOG entry prints on the item's line",
         "Cites shipped: [beta]" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_processed_record_is_not_reported_as_shipped():
+    """A planning session's record must not read as work that was built.
+
+    The whole defect: a plan entry splits per item PROCESSED, so a discussed-
+    and-kept item has a record named after it exactly like a built one, and the
+    filename cannot tell them apart.
+    """
+    root = project(
+        processed=(
+            "#### Do the thing [alpha]\n"
+            "This builds on [beta], which was discussed.\n"
+        ),
+        log_entries=(("2026-08-01-beta.md", PROCESSED_BODY),),
+    )
+    _, out = run(root)
+    check(
+        "a record a planning session wrote prints under Cites processed",
+        "Cites processed: [beta]" in out,
+        out,
+    )
+    check(
+        "and never under Cites shipped",
+        "Cites shipped" not in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_old_format_record_is_reported_unclassified():
+    """Neither marker present — say so rather than guessing which it was."""
+    root = project(
+        processed=(
+            "#### Do the thing [alpha]\n"
+            "This builds on [beta].\n"
+        ),
+        log_entries=(("2026-08-01-beta.md", OLD_FORMAT_BODY),),
+    )
+    _, out = run(root)
+    check(
+        "an older-format record prints as found but unclassified",
+        "[beta] (record kind unknown)" in out,
+        out,
+    )
+    check(
+        "and is claimed as neither built nor processed",
+        "Cites shipped" not in out and "Cites processed" not in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_processed_only_blocker_is_not_reported_as_shipped():
+    """The consequence that makes the distinction load-bearing.
+
+    A held item lifts when its blockers resolve. A blocker a planning session
+    merely processed has not resolved, so resolving it to a bare record would
+    release work whose dependency is still outstanding.
+    """
+    root = project(
+        processed=(
+            "#### Do the thing [alpha]\n"
+            "Waits for the other work.\n"
+            "Blocked by: [beta]\n"
+        ),
+        log_entries=(("2026-08-01-beta.md", PROCESSED_BODY),),
+    )
+    _, out = run(root)
+    check(
+        "a blocker with only a planning record says it was not built",
+        "[beta] -> ABSENT, only processed — not built" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_built_blocker_says_it_was_built():
+    root = project(
+        processed=(
+            "#### Do the thing [alpha]\n"
+            "Waits for the other work.\n"
+            "Blocked by: [beta]\n"
+        ),
+        log_entries=("2026-08-01-beta.md",),
+    )
+    _, out = run(root)
+    check(
+        "a blocker with a build record says it was built",
+        "[beta] -> ABSENT, built" in out,
         out,
     )
     shutil.rmtree(root, ignore_errors=True)
@@ -584,6 +689,10 @@ if __name__ == "__main__":
     test_line_count_and_median_print()
     test_median_absent_on_an_empty_section()
     test_shipped_citation_prints()
+    test_processed_record_is_not_reported_as_shipped()
+    test_old_format_record_is_reported_unclassified()
+    test_processed_only_blocker_is_not_reported_as_shipped()
+    test_built_blocker_says_it_was_built()
     test_unshipped_citation_stays_quiet()
     test_flavor_tag_is_not_a_citation()
     test_own_slug_is_not_a_citation()

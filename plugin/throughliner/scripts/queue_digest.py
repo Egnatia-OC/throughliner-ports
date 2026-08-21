@@ -339,26 +339,62 @@ def _superseded_research(item, root):
     return hits
 
 
-def shipped_slugs(root):
-    """Slugs that have a LOG entry, i.e. slugs whose work shipped.
+def shipped_slugs(root, wanted=None):
+    """Slugs that have a LOG entry, mapped to what KIND of record it is.
 
-    Entries are named `<date>-<slug>.md`, so this is one directory listing
-    rather than a history scan. Degrades to an empty set where there is no
-    LOG/ folder at all.
+    The name is kept for the references to it elsewhere in the queue; what it
+    returns is deliberately not a set of shipped slugs, because that was the
+    defect.
+
+    A record existing says only that a session wrote about that slug. It does
+    not say the work was built: a planning session writes a record for each
+    item it PROCESSES and a build writes one for each item it BUILDS, and both
+    are named `<date>-<slug>.md`, so the filename cannot tell them apart. The
+    body has to be read.
+
+        "built"      the entry carries `Files touched:`
+        "processed"  it carries `Work processed:` and not `Files touched:`
+        "unknown"    it carries neither — an older format, reported as found
+                     but unclassified rather than guessed at
+
+    `wanted` bounds which entries are opened, to the slugs the caller will
+    actually print. Reading every entry costs megabytes to answer a handful of
+    citations. Passing None reads them all. Degrades to an empty mapping where
+    there is no LOG/ folder at all.
     """
     if not root:
-        return set()
-    found = set()
-    for folder in (os.path.join(root, "LOG"),):
-        try:
-            names = os.listdir(folder)
-        except OSError:
+        return {}
+    kinds = {}
+    folder = os.path.join(root, "LOG")
+    try:
+        names = os.listdir(folder)
+    except OSError:
+        return {}
+    for name in names:
+        match = LOG_ENTRY_RE.match(name)
+        if not match:
             continue
-        for name in names:
-            match = LOG_ENTRY_RE.match(name)
-            if match:
-                found.add(match.group(1))
-    return found
+        slug = match.group(1)
+        if wanted is not None and slug not in wanted:
+            continue
+        try:
+            with open(os.path.join(folder, name), "r", encoding="utf-8") as f:
+                body = f.read()
+        except OSError:
+            kinds.setdefault(slug, "unknown")
+            continue
+        if "Files touched:" in body:
+            kind = "built"
+        elif "Work processed:" in body:
+            kind = "processed"
+        else:
+            kind = "unknown"
+        # A slug with several entries is built if any one of them built it —
+        # an item processed in planning and built later has both records, and
+        # the built one is the answer.
+        if kinds.get(slug) != "built":
+            kinds[slug] = kind
+    return kinds
 
 
 def first_seen(root, queue_path, held_dates=None):
@@ -653,19 +689,40 @@ def median_first_seen(items, ages):
     return dates[(len(dates) - 1) // 2]
 
 
-def locate(slug, items):
-    """Where a slug sits, for resolving a Blocked by: reference."""
+def locate(slug, items, kinds=None):
+    """Where a slug sits, for resolving a Blocked by: reference.
+
+    A blocker that has left the queue is reported with the KIND of record it
+    left behind, never as bare absence. The below-the-line revisit lifts an
+    item when its blockers have resolved, and a blocker that a planning session
+    merely processed has not resolved — reading a record's existence as proof
+    of building would release work whose dependency is still outstanding.
+    """
     for item in items:
         if item["slug"] == slug:
             if item["section"] == "Unprocessed":
                 return "Unprocessed"
             return "Processed/cleared" if item["cleared"] else "Processed/held"
+    kind = (kinds or {}).get(slug)
+    if kind == "built":
+        return "ABSENT, built"
+    if kind == "processed":
+        return "ABSENT, only processed — not built"
+    if kind == "unknown":
+        return "ABSENT, has a record of unknown kind"
     return "ABSENT"
 
 
 def render(items, root="", queue_path="QUEUE.md"):
     out = []
-    shipped = shipped_slugs(root)
+    # Bound the entry-reading to the slugs that can actually be printed: every
+    # slug some item cites, and every slug named as a blocker. Reading the whole
+    # folder is megabytes to answer a handful of citations.
+    wanted = set()
+    for item in items:
+        wanted.update(citations(item))
+        wanted.update(item["blocked_by"])
+    shipped = shipped_slugs(root, wanted)
     held_dates = {}
     ages = first_seen(root, queue_path, held_dates)
     for section in ("Processed", "Unprocessed"):
@@ -704,7 +761,7 @@ def render(items, root="", queue_path="QUEUE.md"):
                 # lifts only when all of them resolve — printing the first alone
                 # would read as one outstanding dependency when there are four.
                 shown = ", ".join(
-                    f"[{ref}] -> {locate(ref, items)}"
+                    f"[{ref}] -> {locate(ref, items, shipped)}"
                     for ref in item["blocked_by"]
                 )
                 line += f"  | Blocked by: {shown}"
@@ -712,13 +769,31 @@ def render(items, root="", queue_path="QUEUE.md"):
                 line += f"  | Not before: {item['not_before']} -> {not_before_state(item['not_before'])}"
             if item["flag"]:
                 line += f"  | Red flag: {item['flag']}"
-            # Only citations that resolve to a shipped LOG entry are printed.
-            # An unshipped citation is the normal state and would print on
-            # nearly every line for nothing; a shipped one is the signal — the
-            # item's premise names work that is already done.
-            done = [s for s in citations(item) if s in shipped]
-            if done:
-                line += "  | Cites shipped: " + ", ".join(f"[{s}]" for s in done)
+            # Only citations that resolve to a LOG entry are printed. A citation
+            # with no record at all is the normal state and would print on
+            # nearly every line for nothing; a citation with one is the signal.
+            #
+            # Built and processed print as SEPARATE lists rather than one, because
+            # they carry different weight: an item leaning on work already built
+            # has a premise worth re-reading before it runs, while an item leaning
+            # on work that was only agreed has a weaker premise still. Collapsing
+            # them reported the second as the first. Suppressing the processed
+            # case was refused — a weaker premise is a fact worth seeing, and the
+            # digest states facts rather than hiding them.
+            built = [s for s in citations(item) if shipped.get(s) == "built"]
+            processed = [s for s in citations(item) if shipped.get(s) == "processed"]
+            unclassified = [s for s in citations(item) if shipped.get(s) == "unknown"]
+            if built:
+                line += "  | Cites shipped: " + ", ".join(f"[{s}]" for s in built)
+            if processed:
+                line += "  | Cites processed: " + ", ".join(f"[{s}]" for s in processed)
+            # An older-format record carries neither marker. Reported as found
+            # and unclassified rather than guessed at — partial coverage, said
+            # plainly, which is the posture the rest of this digest takes.
+            if unclassified:
+                line += "  | Cites: " + ", ".join(
+                    f"[{s}] (record kind unknown)" for s in unclassified
+                )
             # Research files the item names. Printed for every citation, not
             # only superseded ones: the superseded flag tells a session that a
             # finding it already knows about has moved, while this tells the
