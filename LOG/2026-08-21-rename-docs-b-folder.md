@@ -1,4 +1,4 @@
-# [HASH] — `docs-b/` becomes `docs/`, and the queue's own stale paths turn out to be beyond a build's reach
+# a2e9f2b — `docs-b/` becomes `docs/`, and the queue's own stale paths turn out to be beyond a build's reach
 
 The folder rename refused on 2026-08-16 and overturned on 2026-08-17 was built. `plugin/throughliner/docs-b/` is now `plugin/throughliner/docs/`, moved with `git mv` so all fourteen procedure docs kept their history as renames rather than as a delete and an add.
 
