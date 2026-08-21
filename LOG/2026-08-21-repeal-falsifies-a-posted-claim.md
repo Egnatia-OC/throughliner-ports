@@ -1,4 +1,4 @@
-# [HASH] — A repeal now greps the send record too, and files a correction post where it finds a claim it has falsified
+# cc33c1e — A repeal now greps the send record too, and files a correction post where it finds a claim it has falsified
 
 **Why this was worth doing.** Split from `[repeal-has-no-ripple-trace]` at processing on
 2026-08-17, kept apart rather than merely trimmed because the two differ in readiness

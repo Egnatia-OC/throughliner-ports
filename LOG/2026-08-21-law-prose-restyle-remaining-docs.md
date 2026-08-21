@@ -1,4 +1,4 @@
-# [HASH] — The remaining eleven rule-bearing docs restyled, and the pass's own search method turns out to be its coverage limit
+# cc33c1e — The remaining eleven rule-bearing docs restyled, and the pass's own search method turns out to be its coverage limit
 
 **Why this was worth doing.** Filed on the same decision of the user's that carried
 `[law-prose-restyle-heavy-docs]`. It follows that item rather than blocking it, because

@@ -1,4 +1,4 @@
-# [HASH] — The gitignore offer becomes per-document, so a private queue with a public history is reachable
+# cc33c1e — The gitignore offer becomes per-document, so a private queue with a public history is reachable
 
 **Why this was worth doing.** Scaffolding offered `SPEC.md`, `QUEUE.md` and `LOG/` as one
 all-or-nothing choice. So a user who wants their plans and reasoning private while their

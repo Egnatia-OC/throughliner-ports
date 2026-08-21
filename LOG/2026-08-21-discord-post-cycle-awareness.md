@@ -1,4 +1,4 @@
-# [HASH] — Discord post drafted: Claude now knows how the work cycle fits together
+# cc33c1e — Discord post drafted: Claude now knows how the work cycle fits together
 
 Walk-through of `[discord-post-cycle-awareness]`, run inside the /next of
 2026-08-21 after its seventeen build items. Written as the walk-through happened

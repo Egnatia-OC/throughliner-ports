@@ -1,4 +1,4 @@
-# [HASH] — The rationale lens runs: done.md loses 165 lines of history, plan.md is covered in part, and the acceptance test turns out to be undischargeable
+# cc33c1e — The rationale lens runs: done.md loses 165 lines of history, plan.md is covered in part, and the acceptance test turns out to be undischargeable
 
 **Why this was worth doing.** Split out of `[law-prose-restyle-heavy-docs]` on
 2026-08-19 when the test that item was waiting on came back confirmed. The lens deletes

@@ -1,4 +1,4 @@
-# [HASH] — A one-off instrument for what Claude actually says, and the baseline reading it was built to take
+# cc33c1e — A one-off instrument for what Claude actually says, and the baseline reading it was built to take
 
 Build entry. The planning entry that processed this item is
 `2026-08-21-transcript-output-measurement.md`.

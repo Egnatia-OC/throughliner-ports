@@ -1,4 +1,4 @@
-# [HASH] — Structured explanation shown to the user goes one item per line, never in aligned columns
+# cc33c1e — Structured explanation shown to the user goes one item per line, never in aligned columns
 
 **Why this was worth doing.** Claude presented a rewritten ladder as a fenced block
 with a label on the left and its explanation in a right-hand column. On the user's

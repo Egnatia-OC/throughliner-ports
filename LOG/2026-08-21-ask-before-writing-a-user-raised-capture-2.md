@@ -1,4 +1,4 @@
-# [HASH] — Both branches of the /plan carve-out now ask before the write, and the process-now route writes no capture at all
+# cc33c1e — Both branches of the /plan carve-out now ask before the write, and the process-now route writes no capture at all
 
 Build entry. The planning entry that processed this item is
 `2026-08-21-ask-before-writing-a-user-raised-capture.md`.

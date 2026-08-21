@@ -1,4 +1,4 @@
-# [HASH] — /setup's migration gate stops testing the queue's shape and asks the question it means
+# cc33c1e — /setup's migration gate stops testing the queue's shape and asks the question it means
 
 Build entry. The planning entry that processed this item is
 `2026-08-21-setup-migration-gate-is-epoch-3-shaped.md`.

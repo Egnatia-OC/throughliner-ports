@@ -1,4 +1,4 @@
-# [HASH] — The version-change notice is deleted, and /next's guard retargeted onto the signals that actually mean /setup is outstanding
+# cc33c1e — The version-change notice is deleted, and /next's guard retargeted onto the signals that actually mean /setup is outstanding
 
 Build entry. The planning entry that processed this item is
 `2026-08-21-version-notice-recommends-setup-with-no-cause.md`.

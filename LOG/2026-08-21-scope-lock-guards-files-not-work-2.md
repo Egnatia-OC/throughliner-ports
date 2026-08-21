@@ -1,4 +1,4 @@
-# [HASH] — The scope-lock's file boundary is stated plainly, and `[freeform]` is pinned as a flavour rather than a mode
+# cc33c1e — The scope-lock's file boundary is stated plainly, and `[freeform]` is pinned as a flavour rather than a mode
 
 Build entry. The planning entry that processed this item is
 `2026-08-21-scope-lock-guards-files-not-work.md`.

@@ -1,4 +1,4 @@
-# [HASH] — The always-loaded licence for any length is repealed and restated as the action required
+# cc33c1e — The always-loaded licence for any length is repealed and restated as the action required
 
 Build entry. The planning entry that processed this item is
 `2026-08-21-brevity-instruction-for-the-5-series.md`.

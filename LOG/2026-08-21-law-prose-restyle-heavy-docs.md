@@ -1,4 +1,4 @@
-# [HASH] — done.md and plan.md restyled to the law-prose standard, and the acceptance test's own arithmetic turns out to run backwards
+# cc33c1e — done.md and plan.md restyled to the law-prose standard, and the acceptance test's own arithmetic turns out to run backwards
 
 **Why this was worth doing.** Filed on the user's decision that the restyle continues to
 the rest of the corpus after `[law-prose-restyle]` shipped covering

@@ -1,4 +1,4 @@
-# [HASH] — The bracketed name is explained once in the queue header, and every slug shown to the user now carries what its item is for
+# cc33c1e — The bracketed name is explained once in the queue header, and every slug shown to the user now carries what its item is for
 
 **Why this was worth doing.** The user captured it in her own terms: she had never
 actually known what the bracketed part of the title was for — it just randomly emerged

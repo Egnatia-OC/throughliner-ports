@@ -1,4 +1,4 @@
-# [HASH] — Feedback about a behaviour the method produced stops going to memory, where it was silently buying one user a fix and leaving every consumer the bug
+# cc33c1e — Feedback about a behaviour the method produced stops going to memory, where it was silently buying one user a fix and leaving every consumer the bug
 
 **Why this was worth doing.** The user raised it at a close: if Claude's replies are
 affected by memory, then the method cannot truly be tested. The shipped rule did not see

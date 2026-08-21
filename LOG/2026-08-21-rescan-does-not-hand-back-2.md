@@ -1,4 +1,4 @@
-# [HASH] — /rescan now names the session it is in and hands back, instead of sending the work away
+# cc33c1e — /rescan now names the session it is in and hands back, instead of sending the work away
 
 Build entry. The planning entry that processed this item is
 `2026-08-21-rescan-does-not-hand-back.md`.

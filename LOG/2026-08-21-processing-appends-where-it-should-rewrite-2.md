@@ -1,4 +1,4 @@
-# [HASH] — Re-processing a layered queue item now rewrites it whole, and the advisory framing that stopped it is repealed
+# cc33c1e — Re-processing a layered queue item now rewrites it whole, and the advisory framing that stopped it is repealed
 
 Build entry. The planning entry that processed this item is
 `2026-08-21-processing-appends-where-it-should-rewrite.md`.

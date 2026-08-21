@@ -6,6 +6,558 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
+#### Length: cut everything, everywhere, and repeal the rule that forbids limits [cut-length-everywhere]
+
+**Your decision 2026-08-21, after weeks of asking for this and getting narrowed
+fixes each time:** *"i don't care I just want it fixed... the rules are so long,
+the law thing was supposed to fix it and it didn't. everything is too long the
+queue is too long, the conversations are too long. EVERYTHING IS TOO LONG"*
+
+**Why every previous fix was narrowed.** SPEC says no written shape carries a
+length cap, and the always-loaded authoring standard says a record runs to
+whatever carries its facts, references, conditions and reasoning. That is an
+instruction to keep writing. So a fix could only ever land on narration, which
+measured at 19 words a message in a build run and was never the problem. The
+writing is four times the talking: one run talked 3,843 words and wrote 15,200
+into the log.
+
+**This item repeals that position.** It is the user's decision, taken after being
+told caps were retired on measured grounds. She is overruling that, knowingly.
+
+**Everywhere means everywhere**, and any build narrowing it has failed:
+chat, queue items, captures, session records, index lines, the procedure docs,
+the always-loaded rules, SPEC, the FAQ.
+
+**This item is short on purpose.** An item about length that ran to 800 words
+would refute itself.
+
+--- Build block ---
+Changes:
+  - `SPEC.md` — repeal the no-length-caps position and the caps-were-retired
+    paragraphs; state that every written shape is bounded.
+  - `plugin/throughliner/docs/skill-nonspecific-rules.md` — the authoring
+    standard's length provisions: replace "runs to whatever carries its facts"
+    with a stated bound per shape.
+  - `plugin/throughliner/docs/` — every procedure doc: cut to the operative
+    instruction. `plan.md` (1,549 lines), `next.md`, `done.md` are the weight.
+  - `CLAUDE.md` — same treatment.
+  - `QUEUE.md` — every item cut to its build block plus a short rationale;
+    history relocated to the record and cited.
+  Derive each bound as a proportion of that shape's current measured
+  distribution, printed by `scripts/measure_written_shape_length.py`. A
+  proportion is admissible where a bare number is not.
+Acceptance: every file above is smaller, and the measuring script's report shows
+  each shape's distribution moved down. Report before and after per shape. No
+  operative rule is lost — the count of rule statements does not fall except
+  where an eviction is named.
+Refused: narrowing this to narration, to /plan, or to any one shape. That is
+  what has happened every previous time and is why this item exists.
+Refused: leaving SPEC's retirement-of-caps reasoning standing while cutting
+  elsewhere — it is the thing that regrows the text.
+--- End build block ---
+
+#### Both law-prose passes restyled sentence-leading prohibitions only, leaving roughly 150 mid-sentence ones unread [law-prose-pass-missed-mid-sentence-prohibitions]
+
+The wording standard says anything described in terms of what *not* to do means
+the rule of what TO do was never adequately described. Both restyle passes —
+[law-prose-restyle-heavy-docs] and [law-prose-restyle-remaining-docs], built
+2026-08-21 — found their targets by grepping for prohibitions that START a
+sentence or a bold lead-in. That found and fixed thirteen across thirteen files.
+
+A count taken at the end of the second pass puts the remainder at about 151
+occurrences of "don't", "never" and "do not" across the eleven non-heavy docs
+alone, concentrated in `next.md` (47), `setup.md` (26), `feedback-and-inbox.md`
+(20) and `done-plan.md` (18). The heavy docs were not counted the same way, so
+the true total is higher.
+
+**Most of that remainder is legitimate and must not be swept.** Three kinds:
+a typed-block contrast pair, where `write:` / `never:` is the established shape
+and is the clearest form available; an honest-limit statement, which the
+authoring rule's own carve-out protects by name — the test is whether the caveat
+argues against doing something or describes what the thing does; and prose
+describing what a mechanism does not cover, which is required rather than
+tolerated. What is left after those is the real target, and nobody has counted
+it.
+
+**Why this is its own item rather than a defect in the passes.** Applying the
+standard to a mid-sentence prohibition means reading the surrounding provision
+and deciding which of the three protected kinds it is — per occurrence, on
+judgment, with no mechanical test available. That is a different pass from a
+grep-and-restate, and it carries the risk both restyle items already name: a
+rewrite is the one thing that can silently author a rule by changing one.
+
+**What a build would need to settle first**, which is why this is a capture
+rather than a work item: whether the pass runs per file or per doc family, and
+what evidence it leaves that an occurrence was read and judged protected rather
+than missed. Without the second, a later count finds the same 150 and cannot
+tell which were considered.
+
+**Both settled at processing 2026-08-21, and the count was re-taken rather than
+trusted.** The ~151 figure covered eleven non-heavy docs. Counting all fourteen
+gives **310** occurrences of "don't", "never" and "do not": `plan.md` 81,
+`next.md` 52, `skill-nonspecific-rules.md` 46, `setup.md` 28, `done.md` 23,
+`feedback-and-inbox.md` 21, `done-plan.md` 18, `next-build.md` 17,
+`migrate-checklist.md` and `done-build.md` 7 each, `rescan.md` 5, `recovery.md` 3,
+`next-audit.md` 2, `done-audit.md` 0. So the remainder is roughly double what
+this item estimated.
+
+**The evidence question is answered with a coverage list, and that is the whole
+of what was settled.** The pass emits one line per occurrence — file, line
+number, and one word for what was decided. A file read and correctly left alone
+is otherwise byte-for-byte identical to one never opened, which is why the first
+pass's miss was invisible; the list is what lets a later count tell the two
+apart. It is the required-artifact shape this project has used twice with teeth,
+applied to a pass rather than to a close.
+
+**Runs per file, not per doc family**, because the coverage list is keyed on file
+and line and a family-wide pass gives no natural boundary to report against.
+
+**The general version was refused, and the refusal is the user's cost to bear
+rather than a design win.** A clause on `plan.md`'s keep-step requiring any item
+whose acceptance could be met by traceless work to name its coverage artifact
+would reach the next grep-shaped pass, which this settlement does not.
+[keep-step-accretes-from-five-items] records five cleared items each adding a
+clause to that one step with none naming the others, and asks for one reading of
+the finished step before anything more lands on it. Adding a sixth in the session
+that read the warning is what that item exists to prevent. **The gap is real and
+stays open**: a judgment pass filed later gets no prompt to leave evidence.
+
+**Scoped against the sweep rather than folded into it.** At 310 occurrences with
+a judgment per line, this is unlikely to be one run. The build stops at a file
+boundary and the coverage list is what makes resuming possible, so a partial run
+loses nothing.
+
+Rule gate: run — no rule is admitted, amended or evicted. The pass restates
+existing rules in the shape the wording standard already requires, and the
+coverage list is what makes an accidental authoring visible: a restated
+prohibition that changes what a rule requires shows up as a line in the list
+somebody can check. Failure evidence is two instances, both from 2026-08-21 —
+this pass and [rationale-lens-plan-md-coverage-incomplete], the same shortcut in
+two passes on the same day. A hook was considered and refused: which of the three
+protected kinds an occurrence is cannot be decided mechanically, which is the
+reason this is a judgment pass rather than a script.
+
+FAQ: not needed — a consumer's actions are unchanged; this rewords the method's
+own procedure docs and adds no step, command or document they see.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/` — all fourteen docs. For each occurrence of
+  "don't", "never" or "do not", read the provision around it and either restate
+  the rule as the action it requires, or leave it and record which protected
+  kind it is. Three protected kinds, and they are left alone:
+    - a typed-block contrast pair, where `write:` / `never:` is the established
+      shape and is the clearest form available;
+    - an honest-limit statement, which the wording rule's own carve-out protects
+      by name — the test is whether the caveat argues against doing something or
+      describes what the thing does;
+    - prose describing what a mechanism does not cover, which is required.
+  Work per file, in descending count order, and stop at a file boundary.
+  Also write the coverage list, below.
+Acceptance: a coverage list in this session's LOG entry — one line per
+  occurrence, carrying its file, its line number and one word: `restyled`,
+  `contrast-pair`, `honest-limit`, or `not-covered-prose`. The list's length
+  equals the count of occurrences in the files the run reached, so a file read
+  and found wholly protected is distinguishable from a file never opened. The
+  entry names which files were reached and which were not. No occurrence is
+  restyled without appearing on the list.
+Refused: a general clause on plan.md's keep-step requiring every item to name a
+  coverage artifact — right in substance, wrong in timing, because
+  [keep-step-accretes-from-five-items] asks for one reading of that step before a
+  sixth clause lands on it. Refused here, not dropped.
+Refused: gathering the remainder by grepping for the three protected shapes and
+  restyling whatever is left — that is the same shortcut this item was filed to
+  record, one level down.
+--- End build block ---
+
+#### The queue digest reports a converging blocker chain as an unresolvable loop [digest-diamond-read-as-a-loop]
+Filed 2026-08-21 by Claude from INBOX mail sent by a consumer project running 1.20.0-test12. Their diagnosis, read against the code rather than taken on trust.
+
+**What they report.** `scripts/queue_digest.py`'s `_blocker_loop()` walks the blocker graph depth-first using a single `seen` set for the whole walk, and returns true as soon as it reaches a slug already in that set. A set shared across the entire walk records "visited", not "on the current path", so any diamond trips it: an item naming two blockers, where one of those blockers also names the other, reaches the shared ancestor twice by two different routes and is reported as a cycle. Nothing is circular and the chain terminates normally.
+
+**Their repro.** Item C is blocked by A and B; B is blocked by A; A is blocked by nothing. The digest reports C as sitting in a loop that comes back to itself, with nothing in the loop ever releasable.
+
+**Why the direction of the failure is the expensive one.** The message asserts the work can never be released, which invites moving a correctly placed item out of Processed — a fate decision taken on a false premise. And the function's own docstring makes the case against leaving it: a flag that fires on correct work gets learned past, and then a real one arrives looking exactly like the ones that are always there.
+
+**To settle at processing.** The suggested fix is to track the current path rather than every node visited, unwinding on the way back out. Read the function before designing anything — this item carries a claim about how the code behaves, not a fact.
+
+**Kept 2026-08-21, autonomous session on your standing instruction.** Prior implementation checked: the loop walk shipped 2026-08-15 (`LOG/2026-08-15-digest-flags-correct-hold-chains.md`) replacing a hold-chain flag that fired on correct work; its own reasoning — a flag firing on correct work gets learned past — is the reason to fix its remaining false fire. The code was read: `_blocker_loop` uses one `seen` set for the whole depth-first walk, so the consumer's diagnosis is confirmed.
+
+--- Build block ---
+Changes: `plugin/throughliner/scripts/queue_digest.py` `_blocker_loop` — track
+  the CURRENT PATH (adding on descent, removing on unwind) rather than every
+  node visited, so a diamond (C blocked by A and B, B blocked by A) is not
+  reported while a true cycle still is. `resources/testing/test_queue_digest.py`
+  — a diamond case asserting no flag, and a cycle case asserting the flag.
+Acceptance: both new tests pass, the existing suite passes, and the consumer's
+  repro shape produces no loop flag.
+Refused: leaving it — the flag's message invites moving a correctly placed item
+  out of Processed, a fate decision on a false premise.
+--- End build block ---
+
+#### The queue lint flags the two section preambles that /setup itself writes [lint-flags-its-own-scaffolding]
+Filed 2026-08-21 by Claude from INBOX mail sent by a consumer project running 1.20.0-test12, and **confirmed live here in the same session**: this project's own lint reports thirteen standing flags at every edit.
+
+**What they report.** The lint reports "prose belongs to no entry" for any text in a section with no `#### ` heading above it, warning that this is what a destroyed or overwritten item heading looks like. Both section preambles — the paragraph under `## Processed` and the one under `## Unprocessed` — are written by /setup from its own template and correctly have no heading. So the lint flags its own scaffolding, in every project, from the moment it is created.
+
+**Why they judge this the worst of the three defects they sent.** It is permanent rather than occasional. The hook reports the flags as "already present in the last commit and none introduced by this change", which is accurate and is exactly what makes them invisible — in their session the flags had survived unexamined across many commits. A block that always contains flags is a block nobody reads, which is where a genuine flag will land.
+
+**To settle at processing.** Whether the lint learns to recognise a section preamble, whether the scaffold stops writing one, or whether the flags are simply correct and the reporting is what should change. Read the lint before designing anything. **Worth checking in the same pass what the other eleven flags in this project actually are**, since nobody has looked.
+
+**Kept 2026-08-21, autonomous session.** Prior implementation found and it reframes this item: `LOG/2026-08-15-lint-flags-scaffold-preamble.md` already fixed the scaffold — /setup writes both preambles as blockquotes, which the lint exempts — and deliberately refused widening the exemption, accepting a residual for already-adopted projects with no epoch bump. The consumer's report and this project's own standing flags are that accepted residual turning out to cost real attention: a block that always contains flags is a block nobody reads. So the fix is a migration path, not a lint change, and the 2026-08-15 refusal stands.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/setup.md` migration step and
+  `migrate-checklist.md` — where an adopted project's preamble paragraph under
+  `## Processed` or `## Unprocessed` is plain prose, rewrite it as the
+  blockquote shape the scaffold has shipped since 2026-08-15. Convert this
+  project's own QUEUE.md preambles in the same build, taking its standing lint
+  flags to zero. First check what this project's standing flags actually are —
+  the item records that nobody has looked.
+Acceptance: the lint reports zero standing flags here; a migration over an
+  old-preamble project converts both preambles and the lint stops firing;
+  existing lint tests still pass.
+Refused (carried from 2026-08-15): widening the lint exemption to any first
+  paragraph — it would exempt genuinely orphaned prose, which is what the check
+  exists to catch.
+--- End build block ---
+
+#### The mailbox scan counts the operating system's own folder-icon file as waiting mail [inbox-scan-counts-os-metadata-files]
+Filed 2026-08-21 by Claude from INBOX mail sent by a private evidence-library project running 1.20.0-test12.
+
+**What they report.** Every session there opens with a notice that one message is waiting, directing the session to read it in full before its first reply. The file is `INBOX/desktop.ini`, which their cloud-drive client writes to set the folder's icon. It is not a message and never was.
+
+**The mechanism, which they read rather than guessed.** `hooks/session_start.py`, in `_waiting_inbox_messages()`, lists the INBOX folder and reports every entry that is a file, skipping only names beginning with a dot. That is why `.address-book.md` never appears and `desktop.ini` always does.
+
+**Why it cannot be fixed on their side.** Deleting it locally is unreliable — the drive client rewrites it. It is tracked in their git as well. Archiving it just moves it into `INBOX/archive/`, where the client writes a fresh one beside it.
+
+**Their suggested remedy:** skip the operating system's folder-metadata files in that scan — `desktop.ini` and `Thumbs.db` on Windows, `.DS_Store` on macOS already covered by the dot rule.
+
+**The cost is the part worth weighing, and it is theirs.** The nuisance is small; the shape is not. That opening notice is the method's guarantee that cross-project mail is not missed, and it carries a self-check insisting the session actually read what is waiting. A permanent false positive there trains sessions to discount the one signal that exists for real mail. They have paid the full reading twice. **This is the same family as [lint-flags-its-own-scaffolding]** — a check that always fires is a check nobody reads.
+
+**One thing to note at processing:** this project keeps its own projects in a synced Drive folder too, so it is a common setup rather than one project's bad luck.
+
+**Kept 2026-08-21, autonomous session.** Settled together with [sent-record-surfaced-as-waiting-mail] — same function, one edit. The code was read: `_waiting_inbox_messages` lists every non-dot file, so both diagnoses are confirmed.
+
+--- Build block ---
+Changes: `plugin/throughliner/hooks/session_start.py` `_waiting_inbox_messages`
+  — skip OS metadata filenames case-insensitively (`desktop.ini`, `thumbs.db`;
+  the dot rule already covers `.DS_Store`) and `sent.md`, the outbound register.
+  `resources/testing/` — cases: a mailbox holding only those files reports no
+  waiting mail; a real message still reports.
+Acceptance: the reporting projects' state (desktop.ini present) opens with no
+  mail notice; this project's opening stops naming `INBOX/sent.md`; suite green.
+Refused: a naming convention for mail requiring every existing mailbox to
+  migrate — a deny-list of two OS names plus one named register is complete
+  today and costs nothing. Revisit only if the folder gains a third permanent
+  artifact.
+--- End build block ---
+
+#### The mailbox scan reports the outbound send record as waiting mail, and the directive beside it says to archive the record [sent-record-surfaced-as-waiting-mail]
+Filed 2026-08-21 by Claude, from this session's own opening, which announced *"1 message waiting in this project's INBOX"* and named `INBOX/sent.md`.
+
+**The mechanism, read in the code rather than inferred.** `session_start.py`'s inbox scan lists every non-dot file directly inside `INBOX/`, skipping only directories — so it has no way to tell an inbound message from anything else living there. `INBOX/sent.md` lives there permanently by design: it is this project's own record of what it has sent, one line per outbound artifact, and [send-record-lacks-destination-and-intent] shipped it into that folder deliberately.
+
+**Why it is worse than a wrong count.** The surfacing text that rides with it instructs the session to route each message through the three-way triage and then **move the file to `INBOX/archive/` so it stops being surfaced.** Followed literally, that files the send record away — the one artifact a repeal is supposed to be checked against, and the thing [repeal-falsifies-a-posted-claim] is built to grep. A cleared region already holds an item whose whole premise is that `INBOX/sent.md` sits where it can be read.
+
+**It did not happen this session**, because the file was read and recognised for what it is. That is judgment covering for a mechanism, which is the class this project treats as a mandatory capture rather than a near-miss.
+
+**Shipped, not host-only.** Every consumer project that has ever sent anything has a `sent.md` in the same place, and gets the same false message at every session opening.
+
+**The fix is not settled.** Excluding the one filename is the obvious move and may be too narrow — the folder now holds at least one permanent artifact, so the question is whether the scan should key on a naming convention for mail rather than on a deny-list of everything else. Worth deciding once rather than each time something else is filed there.
+
+Relates to [send-record-lacks-destination-and-intent], which created the file, and to [repeal-falsifies-a-posted-claim], which depends on it staying readable.
+
+**Kept 2026-08-21, autonomous session.** The scan half is built by [inbox-scan-counts-os-metadata-files] in the same run; this item carries the doc half.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/feedback-and-inbox.md` — the archive
+  directive gains one clause: `INBOX/sent.md` is the project's outbound register,
+  is never waiting mail, and is never archived. (The scan exclusion itself ships
+  under [inbox-scan-counts-os-metadata-files].)
+Acceptance: the doc names the register beside the archive instruction, so a
+  session told to archive waiting mail has the exception in front of it.
+Refused: keying the whole fix on the doc alone — a directive is a step and a
+  step can be skipped, which is why the scan exclusion is the load-bearing half.
+--- End build block ---
+
+#### The build view drops `Runs alone`, so a run cannot see its own second bound [build-view-drops-runs-alone]
+
+`next.md` states two bounds on a run: the cleared-to-run line, and a `Runs alone`
+marker on an item, which ends the run before that item. It also states that a run
+reads the generated build view and never QUEUE.md.
+
+`generate_build_view.py` never emits `Runs alone` — the literal does not appear
+anywhere in the script. So the marker exists on the queue item and is invisible to
+the only file the run is allowed to read. A run following next.md as written would
+sweep straight past a `Runs alone` item and build it alongside other work, which is
+the exact failure the marker exists to prevent: the marked work moves file paths
+underneath a run holding stale paths in its scope-lock list.
+
+Found during a /next pre-flight on 2026-08-21, only because the run grepped
+QUEUE.md for the literal rather than trusting the view. [rename-docs-b-folder] is
+live in the cleared region carrying the marker right now, and the queue's own prose
+records that it was placed deliberately so the run would stop before it.
+
+The fix is one of two, to be weighed at a keep-step: emit the marker into each
+cleared item's build block, or emit it in the by-name listing. Related to
+[build-view-strips-the-gate-disposition] and
+[build-view-completeness-test-unreachable] — the same shape, a fact the run needs
+that the projection does not carry.
+
+**Weighed 2026-08-21, autonomous session: the marker goes on the item's entry in
+the cleared region, not the by-name listing.** The listing exists for
+duplicate-checking and a run reads its bounds from what it is building; a bound
+in the listing is a bound in the wrong place.
+
+--- Build block ---
+Changes: `plugin/throughliner/scripts/generate_build_view.py` — emit
+  `Runs alone` on its own line in the affected item's entry in the view's
+  cleared-items region, beside the block it copies. `resources/testing/` — a
+  case: a cleared item carrying the marker appears in the generated view with
+  the literal present.
+Acceptance: a view generated over a queue holding a `Runs alone` item carries
+  the literal where the run reads; `next.md` needs no change, since it already
+  instructs stopping on the marker. Suite green.
+Refused: emitting it only in the by-name listing — the run's bound belongs with
+  the work the run builds.
+--- End build block ---
+
+Filed mid-run, before any build started; commit at filing time is the tip of main
+at `461c999`.
+
+#### The build view's completeness test can never read equal in a project holding a cleared `[user]` or `[freeform]` item [build-view-completeness-test-unreachable]
+Filed 2026-08-21 by Claude, from running the test itself at the end of [convert-cleared-items-to-build-blocks].
+
+**What the checklist says.** `migrate-checklist.md`'s epoch-4 section closes with a check-it-landed step: run the generator and read its summary line, which prints how many cleared items it found and how many carried a block — *"Equal numbers mean the migration is complete."*
+
+**What the generator actually prints.** Against this queue, immediately after a conversion that left nothing undone: `20 cleared item(s), 17 with a build block`. The three without are the two `[user]` posts and the `[freeform]` item itself — which the same checklist, four lines above, says need no block at all. So the two halves of one section disagree, and the disagreement is not a judgment call: the excluded flavors are excluded by name.
+
+**Why it is worth fixing rather than remembering.** The test is the only mechanical confirmation the epoch-4 migration has. A migration that ran correctly reports as incomplete, and one that genuinely left items unconverted reports the same way, so the number distinguishes nothing in any project holding a cleared `[user]` or `[freeform]` item — which is most of them. A test that reads wrong on correct work is the cry-wolf shape this project has repealed measures for twice.
+
+**Two candidate fixes, and neither is settled here.** The generator could count only the flavors that need a block, so equal becomes reachable; or the checklist could state the test as the generator's numbers plus the count of cleared `[user]` and `[freeform]` items. The first changes shipped code and the second changes shipped prose, and which is right depends on whether that summary line has other readers — not checked.
+
+Relates to [convert-cleared-items-to-build-blocks], which ran the test, and to [setup-migration-gate-is-epoch-3-shaped], which repairs the recipe this section belongs to and may want to settle both at once.
+
+**Kept 2026-08-21, autonomous session: both halves change, code first.** The open question — whether the summary line has other readers — was checked by grep: only `migrate-checklist.md` cites it.
+
+--- Build block ---
+Changes: `plugin/throughliner/scripts/generate_build_view.py` — the summary line
+  counts only block-needing flavors, e.g. "17 block-needing cleared item(s), 17
+  with a build block; 3 cleared [user]/[freeform] item(s), which need none".
+  `plugin/throughliner/docs/migrate-checklist.md` — the epoch-4 completeness
+  test reworded to match the new line. `resources/testing/` — a case over a
+  queue holding cleared `[user]` and `[freeform]` items asserting equal is
+  reachable.
+Acceptance: run against this queue immediately after, the two counted numbers
+  are equal; a queue with a genuinely blockless build item still reads unequal.
+Refused: prose-only fix — the printed number would still distinguish nothing at
+  the moment it is read.
+--- End build block ---
+
+#### No test asserts that an origin claim goes unflagged, which is the whole of the provenance split [origin-claim-has-no-test]
+Filed 2026-08-16 by the build of [provenance-splits-origin-from-quote], as adjacent work rather than part of it.
+
+**What the suite covers and what it misses.** `resources/testing/test_queue_lint_flags.py` has four cases on the credit check, and all four survived the split untouched because each happens to use a quote-claim phrase alongside its `Captured by you`. So the suite still passes and still asserts only the half that did not change.
+
+**The half that did change has no case at all:** a bare `Captured by you` with nothing quoted must now produce no warning. That is the entire point of the split — it is what stops Claude asking the user to prove her own work is hers — and a later session could restore the old phrase list with every test still green.
+
+**Files:** `resources/testing/test_queue_lint_flags.py` — one case asserting a bare origin claim is not flagged, and one asserting a quote claim still is.
+
+**Kept 2026-08-21, autonomous session.** Already fully specified — the Files line above is the design.
+
+--- Build block ---
+Changes: `resources/testing/test_queue_lint_flags.py` — two cases: a bare
+  `Captured by you` with nothing quoted produces no warning; a quote-claim
+  phrase without verbatim text is still flagged.
+Acceptance: both pass; suite green; reverting the provenance split's phrase
+  list makes the first case fail.
+--- End build block ---
+
+#### The filing-claim hook fires on a slug that was only cited, not filed [stop-hook-fires-on-cited-slugs]
+Filed 2026-08-13 by Claude from a live instance in this /plan session, after the last committed close, so it belongs to no committed session record.
+**What happened.** A message cited `[nothing-runs-the-hook-tests-at-a-close]` while reasoning about an already-built item — quoting a planning entry's kept-list and naming that item's LOG file. The stop hook read the slug as a filing claim, found no matching `#### ` heading in QUEUE.md, and blocked with "the write did not happen". Nothing had been written, and nothing was meant to be.
+**Why the detector cannot tell them apart as written.** A slug in square brackets is the method's only cross-reference notation, and the always-loaded rules positively require citing other items by slug in prose. So the hook's signal — a slug in a message — is present in the ordinary compliant case as well as the failure case. Not a tuning miss; the two shapes are identical at the level the detector reads.
+**This is the second recorded shape, and the pair is what makes it structural.** [stop-hook-fires-on-drafted-not-filed-captures] records the hook firing on a capture presented as a draft for approval, also a shape the method specifies. Both fire on conduct the rules mandate.
+**A harder case the fix must survive:** an item genuinely built this session is absent from QUEUE.md for the correct reason — /next consumes it — so absence can never on its own mean a write was missed.
+**One thing to check rather than assume:** whether the detector distinguishes a slug in a reporting sentence from one in a citation, and whether it can consult LOG filenames before concluding a slug is unfiled. Relates to [stop-hook-fires-on-drafted-not-filed-captures] and [disposition-detector-is-format-brittle].
+
+**Two further instances, 2026-08-17, both in one planning session and both on SHIPPED work.** The hook fired on [rename-to-throughliner] and again on [law-prose-restyle], each cited as work already built and therefore correctly absent from the queue — /next consumes an item when it builds it. Each cost an exchange. **This sharpens the fix rather than only adding weight:** in both cases a LOG entry named after the slug existed, so consulting `LOG/` before concluding a slug is unfiled would have suppressed both, and that is the check this item already suspected. It also confirms the harder case named above is the whole difficulty — absence from the queue cannot mean a missed write, because the successful case produces exactly that absence.
+
+**A fifth instance, 2026-08-21, reported by a consumer project on 1.20.0-test12, and it names a site the earlier four did not.** The /plan checkpoint requires presenting the next queue item verbatim. Where that quoted text happens to mention another item's slug, the hook reads the mention as a filing claim, fails to find the named item in QUEUE.md, and blocks the turn demanding an explanation. In their case the quoted item referred to work that had shipped and was recorded under its own LOG entry, so the reference was correct as written. **This makes the defect recurrent rather than occasional for any queue whose items cite each other** — which the method actively encourages, since cross-references are supposed to be written as slugs in prose, and the checkpoint quotes an item at every single pick. Their cost note is the same one this item already carries: the recovery is a correction addressed to the user about something that was never wrong.
+
+**Kept 2026-08-21, autonomous session.** The check this item suspected is the fix: in three of the five instances a LOG entry named after the slug existed, so consulting `LOG/` would have suppressed them. It also survives the harder case the item names — an item built this session is absent from the queue for the correct reason and has its LOG entry by the close.
+
+--- Build block ---
+Changes: `plugin/throughliner/hooks/stop.py` — before blocking on a slug absent
+  from QUEUE.md's headings, scan `LOG/` for any filename containing `-<slug>.md`;
+  a match suppresses the block, since the slug names recorded work rather than a
+  failed filing. `resources/testing/` — cases: a cited shipped slug does not
+  block; a filing claim whose slug has no heading and no LOG entry still does.
+Acceptance: the five recorded instances' shape no longer blocks; the hook's real
+  catch (a report naming a capture that was never written) still fires; the
+  block-once-per-claim behaviour is untouched.
+Refused: distinguishing citation from filing-claim by parsing the sentence — the
+  item's own finding is that the two shapes are identical at the level the
+  detector reads.
+--- End build block ---
+
+#### The gate-line check fires on every rule-bearing commit at the moment it is made, because the hash it matches on has not been backfilled yet [rule-gate-dispositions-missing]
+Filed 2026-08-20 in the post-commit tail, under the slug `rule_signals.py` printed. **What it found is real; what it concluded is wrong, and both halves matter.**
+
+**What it reported.** After commit `b485ee3`, the check said 1 of 11 rule-bearing commits since the baseline carries no `Rule gate:` disposition in any LOG entry, naming that commit — the one just made.
+
+**Why that is a false positive.** `_log_dispositions` matches a commit's entries **by the hash in the entry's heading**, which is the position the backfill writes. A close writes its entries *before* the commit exists, so every heading reads `# [HASH] — …` at that moment. `session_start` fills them at the next session opening. So the check cannot see any disposition belonging to the commit it has just been run against.
+
+**The dispositions are there.** 23 of the 24 entries this close wrote carry a plain `Rule gate:` line; the twenty-fourth is the chat-level record, which is not an item and owes none.
+
+**Why this is worth fixing rather than tolerating.** `CLAUDE.md` requires this script to run at any close whose staged paths touch the rule-bearing set — which is precisely the set of closes that will trip this. So it fires at every rule-bearing close, always wrongly, and clears itself by the next session. That is the cry-wolf shape this project has repealed measures for twice, and it is worse than an ordinary false positive: it teaches the reader to discount the one check that guards the gate obligation.
+
+**It also mis-scores the growth signal in the same window**, since a session's own commit is the one whose rules just changed.
+
+**Options, none designed.** Skip the most recent commit when its entries still carry unfilled placeholders — cheapest, and it reads the same artifact the backfill does. Or match on filename as a fallback where the heading hash is a placeholder, which is looser and reintroduces the misattribution the heading-only rule was written to fix (an entry citing another commit used to donate its disposition to it). Or run the check before the commit rather than after, which changes what the close's step means.
+
+**One honest limit on this capture:** the check is doing exactly what it says it does, and the defect is in when `CLAUDE.md` tells it to run rather than in its matching logic. Whichever way it is fixed, the heading-only match should survive — it exists for a recorded misattribution.
+
+**Confirmed by observation later the same night, so this is no longer inference.** The session-start backfill ran and resolved every `[HASH]` placeholder in the 24 entries to `b485ee3`. Re-running the script immediately afterwards, with nothing else changed: `0 of 4 found something`, and the gate check reports all 11 rule-bearing commits carrying a disposition. The diagnosis and the fix are therefore both pinned — the window is exactly between a close and the next session's backfill.
+
+**Kept 2026-08-21, autonomous session, on the item's own cheapest option** — it reads the same artifact the backfill does, and the item's honest limit is honoured: the heading-only match survives.
+
+--- Build block ---
+Changes: `resources/rule_signals.py` — the gate-line check and the growth
+  signal both skip the newest commit while LOG entries still carry `[HASH]`
+  placeholders, since that commit's dispositions cannot yet be matched by
+  heading. `resources/testing/` — a case with a placeholder entry asserting no
+  finding, and one after backfill asserting normal behaviour.
+Acceptance: run immediately after a close, no false finding on the fresh
+  commit; run after the backfill, output unchanged from today's confirmed
+  `0 of 4`.
+Refused: filename-fallback matching — it reintroduces the misattribution the
+  heading-only rule was written to fix.
+Refused: running the check before the commit — it changes what the close's
+  step means, for the same result the skip gets cheaper.
+--- End build block ---
+
+#### The shell-write guard blocked a scratchpad write while its own message says the scratchpad passes [shell-write-guard-blocks-the-scratchpad]
+Filed 2026-08-19 by Claude at its own close, from an instance it caused minutes earlier.
+
+**What happened.** A close needed to split one scratch file into two. The command was `py -c` writing two files inside the session scratchpad — outside the repository, self-clearing, and named explicitly rather than computed. `pre_tool_use.py` refused it. **The refusal text itself says: "If you genuinely need scratch space, the session scratchpad sits outside the repo and still passes."** It did not pass.
+
+**Why this is worth a line rather than a shrug.** The guard is correct in substance — the fix was to use the editing tools, which worked — so nothing was lost this time. What is wrong is that the message tells the session a route is available and the same hook then refuses that route, which is the cry-wolf shape this project has repealed measures for twice. A session that believes the message will retry into the same wall.
+
+**Two possibilities, and the item should not assume which.** Either the path check does not recognise the scratchpad directory at all, or it recognises it and the shell-write rule is deliberately unconditional — in which case the refusal text is what is wrong, not the behaviour. **Read the hook before designing anything**, since the whole defect is a mismatch between what the code does and what its own message claims.
+
+**Files (rough):** `plugin/throughliner/hooks/pre_tool_use.py` and `resources/testing/` for whichever half turns out to be wrong. Host-only in origin; shipped in effect, since every consumer meets the same message.
+
+**Kept 2026-08-21, autonomous session, and the hook was read as the item requires.** `_is_scratchpad_dir` needs a `scratchpad` path segment with a `claude` segment above it, outside the repo — and the structured-write pass consults it, so a *literal* scratchpad target should pass. The likely culprit is the computed-target branch: a `py -c` command whose path is assembled rather than written out is denied wherever it points, and its message says a literal scratchpad path still passes. So the mismatch may be between the two branches' messages rather than in the path check — the build reproduces before fixing.
+
+--- Build block ---
+Changes: `plugin/throughliner/hooks/pre_tool_use.py` — reproduce with a literal
+  `py -c` write into the session scratchpad; fix whichever half disagrees with
+  its own message (the path check, or the refusal text's claim). `resources/
+  testing/` — a case pinning that a script write naming a scratchpad path
+  literally passes, and that a computed one is still denied.
+Acceptance: message and behaviour agree on both branches; suite green.
+Refused: weakening the computed-target denial — it exists for a recorded
+  QUEUE.md corruption.
+--- End build block ---
+
+#### The project's two Claude Code config files point at a folder layout that has not existed for months [claude-config-points-at-dead-layout]
+Filed 2026-08-13 by Claude during the identity-rename build. Filed after the last committed close, so it belongs to no committed session record.
+**What was found, and it is not what the rename item predicted.** [rename-to-throughliner] listed `.claude/launch.json` and `.claude/settings.local.json` among the files the folder rename would invalidate. Neither was, because neither pointed at `plugin/si-plugin`. They point at a much older layout — a top-level `sovereign-implementer/` folder with `planning/`, `build-log/` and `Dev/Resources/` — under a user path (`C:\Users\Alex\...`) that is no longer this machine's. That folder hasn't existed for a long time.
+**What this means in practice.** `launch.json` declares one dev-server configuration serving `sovereign-implementer/crash-course`, an absent directory, so it cannot start. `settings.local.json` carries roughly fifteen permission allowlist entries naming absolute paths into that dead layout; a permission entry for a path that cannot occur never matches, so they're inert rather than harmful. Two live entries in the same file *did* name the real `plugin/si-plugin/scripts/reorder_queue.py` and were corrected in the rename build.
+**Why it is captured rather than fixed there.** The rename item's work is the identity change, and none of this is that — the strings were stale for an unrelated reason, before the rename started. Fixing them means deciding what `launch.json` should serve now, or whether the project needs one, which is a decision rather than a substitution.
+**To settle at processing.** Whether `launch.json` is deleted or repointed; whether the dead allowlist entries are pruned (harmless, but they make the file hard to read, and this user's stated difficulty is scanning dense lists); and whether anything else in `.claude/` assumes the old layout.
+**Files (rough):** `.claude/launch.json`, `.claude/settings.local.json`. Host-only — a consumer's `.claude/` is their own.
+
+**Kept 2026-08-21, autonomous session, and the open decision is taken: delete `launch.json`.** This project serves nothing — it is a plugin of hooks and docs with no dev server — so there is nothing to repoint it at. The dead allowlist entries are pruned for the reason the item already carries: they are inert but make the file hard to scan, and scanning dense lists is this user's stated difficulty.
+
+--- Build block ---
+Changes: delete `.claude/launch.json` (its one configuration serves an absent
+  directory). `.claude/settings.local.json` — remove allowlist entries naming
+  the dead `sovereign-implementer/` layout or the old `C:\Users\Alex\` user
+  path; keep every entry naming a path that exists.
+Acceptance: no path in `.claude/` names a directory absent from disk; the live
+  entries still present.
+Refused: repointing launch.json — nothing here to serve.
+--- End build block ---
+
+#### The surviving parent-folder CLAUDE.md still calls this project v37 at plugin version 0.37.0 [parent-claude-md-version-claim-stale]
+Noticed by Claude 2026-08-20 while building [parent-claude-md-taskflow-no-write-stale], which corrected a path and added an exception in the same file and did not reach this.
+
+**What it says.** `Taskflow Planning/CLAUDE.md` line 5 describes `No code method/` as "currently v37, plugin version 0.37.0". The target is at 1.20.0 and the installed host at 1.20.0-test12, so the claim is wrong by a whole version line. It also still calls the project "the no-code method", which is the pre-rename name — the plugin became Throughliner on 2026-08-13, slug, package folder, marker files and positioning together.
+
+**Why it was not folded into the item that was in the file.** That item's described work was the path and the INBOX exception, both of which it named; a version claim is a different staleness with a different cause, and folding it in would have grown scope the item never described. Captured rather than done, so it gets weighed against the rest of the queue.
+
+**Whether it is worth fixing at all is the real question.** A version number written into a folder-orientation file is stale the day after it is written, and nothing keeps it current — the same shape as the version-versus-format-epoch reasoning already settled here, where a version check was rejected for crying wolf. The likely disposition is to remove the version claim rather than update it, leaving the sentence to say what the folder is without asserting what release it is on. The rename is a plain correction either way.
+
+**One folder up has the same class of fault**, recorded as [claude-config-points-at-dead-layout], and `Desktop/CLAUDE.md` is worth reading in the same pass since it enumerates projects and may name the same things by retired names.
+
+**Kept 2026-08-21, autonomous session, on the item's own likely disposition: remove the version claim rather than update it.** Same reasoning as the settled version-versus-epoch decision — a number written into an orientation file is stale the day after and nothing keeps it current. Precedent for the write: [parent-claude-md-taskflow-no-write-stale] edited this same file as a build and shipped.
+
+--- Build block ---
+Changes: `../CLAUDE.md` (the Taskflow Planning folder's) — drop "currently v37,
+  plugin version 0.37.0" so the sentence describes the folder without asserting
+  a release; where the file names the plugin "the no-code method", say
+  Throughliner, per the 2026-08-13 rename. Read `Desktop/CLAUDE.md` in the same
+  pass and correct the same two staleness classes there, or record that it is
+  clean.
+Acceptance: no version number in either folder file; the plugin's name matches
+  the rename; nothing else in either file is touched.
+Refused: updating the number — stale by design, the cry-wolf shape the epoch
+  system replaced.
+--- End build block ---
+
+#### This project's CLAUDE.md describes work as batches in six places, reported by /setup and never written down [host-claude-md-names-retired-batches]
+Filed 2026-08-21 by Claude at a /rescan. **/setup's retired-terms step found these today and reported them in chat; the report is all that happened, and chat does not survive.**
+
+**What the step is for.** /setup reads a project's own CLAUDE.md for names of method pieces that no longer exist and reports each alongside its replacement, editing nothing — because the file is the user's. That worked. What it has no route to is a record: the finding lands in a message and stops there.
+
+**What it found, in this project's `CLAUDE.md`.** Six occurrences describing work as **batches**, a model retired in favour of one work item as a single `#### ` heading with a flavour tag and no sub-headings. The clearest are the scope-lock description ("the active batch's file list", around line 64), the cross-doc-reference rule (line 90), the FAQ-authoring rule (line 196), the hook-format ripple rule (line 238, "A new batch type touches four places"), and the SPEC rule at line 375, which says the spec-edit batch type is retired while itself calling a build "a normal build batch".
+
+**Why it is worth an item rather than a shrug.** This file is always-loaded: every session in this project reads it before doing anything. A session reading "the active batch's file list" is being told the scope-lock works on a structure that does not exist, and the corpus already records four instances of a correctly worded rule failing to fire — a wrongly worded one has less chance still.
+
+**One thing that is genuinely undecided, and it is yours.** /setup's step reports and never edits, deliberately. Whether these six get rewritten is a decision about your own file. Some may be deliberate historical references — line 375 explains a retirement and may need the old word to do it.
+
+**Files (rough):** `CLAUDE.md`. Host-only. **Relates to [claude-md-unwritable-by-the-skills-that-notice]**, which is the same wall from the other side: the skill that finds this is barred from fixing it. Also to [parent-claude-md-version-claim-stale] and [claude-config-points-at-dead-layout] — worth doing as one pass over this project's own configuration files.
+
+**Kept 2026-08-21, autonomous session.** The undecided half is decided the way the item leans: the five descriptions of live machinery are rewritten to the work-item model; line 375's mention stays, because it explains a retirement and needs the old word to do it.
+
+--- Build block ---
+Changes: `CLAUDE.md` — rewrite the five stale "batch" descriptions to the
+  work-item model: the scope-lock line (~64), the cross-doc-reference rule
+  (~90), the FAQ-authoring rule (~196), the hook-ripple rule's "A new batch
+  type touches four places" (~238), and the SPEC rule's "a normal build batch"
+  (~375, which becomes "a normal build item" while its retirement sentence
+  keeps the old word). Re-grep "batch" after, since the line numbers are from
+  /setup's report and may have drifted.
+Acceptance: `grep -n batch CLAUDE.md` returns only mentions that name a
+  retirement; no rule's requirement changes.
+Rule gate: not needed — terminology correction; what each rule requires is
+  untouched.
+--- End build block ---
+
+#### A user has no answer to what happens when Claude deletes something from their queue [no-faq-entry-on-deletion-and-recovery]
+Captured 2026-08-14 at a /plan close, from the user asking mid-session what git history does and what was happening to her queue. She is the method's most experienced user and still had to ask.
+**The gap.** Deleting a work item is a routine, approved planning move, and the method's own reasoning leans on deletion being safe because git history keeps the text. That premise is never explained anywhere the user reads. A non-coder approving a delete is being asked to agree that something isn't worth doing, with no way to know whether "delete" means gone.
+**Why it is not covered.** The FAQ has entries on the workflow's moving parts, none on what deletion does or how anything is recovered. SPEC states that git history keeps a deleted item, but SPEC is product truth, not user help.
+**What to weigh at processing.** Whether one entry covers it or two — deletion specifically, and the general "is anything I approve ever unrecoverable" — and whether the answer names a recovery command or simply says to ask Claude, which is the honest route for a user who doesn't use a terminal. Ships to consumers, so an ordinary FAQ entry rather than host-only. Relates to [own-faq-diverged-from-shipped-template] — decide which FAQ the entry lands in before writing it.
+
+**Kept 2026-08-21, autonomous session, both open questions decided.** One entry, framed on the general question with deletion as its worked case — two entries would split one answer. The answer says to ask Claude to recover it, never a command, for the item's own reason. The which-FAQ question is settled by the standing rule: the template is canonical, then re-copy into `FAQ/`.
+
+--- Build block ---
+Changes: `plugin/throughliner/templates/faq-template.md` — one entry, roughly
+  "Is anything I approve ever gone for good?": deletes need your approval; git
+  history keeps the text, so ask Claude to bring a deleted item back; the one
+  exception is a project that chose to keep its docs out of git, where a
+  deleted queue item is genuinely gone — the same caveat the method states when
+  that choice is made. `faq-index-template.md` — its index line. Re-copy both
+  into `FAQ/faq.md` and `FAQ/index.md`.
+Acceptance: entry and index line present in template and `FAQ/` copies,
+  byte-identical.
+Refused: naming a recovery command — the audience does not use a terminal, and
+  a command in an FAQ ages into wrong advice.
+--- End build block ---
+
 #### [user] Discord post: Claude now knows how the work cycle actually fits together [discord-post-cycle-awareness]
 Captured by you 2026-08-12; the angle is yours — awareness of the build cycle.
 **Cannot be written until [cycle-summary-at-every-skill-opening] has shipped.**
@@ -57,8 +609,6 @@ Captured by you 2026-08-12; the angle is yours — awareness of the build cycle.
 
 **Files:** none in this project — the artifacts are an article for the Throughliner site and a Discord post. Relates to [digest-reports-computed-fields-not-summaries] (shipped) and `resources/research/auto-memory-staleness.md` (verified and corrected).
 
---- Cleared to run above this line ---
-
 #### [audit] Read the before-and-after output measurement and say whether the brevity amendment moved anything [brevity-amendment-outcome]
 Filed 2026-08-21 alongside the two items it reads, because a measuring build that ships alone leaves nothing in the queue to read its output.
 
@@ -74,7 +624,9 @@ Filed 2026-08-21 alongside the two items it reads, because a measuring build tha
 
 Findings become captures like any audit's.
 
-Blocked by: [brevity-instruction-for-the-5-series]
+**Lifted 2026-08-21.** [brevity-instruction-for-the-5-series] is built — `LOG/2026-08-21-brevity-instruction-for-the-5-series-2.md`, a build entry — and the rezip has carried it into the installed plugin: the host's build stamp and the target's both read `2c20f14b38aa`, so the amendment is live in sessions from now on. Both halves of the holding fact are therefore satisfied. **One constraint the lift does not remove:** the after-sample must come from transcripts written after that rezip, and the entry says which build each sample came from.
+
+**Read this against [close-cost-scales-with-run-size] before drawing any conclusion.** That capture measured the seventeen-item run's chat output at median 20 words a message — below this project's own 55-word baseline — while its close wrote roughly 15,200 words into `LOG/`. So a large close is evidence about the record-writing step and not about narration, and this audit must not read one as the other.
 
 --- Build block ---
 Changes: none — an audit edits nothing. The one file operation belongs to the
@@ -107,7 +659,32 @@ Filed 2026-08-17, absorbing five captures from [terminology-corpus-audit] that w
 
 **Why the existing survey is not enough.** [terminology-corpus-audit] enumerated collocations, not occurrences — a floor on how many meanings exist, never a ceiling — and never reached the FAQ or SPEC, which are the consumer-facing texts. The scale is measured: across five procedure docs, bare forms outnumber qualified ones by roughly nine to one — 134 bare against 29 qualified — so 134 judgment calls rather than substitutions sit in those files alone.
 
-Blocked by: [law-prose-restyle-remaining-docs]
+**Lifted 2026-08-21.** [law-prose-restyle-remaining-docs] is built — `LOG/2026-08-21-law-prose-restyle-remaining-docs.md` — so the restyle has reached the rest of the corpus and a list gathered now is no longer stale before it is used.
+
+**One thing the restyle left behind that this audit inherits.** [law-prose-pass-missed-mid-sentence-prohibitions] records that both passes found their targets by grepping for prohibitions that start a sentence, leaving roughly 150 mid-sentence ones unread. That is a gap in the prohibitions work rather than in the wording of the text this audit reads, so it does not re-hold this item — but the same shortcut is available here, and the build block below is written against it.
+
+--- Build block ---
+Changes: none — an audit edits nothing. It produces one classification per
+  occurrence of "session", as a findings list in this session's LOG entry:
+  means the chat, means a run, or correct as it stands and left alone.
+  Files read: `plugin/throughliner/docs/` (every procedure doc),
+  `plugin/throughliner/templates/faq-template.md`, `FAQ/faq.md`, `SPEC.md`.
+  Re-count first rather than trusting the ~707 figure in the prose above — the
+  restyle passes rewrote this text after that count was taken.
+  The stop-list is honoured rather than re-derived: "mid-session", "short
+  session", "fresh session", "isolated session" and `done.md`'s "session type"
+  all correctly mean the chat and are left alone.
+Acceptance: a LOG entry carrying every occurrence with its file, its line and
+  its classification — complete enough that [session-vocabulary-corrections]
+  can be built from it without re-reading the corpus. The entry states how many
+  occurrences were found and how the count was taken, so a later reader can tell
+  a file that was read and found clean from one that was never opened.
+Refused: gathering the list by grepping for qualified forms and inferring the
+  rest — the reason this is an audit rather than a script is that deciding what
+  each occurrence means is judgment on every line.
+--- End build block ---
+
+--- Cleared to run above this line ---
 
 #### Rename every occurrence of "session" that means a run, per the audit's classification [session-vocabulary-corrections]
 Filed 2026-08-17 from the same settlement. **The corrections pass, which cannot start without the audit's line-by-line list.**
@@ -175,16 +752,13 @@ Blocked by: [discord-post-cycle-awareness]
 
 ## Unprocessed
 
-#### Last session advises a rezip first, then a planning session on the three grep-shaped captures [forward-advisory]
-**This replaces a spent advisory rather than sitting beside one.** The note in this slot advised a build run and then a rezip. The build run happened — seventeen items. **The rezip did not, and that half is still live**, so it is carried forward here rather than lost. This replacement is the branch `[advisory-step-collides-with-a-spent-note]` says the close does not have; that item is still worth processing, and this is a second live instance of it.
-
-**Rezip before anything else reaches a session.** This run changed what `session_start.py` emits, and changed the always-loaded rules in five places — the brevity limb, the vocabulary rule's third arm, the memory-routing qualification, the render rule's column clause and the Scope section's file boundary. None of that reaches this project or any other until the plugin is reinstalled and the app restarted. Until then the installed host still emits the version-change notice on every update, which is the thing you raised.
-
-**Then a planning session, and there is one subject worth taking as a subject.** Three captures were filed today that are the same defect wearing three faces: `[law-prose-pass-missed-mid-sentence-prohibitions]`, `[rationale-lens-plan-md-coverage-incomplete]`, and the acceptance-test problem recorded inside the second of those. Each is a pass that searched by grep, where a miss leaves no trace — a file with no match reads exactly like a file never searched. The method already has the shape that fixes this, the required-artifact rules that turn a silent omission into a visible one, and none of the three passes had one. Processing them together is likely to produce one repair rather than three.
-
-**Two held items name blockers this run shipped**, so the below-the-line revisit has something to lift: `[brevity-amendment-outcome]` waited on `[brevity-instruction-for-the-5-series]`, and `[session-occurrence-audit]` waited on `[law-prose-restyle-remaining-docs]`. Both shipped and both are confirmed. `[brevity-amendment-outcome]` is the audit that reads the before-and-after measurement, and its before-figures are recorded in `LOG/2026-08-21-transcript-output-measurement-2.md` — but it wants transcripts written *after* the rezip, since the amendment is not live until then.
-
-**One item in the cleared region is a `[user]` line deferred to tomorrow.** `[competition-comparison-article]` lifted when the Discord post went out and was held only by your one-post-per-day pacing. Its `Blocked by:` names an item this run removed, so the lint flags it until the revisit settles it.
+#### Last session advises a build run next, starting at the length cut [forward-advisory]
+The cleared region holds 20 items and [cut-length-everywhere] sits at its head —
+the user's repeal of the no-length-caps position, to be built first so every
+later rewrite lands in the shorter register. Fourteen of the twenty are small
+mechanical fixes with tests; the two `[user]` posts and two `[audit]` items sit
+at the end. A /next run will work the region top-down and stop at the readiness
+line.
 
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
@@ -201,26 +775,6 @@ External dependency: anthropics/claude-code#77134.
 **Surfaced 2026-08-19 by the decay rung, on its first firing since the interleave was adopted.** It had been the oldest entry in the queue at 17 days and nothing in the ladder had ever reached it.
 
 **Skipped again 2026-08-19, and it is the item that produced the fix for its own condition.** Presented, found unchanged, and in being presented it made the pattern visible: three entries in one session waiting on something outside this project, none able to name a blocker, all re-offered every session. That is [not-before-reaches-unprocessed], kept and cleared in the same session. **This is its first candidate** — once `anthropics/claude-code#77134` ships, or a date is worth guessing at, the field goes here and the re-offering stops. Until the field is built there is nothing to write, so the skip stands.
-
-#### The filing-claim hook fires on a slug that was only cited, not filed [stop-hook-fires-on-cited-slugs]
-Filed 2026-08-13 by Claude from a live instance in this /plan session, after the last committed close, so it belongs to no committed session record.
-**What happened.** A message cited `[nothing-runs-the-hook-tests-at-a-close]` while reasoning about an already-built item — quoting a planning entry's kept-list and naming that item's LOG file. The stop hook read the slug as a filing claim, found no matching `#### ` heading in QUEUE.md, and blocked with "the write did not happen". Nothing had been written, and nothing was meant to be.
-**Why the detector cannot tell them apart as written.** A slug in square brackets is the method's only cross-reference notation, and the always-loaded rules positively require citing other items by slug in prose. So the hook's signal — a slug in a message — is present in the ordinary compliant case as well as the failure case. Not a tuning miss; the two shapes are identical at the level the detector reads.
-**This is the second recorded shape, and the pair is what makes it structural.** [stop-hook-fires-on-drafted-not-filed-captures] records the hook firing on a capture presented as a draft for approval, also a shape the method specifies. Both fire on conduct the rules mandate.
-**A harder case the fix must survive:** an item genuinely built this session is absent from QUEUE.md for the correct reason — /next consumes it — so absence can never on its own mean a write was missed.
-**One thing to check rather than assume:** whether the detector distinguishes a slug in a reporting sentence from one in a citation, and whether it can consult LOG filenames before concluding a slug is unfiled. Relates to [stop-hook-fires-on-drafted-not-filed-captures] and [disposition-detector-is-format-brittle].
-
-**Two further instances, 2026-08-17, both in one planning session and both on SHIPPED work.** The hook fired on [rename-to-throughliner] and again on [law-prose-restyle], each cited as work already built and therefore correctly absent from the queue — /next consumes an item when it builds it. Each cost an exchange. **This sharpens the fix rather than only adding weight:** in both cases a LOG entry named after the slug existed, so consulting `LOG/` before concluding a slug is unfiled would have suppressed both, and that is the check this item already suspected. It also confirms the harder case named above is the whole difficulty — absence from the queue cannot mean a missed write, because the successful case produces exactly that absence.
-
-**A fifth instance, 2026-08-21, reported by a consumer project on 1.20.0-test12, and it names a site the earlier four did not.** The /plan checkpoint requires presenting the next queue item verbatim. Where that quoted text happens to mention another item's slug, the hook reads the mention as a filing claim, fails to find the named item in QUEUE.md, and blocks the turn demanding an explanation. In their case the quoted item referred to work that had shipped and was recorded under its own LOG entry, so the reference was correct as written. **This makes the defect recurrent rather than occasional for any queue whose items cite each other** — which the method actively encourages, since cross-references are supposed to be written as slugs in prose, and the checkpoint quotes an item at every single pick. Their cost note is the same one this item already carries: the recovery is a correction addressed to the user about something that was never wrong.
-
-#### The project's two Claude Code config files point at a folder layout that has not existed for months [claude-config-points-at-dead-layout]
-Filed 2026-08-13 by Claude during the identity-rename build. Filed after the last committed close, so it belongs to no committed session record.
-**What was found, and it is not what the rename item predicted.** [rename-to-throughliner] listed `.claude/launch.json` and `.claude/settings.local.json` among the files the folder rename would invalidate. Neither was, because neither pointed at `plugin/si-plugin`. They point at a much older layout — a top-level `sovereign-implementer/` folder with `planning/`, `build-log/` and `Dev/Resources/` — under a user path (`C:\Users\Alex\...`) that is no longer this machine's. That folder hasn't existed for a long time.
-**What this means in practice.** `launch.json` declares one dev-server configuration serving `sovereign-implementer/crash-course`, an absent directory, so it cannot start. `settings.local.json` carries roughly fifteen permission allowlist entries naming absolute paths into that dead layout; a permission entry for a path that cannot occur never matches, so they're inert rather than harmful. Two live entries in the same file *did* name the real `plugin/si-plugin/scripts/reorder_queue.py` and were corrected in the rename build.
-**Why it is captured rather than fixed there.** The rename item's work is the identity change, and none of this is that — the strings were stale for an unrelated reason, before the rename started. Fixing them means deciding what `launch.json` should serve now, or whether the project needs one, which is a decision rather than a substitution.
-**To settle at processing.** Whether `launch.json` is deleted or repointed; whether the dead allowlist entries are pruned (harmless, but they make the file hard to read, and this user's stated difficulty is scanning dense lists); and whether anything else in `.claude/` assumes the old layout.
-**Files (rough):** `.claude/launch.json`, `.claude/settings.local.json`. Host-only — a consumer's `.claude/` is their own.
 
 #### The superseded-research flag cannot tell a citation of the fallen part from a citation of the surviving part [superseded-flag-has-no-section-granularity]
 Observed 2026-08-13 while filing [written-deliverable-length-unaddressed], which cites `instruction-file-bloat-and-subtraction.md`. The digest flagged it correctly by its own rule, and for this item it was a false alarm.
@@ -244,12 +798,6 @@ Captured 2026-08-14 at a /plan close, from the user losing her place live. Her w
 **A running count is NOT the fix, and this capture's first draft had it backwards.** It claimed the count was stated once at the start and never again, and offered a running position line. The user corrected both at the close; her correction, rendered in Claude's words rather than quoted: the count was in fact being stated at random points through the run for no apparent reason, it has since gone, and it is better gone. Claude had been emitting unprompted tallies — "that's five items processed and two skipped" — at moments no procedure asks for, noise dressed as orientation. Recorded rather than quietly amended, because a running counter is the intuitive fix and would otherwise be re-proposed by the next session to read this.
 **What is actually missing is narrower.** Not how many items, but whether the item in hand is finished and whether what Claude is now doing still belongs to it. All three of her questions were that question, never a request for a total.
 **What to weigh at processing.** Whether side-work should be announced as side-work when it starts, so a stretch of tool calls after a one-word instruction reads as "still finishing the delete". Whether a plain "that item is closed" line at the moment an item ends would do it. Neither should reintroduce a tally. Relates to [concision-build-removed-the-asks], [subset-done-has-no-stated-shape] and [claude-md-vocabulary-is-unexplained] — all four are the user unable to read her own position from what the session says.
-
-#### A user has no answer to what happens when Claude deletes something from their queue [no-faq-entry-on-deletion-and-recovery]
-Captured 2026-08-14 at a /plan close, from the user asking mid-session what git history does and what was happening to her queue. She is the method's most experienced user and still had to ask.
-**The gap.** Deleting a work item is a routine, approved planning move, and the method's own reasoning leans on deletion being safe because git history keeps the text. That premise is never explained anywhere the user reads. A non-coder approving a delete is being asked to agree that something isn't worth doing, with no way to know whether "delete" means gone.
-**Why it is not covered.** The FAQ has entries on the workflow's moving parts, none on what deletion does or how anything is recovered. SPEC states that git history keeps a deleted item, but SPEC is product truth, not user help.
-**What to weigh at processing.** Whether one entry covers it or two — deletion specifically, and the general "is anything I approve ever unrecoverable" — and whether the answer names a recovery command or simply says to ask Claude, which is the honest route for a user who doesn't use a terminal. Ships to consumers, so an ordinary FAQ entry rather than host-only. Relates to [own-faq-diverged-from-shipped-template] — decide which FAQ the entry lands in before writing it.
 
 #### EDITING-STATE-CONTRACT.md has a live consumer, no maintenance trigger, and an unexamined justification [editing-state-contract-status]
 Captured by you 2026-08-14, mid-/next, from your proposal to delete the file. Filed after the last committed close, so it belongs to no committed session record. Three questions, yours, kept together because they are weighed against each other.
@@ -404,15 +952,6 @@ Filed 2026-08-15 by Claude while writing a gate disposition, and raised with the
 
 **Also worth checking in the same pass:** whether any other file under `resources/` holds operative rules and sits outside the trigger. `retired-terms.md` and `rule_signals.py` are the obvious candidates, and both may turn out to be data and code rather than rules.
 
-#### No test asserts that an origin claim goes unflagged, which is the whole of the provenance split [origin-claim-has-no-test]
-Filed 2026-08-16 by the build of [provenance-splits-origin-from-quote], as adjacent work rather than part of it.
-
-**What the suite covers and what it misses.** `resources/testing/test_queue_lint_flags.py` has four cases on the credit check, and all four survived the split untouched because each happens to use a quote-claim phrase alongside its `Captured by you`. So the suite still passes and still asserts only the half that did not change.
-
-**The half that did change has no case at all:** a bare `Captured by you` with nothing quoted must now produce no warning. That is the entire point of the split — it is what stops Claude asking the user to prove her own work is hers — and a later session could restore the old phrase list with every test still green.
-
-**Files:** `resources/testing/test_queue_lint_flags.py` — one case asserting a bare origin claim is not flagged, and one asserting a quote claim still is.
-
 #### The build working file's Changes section falls behind its ticks, and only the ticks are enforced [changes-section-falls-behind-the-ticks]
 Filed 2026-08-17 by Claude at its own close, from the reconcile against memory that `done-build.md` requires.
 
@@ -467,17 +1006,6 @@ Filed 2026-08-19 from INBOX mail sent by a private legal-evidence project, and *
 
 **To settle at processing:** which of the three, and whether the answer differs for the *project's own* CLAUDE.md versus a folder-level one above it. Relates to [parent-claude-md-taskflow-no-write-stale] (the local instance) and [gate-trigger-misses-the-audit-checklist] (rules living where no mechanism reaches them).
 
-#### The shell-write guard blocked a scratchpad write while its own message says the scratchpad passes [shell-write-guard-blocks-the-scratchpad]
-Filed 2026-08-19 by Claude at its own close, from an instance it caused minutes earlier.
-
-**What happened.** A close needed to split one scratch file into two. The command was `py -c` writing two files inside the session scratchpad — outside the repository, self-clearing, and named explicitly rather than computed. `pre_tool_use.py` refused it. **The refusal text itself says: "If you genuinely need scratch space, the session scratchpad sits outside the repo and still passes."** It did not pass.
-
-**Why this is worth a line rather than a shrug.** The guard is correct in substance — the fix was to use the editing tools, which worked — so nothing was lost this time. What is wrong is that the message tells the session a route is available and the same hook then refuses that route, which is the cry-wolf shape this project has repealed measures for twice. A session that believes the message will retry into the same wall.
-
-**Two possibilities, and the item should not assume which.** Either the path check does not recognise the scratchpad directory at all, or it recognises it and the shell-write rule is deliberately unconditional — in which case the refusal text is what is wrong, not the behaviour. **Read the hook before designing anything**, since the whole defect is a mismatch between what the code does and what its own message claims.
-
-**Files (rough):** `plugin/throughliner/hooks/pre_tool_use.py` and `resources/testing/` for whichever half turns out to be wrong. Host-only in origin; shipped in effect, since every consumer meets the same message.
-
 #### The dispositions listing was run at a planning opening and never surfaced to the user [dispositions-listing-run-not-surfaced]
 Filed 2026-08-19 by Claude at its own close, as a testing outcome from using the plugin to build the plugin.
 
@@ -528,17 +1056,6 @@ Raised by you 2026-08-20 mid-run, immediately after approving the send that prom
 
 **Relates to [send-record-lacks-destination-and-intent]**, cleared to run in this same session, which gives every outbound artifact a line in `INBOX/sent.md` carrying destination, intent and what was claimed. That may already be the tracking this item is reaching for, in which case a send never needs to be a work item at all — which is worth checking before anything is designed here.
 
-#### The surviving parent-folder CLAUDE.md still calls this project v37 at plugin version 0.37.0 [parent-claude-md-version-claim-stale]
-Noticed by Claude 2026-08-20 while building [parent-claude-md-taskflow-no-write-stale], which corrected a path and added an exception in the same file and did not reach this.
-
-**What it says.** `Taskflow Planning/CLAUDE.md` line 5 describes `No code method/` as "currently v37, plugin version 0.37.0". The target is at 1.20.0 and the installed host at 1.20.0-test12, so the claim is wrong by a whole version line. It also still calls the project "the no-code method", which is the pre-rename name — the plugin became Throughliner on 2026-08-13, slug, package folder, marker files and positioning together.
-
-**Why it was not folded into the item that was in the file.** That item's described work was the path and the INBOX exception, both of which it named; a version claim is a different staleness with a different cause, and folding it in would have grown scope the item never described. Captured rather than done, so it gets weighed against the rest of the queue.
-
-**Whether it is worth fixing at all is the real question.** A version number written into a folder-orientation file is stale the day after it is written, and nothing keeps it current — the same shape as the version-versus-format-epoch reasoning already settled here, where a version check was rejected for crying wolf. The likely disposition is to remove the version claim rather than update it, leaving the sentence to say what the folder is without asserting what release it is on. The rename is a plain correction either way.
-
-**One folder up has the same class of fault**, recorded as [claude-config-points-at-dead-layout], and `Desktop/CLAUDE.md` is worth reading in the same pass since it enumerates projects and may name the same things by retired names.
-
 #### Audit this project's own claims against what Claude Code alone already delivers [claims-need-a-claude-code-delta-test]
 Filed 2026-08-20 at the close, from INBOX mail sent by the flintcraft.tech site project. Their finding, not ours, and it lands on this project's SPEC rather than on their page.
 
@@ -571,49 +1088,6 @@ Noticed by Claude 2026-08-20 at the close, from a question the user asked: she p
 
 **Recorded as answered in conversation and not otherwise.** The user changed course on being told, so this cost nothing here — which is exactly the siteless-noticing shape this project has recorded five times: it worked because Claude happened to say it, and it is not repeatable.
 
-#### The gate-line check fires on every rule-bearing commit at the moment it is made, because the hash it matches on has not been backfilled yet [rule-gate-dispositions-missing]
-Filed 2026-08-20 in the post-commit tail, under the slug `rule_signals.py` printed. **What it found is real; what it concluded is wrong, and both halves matter.**
-
-**What it reported.** After commit `b485ee3`, the check said 1 of 11 rule-bearing commits since the baseline carries no `Rule gate:` disposition in any LOG entry, naming that commit — the one just made.
-
-**Why that is a false positive.** `_log_dispositions` matches a commit's entries **by the hash in the entry's heading**, which is the position the backfill writes. A close writes its entries *before* the commit exists, so every heading reads `# [HASH] — …` at that moment. `session_start` fills them at the next session opening. So the check cannot see any disposition belonging to the commit it has just been run against.
-
-**The dispositions are there.** 23 of the 24 entries this close wrote carry a plain `Rule gate:` line; the twenty-fourth is the chat-level record, which is not an item and owes none.
-
-**Why this is worth fixing rather than tolerating.** `CLAUDE.md` requires this script to run at any close whose staged paths touch the rule-bearing set — which is precisely the set of closes that will trip this. So it fires at every rule-bearing close, always wrongly, and clears itself by the next session. That is the cry-wolf shape this project has repealed measures for twice, and it is worse than an ordinary false positive: it teaches the reader to discount the one check that guards the gate obligation.
-
-**It also mis-scores the growth signal in the same window**, since a session's own commit is the one whose rules just changed.
-
-**Options, none designed.** Skip the most recent commit when its entries still carry unfilled placeholders — cheapest, and it reads the same artifact the backfill does. Or match on filename as a fallback where the heading hash is a placeholder, which is looser and reintroduces the misattribution the heading-only rule was written to fix (an entry citing another commit used to donate its disposition to it). Or run the check before the commit rather than after, which changes what the close's step means.
-
-**One honest limit on this capture:** the check is doing exactly what it says it does, and the defect is in when `CLAUDE.md` tells it to run rather than in its matching logic. Whichever way it is fixed, the heading-only match should survive — it exists for a recorded misattribution.
-
-**Confirmed by observation later the same night, so this is no longer inference.** The session-start backfill ran and resolved every `[HASH]` placeholder in the 24 entries to `b485ee3`. Re-running the script immediately afterwards, with nothing else changed: `0 of 4 found something`, and the gate check reports all 11 rule-bearing commits carrying a disposition. The diagnosis and the fix are therefore both pinned — the window is exactly between a close and the next session's backfill.
-
-#### The queue digest reports a converging blocker chain as an unresolvable loop [digest-diamond-read-as-a-loop]
-Filed 2026-08-21 by Claude from INBOX mail sent by a consumer project running 1.20.0-test12. Their diagnosis, read against the code rather than taken on trust.
-
-**What they report.** `scripts/queue_digest.py`'s `_blocker_loop()` walks the blocker graph depth-first using a single `seen` set for the whole walk, and returns true as soon as it reaches a slug already in that set. A set shared across the entire walk records "visited", not "on the current path", so any diamond trips it: an item naming two blockers, where one of those blockers also names the other, reaches the shared ancestor twice by two different routes and is reported as a cycle. Nothing is circular and the chain terminates normally.
-
-**Their repro.** Item C is blocked by A and B; B is blocked by A; A is blocked by nothing. The digest reports C as sitting in a loop that comes back to itself, with nothing in the loop ever releasable.
-
-**Why the direction of the failure is the expensive one.** The message asserts the work can never be released, which invites moving a correctly placed item out of Processed — a fate decision taken on a false premise. And the function's own docstring makes the case against leaving it: a flag that fires on correct work gets learned past, and then a real one arrives looking exactly like the ones that are always there.
-
-**To settle at processing.** The suggested fix is to track the current path rather than every node visited, unwinding on the way back out. Read the function before designing anything — this item carries a claim about how the code behaves, not a fact.
-
-**Files (rough):** `plugin/throughliner/scripts/queue_digest.py` and `resources/testing/` for a diamond case. Shipped, not host-only: every consumer's digest runs this.
-
-#### The queue lint flags the two section preambles that /setup itself writes [lint-flags-its-own-scaffolding]
-Filed 2026-08-21 by Claude from INBOX mail sent by a consumer project running 1.20.0-test12, and **confirmed live here in the same session**: this project's own lint reports thirteen standing flags at every edit.
-
-**What they report.** The lint reports "prose belongs to no entry" for any text in a section with no `#### ` heading above it, warning that this is what a destroyed or overwritten item heading looks like. Both section preambles — the paragraph under `## Processed` and the one under `## Unprocessed` — are written by /setup from its own template and correctly have no heading. So the lint flags its own scaffolding, in every project, from the moment it is created.
-
-**Why they judge this the worst of the three defects they sent.** It is permanent rather than occasional. The hook reports the flags as "already present in the last commit and none introduced by this change", which is accurate and is exactly what makes them invisible — in their session the flags had survived unexamined across many commits. A block that always contains flags is a block nobody reads, which is where a genuine flag will land.
-
-**To settle at processing.** Whether the lint learns to recognise a section preamble, whether the scaffold stops writing one, or whether the flags are simply correct and the reporting is what should change. Read the lint before designing anything. **Worth checking in the same pass what the other eleven flags in this project actually are**, since nobody has looked.
-
-**Files (rough):** `plugin/throughliner/hooks/post_tool_use.py`, possibly `plugin/throughliner/docs/setup.md`, and `resources/testing/`. Shipped.
-
 #### The plugin-managed CLAUDE.md block promises it is kept current and never is [managed-claude-md-block-never-refreshed]
 Filed 2026-08-21 by Claude from INBOX mail sent by a consumer project running 1.20.0-test12.
 
@@ -630,23 +1104,6 @@ Filed 2026-08-21 by Claude from INBOX mail sent by a consumer project running 1.
 **To settle at processing.** Whether /setup gains a refresh path for the managed region, whether the marker's promise is rewritten to say what is actually true, or both. Relates to [claude-md-unwritable-by-the-skills-that-notice] and [spec-scaffold-describes-method-docs] — all three are content the method copies into a consumer document where the method can change and the copy cannot be reached.
 
 **Files (rough):** `plugin/throughliner/docs/setup.md`, `plugin/throughliner/templates/CLAUDE-TEMPLATE.md`. Shipped.
-
-#### The mailbox scan counts the operating system's own folder-icon file as waiting mail [inbox-scan-counts-os-metadata-files]
-Filed 2026-08-21 by Claude from INBOX mail sent by a private evidence-library project running 1.20.0-test12.
-
-**What they report.** Every session there opens with a notice that one message is waiting, directing the session to read it in full before its first reply. The file is `INBOX/desktop.ini`, which their cloud-drive client writes to set the folder's icon. It is not a message and never was.
-
-**The mechanism, which they read rather than guessed.** `hooks/session_start.py`, in `_waiting_inbox_messages()`, lists the INBOX folder and reports every entry that is a file, skipping only names beginning with a dot. That is why `.address-book.md` never appears and `desktop.ini` always does.
-
-**Why it cannot be fixed on their side.** Deleting it locally is unreliable — the drive client rewrites it. It is tracked in their git as well. Archiving it just moves it into `INBOX/archive/`, where the client writes a fresh one beside it.
-
-**Their suggested remedy:** skip the operating system's folder-metadata files in that scan — `desktop.ini` and `Thumbs.db` on Windows, `.DS_Store` on macOS already covered by the dot rule.
-
-**The cost is the part worth weighing, and it is theirs.** The nuisance is small; the shape is not. That opening notice is the method's guarantee that cross-project mail is not missed, and it carries a self-check insisting the session actually read what is waiting. A permanent false positive there trains sessions to discount the one signal that exists for real mail. They have paid the full reading twice. **This is the same family as [lint-flags-its-own-scaffolding]** — a check that always fires is a check nobody reads.
-
-**One thing to note at processing:** this project keeps its own projects in a synced Drive folder too, so it is a common setup rather than one project's bad luck.
-
-**Files (rough):** `plugin/throughliner/hooks/session_start.py` and `resources/testing/`. Shipped.
 
 #### Should /setup be able to start a project from a template, and what would the unit be [setup-from-a-template]
 Filed 2026-08-21 by Claude from INBOX mail sent by a project that has been running the method continuously for about two months. **It asks two questions and proposes nothing to build**, so what is captured is the question plus the evidence they attached to it.
@@ -683,19 +1140,6 @@ Filed 2026-08-21 by Claude from INBOX mail sent by a project that has been runni
 **Runs behind [rescan-does-not-hand-back]**, which fixes the one confirmed instance. Placement carries that and this sentence carries the reason: no `Blocked by:` is written, because this could be designed independently — it is only cheaper afterwards, since that build establishes what a corrected ending actually looks like.
 
 **Files (rough): not yet derivable, which is the point of not keeping it.** Likely `plugin/throughliner/docs/` across the procedure docs, and possibly nothing at all if the answer is that no signal exists. Shipped in effect: every consumer runs these docs. Relates to [plan-does-not-build-keeps-being-relitigated] and [standing-audit-programme], both of which record a doc's own wording teaching a later session the wrong thing.
-
-#### This project's CLAUDE.md describes work as batches in six places, reported by /setup and never written down [host-claude-md-names-retired-batches]
-Filed 2026-08-21 by Claude at a /rescan. **/setup's retired-terms step found these today and reported them in chat; the report is all that happened, and chat does not survive.**
-
-**What the step is for.** /setup reads a project's own CLAUDE.md for names of method pieces that no longer exist and reports each alongside its replacement, editing nothing — because the file is the user's. That worked. What it has no route to is a record: the finding lands in a message and stops there.
-
-**What it found, in this project's `CLAUDE.md`.** Six occurrences describing work as **batches**, a model retired in favour of one work item as a single `#### ` heading with a flavour tag and no sub-headings. The clearest are the scope-lock description ("the active batch's file list", around line 64), the cross-doc-reference rule (line 90), the FAQ-authoring rule (line 196), the hook-format ripple rule (line 238, "A new batch type touches four places"), and the SPEC rule at line 375, which says the spec-edit batch type is retired while itself calling a build "a normal build batch".
-
-**Why it is worth an item rather than a shrug.** This file is always-loaded: every session in this project reads it before doing anything. A session reading "the active batch's file list" is being told the scope-lock works on a structure that does not exist, and the corpus already records four instances of a correctly worded rule failing to fire — a wrongly worded one has less chance still.
-
-**One thing that is genuinely undecided, and it is yours.** /setup's step reports and never edits, deliberately. Whether these six get rewritten is a decision about your own file. Some may be deliberate historical references — line 375 explains a retirement and may need the old word to do it.
-
-**Files (rough):** `CLAUDE.md`. Host-only. **Relates to [claude-md-unwritable-by-the-skills-that-notice]**, which is the same wall from the other side: the skill that finds this is barred from fixing it. Also to [parent-claude-md-version-claim-stale] and [claude-config-points-at-dead-layout] — worth doing as one pass over this project's own configuration files.
 
 #### Four inbound messages changed work here and the rule to draft a reply fired for none of them [inbound-replies-not-drafted]
 Filed 2026-08-21 by Claude at a /rescan, **as a testing outcome from using the plugin to build the plugin.** The failure is Claude's own, in this session, and nobody noticed at the time.
@@ -862,61 +1306,6 @@ Relates to [build-wrote-its-own-gate-disposition] (the instance), [rule-admissio
 **Files (rough):** `plugin/throughliner/docs/done.md` — the freeform announce step. Possibly `templates/faq-template.md` with `FAQ/faq.md` and both index lines, since what the user *does* changes: today they work out how to start the session, and after this they paste a line. Shipped, not host-only: every consumer with a freeform item meets the same blank chat.
 
 Filed after this chat's close, in the post-commit tail, so it belongs to no committed session record until the next close picks it up.
-
-#### The build view's completeness test can never read equal in a project holding a cleared `[user]` or `[freeform]` item [build-view-completeness-test-unreachable]
-Filed 2026-08-21 by Claude, from running the test itself at the end of [convert-cleared-items-to-build-blocks].
-
-**What the checklist says.** `migrate-checklist.md`'s epoch-4 section closes with a check-it-landed step: run the generator and read its summary line, which prints how many cleared items it found and how many carried a block — *"Equal numbers mean the migration is complete."*
-
-**What the generator actually prints.** Against this queue, immediately after a conversion that left nothing undone: `20 cleared item(s), 17 with a build block`. The three without are the two `[user]` posts and the `[freeform]` item itself — which the same checklist, four lines above, says need no block at all. So the two halves of one section disagree, and the disagreement is not a judgment call: the excluded flavors are excluded by name.
-
-**Why it is worth fixing rather than remembering.** The test is the only mechanical confirmation the epoch-4 migration has. A migration that ran correctly reports as incomplete, and one that genuinely left items unconverted reports the same way, so the number distinguishes nothing in any project holding a cleared `[user]` or `[freeform]` item — which is most of them. A test that reads wrong on correct work is the cry-wolf shape this project has repealed measures for twice.
-
-**Two candidate fixes, and neither is settled here.** The generator could count only the flavors that need a block, so equal becomes reachable; or the checklist could state the test as the generator's numbers plus the count of cleared `[user]` and `[freeform]` items. The first changes shipped code and the second changes shipped prose, and which is right depends on whether that summary line has other readers — not checked.
-
-Relates to [convert-cleared-items-to-build-blocks], which ran the test, and to [setup-migration-gate-is-epoch-3-shaped], which repairs the recipe this section belongs to and may want to settle both at once.
-
-#### The mailbox scan reports the outbound send record as waiting mail, and the directive beside it says to archive the record [sent-record-surfaced-as-waiting-mail]
-Filed 2026-08-21 by Claude, from this session's own opening, which announced *"1 message waiting in this project's INBOX"* and named `INBOX/sent.md`.
-
-**The mechanism, read in the code rather than inferred.** `session_start.py`'s inbox scan lists every non-dot file directly inside `INBOX/`, skipping only directories — so it has no way to tell an inbound message from anything else living there. `INBOX/sent.md` lives there permanently by design: it is this project's own record of what it has sent, one line per outbound artifact, and [send-record-lacks-destination-and-intent] shipped it into that folder deliberately.
-
-**Why it is worse than a wrong count.** The surfacing text that rides with it instructs the session to route each message through the three-way triage and then **move the file to `INBOX/archive/` so it stops being surfaced.** Followed literally, that files the send record away — the one artifact a repeal is supposed to be checked against, and the thing [repeal-falsifies-a-posted-claim] is built to grep. A cleared region already holds an item whose whole premise is that `INBOX/sent.md` sits where it can be read.
-
-**It did not happen this session**, because the file was read and recognised for what it is. That is judgment covering for a mechanism, which is the class this project treats as a mandatory capture rather than a near-miss.
-
-**Shipped, not host-only.** Every consumer project that has ever sent anything has a `sent.md` in the same place, and gets the same false message at every session opening.
-
-**The fix is not settled.** Excluding the one filename is the obvious move and may be too narrow — the folder now holds at least one permanent artifact, so the question is whether the scan should key on a naming convention for mail rather than on a deny-list of everything else. Worth deciding once rather than each time something else is filed there.
-
-Relates to [send-record-lacks-destination-and-intent], which created the file, and to [repeal-falsifies-a-posted-claim], which depends on it staying readable.
-
-#### The build view drops `Runs alone`, so a run cannot see its own second bound [build-view-drops-runs-alone]
-
-`next.md` states two bounds on a run: the cleared-to-run line, and a `Runs alone`
-marker on an item, which ends the run before that item. It also states that a run
-reads the generated build view and never QUEUE.md.
-
-`generate_build_view.py` never emits `Runs alone` — the literal does not appear
-anywhere in the script. So the marker exists on the queue item and is invisible to
-the only file the run is allowed to read. A run following next.md as written would
-sweep straight past a `Runs alone` item and build it alongside other work, which is
-the exact failure the marker exists to prevent: the marked work moves file paths
-underneath a run holding stale paths in its scope-lock list.
-
-Found during a /next pre-flight on 2026-08-21, only because the run grepped
-QUEUE.md for the literal rather than trusting the view. [rename-docs-b-folder] is
-live in the cleared region carrying the marker right now, and the queue's own prose
-records that it was placed deliberately so the run would stop before it.
-
-The fix is one of two, to be weighed at a keep-step: emit the marker into each
-cleared item's build block, or emit it in the by-name listing. Related to
-[build-view-strips-the-gate-disposition] and
-[build-view-completeness-test-unreachable] — the same shape, a fact the run needs
-that the projection does not carry.
-
-Filed mid-run, before any build started; commit at filing time is the tip of main
-at `461c999`.
 
 #### SPEC owes a sentence: the close now records whether it filed a forward recommendation [spec-silent-on-advisory-disposition]
 
@@ -1199,42 +1588,6 @@ Filed 2026-08-21 by Claude at its own close. **The finding is the user's**: told
 
 **Files (rough):** `SPEC.md`. Relates to [claims-need-a-claude-code-delta-test] and to [brevity-instruction-for-the-5-series], which rests on the corrected claim.
 
-#### Both law-prose passes restyled sentence-leading prohibitions only, leaving roughly 150 mid-sentence ones unread [law-prose-pass-missed-mid-sentence-prohibitions]
-
-The wording standard says anything described in terms of what *not* to do means
-the rule of what TO do was never adequately described. Both restyle passes —
-[law-prose-restyle-heavy-docs] and [law-prose-restyle-remaining-docs], built
-2026-08-21 — found their targets by grepping for prohibitions that START a
-sentence or a bold lead-in. That found and fixed thirteen across thirteen files.
-
-A count taken at the end of the second pass puts the remainder at about 151
-occurrences of "don't", "never" and "do not" across the eleven non-heavy docs
-alone, concentrated in `next.md` (47), `setup.md` (26), `feedback-and-inbox.md`
-(20) and `done-plan.md` (18). The heavy docs were not counted the same way, so
-the true total is higher.
-
-**Most of that remainder is legitimate and must not be swept.** Three kinds:
-a typed-block contrast pair, where `write:` / `never:` is the established shape
-and is the clearest form available; an honest-limit statement, which the
-authoring rule's own carve-out protects by name — the test is whether the caveat
-argues against doing something or describes what the thing does; and prose
-describing what a mechanism does not cover, which is required rather than
-tolerated. What is left after those is the real target, and nobody has counted
-it.
-
-**Why this is its own item rather than a defect in the passes.** Applying the
-standard to a mid-sentence prohibition means reading the surrounding provision
-and deciding which of the three protected kinds it is — per occurrence, on
-judgment, with no mechanical test available. That is a different pass from a
-grep-and-restate, and it carries the risk both restyle items already name: a
-rewrite is the one thing that can silently author a rule by changing one.
-
-**What a build would need to settle first**, which is why this is a capture
-rather than a work item: whether the pass runs per file or per doc family, and
-what evidence it leaves that an occurrence was read and judged protected rather
-than missed. Without the second, a later count finds the same 150 and cannot
-tell which were considered.
-
 #### The rationale lens covered done.md whole and plan.md only in part, so plan.md's acceptance test is unmet [rationale-lens-plan-md-coverage-incomplete]
 
 [rationale-lens-after-the-build-view] required every paragraph of `done.md` and
@@ -1271,4 +1624,169 @@ has been through the test" is unfalsifiable from the artifacts, since a paragrap
 correctly judged operative and left alone looks identical to one never read.
 That is the same defect the required-artifact rules elsewhere in this project
 exist to fix, and it is arguably the more valuable half of this item.
+
+#### The close's cost scales with run size and nothing bounds it — a 17-item run wrote 15,000 words into the record [close-cost-scales-with-run-size]
+
+**Raised by you 2026-08-21**, immediately after the close of the seventeen-item run:
+that was the longest close you had ever seen, at over 30k tokens. Filed after that
+session's commit, so it belongs to no committed session record — the measurement below
+is Claude's, taken with the instrument built earlier the same day.
+
+**The measurement, and it points away from the obvious cause.** Chat output across that
+whole session was **3,843 words in 49 messages, median 20 words when speaking** —
+*below* the project's own baseline of 55, and far below /plan's 119. By the one thing
+this project measures about talking, the session was not verbose.
+
+**The cost was the record, not the talking.** The close wrote **19 LOG entries totalling
+13,758 words**, median 722 per entry, range 486–1,124, plus **1,452 words of index
+lines** across 26 lines. Roughly 15,200 words written into `LOG/` in one close.
+
+**So the brevity amendment shipped that morning is not what is at fault, and neither is
+any narration rule.** Those govern messages. The close's output is governed by
+`done.md`'s entry-writing step and the authoring standard, which are a different lever
+entirely. A fix aimed at narration would move none of this.
+
+**The structural driver, stated plainly.** `done.md` holds that one entry per built item
+is **unconditional**, however long the run. The readiness line bounds how much a run
+*builds*; nothing bounds what the close then *writes*. So close cost is linear in run
+size, and the queue's own throughput ambitions — clear more items per run — drive it
+directly. The bigger the run, the worse the close, with no ceiling anywhere and no
+session positioned to notice, because each entry looks reasonable on its own.
+
+**The depth field exists for exactly this and did not work.** `next.md` requires a
+`Depth: short` or `Depth: full` line per ticked item, written at the tick, precisely so
+the close does not treat every item as worth telling at length. That run marked 13 short
+and 4 full — and **the median "short" entry still ran about 700 words.** Nothing anywhere
+defines what short *means* in output terms, so the field recorded a judgment and changed
+nothing. That is the same defect this project has fixed twice elsewhere by requiring an
+artifact rather than a self-assessment, and here the artifact exists and carries no
+consequence.
+
+**What a build would need to settle, which is why this is a capture.** Whether the fix is
+(a) giving the depth field a definition with teeth, (b) letting a decision that settles
+several items write one entry with siblings citing it — which
+`[plan-entry-split-wording-disagrees]` just shipped for planning entries and which was
+NOT applied to build entries, (c) bounding what the close writes rather than what the run
+builds, or (d) accepting the cost and saying so. **Option (b) is the cheapest and is
+already half-built**, and its absence on the build side may simply be an oversight rather
+than a decision — that is the first thing to check.
+
+**Do not reach for a word count.** Caps are retired here on measured grounds, and the
+retirement is recorded in SPEC. The lever this project settled on is *where text lives*,
+which is exactly what option (b) is.
+
+**Relates to** `[plan-entry-split-wording-disagrees]` (shipped the sibling-citation
+clause for planning entries), `[rationale-lens-plan-md-coverage-incomplete]` and
+`[law-prose-pass-missed-mid-sentence-prohibitions]` (the same run's other captures), and
+`[brevity-amendment-outcome]` (the held audit — which should be told that chat output was
+already at median 20 in this session, so it must not read a close's size as evidence
+about narration).
+
+#### The rezip ritual names a verification but supplies no words for it, so Claude re-invents the prompt every time and got it wrong today [rezip-supplies-no-verification-prompt]
+
+**Raised by you 2026-08-21**, immediately after a rezip: you are tired of having to get
+Claude to redesign this prompt on every rezip, and want it supplied ready-made.
+
+**The gap.** `resources/release-ritual.md` step 9 says to prove the hooks are alive by
+asking a fresh session what the session-start hook actually reported to it, and explains
+correctly why that step exists — a hook that is well-formed, installed and silently
+dropped looks exactly like a working one from the source side, so only a session saying
+what it received distinguishes them. **It supplies no prompt.** So the words are composed
+fresh at every rezip, at the end of a long ritual, by whichever session is running.
+
+**The failure is today's instance, observed end to end.** Claude told you to check what
+the next session's opening line said. You relayed it as *"please tell me what its
+session-start line says"*. The fresh session replied that it was not sure what "its"
+pointed at — correctly, because it has no memory of the chat the instruction came from.
+The verification did not happen, and the only reason it was not simply skipped is that
+you came back and said so.
+
+**Why the fresh-composition is the defect rather than that one wording.** This prompt has
+an unusual authoring constraint: it is pasted into a session with **zero context**, so
+every referring word has to resolve inside the prompt itself. A prompt composed by a
+session that has been immersed in the work for hours is exactly the wrong author for that
+— pronouns that are obvious here resolve to nothing there. The method already knows this
+failure shape: it is the same reason `done.md` fixes the compaction caveat as a verbatim
+sentence rather than an instruction to explain the limit honestly, and records that
+inviting improvement is what went wrong.
+
+**What a build would supply**, sketched from the version that worked today rather than
+designed from scratch. A verbatim fenced block at step 9, plus two things around it:
+
+- **Where to paste it** — any project in the state that reproduces the bug: **version
+  marker stale, epoch current, nothing missing.** Name the state rather than a project.
+  Claude's first attempt at this said "a project that was actually exhibiting the
+  symptom, not this one", which was wrong twice over: it sent the user hunting for the
+  right project when the dev project was already in the reproducing state, and a project
+  picked that way may halt for a *legitimate* stale-epoch reason, which muddies the
+  result rather than confirming anything.
+- **How to read the answer** — which reply means the fix landed, which means a real and
+  correct halt, and which means the app did not fully restart. Without that the report
+  comes back and still needs interpreting.
+
+The four questions the working version asked: quote the `[Throughliner]` block verbatim;
+does it mention `/setup` and for which of the three reasons; does it tell you to stop or
+close what is running; what version and build stamp does it report. Plus one instruction
+that carries most of the value — **if the block did not arrive at all, say so plainly
+rather than reconstructing it from the project's files**, which is the one answer that
+distinguishes a delivered hook from a dropped one and is exactly what step 9 exists for.
+
+**Host-only, and it goes in `resources/release-ritual.md`.** Consumers never rezip, so
+this reaches no shipped doc.
+
+**One thing to settle at processing.** Whether the block is fixed text that must be pasted
+as written — the `done.md` compaction-caveat precedent, which exists because improving it
+is what broke it — or a template a session may adapt per rezip. The failure recorded above
+is an argument for the first, and the first is also cheaper.
+
+**The prompt was then run and it worked, so a build starts from something proven rather
+than from a sketch.** The reply came back as a straight paste of the whole
+`[Throughliner]` block, and that single instruction — quote it verbatim — answered all
+four questions on its own without the reader working through them one by one. So the
+verbatim quote is the load-bearing part and the four questions are the fallback for a
+session that paraphrases instead. **Design the block that way round.**
+
+**What the run confirmed, recorded because it is also the worked example a build can put
+in the ritual.** The dev project recorded `1.20.0-test13` against an installed
+`1.20.0-test14`, with epoch 4 against a declared 4 and nothing missing — exactly the
+state that produced the halt reported that morning. A fresh session opened in that state
+and its block mentioned `/setup` nowhere. That is what a passing result looks like, and
+it is worth showing rather than describing.
+
+**One piece of expected noise the ritual should warn about**, or the next reader files it
+as a finding: the returned block carries the INBOX line flagging `INBOX/sent.md`, which
+is the outbound register rather than waiting mail. Already known as
+`[sent-record-surfaced-as-waiting-mail]`. A verification step that returns a block
+containing a known false positive needs to say so, or it manufactures work.
+
+**Relates to** `[close-cost-scales-with-run-size]`,
+`[law-prose-pass-missed-mid-sentence-prohibitions]` and
+`[rationale-lens-plan-md-coverage-incomplete]`, all filed the same day. All four are the
+same family: **a step that names a check and leaves its artifact unspecified**, so
+whether it was really performed cannot be told afterwards. That family is worth processing
+together rather than four separate repairs.
+
+#### Heading word-order rule did not fire on a fresh capture, and the user could not find it in her outline [heading-rule-did-not-fire-on-a-fresh-capture]
+
+Filed 2026-08-21 by Claude at its own close, from an instance minutes earlier.
+
+A capture was filed with the heading "The brevity work went to narration…" into
+an outline where eleven consecutive headings already began with "The". The user
+scrolled the outline, could not find it, and had to ask for it by name. The
+shipped rule — put a heading's distinguishing words first, because the outline
+truncates mid-phrase — is always-loaded, was in context, and did not fire; the
+heading was corrected only after the user reported the failure.
+
+Joins the class this corpus records as correctly-worded rules with a stated site
+not firing (ninth instance). Per that record, stating it harder is not a
+candidate direction. What may be mechanical here where the others are not: a
+heading's first word is text a lint can read, and "starts with The/A/An" is
+checkable at zero judgment — though that catches only the article case, not a
+generically front-loaded heading, and the limit would need stating wherever it
+reports.
+
+**Files (rough):** `plugin/throughliner/hooks/post_tool_use.py` and
+`resources/testing/` if the lint arm is taken; nothing if judged below the bar —
+one instance, which the gate treats as insufficient for a rule, though this
+would be a lint check rather than a rule.
 

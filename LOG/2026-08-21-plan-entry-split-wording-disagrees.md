@@ -1,4 +1,4 @@
-# [HASH] — The sibling-citation clause lands, and the item's repeal half turns out to have been a no-op against both files it named
+# cc33c1e — The sibling-citation clause lands, and the item's repeal half turns out to have been a no-op against both files it named
 
 **Why this was worth doing.** Filed at a close that had to choose between two live
 statements. `skill-nonspecific-rules.md` says a plan entry "splits per item processed",
