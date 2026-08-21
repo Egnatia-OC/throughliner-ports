@@ -1,4 +1,4 @@
-# [HASH] — The dead `.claude/launch.json` deleted and 52 stale allow-entries removed
+# 7bc2c58 — The dead `.claude/launch.json` deleted and 52 stale allow-entries removed
 
 `launch.json` held one configuration serving `sovereign-implementer/crash-course`, a directory that has not existed for months. Nothing here to repoint, so it is deleted rather than fixed.
 

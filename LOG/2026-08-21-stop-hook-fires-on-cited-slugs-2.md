@@ -1,4 +1,4 @@
-# [HASH] — The filing-claim hook now reads LOG/ before blocking, so a citation of shipped work passes
+# 7bc2c58 — The filing-claim hook now reads LOG/ before blocking, so a citation of shipped work passes
 
 The hook blocks when a message names a slug that is not a `#### ` heading in QUEUE.md. A built item leaves the queue, so from the queue alone a citation of finished work and a report of a write that never happened look identical. Five recorded instances, every one a session correctly citing its own completed work.
 

@@ -1,4 +1,4 @@
-# [HASH] — Both parent-folder CLAUDE.md files corrected: no version claim, and the rename applied
+# 7bc2c58 — Both parent-folder CLAUDE.md files corrected: no version claim, and the rename applied
 
 The Taskflow Planning folder's CLAUDE.md described this project as "currently v37, plugin version 0.37.0" — a number nothing maintains, read at the start of every session opened at that folder. The sentence now describes the folder without asserting a release.
 

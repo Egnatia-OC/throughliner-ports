@@ -1,4 +1,4 @@
-# [HASH] — plan.md's 68 prohibitions restyled or classified, with the ~150 figure re-counted before use
+# 7bc2c58 — plan.md's 68 prohibitions restyled or classified, with the ~150 figure re-counted before use
 
 The build half; the planning entry of the same date carries why the item was kept.
 

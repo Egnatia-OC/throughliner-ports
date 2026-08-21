@@ -1,4 +1,4 @@
-# [HASH] — The shell-write guard reads `r'...'` as the literal path it is
+# 7bc2c58 — The shell-write guard reads `r'...'` as the literal path it is
 
 Reproducing the report showed the disagreement is not in the path check at all. `open(r'C:\...', 'w')` — the ordinary way to write a Windows path in Python — was unreadable to the literal extractor and read as *computed* by `has_computed_write_target`. So a scratchpad path spelled out in full was denied by a message that promises a literal scratchpad path passes. On this machine that fires constantly.
 

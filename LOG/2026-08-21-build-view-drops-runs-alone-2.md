@@ -1,4 +1,4 @@
-# [HASH] — The build view now emits `Runs alone`, so a run can see its own second bound
+# 7bc2c58 — The build view now emits `Runs alone`, so a run can see its own second bound
 
 A run reads the generated view and never QUEUE.md. `Runs alone` sits outside the `--- Build block ---` delimiters, so the projection dropped it — and /next reads that literal to decide where a run stops. The bound existed in the queue and was invisible to the only thing that acts on it.
 

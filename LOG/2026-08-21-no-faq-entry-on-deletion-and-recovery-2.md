@@ -1,4 +1,4 @@
-# [HASH] — FAQ answers what happens when something is deleted from the queue
+# 7bc2c58 — FAQ answers what happens when something is deleted from the queue
 
 A user had no answer to the most reasonable worry the method produces: Claude just removed an item from my queue — is it gone?
 

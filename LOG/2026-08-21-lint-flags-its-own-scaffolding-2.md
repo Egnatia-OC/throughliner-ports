@@ -1,4 +1,4 @@
-# [HASH] — The migration now quotes a plain-prose section preamble, and this project turned out to have nothing to fix
+# 7bc2c58 — The migration now quotes a plain-prose section preamble, and this project turned out to have nothing to fix
 
 The item's premise was that this project carries thirteen standing lint flags. Checked first, as the item asked, and it is no longer true: the lint reports **zero** here, because this project's preamble sits above `## Processed` rather than inside it. So the local half was moot and only the shipped half was built.
 

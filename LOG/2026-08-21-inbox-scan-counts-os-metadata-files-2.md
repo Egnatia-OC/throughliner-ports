@@ -1,4 +1,4 @@
-# [HASH] — The mailbox scan stops counting OS metadata and the outbound register as waiting mail
+# 7bc2c58 — The mailbox scan stops counting OS metadata and the outbound register as waiting mail
 
 `_waiting_inbox_messages` listed every non-dot file directly inside `INBOX/`, so it had no way to tell an inbound message from anything else living there. A consumer project's `desktop.ini` was announced as waiting mail at every session opening; this project's own opening named `INBOX/sent.md` the same way, including the opening that filed the item.
 

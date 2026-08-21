@@ -1,4 +1,4 @@
-# [HASH] — The provenance split gains the test that asserts what it is for
+# 7bc2c58 — The provenance split gains the test that asserts what it is for
 
 The queue lint flags a QUOTE claim ("your words", "in her own words") showing no quoted text, and deliberately never flags an ORIGIN claim ("captured by you"). Every test covered the flagging side; nothing asserted the not-flagging side, which is the whole of the split.
 

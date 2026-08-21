@@ -1,4 +1,4 @@
-# [HASH] — The queue digest's loop check now tracks the current path, so a converging blocker chain stops reading as a cycle
+# 7bc2c58 — The queue digest's loop check now tracks the current path, so a converging blocker chain stops reading as a cycle
 
 `_blocker_loop` walked the blocker graph depth-first while tracking every node it had *visited*. Where C waits on both A and B and B also waits on A, A is reached twice by two different routes, and the second arrival is indistinguishable from a cycle. Nothing in that shape fails to release — A ships, then B, then C — and it is an ordinary way to say "these three land in this order".
 

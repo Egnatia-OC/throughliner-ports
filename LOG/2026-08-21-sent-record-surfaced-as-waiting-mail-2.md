@@ -1,4 +1,4 @@
-# [HASH] — The archive directive now names the outbound register as the thing it must not archive
+# 7bc2c58 — The archive directive now names the outbound register as the thing it must not archive
 
 The doc half of the same defect. The scan exclusion stops `INBOX/sent.md` being *counted*; this stops a session that reads the surfacing directive from *acting* on it.
 

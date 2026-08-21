@@ -1,4 +1,4 @@
-# [HASH] — Six "batch" descriptions in this project's CLAUDE.md rewritten to the work-item model
+# 7bc2c58 — Six "batch" descriptions in this project's CLAUDE.md rewritten to the work-item model
 
 `/setup` reported these and nobody wrote them down. The queue stopped being a queue of batches when the two-section work-line model merged to main, so every rule describing "the active batch's file list" or "a new batch type" was describing machinery that no longer exists — read at the start of every session in this project.
 

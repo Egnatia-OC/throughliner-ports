@@ -1,4 +1,4 @@
-# [HASH] — The no-length-caps position repealed and replaced with a per-shape bound derived from the project's own measured median
+# 7bc2c58 — The no-length-caps position repealed and replaced with a per-shape bound derived from the project's own measured median
 
 The build half of [cut-length-everywhere]; the planning entry of the same date carries the decision to repeal.
 

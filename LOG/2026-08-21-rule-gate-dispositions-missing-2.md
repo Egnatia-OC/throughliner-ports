@@ -1,4 +1,4 @@
-# [HASH] — The gate-line check skips the freshest commit while a hash backfill is outstanding
+# 7bc2c58 — The gate-line check skips the freshest commit while a hash backfill is outstanding
 
 `BORN` matches a commit to its disposition by the hash in a LOG entry's heading. An entry is written before its commit exists, so the heading carries a `[HASH]` placeholder until the next session start backfills it. Run immediately after a close — which is exactly when the close's own step runs it — the check therefore reported the commit just made as carrying no disposition, every single time. The dispositions were there and simply could not be matched yet.
 

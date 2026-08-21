@@ -1,4 +1,4 @@
-# [HASH] — The build view's completeness test counts only block-needing items, so equal is reachable
+# 7bc2c58 — The build view's completeness test counts only block-needing items, so equal is reachable
 
 The generator's summary printed how many cleared items it found and how many carried a build block, and the epoch-4 migration test reads equal numbers as "migration complete". `[user]` and `[freeform]` items are cleared and neither is built from a block, so any project holding one could never read equal — and a number that can never match distinguishes nothing at the moment it is read.
 
