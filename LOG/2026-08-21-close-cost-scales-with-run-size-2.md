@@ -1,4 +1,4 @@
-# [HASH] — One entry per built item is now unconditional in count, not content, and names the sibling-citation route
+# 15e10c9 — One entry per built item is now unconditional in count, not content, and names the sibling-citation route
 
 Build entry; the planning record is `2026-08-21-close-cost-scales-with-run-size.md`. Raised by the user after a 17-item run wrote ~15,000 words into the record: close cost is linear in run size and nothing bounds it. The measurement pointed away from narration (chat median was 20 words, below baseline) and at the entry-writing step. Kept on option (b): the sibling-citation clause already shipped flavour-neutrally in done.md; what was missing was that done-build.md never pointed at it and its "unconditional" sentence read as forbidding grouping.
 

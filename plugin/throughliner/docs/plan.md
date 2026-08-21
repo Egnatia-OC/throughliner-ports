@@ -116,13 +116,10 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
   state, no parking.
 - **When placing an item into Processed — at the keep-step, or when lifting one
   from below the line — keep `[user]` and `[audit]` lines end-preferred, as
-  done-plan.md's reorder step requires.** Both of /plan's insertion points were
-  blind to that rule, which is kept for one reason: batching the stops that need
-  a human is what lets an otherwise unattended run stay unattended. A `[user]`
-  line landing mid-region gives a run that stops for the user in the middle. The
-  close repairs it, but /next runs before /done, so an item placed at a /plan
-  opening and built the same day is built in the wrong order and the repair
-  arrives after the run it would have helped.
+  done-plan.md's reorder step requires.** Batching the stops that need a human
+  is what lets an otherwise unattended run stay unattended, and /next runs
+  before /done, so the close's repair arrives after the run it would have
+  helped.
 - **A user-credit stays on the item after processing** — see the provenance rule
   in skill-nonspecific-rules.md for what earns one.
 - **Who does the work, and how.** Work is Claude's to build by default, and the
@@ -164,10 +161,6 @@ Runs alone
   run bound and stops there; the marker binds /next and nothing else, so it does
   not stop the work being done alongside other work by hand.
 
-  **The marker's original justification — that a half-landed rename cannot be
-  recovered — was tested on 2026-08-14 and refuted. The justification that
-  stands is the run-in-flight hazard above.**
-
   This is not `[freeform]`. `[freeform]` marks work /next must **not** build;
   `Runs alone` marks work /next **should** build, on its own.
 
@@ -177,10 +170,6 @@ Runs alone
 **Run the queue digest, then read QUEUE.md whole, then read SPEC.md.** Both, in
 that order — the digest for the facts only a script can compute, then the file
 for the reasoning it deliberately omits.
-
-**Why both.** The digest computes what reading cannot — how long an item has been
-held, where a blocker sits, which files two items share, whether a premise cites
-shipped work. The read gives the prose the digest omits.
 
 ```
 python <plugin-root>/scripts/queue_digest.py <QUEUE.md path>
@@ -230,9 +219,7 @@ the order.**
 can often be settled together.
 
 **Name the held work in the opening narration: each held item, what it waits on,
-and how long it has been held.** Not a count. A count is already reported at
-every session start and reads as background — four items were reported held while
-a chain sat stuck for a day, and neither the user nor Claude noticed. "Held since
+and how long it has been held — not a count.** "Held since
 the 14th, waiting on you" is what a reader acts on. The digest supplies all three
 fields per item, including the held-since date; where that date could not be
 attributed the digest prints none, and the narration says the item is held
@@ -360,9 +347,7 @@ its stated triggers.
 **Do this before the opening below**, so anything a message produces is ordinary
 Unprocessed work by the time the session skims and orders. Once a message is
 opened its contents are ordinary captures and rank by the existing ladder;
-**mail gets no priority rung of its own.** The step that was missing is the
-opening, not the ranking — a rung would have had to say how an unread message
-competes with designed work before anyone knows what is in it.
+**mail gets no priority rung of its own.**
 
 Any session may open mail whenever the user asks; opening and routing is filing,
 which every session may do. What /plan adds is the guarantee.
@@ -517,9 +502,6 @@ obviously droppable this beat doesn't fire at all — say nothing and go to beat
 > "Two look droppable — 1. **[old-slug]**: its premise is gone, the feature it
 > targeted was cut. 2. **[dupe-slug]**: duplicates **[other-slug]**. Drop both, or
 > name any to keep?"
-
-Dropping comes first because there is no point ordering items that are about to be
-deleted, and what gets dropped changes what is left to order.
 
 **Beat 2 — the ordering ask** [PROMPT]. One question, with the default named:
 **"Anything you want to prioritise, or shall I work through them
@@ -680,8 +662,7 @@ questions, stated once at that revisit.
 
 **And say it out loud, always.** The floor narration fires every session,
 including when the derivation lands on zero. A floor that is computed and never
-spoken is indistinguishable from one that was never computed — which is what
-happened before the facts existed: a floor was invented at six and never said.
+spoken is indistinguishable from one that was never computed.
 
 Word it as a recommendation, not a cap: "Ordered to process the biggest
 unblockers first — three items are holding other work up, so I'd recommend
@@ -693,14 +674,9 @@ these one at a time; say skip, stop, or run /done whenever."* This is the only p
 they are recited. The per-item checkpoint then presents just the next item.
 
 **Re-check the rung at every pick, and narrate in one clause only when it has
-changed.** The opening names the rung the order came from; nothing used to cover
-a change once processing was under way. A session once opened on one rung,
-exhausted the work that rung selected about ten items later, moved to another
-with no narration at all, and the user had to ask outright what order was in
-force. A rung can still change mid-session — a red flag arrives, the item holding
+changed.** A rung can change mid-session — a red flag arrives, the item holding
 everything up gets processed, or the long-and-old group empties into rung 4 —
-even though the bottom rung no longer
-runs out.
+even though the bottom rung no longer runs out.
 
 **A rung can become live again rather than only run out, so re-check reads in
 both directions.** Filing a blocker into Unprocessed is the move that does it: a
@@ -733,8 +709,6 @@ every item after  ->  it was already sent at the prior item's checkpoint, so
 Where the answer is something outside what you can read — a current version,
 whether a feature exists, what a tool actually does — offer the search or run
 the command, here, with the user present. Where it is a choice they own, ask.
-
-This is a forced site for a question that otherwise floats free.
 
 **There is no separate "ready to dig into this one?" turn.** Presenting the item
 and beginning to work it is one beat. The one wait that stays is the [PROMPT] at
@@ -956,9 +930,6 @@ it.** The tool is the build; reading its output is the audit. Ordering works by
 placement and needs no `Blocked by:` line, because a dev tool run directly is
 live the moment it is written — one run can build the tool and then use it.
 
-Nothing detects the absence of a step that never existed, so the filing is what
-has to be required.
-
 Stop and wait. The user decides.
 
 **Fold the recommend into the action when the user already agreed** during the
@@ -1068,9 +1039,7 @@ before `--move`, which `--move-section` does not.
 **`--position BOTTOM` with `--marker-after` sweeps the held region, whenever one
 exists.** `BOTTOM` means the bottom of the whole Processed section, which is
 *below* the held items — so the marker follows the item down there and every
-held item lands above it, cleared. It happened: four held posts became cleared
-silently, caught only afterwards by the queue lint. The hazard grows with the
-held region.
+held item lands above it, cleared. The hazard grows with the held region.
 
 ```
 held region EMPTY      ->  --position BOTTOM --marker-after <slug> is safe
@@ -1113,9 +1082,7 @@ Re-run the digest afterwards either way.
 *Split out a buried user-only prerequisite before keeping.* Scan the item's
 rationale for a gating action that is both user-only and gates this or other work.
 When found buried in prose, split it into its own `[user]` line with its own slug
-and reference that slug from the original. A gating action left embedded is
-invisible as next-work — its next-ness survives only in the memory of whoever read
-the prose.
+and reference that slug from the original.
 
 *Where the item's walkthrough is authored here, confirm the step can
 actually produce the observation the item names* — where running the command is

@@ -1,4 +1,4 @@
-# [HASH] — The composite keep-step written out and judged clause by clause: the accretion is volume, not mis-siting
+# 15e10c9 — The composite keep-step written out and judged clause by clause: the accretion is volume, not mis-siting
 
 Audit entry; the planning record is `2026-08-21-keep-step-accretes-from-five-items.md`. The keep-step was read whole (plan.md's recommend sub-step plus the SPEC question and the [user]-authoring rules) and written out as fifteen clauses, each judged for site:
 

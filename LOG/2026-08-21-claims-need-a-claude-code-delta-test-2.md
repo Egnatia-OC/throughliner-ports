@@ -1,4 +1,4 @@
-# [HASH] — The delta test run over SPEC, README and the sent record: no claim claims Claude Code's work outright, two premises are stale
+# 15e10c9 — The delta test run over SPEC, README and the sent record: no claim claims Claude Code's work outright, two premises are stale
 
 Audit entry; the planning record is `2026-08-21-claims-need-a-claude-code-delta-test.md`. Two lenses over every claim: does bare Claude Code deliver it, and is it contradicted for the 5-series by the live model research.
 

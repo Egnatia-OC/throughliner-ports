@@ -15,7 +15,7 @@ You are setting up a project folder with the Throughliner method.
 
 **This doc carries no response-shape tags** (the bracketed `[BRIEF]`-style
 markers other procedure docs use); the prose in each step carries the behaviour
-directly instead. **Don't add tags back.** /setup runs on two kinds of session: a
+directly instead. **It stays tag-free.** /setup runs on two kinds of session: a
 fresh adoption, where the rules defining those tags are not loaded, and a
 migration or top-up inside an already-adopted project, where they are. One text
 cannot carry markers that mean something on one run and nothing on the other.
@@ -24,11 +24,7 @@ cannot carry markers that mean something on one run and nothing on the other.
 who may be brand new to all of this. Keep internal terms out of what they see — no
 hook filenames, no working-file names, no "scope-lock," "method docs," or "Case B"
 labels. Say "your project's files," not "method docs"; say "I'll set this up as a
-migration," not "this is Case B." It is stated here unconditionally because a
-fresh adoption has no always-loaded rules at all, and that is the run where a
-brand-new non-coder meets this for the first time. On a migration or top-up run
-the same guard is already loaded; the duplication is deliberate, since a guard
-that first has to work out which run it is on is worse than a guard stated twice.
+migration," not "this is Case B."
 
 ## Step 0: Is a build running right now?
 
@@ -45,10 +41,7 @@ it would fail partway, file by file, leaving the setup half-finished. So:
 > runs would leave things half-changed. Finish it, or run /done to close it, and
 > then start me again — I'll pick up from there.
 
-Then stop. Don't begin the scaffolding, don't ask whether to continue anyway, and
-don't try to work around the refusal. Making /setup runnable during a build would
-mean the safety check yielding to the one command that changes the most files,
-which is that guard's whole purpose inverted.
+Then stop there — no scaffolding, no continue-anyway question, no workaround.
 
 **A planning session is different — it is not refused.** There is no build file
 there, and /setup's own marker (Step 0.5 below) is what lets its writes through:
@@ -76,9 +69,7 @@ It is what tells the safety check that this session is a setup run rather than a
 planning one. Without it, every write /setup makes outside QUEUE.md, SPEC.md,
 LOG/ and FAQ/ is refused: the version marker, the format-epoch marker, the
 `.gitignore` lines, the managed block in CLAUDE.md, and any scaffold file the
-run finds missing. Fresh adoption and the queue conversion still work, which is
-what made the failure invisible until a migration in an already-adopted project
-hit it.
+run finds missing.
 
 The scratchpad is used because it is writable in every session type — so the
 marker can always be created — and because it clears itself, so a run that dies
@@ -108,8 +99,8 @@ version missing or outdated      ->  Step 2C (migration scaffolding)
 ## Case B: pre-existing content rules
 
 **1. Peek before Q1.** Read the pre-existing content before the first interview
-question, and use what you learn to *frame* that question — never to *pre-answer*
-it.
+question, and use what you learn to *frame* that question rather than to
+*pre-answer* it.
 
 ```
 a clarifier INVITES the user's own answer:
@@ -135,13 +126,13 @@ source's shape wholesale.
 
 - **State SPEC's purpose first.** Before mapping anything, say plainly what SPEC.md
   is for: product truth — what the app is, who it's for, how it works, why it
-  exists. **It is not a UX spec or an implementation manual.** Map the source into
-  that frame; don't let the source decide what SPEC becomes.
-- **Check role-fit before renaming — never blind-rename.** A source doc and the SI
+  exists. **It is not a UX spec or an implementation manual.** Map the source
+  into that frame, with SPEC's purpose deciding the shape rather than the source.
+- **Check role-fit before renaming.** A source doc and the SI
   doc it seems to map to may not cover the same ground: the old one might be
   broader (a UX doc walking every screen) or narrower. If the roles don't match,
-  say so plainly and let the user decide how to split or combine — don't silently
-  rename one into the other.
+  say so plainly and let the user decide how to split or combine rather than
+  silently renaming one into the other.
 - **Scrub the source's self-description from the content.** Renaming the file isn't
   enough — the old framing hides inside the text. A line like "this describes every
   functionality and UI element as the user experiences it" silently re-mandates the
@@ -178,18 +169,13 @@ no marker file
             whole checklist from the beginning
 ```
 
-**Read the epoch from the marker rather than inferring it from the documents.**
-Inspecting a project's files to guess which shape they are in guesses about
-files users legitimately hand-edit, and it is rejected for that reason wherever
-this comes up.
+**Read the epoch from the marker rather than inferring it from the documents** —
+inferring guesses about files users legitimately hand-edit.
 
 Showing each conversion before writing it is the general write-first test
 applied, not an exception to it: a project being adopted or migrated may not be
 a committed git repo, so its old documents may not be recoverable once
-overwritten. The checklist states the reasoning where it is used.
-
-The queue is the one project doc that reliably falls behind as the method
-evolves; the checklist encodes judgment a find-and-replace can't make.
+overwritten.
 
 **1b. Reconcile the settings attached to the scaffold list.** Step 1 restores
 missing *files*. It does not re-run the *decisions* attached to them, so a
@@ -201,18 +187,14 @@ INBOX/ present          ->  `.gitignore` carries an `INBOX/` line
 .gitignore present      ->  it carries a `.throughliner/` line
 ```
 
-Both are "exists → skip" cases under Step 1, which is exactly how they get
-missed: an existing `.gitignore` counts as present however little it contains.
-
 **Where the project has INBOX files already in git history, say so plainly.**
 Adding an ignore line stops future commits; it does not untrack what is already
 committed, and it cannot remove anything from history. Tell the user what is
-there and that the line does not undo it. Don't write the line and leave the
-impression the mail is now private.
+there and that the line does not undo it — the line goes in only alongside that
+plain statement, so nobody is left thinking the mail is now private.
 
 **2. Retire REGISTRY.md if present.** No longer one of the method's docs, but
-**don't delete it on sight** — the user may have written real notes there. Read it
-first.
+**read it before deleting** — the user may have written real notes there.
 
 ```
 holds ONLY what the old setup put there
@@ -232,11 +214,8 @@ QUEUE.md is ordinary prose, prefix each of its lines with `> ` so it becomes a
 blockquote. Leave the wording alone — this changes the shape, not the text.
 
 The queue lint reads any un-quoted, un-headed prose inside a section as an
-orphaned rationale and warns that an item's heading may have been overwritten. A
-preamble legitimately has no heading, so a project scaffolded before 2026-08-15
-— when the scaffold started shipping these as blockquotes — carries two standing
-warnings from the moment it was created, on text /setup wrote itself. Both fire
-at every queue edit, which is what teaches a user to read past the lint.
+orphaned rationale and warns that an item's heading may have been overwritten —
+and a preamble legitimately has no heading.
 
 ```
 preamble is already a blockquote  ->  nothing to do
@@ -275,18 +254,12 @@ user skipped the conversion    ->  leave the marker at its old value, and say
                                    session because the conversion is still owed
 ```
 
-The skip branch is not a punishment — it is the marker telling the truth. A
-marker written ahead of the conversion it certifies is the one state nothing can
-ever detect or repair.
-
 **3b. Read the project's own CLAUDE.md for retired terms, and report what you
 find**  [SILENT] when clean; [BRIEF] when reporting.
 
 A project's CLAUDE.md was written when it was set up and is read at the start of
-every session since. Where it describes a piece of the method that has since been
-retired, every session reads that description as current — one went looking for a
-section that no longer exists and had to establish from the shipped docs that it
-was gone.
+every session since; where it describes a piece of the method that has since
+been retired, every session reads that description as current.
 
 Search the file for each retired term the method carries, and for each hit say
 plainly what the term was and what replaced it.
@@ -329,7 +302,7 @@ no markers found       ->  report it like a retired term (3b): say the managed
                            block is missing and what it is, edit nothing
 ```
 
-This is the one deliberate exception to the never-overwrite rule below: the
+This is the one deliberate exception to the add-only rule below: the
 block's own marker promises it is updated on /setup, and the method-owned text
 between the markers is exactly what goes stale as the method evolves — a stale
 queue model there is read as current at the start of every session. The move-
@@ -350,15 +323,16 @@ otherwise                        ->  tell the user what was created or updated
                                      and recommend /done
 ```
 
-**Do NOT overwrite existing files.** The goal is to add what a newer plugin version
-introduced, not to refresh content. The one carve-out is the plugin-managed block
-in CLAUDE.md (3c), which is method-owned text the marker promises is kept current
-— and even there, user-authored lines are moved, never deleted.
+**Add only — existing files stay as they are.** The goal is to add what a newer
+plugin version introduced, not to refresh content. The one carve-out is the
+plugin-managed block in CLAUDE.md (3c), which is method-owned text the marker
+promises is kept current — and even there, user-authored lines are moved rather
+than deleted.
 
 ## Step 2: Scaffold the docs
 
-Create these files (empty structure; content comes from the interview). **Don't
-narrate each file as it's created** — the Step 4 close-out reports the full list.
+Create these files (empty structure; content comes from the interview),
+**silently** — the Step 4 close-out reports the full list.
 
 **SPEC.md:**
 
@@ -449,14 +423,10 @@ Add `INBOX/` to `.gitignore`, and say so in one line — that mail from other
 projects stays out of the repository, and they can remove the line if they want it
 committed. No question is asked.
 
-Why it isn't asked: a message another project sends carries that project's content
-into this one, and anything committed is published. A read message is *moved to
-`INBOX/archive/`*, not deleted, so a mailbox that isn't ignored accumulates
-another project's raw text in the repository forever — long after its useful
-content has been carried into this project's queue in this project's own words.
-Anything worth keeping leaves the mailbox by being processed, so the mailbox
-itself is leftover comms. The safe outcome must not depend on a question being
-asked, because a question is skippable.
+Why it isn't asked: anything committed is published, an un-ignored mailbox
+accumulates another project's raw text in the repository forever, and the safe
+outcome must not depend on a question being asked, because a question is
+skippable.
 
 **CLAUDE.md:**
 
@@ -482,21 +452,21 @@ compares the two and halts the session when the project is behind, so a project
 on an old shape finds out instead of quietly running on stale scaffolding.
 
 **.gitignore** — create it if absent, and make sure it carries an entry for
-`.throughliner/` (don't duplicate one already there).
+`.throughliner/`, added only where one is missing.
 
 That folder holds the editing-state signal: while Claude is writing a file, the
 hooks drop a small file in there saying so, so a Markdown reader or editor open
 on the same document can hold off rather than the two of you typing over each
-other. It is transient state about the session running right now, so it must
-never be committed.
+other. It is transient state about the session running right now, so it stays
+out of the repository.
 
 **Git repository** — if the folder isn't already one, run `git init`, silently and
 mechanically like the rest of the scaffold. Without a repository there is nothing
 for the close-out to commit to.
 
 **Keep-private option**  [BRIEF, PROMPT]. Offer once, as part of scaffolding, to
-add the project's Throughliner documents to `.gitignore` so they never enter the
-repository at all — **and offer the three separately, so any combination of them
+add the project's Throughliner documents to `.gitignore` so they stay out of the
+repository entirely — **and offer the three separately, so any combination of them
 is reachable:**
 
 ```
@@ -604,8 +574,8 @@ scaffold.
 **The framing throughout is "adopt the folder":** the method is being applied to
 their project, not their project reorganised to suit the method.
 
-**Ask one question per message and stop after each.** Never bundle two questions
-into one message, even short ones.
+**Ask one question per message and stop after each, however short the questions
+are** — two in one message is bundling.
 
 - **Use the user's own language.** Ask in their words and record their answers in
   their words, rather than rephrasing into the method's vocabulary.
@@ -614,8 +584,8 @@ into one message, even short ones.
 - **Read each answer, then reason about what's still unclear** before choosing the
   next question. Walk the design one branch at a time. The next question is
   generated from what's missing, not from a fixed position in a script.
-- **Recommend an answer to each question.** Don't ask cold — offer a plausible
-  answer the user can accept, correct, or replace ("My guess is this is for
+- **Recommend an answer to each question** rather than asking cold — offer a
+  plausible answer the user can accept, correct, or replace ("My guess is this is for
   personal use rather than a team — is that right?"). A non-coder finds it far
   easier to react to a proposal than to fill a blank.
 - **Cover these topics** — a bank to draw on, not a checklist to recite:
@@ -639,8 +609,8 @@ anything else worth knowing
 
 **The stopping rule (the anti-overwhelm guard).** Keep probing only until the
 answers bottom out into something concrete enough to build from — you're done when
-the Whys are answered, not when every branch is exhausted. **Don't turn discovery
-into an interrogation.** Tell the user plainly, early on, that they can end it any
+the Whys are answered, not when every branch is exhausted.
+Tell the user plainly, early on, that they can end it any
 time by saying **"build from what we have"**, at which point you stop asking and
 write the docs from whatever's been gathered.
 
@@ -661,12 +631,9 @@ whether INBOX messages were committed — was dropped in favour of ignoring
 `INBOX/` on both paths, because the safe outcome must not depend on a question
 being asked. Discovery ends where it ends; there is no settings round after it.
 
-The editor and working-mode questions that used to sit here are **gone**. Neither
-was doing a job: the desktop app opens `.md` in its own viewer whatever editor is
-named, and the location question measured how much text the user wanted pasted
-rather than where they were sitting. Both are replaced by one default — point at
-the doc — plus a one-line offer in the session's opening narration to paste text
-inline instead.
+The editor and working-mode questions that used to sit here are **gone**,
+replaced by one default — point at the doc — plus a one-line offer in the
+session's opening narration to paste text inline instead.
 
 ## Step 4: Write the docs
 

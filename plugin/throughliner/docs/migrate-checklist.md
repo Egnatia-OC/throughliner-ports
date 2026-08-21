@@ -106,8 +106,8 @@ a deferred test ONLY THE USER can run ->  a [user] item with a described
                                           walkthrough
 ```
 
-**3. Method-shipped boilerplate is refreshed by re-copy, never regenerated from
-guesses.** FAQ files, the QUEUE.md header prose, CLAUDE-TEMPLATE scaffolding — copy
+**3. Method-shipped boilerplate is refreshed by re-copy rather than regenerated
+from guesses.** FAQ files, the QUEUE.md header prose, CLAUDE-TEMPLATE scaffolding — copy
 the *current shipped template* over the stale file rather than rewriting it from
 the method docs.
 
@@ -116,9 +116,6 @@ per-file discriminator:
     the user's own work   ->  migrate by judgment
     method boilerplate    ->  re-copy the template
 ```
-
-(Observed: a session nearly rewrote a project's FAQ from the method docs when a
-verbatim re-copy was correct.)
 
 **4. Approval before write.** Draft, show, get the okay, then write.
 
@@ -174,10 +171,7 @@ many **block-needing** cleared items it found and how many carried a block.
 Equal numbers mean the migration is complete.
 
 Cleared `[user]` and `[freeform]` items are counted separately, on the same
-line, as items that need no block. They are excluded from the two numbers
-deliberately: neither is built from a block, so counting them made equal
-unreachable in any project holding one, and a completeness test that can never
-read equal distinguishes nothing at the moment it is read.
+line, as items that need no block — neither is built from one.
 
 ## Section preambles — run this at every epoch
 
@@ -186,10 +180,8 @@ read equal distinguishes nothing at the moment it is read.
 with `> `. The wording is left exactly as it is.
 
 The lint reads un-quoted, un-headed prose inside a section as an orphaned
-rationale and warns that a heading may have been overwritten. A preamble
-legitimately has no heading, so any project scaffolded before 2026-08-15 carries
-two standing warnings on text /setup wrote itself — and a lint that always warns
-is one its user learns to read past.
+rationale and warns that a heading may have been overwritten — and a preamble
+legitimately has no heading.
 
 ```
 already a blockquote  ->  nothing to do
@@ -213,14 +205,4 @@ any red-flag risk                 ->  kept as a marked work item
 ```
 
 **When unsure whether something is the user's own work or method boilerplate,
-ask** — don't guess and overwrite.
-
-## Validated live (Hexboard, 2026-07-29)
-
-The ad-hoc form of this checklist passed cleanly in a consumer project (host
-1.15.0-test6): the QUEUE header prose was re-copied from setup.md rather than
-regenerated (rule 3 fired unprompted); empty Red-flags / Deferred-tests / Parked
-placeholders were dropped; a Batches › Build item became a `[user]` line; four
-Captures became `#### ` work items with slug + provenance, full rationale
-preserved; approval-before-write was honoured; the lint ran clean; no content was
-lost.
+ask** rather than guessing and overwriting.

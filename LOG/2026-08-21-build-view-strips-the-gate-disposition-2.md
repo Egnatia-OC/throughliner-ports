@@ -1,4 +1,4 @@
-# [HASH] — The build view now carries each item's rule-gate disposition, so a build transcribes instead of halting
+# 15e10c9 — The build view now carries each item's rule-gate disposition, so a build transcribes instead of halting
 
 Build entry; the planning record is `2026-08-21-build-view-strips-the-gate-disposition.md`. Raised by the user: if CLAUDE.md is editable in a build, the build can justify what it built. The decide-versus-type split answers that only if the build can *see* the disposition it transcribes — and the view stripped it as decision history, making every rule-authoring build halt by the letter of the instruction.
 

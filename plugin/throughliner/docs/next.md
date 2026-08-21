@@ -33,9 +33,7 @@ FALSE, and no longer claimed anywhere:
         finishes its builds and sits there uncommitted
 ```
 
-**The person this misleads is the one who reads "unattended" and walks away.**
-They come back to a finished run that recorded nothing, because /done was never
-invoked. Say what happens instead of reaching for the shorter word.
+**Say what happens instead of reaching for the shorter word "unattended".**
 
 **"Unattended" stays correct wherever it means "do not interrupt this"**, which is
 almost everywhere it appears below. Those uses lean on the true half, so
@@ -49,13 +47,13 @@ a wording problem, and it is answered by concurrency work rather than here.
 **Self-closing is refused, recorded so it is not re-proposed.** A run that ran
 /done on itself would commit with nobody present, and a commit message is one of
 the few things this method still shows before it happens — precisely because a
-commit is hard to unwind and never becomes file content. Auto-closing either
+commit is hard to unwind and its message lands in no file. Auto-closing either
 overrides that guard or invents a version of it that survives nobody being there.
 Neither is worth saving one command.
 
 ## What /next runs on
 
-**A run reads the generated build view, never QUEUE.md.** Regenerate it first —
+**A run reads the generated build view, not QUEUE.md.** Regenerate it first —
 
 ```
 python <plugin-root>/scripts/generate_build_view.py <QUEUE.md path>
@@ -70,11 +68,10 @@ alone, so a capture filed mid-run can still be checked against what is already
 in the queue.
 
 **It carries no decision history, and that is the mechanism rather than a
-saving.** A build transcribes what it reads, and rationale written into work
-items was measured reaching this method's own shipped documents in near-verbatim
-form. A build cannot copy what it was never given. The reasoning is not lost:
-QUEUE.md keeps it inline and whole, and the close resolves each built slug back
-against the queue as one targeted read of one entry.
+saving** — a build transcribes what it reads, so it cannot copy what it was
+never given. The reasoning is not lost: QUEUE.md keeps it inline and whole, and
+the close resolves each built slug back against the queue as one targeted read
+of one entry.
 
 **Refusals are the exception that travels**, carried inside the block, because a
 build that cannot see why an option was rejected proposes it again and stops to
@@ -163,7 +160,7 @@ against it. Reading it once per run is what makes the per-item check below cost
 almost nothing.
 
 Then regenerate the build view and read its cleared section top-down. That is the
-run. **Do not open QUEUE.md** — the scope-lock refuses a build's reads of it, and
+run. **Leave QUEUE.md closed** — the scope-lock refuses a build's reads of it, and
 the view is what the run is built from.
 
 ```
@@ -178,25 +175,20 @@ early exits:
 **On NOTHING_CLEARED** [BRIEF] — tell the user the next work isn't cleared to run
 yet, recommend /plan to vet it, and stop.
 
-**On UNCLEARED_FLAG** [BRIEF, PROMPT] — stop. Don't build the item, and don't
-build the rest of the run around it. Name the risk in plain English, say the item
+**On UNCLEARED_FLAG** [BRIEF, PROMPT] — stop, leaving the item and the rest of
+the run unbuilt. Name the risk in plain English, say the item
 reached the ready region with its flag still uncleared, and recommend /plan to
 clear it. Then wait.
 
 This should be impossible: a flag is cleared at processing, so an item only
 reaches Processed with a cleared flag, and the cleared region is red-flag-safe by
-construction. That is exactly why the check is here. A backstop for an impossible
-case never fires, so nothing ever reveals it missing — and this one *was* missing,
-promised by SPEC and the behaviour rules while no code path implemented it. What
-it guards is real: without it, an unattended run would silently build work
-carrying an unaddressed data-exposure risk, which is the one thing the whole
-red-flag model exists to prevent.
+construction. That is exactly why the check is here.
 
 **On FREEFORM_HALT** [BRIEF, PROMPT] — say plainly what the item is and that it
 needs a session of its own where the work is done by hand rather than built from
-the queue, and stop. Don't skip past it to the next item.
+the queue, and stop there rather than skipping to the next item.
 
-A `[freeform]` item is placed at one end of the cleared region, never in the
+A `[freeform]` item is placed at one end of the cleared region rather than the
 middle, so the halt is always cheap: met first, nothing has started; met last,
 everything else is already finished. When one sits at the *end* of the run, Step 3
 builds everything above it and then halts on it, which is the same stop reached
@@ -204,11 +196,6 @@ from the other side.
 
 **On ALL_WALKTHROUGHS** [PROMPT] — there's nothing to build, so skip Step 2's
 build scaffolding entirely and go straight to Step 3's walk-through branch.
-
-**Why the run is marker-bounded rather than stop-at-first-`[user]`.** Step 2
-builds all the Claude-work, then Step 3 walks the `[user]` items. The two passes
-never interleave, so no cleared Claude-work is left unbuilt — even when a `[user]`
-item sits mid-run.
 
 **Before handing a `[user]` item over, run the LIGHT capability check.** Name the
 tool that would do the work and confirm it is absent or unauthenticated (the
@@ -267,13 +254,12 @@ The pointer is the default and the token-saving path; the inline quote is what t
 opening inline-text offer switches on. These items already exist in QUEUE.md, so
 confirm the link resolves before sending it.
 
-**Present the whole cleared region, and never recommend a subset of it.** The
-cleared-to-run line is the run bound and the user set it at /plan; a softer cap
-proposed here is a guess dressed as prudence, because Claude has no gauge of
-context filling at all. Don't say a run looks large, don't suggest stopping after
-the first few, and don't inherit such a suggestion from a previous session's
-advisory. If a run should stop early, that is decided by observed behaviour — the
-no-progress halt — not by a number chosen up front.
+**Present the whole cleared region.** The cleared-to-run line is the run bound
+and the user set it at /plan; a softer cap proposed here — the run looks large,
+stop after the first few — is a guess dressed as prudence, because Claude has no
+gauge of context filling at all, and a previous session's advisory to that
+effect is not inherited either. A run stops early only on observed behaviour —
+the no-progress halt — not on a number chosen up front.
 
 **Two things may drop an item from the run, and neither is a cap** [BRIEF]. Both
 rest on something specific and checkable rather than on a guess about how large a
@@ -296,16 +282,11 @@ the queue is left untouched and /plan decides its fate.
 what counts as plugin-managed content.** Does this item name a file /setup
 rewrites? That is all it asks.
 
-**It fires only on that collision, never on every run in a behind project.** A
+**It fires only on that collision, not on every run in a behind project** — a
 warning that appears whether or not it applies is one people learn to read past.
-The case is real: a project elsewhere ran a whole build and close whose top item
-was void before it started — a fix to a stale description inside CLAUDE.md's
-plugin-managed block, which /setup rewrites from a template already carrying the
-correct text. The run then had to be closed with nothing built, to free /setup.
 
-**Pointing the user at /setup is safe**, and the objection that it would send them
-into a denial is dead: /setup refuses cleanly while a build is in progress rather
-than failing file by file against the scope-lock.
+**Pointing the user at /setup is safe**: /setup refuses cleanly while a build is
+in progress rather than failing file by file against the scope-lock.
 
 **If the user took the inline offer, advise on the large items here** [BRIEF].
 Inline display is settled by the session's opening offer, not by a question of
@@ -322,7 +303,7 @@ inline ON                 ->  one clause naming the large items, e.g. "item 6
 ```
 
 Judge "large" against the item's own files — the share of a file its edits
-rewrite — never against a bare number of lines. This is an ordering-style
+rewrite, not a bare number of lines. This is an ordering-style
 judgment, so narrate it in one sentence like any other.
 
 The answer holds for the run. On a resumed run, carry the previous answer
@@ -336,9 +317,6 @@ second.
 user wants a change  ->  route to /plan
 user says go         ->  Step 2: lock scope, build begins
 ```
-
-Present-once is deliberate: a separate "here it is" beat followed by a separate
-confirm beat is the redundant gate this collapses.
 
 There is no blocker gate, push marker, or unpark/staleness scan — those belonged
 to the old model and are gone. Ordering and readiness are settled in /plan before
@@ -388,28 +366,16 @@ names.** The same two-limb test runs at /plan's keep-step, which carries the ful
 argument and is where an item like this should be stopped; meeting one here means
 it got through.
 
-**Both limbs halt, and the second one is why.** A design question about the item
-in hand — "how should this behave?" — is not a question about which files change
-and is not other work, so under a one-limb test it fell through both routes with
-no defined path, and a run meeting one improvised: it stopped and asked. **That
-question IS underspecification** — the item did not say how — arriving late
-because limb two was never tested here. It routes through the mechanism that
-already exists rather than through a design-question branch, which would
-legitimise stopping an unattended run to ask how things should be.
-
-This matters most where it is least visible. A halt on "which files" is a clean
-stop with a clear question; a halt on "how should this work" is a design
-conversation started by the runner, in a session whose whole premise is that
-design already happened.
+**Both limbs halt.** A design question about the item in hand — "how should this
+behave?" — is neither a question about which files change nor other work: **that
+question IS underspecification** — the item did not say how — and it routes
+through the mechanism that already exists rather than through a design-question
+branch.
 
 *Worked example, second limb.* An item names `plan.md` and says its ordering rule
 should be "improved" without saying what the new rule is. The files are perfectly
 clear and the item is still unbuildable — halt as underspecified rather than
 choosing a rule the user never agreed.
-
-A blocking ask on adjacent work both defeats the unattended run and reopens a
-scope decision reserved for /plan. The extra look self-scoping gives is preserved
-by capturing what it finds, not by asking.
 
 *Worked example.* Building a terminology rename, self-scoping enumerates the docs
 the item names. A doc silent on which sections change → underspecification,
@@ -511,7 +477,7 @@ index-entry candidate, then remove that one item from QUEUE.md with the
 mechanical mover, addressed by its slug.
 
 **Where the project's own instructions require a rule-gate disposition and the
-item carries one, copy it across unchanged.** Transcribe, never compose. Where
+item carries one, copy it across unchanged.** Where
 the item is about to author or amend a standing rule and carries no disposition,
 halt and say so: the gate's site is planning, and a disposition written now could
 only describe what is already built.
@@ -520,11 +486,7 @@ only describe what is already built.
 and `Changes:` all grow one item at a time, so the working file only ever
 describes work that actually happened. The index candidate is artifact touched +
 nature of change (skill-nonspecific-rules.md, Index entries), and written here it
-*describes* the build rather than predicting it — more accurate as well as
-cheaper, since a run is never guaranteed to reach its end and a candidate is only
-ever redeemed by an item that builds. Nothing is lost by moving it: the readiness
-check pre-generation doubled as still runs at /plan's keep-step, which refuses an
-item whose index line cannot be written yet.
+*describes* the build rather than predicting it.
 
 **The depth field is required, not optional, and it is written here rather than
 loosely during the build.** One line per ticked item, under the Progress tick:
@@ -539,13 +501,9 @@ to whichever tick it happens to sit under, so two written together silently
 attach to the wrong items; the slug makes each line self-identifying, and the
 close reads it by slug rather than by position.
 
-A required field is the point. The close reads these hours later, when every
-item's reasoning is simultaneously fresh and every one *feels* worth telling at
-length — so an absent line is not a signal that presents itself, and honouring
-the short-form default would mean hunting item by item for something that is not
-there. Writing the field at the tick turns a silent omission into a visible one,
-which is the shape this method already trusts for the FAQ-sync disposition and
-the rule-gate line.
+Writing the field at the tick turns a silent omission into a visible one, which
+is the shape this method already trusts for the FAQ-sync disposition and the
+rule-gate line.
 
 ```
 python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
@@ -570,8 +528,8 @@ item strands in Processed and the next /next presents it again as if unbuilt.
   user, you don't step back and hand off.
 - **The close is named only after the walk-through finishes.** How completion gets
   recorded is told to the user *after* the last step is done or they defer.
-- **One `[user]` item at a time — never bundled.** Each in its own message, led by
-  its own live walk-through. Not a bulk-approval result set.
+- **One `[user]` item at a time**, each in its own message, led by its own live
+  walk-through. Not a bulk-approval result set.
 - **Three things count as knowing an item is complete**, and nothing else: it was
   walked to its end this session, the user said they did it, or its walkthrough
   named an observable check and that check passed. An item whose blocker visibly
@@ -581,7 +539,7 @@ item strands in Processed and the next /next presents it again as if unbuilt.
   completed on their own, with nothing observable to show for it, will sit in
   Processed until they mention it — and mentioning it is already a supported path.
   This is written down precisely so nobody later notices the hole and proposes an
-  ask to fill it. Don't.
+  ask to fill it.
 - **A completed `[user]` item has a defined close:** log it under its slug and
   remove it from Processed. Lives in **both** /done (the user runs /done right
   after finishing) and /plan (they completed it async and mention it).
@@ -593,8 +551,7 @@ Once the Claude-work is built (or if the run had none), walk the user through ea
 `[user]` item still in the cleared region. Walking one through does **not** end
 the run — it's the last pass of a run whose Claude work is already done.
 
-**One item at a time — never bundled.** Each in its own message, led by its own
-walk-through. Finish one fully — or record that the user deferred it — before
+**One item at a time**, each in its own message, led by its own walk-through. Finish one fully — or record that the user deferred it — before
 moving to the next. (This is *not* the [SEQUENCE] bulk-approval inversion: that's
 for a deterministic result set the user reads and accepts in one pass. A
 walk-through is an action driven live.)
@@ -610,7 +567,7 @@ untouched, so nothing is stranded, and a crash mid-walk-through leaves a partial
 entry saying exactly what was done. The close then finds an entry already started
 rather than writing one fresh.
 
-This is a place to record, never a restriction on doing. The branch is *supposed*
+This is a place to record, not a restriction on doing. The branch is *supposed*
 to run whatever parts Claude can — that is what makes it a live drive. The record
 goes to `LOG/` precisely because `LOG/` is writable whatever the scope-lock says,
 so recording can never be what blocks the walk-through.
@@ -640,17 +597,13 @@ authored and the user is in the room.)
 **Verify any command before handing it over to be pasted.** Run it where doing
 so is safe — a scratch fixture — or read the tool's `--help`. The scope is
 narrow on purpose: a command *Claude* runs with a wrong flag costs one turn and
-self-corrects, because the error arrives, the help gets read, and the work
-continues. The cost only lands when the command goes into a block for the user
-to run: they are a non-coder, they cannot tell a typo from a broken tool, and
-the failure arrives in their hands rather than yours. A tool's own flag list is
-not an external fact to be careful about — it is one `--help` away, so the gap
-this closes is ordering, not knowledge.
+self-corrects. The cost only lands when the command goes into a block for the
+user to run: they are a non-coder, they cannot tell a typo from a broken tool,
+and the failure arrives in their hands rather than yours.
 
-**Say nothing about /done until the walk-through is complete.** While driving the
-steps, don't mention /done, don't frame the item as "handed over", don't recommend
-recording it. Mentioning the close mid-walk-through is what once demoted this to a
-mere offer.
+**Say nothing about /done until the walk-through is complete** — while driving
+the steps, keep the close, "handing over" and recording out of the conversation
+entirely.
 
 **Once an item's walk-through is complete (or deferred), name its close.** A
 `[user]` item stays in the queue for a later session, so it won't record or remove
@@ -665,11 +618,11 @@ When every `[user]` item has been walked through or deferred, tell the user the
 whole run is complete — Claude-work built, user steps addressed — and recommend
 /done.
 
-**Copy discipline when the run is all `[user]` items.** Don't fold the silent
-active-build check into the first message ("no active build" blurs two unrelated
-things), and don't frame it as "there's nothing for me to build" — /next helps
-either way. Say plainly that the next ready item is a step for the user to run,
-say why it's theirs, and start walking them through it.
+**Copy discipline when the run is all `[user]` items.** Open with the item
+itself: say plainly that the next ready item is a step for the user to run, say
+why it's theirs, and start walking them through it. The silent active-build
+check stays silent, and "there's nothing for me to build" stays unsaid — /next
+helps either way.
 
 ## Ending before scope-lock
 
@@ -686,7 +639,7 @@ skip, no output.
 
 **2. Name /done as the next step** [BRIEF]. Whatever the session did before
 stopping gets recorded and committed only by /done. Other recommendations (run
-/plan to vet the next work) ride alongside; they never replace naming /done.
+/plan to vet the next work) ride alongside naming /done, which always happens.
 
 No item returns to the queue, because none left it — scope was never locked.
 

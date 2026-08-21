@@ -1,4 +1,4 @@
-# [HASH] — Every occurrence of "session" classified: 941 matches counted, roughly fifty mean a run, listed by file and line
+# 15e10c9 — Every occurrence of "session" classified: 941 matches counted, roughly fifty mean a run, listed by file and line
 
 Audit entry. The settled vocabulary (user's decision, 2026-08-17): a **run** is a command executing — a /plan run, a /next run — and a **session** is the chat.
 

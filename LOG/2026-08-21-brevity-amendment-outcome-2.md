@@ -1,4 +1,4 @@
-# [HASH] — The brevity amendment measured: median words per message when speaking fell 55 → 37, with the sample's limits stated
+# 15e10c9 — The brevity amendment measured: median words per message when speaking fell 55 → 37, with the sample's limits stated
 
 Audit entry; the planning record is `2026-08-21-brevity-amendment-outcome.md`. Direction and size, no verdict — no target exists to declare against.
 

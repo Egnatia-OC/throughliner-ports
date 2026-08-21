@@ -1,4 +1,4 @@
-# [HASH] — Pointing counts as supplying: the address book's rule gains the bounded user-directed search
+# 15e10c9 — Pointing counts as supplying: the address book's rule gains the bounded user-directed search
 
 Build entry; the planning record is `2026-08-21-address-book-user-directed-find.md`. Raised by the user mid-send — tired of retrieving paths for folders one or two levels away — after the never-scan rule cost visible annoyance a second time. The protection is kept whole: unprompted scanning stays out; what changed is that supplying includes pointing, with the match confirmed before anything is recorded or sent.
 

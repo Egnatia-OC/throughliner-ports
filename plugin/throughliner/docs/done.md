@@ -32,10 +32,8 @@ checks to be dropped.
 
 **Read the build working file in full before the close-out runs, whatever you
 remember of the session.** Conversation memory enriches the LOG entry — the
-tradeoffs, the colour the file doesn't capture — and never substitutes for the
-read. The condition this replaces would have hung on Claude assessing its own
-memory, which fails exactly post-/clear and post-compaction, when the session
-*feels* remembered but the details are gone.
+tradeoffs, the colour the file doesn't capture — and the read still happens in
+full alongside it.
 
 ```
 the build working file EXISTS  ->  read it, then route by the run's work-item flavors:
@@ -167,11 +165,8 @@ moment.
   slug, so `<date>-<slug>.md` resolves for every one of them;
 - an index line carries enough to decide open-or-skip;
 - an index line that restates the entry it points at is wrong at any length;
-- no figure decides any of it, and none is available to restore — the 20%
-  proportional cap was repealed on 2026-08-12 after measurement showed it firing
-  on short entries rather than on long lines, and the absolute word figure that
-  replaced it was repealed on 2026-08-19 with every other length cap. The
-  requirement in the behaviour rules' Index entries section is the whole bound.
+- no figure decides any of it — the requirement in the behaviour rules' Index
+  entries section is the whole bound.
 
 **One text, several positions.** The session authors **two** texts, not four:
 
@@ -196,8 +191,8 @@ session start):
 planning session, what motivated these queue changes), expanded with what was
 learned along the way. Inline prose, no `Why:` label. Re-authoring is where
 reasoning gets re-attributed by accident: credit the user only for reasoning
-they gave in their own words, write mixed authorship as mixed, and don't wear
-Claude's reasoning as theirs (skill-nonspecific-rules.md, rationale provenance).]
+they gave in their own words, write mixed authorship as mixed, and frame
+Claude's reasoning as Claude's (skill-nonspecific-rules.md, rationale provenance).]
 
 [per-flavor body fields]
 ````
@@ -220,10 +215,6 @@ plan/setup  **Queue changes:**       work processed, reordered, or modified
                                      the docs scaffolded)
             **Work processed:**      kept / deleted, with slugs, or "none"
 ```
-
-The audit's Approval-outcomes line means a decision made at audit time doesn't
-vanish — without it, the only trace of a dropped or reworded finding is its
-absence.
 
 **The forward-recommendation advisory — one field on every flavor, and five
 provisions under it.**
@@ -259,9 +250,9 @@ never:      it sits ninth, with eight items ahead of it
 ```
 
 **The advisory is a transient orientation handoff, not work.** It is read and
-cleared at the next /plan's opening (plan.md), so it is never this close's job to
-clear one it is not replacing. It never runs through keep/delete, never moves
-into Processed, and stays in QUEUE.md rather than getting a file of its own.
+cleared at the next /plan's opening (plan.md), so the only one this close clears
+is one it is replacing. It stays outside keep/delete and outside Processed,
+living in QUEUE.md rather than in a file of its own.
 
 **One more section, on every flavor: what the chat did outside its work items.**
 
@@ -272,10 +263,8 @@ into Processed, and stays in QUEUE.md rather than getting a file of its own.
                          item. Omit the section when there is nothing.
 ```
 
-/done closes a **chat**, not one run of a command, and every entry field above is
-organised around the work items that ran — so anything the chat did outside them
-has no entry to belong to. `/rescan` covers the same class on demand; this
-section covers it arriving at the close, which always runs.
+`/rescan` covers the same class on demand; this section covers it arriving at
+the close, which always runs.
 
 **Where the section goes depends on how many entries this close writes**, which
 the close already knows:
@@ -288,15 +277,10 @@ close writes SEVERAL        ->  the chat-level record becomes its OWN entry,
                                 its own line in LOG/index.md.
 ```
 
-Its own entry is findable the ordinary way, from its own index line, and it is
-not a new kind of artifact — a log entry with a different filename — so the index
-format is unchanged. **The cost is one extra file and one extra index line per
-multi-item close.**
-
 **The frame, identical for every flavor.** Write the entry, then report in one
 line what landed and where. A revert undoes a LOG entry, so it doesn't wait on
 approval — the commit message does, because a commit is harder to unwind and
-never becomes file content.
+its message lands in no file.
 
 ```
 run shipped ONE item     ->  the commit message derives from this entry: title
@@ -324,7 +308,7 @@ Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 ```
 
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
-newest-first on a name sort — never appended to a shared log file:
+newest-first on a name sort, each in its own file rather than a shared log:
 
 ```
 session closing work items    ->  LOG/<YYYY-MM-DD>-<slug>.md
@@ -345,9 +329,9 @@ sentence in its record, and change no filename or datestamp:**
 
 > This session ran across 2026-08-11 and 2026-08-12.
 
-**Write the hash into the entry heading and the index line, never into the
-filename** — the commit hash doesn't exist yet when the file is written, which is
-why the placeholder pattern exists.
+**Write the hash into the entry heading and the index line only** — the commit
+hash doesn't exist yet when the file is written, which is why the placeholder
+pattern exists, and the filename carries the date instead.
 
 **Write the literal placeholder token in hash position only**, where the
 automatic backfill treats any match mechanically, so a prose mention is one
@@ -410,8 +394,8 @@ consciously accepted  ->  the informed-consent trail: what the user was warned
 
 The LOG is where the how-it-cleared lives; the marker on the work item carries
 only `State: cleared`. **Recording is unconditional once a flag clears** — the
-record never rides only in chat or on the marker, because no later session
-re-reads those for clearing history.
+record lands in the LOG, because chat and the marker are the only other homes
+and no later session re-reads either for clearing history.
 
 At a build or audit close the flag was cleared in an earlier /plan session, so
 two things:
@@ -431,12 +415,8 @@ Read anything still sitting in this project's `INBOX/`, route it through the
 three-way triage, and move each file to `INBOX/archive/`. Full mechanics —
 `${CLAUDE_PLUGIN_ROOT}/docs/feedback-and-inbox.md`.
 
-**The close is the site because it is the one skill that always runs**, which is
-the same argument that sited the wind-down re-scan below. /plan and /next open
-mail at their own openings, but only mail already waiting when the chat began,
-and only if one of those skills is run at all — so a chat that runs neither, or
-one where mail lands after the opening, leaves it sitting. The close catches
-exactly that case.
+**The close is the site because it is the one skill that always runs** — it
+catches mail a chat's openings missed, or that landed after them.
 
 **Filing, not processing.** Anything a message raises becomes a capture in
 Unprocessed; deciding its fate stays /plan's, like every other capture.
@@ -453,8 +433,8 @@ type.
 **Look back only as far as the last /rescan in this chat.** /rescan is the same
 step with its own trigger, and it can be run as often as the user likes; the
 close picks up whatever came after the last one. Invoke it shortly before
-closing and this costs a line. Never invoke it and the close does the full job —
-scanning the whole chat — which is what it has always done.
+closing and this costs a line. With no /rescan run, the close does the full job,
+scanning the whole chat.
 
 Before committing, re-read that stretch of the chat and surface candidate
 captures — things the user thought out loud but never flagged.
@@ -593,9 +573,7 @@ produces the word "QUEUE.md" — true, useless, and silent about whose work is
 inside. Describe it as making a swept edit visible, and as nothing further.
 
 **3. The commit message is not drafted fresh** — it derives from the LOG entry
-already written at the entry step. It is shown before the commit either way: a
-commit is harder to unwind than a file edit, and the message never becomes file
-content, so there is nothing to revert and nothing to read in the doc.
+already written at the entry step. It is shown before the commit either way.
 
 ```
 ONE work item shipped        ->  the message IS that entry:
@@ -641,8 +619,8 @@ on the scope-lock's standing list, so the write passes in every session type.
 around** [BRIEF, PROMPT]. Check that every path this close meant to stage is
 actually staged — `git status --porcelain` and read what is in the index — before
 running the commit. Where anything intended is missing, say plainly what did not
-stage and why, and **do not commit.** Fix the staging and re-check, or let the
-user decide.
+stage and why, and **hold the commit** until the staging is fixed and re-checked,
+or the user decides.
 
 **6. Commit with `git commit -F`.** No fresh okay needed. Then offer push only
 when a remote exists, and push only if the user accepts.
@@ -676,8 +654,8 @@ advisory FILED       ->  the closing message carries ONE line naming it and
                          ladder below. The advisory already says what to do
                          next; restating it in chat duplicates the record.
                          The overlap scan still runs — and what it finds is
-                         written INTO the advisory before it is filed, never
-                         narrated alongside it.
+                         written INTO the advisory before it is filed rather
+                         than narrated alongside it.
 no advisory filed    ->  the full narration below, unchanged.
 ```
 

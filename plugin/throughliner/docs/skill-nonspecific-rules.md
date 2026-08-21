@@ -30,7 +30,7 @@ top-up runs, which happen in projects already set up.
 
 ## The work cycle
 
-Orientation, read here and never recited to the user.
+Orientation, read here; it is not recited to the user.
 
 ```
 The work cycle. Every piece of work travels the same loop.
@@ -84,7 +84,7 @@ The work cycle. Every piece of work travels the same loop.
     with reasoning and alternatives offered on request, not front-loaded;
   - rendering the single user-facing ask in bold, phrased as a question, at
     the end of the message — naming any command it offers in words rather than
-    as a slash string, and never letting that command end the sentence, since
+    as a slash string, and keeping that command clear of the sentence's end, since
     the app lifts a trailing slash command into the composer where one
     keystroke sends it;
   - giving one item per message when the user's next action depends on the
@@ -96,11 +96,11 @@ The work cycle. Every piece of work travels the same loop.
     stopping there — except that where being readable and being short pull
     apart, readable wins.
 
-  **The inversion governs sequencing, never approval-before-write.** Two
-  separate axes: write-first answers *show-then-wait or write-then-report*, and
-  its test is recoverability; the inversion answers *one item per message or all
-  together*. An inversion delivers a set in one message, and never makes a write
-  wait for approval.
+  **The inversion governs sequencing; approval-before-write is a separate
+  axis.** Write-first answers *show-then-wait or write-then-report*, and its
+  test is recoverability; the inversion answers *one item per message or all
+  together*. An inversion delivers a set in one message, and writes still
+  proceed without waiting for approval.
 
   ```
   inversions — deliver together, not one at a time:
@@ -174,24 +174,21 @@ floor:     the show-first cases above stay show-first regardless. The switch
            moves in ONE direction, toward more showing.
 ```
 
-  Held in the chat, never written to a file — same shape as the inline-text
-  offer.
+  Held in the chat only — same shape as the inline-text offer.
 
   **Being driven remotely is not a separate trigger.** It is a case where the
   user asks. No detection is built to reach an outcome that asking reaches.
 
   **The report after the write is one line** naming what landed and where, and
-  pointing the user at the artifact to read. It is never a re-paste of the text
-  just written — the one exception is the inline-text offer below, which the user
+  pointing the user at the artifact to read. A re-paste of the text just
+  written is reserved for one case: the inline-text offer below, which the user
   switches on and which covers this report by name. **Name the artifact
   specifically enough that the user knows which one to open**, and say they can
   reject what is in it and have it reverted.
 
-  **The report is a pointer to the record, never a substitute for reading it.**
-  This method's control model is that the user reads and approves the record; a
-  report written to be sufficient on its own is a workaround for that not
-  happening, and it makes the workaround the design. What keeps the reading
-  affordable is the artifact's own length, not a longer report.
+  **The report is a pointer to the record; the user reads and approves the
+  record itself.** What keeps the reading affordable is the artifact's own
+  length, not a longer report.
 - **When text IS shown — the show-first cases above — the View-in-doc rendering
   section below says how.** End the message with an explicit ask naming the
   decision needed.
@@ -255,7 +252,7 @@ offer below.
 
 The chat's **first** opening narration carries one clause offering to paste
 text inline instead of linking to it — folded into the narration that already
-fires, never asked as its own question. It's a standing offer, not a prompt that
+fires rather than asked as its own question. It's a standing offer, not a prompt that
 waits for an answer: the work continues immediately.
 
 ```
@@ -266,9 +263,9 @@ wording:   describe the situation, don't name a feature — "reading on your
            awkward". A user who has never worked that way should still
            recognise themselves in it.
 effect:    the user says the word -> paste doc-bound text inline for this
-           chat, including the one-line report after a write — this is the
-           stated exception to that report's never-a-re-paste default, and the
-           only thing that overrides it
+           chat, including the one-line report after a write — this is the one
+           re-paste case that report's rule reserves, and the only thing that
+           overrides its pointer form
                                  -> and, in /next, show each edit's new text
                                     inline instead of by line reference
 ```
@@ -276,7 +273,7 @@ effect:    the user says the word -> paste doc-bound text inline for this
 **The inline switch covers /next's edit display too**, so no separate run-start
 question is asked. Default off means today's behaviour.
 
-This is a chat-scoped switch, held in the chat, never written to a file.
+This is a chat-scoped switch, held in the chat.
 
 **Write, then verify, then point — in that order.** A pointer to content written
 this turn goes out only after the Write returned success *and* a re-read confirms
@@ -317,10 +314,6 @@ time it comes up.
 
 **How to explain is yours to judge.** Answer the question you were actually
 asked, in the form that answers it.
-
-The same term can fall either way in different projects, and that is correct: in
-a project whose subject matter *is* the method, a procedure section is something
-the user can open; in a recipe app it names nothing at all.
 
 Quoting an artifact the user co-reads (a queue entry, a draft, a log line) is not
 narration — quoted text stays verbatim. Processed and Unprocessed are
@@ -372,8 +365,6 @@ write:   [SILENT] when clean; [BRIEF] when flagging
 never:   [SILENT when clean; BRIEF when flagging]     # prose inside the bracket
 never:   [BRIEF, PROMPT in the trigger state]         # a condition worn as a tag
 ```
-
-Tagging every arm is what makes the quiet case as explicit as the loud one.
 
 **Unlabelled steps:** brief acknowledgment if the user needs to know it happened;
 no output if purely internal.
@@ -470,9 +461,7 @@ whole finding falls or only part of it:
 
 The queue digest reads that line back: any queue entry whose prose names a
 superseded research file is flagged, so the correction reaches the decisions
-built on it. Citation otherwise runs one way — an item names the file, the file
-names nothing — so a superseded finding leaves every item scoped against it
-silently wrong.
+built on it.
 
 **It covers only items that NAME the file, and the check says so where it
 reports.** An item scoped on a finding it never cites is not reached. State that
@@ -560,7 +549,7 @@ the plain form is what this block shows.
 
 **Put a heading's distinguishing words first**, because the queue is read through
 an outline of headings that truncates each one mid-phrase, so the end of the line
-may never be seen. This governs word order and never length.
+may never be seen. This governs word order alone.
 
 The user-credit and the filing-time commit stamp are prose conventions written
 into the rationale, not fixed lines of this block — see the two bullets below.
@@ -636,7 +625,7 @@ The tag **leads** the description. One leading tag at most. Flavor is settled
 when the item moves into Processed.
 
 **A flavor names how a work item is executed, and `[freeform]` is a flavor like
-the rest — never a mode a session is in.** Hand-work in a chat with no queue item
+the rest, not a mode a session is in.** Hand-work in a chat with no queue item
 behind it has no name and needs none.
 
 The `[user]` tag is governed by a **matched pair** of rules. Both failures are
@@ -711,8 +700,8 @@ file paths that identify a person or an organisation
 Rewrite what you find, at the same level of usefulness — "a family member",
 "the client's deadline" — rather than dropping the fact. **An additional pass is
 available: `scripts/scrub_sweep.py` under the plugin root sweeps for the same
-shapes** — run it alongside the read, never in place of it, since it matches
-shapes and the read is what catches a sentence that quietly identifies someone.
+shapes** — run it alongside the read, which stays: the script matches shapes,
+and the read is what catches a sentence that quietly identifies someone.
 
 **State the limit whenever this comes up.** This checklist is Claude checking its
 own writing, and the hook's scan matches credential *shapes* only. Neither can
@@ -742,7 +731,7 @@ other length rule in the method is subject to this one.** Three provisions:
 - a deliverable written to disk is bounded by what the task needs;
 - an index line is bounded by the median index line, per Index entries below.
 
-**Read the bound off the corpus, never off memory:** `scripts/
+**Read the bound off the corpus:** `scripts/
 measure_written_shape_length.py` prints each shape's current median. A median is
 a proportion of what is already written rather than an invented figure, and it
 ratchets — writing to it pulls it down.
@@ -766,7 +755,7 @@ carried inside it.
 project's own distributions.** It prints how long your captures, work items,
 session records and index lines actually run, and it prints no threshold of any
 kind — the same posture the queue digest and the growth reports take: state the
-fact, never the verdict.
+fact alone.
 
 **Placement: append to the bottom of Unprocessed, always.** No judgment call, no
 narration line. **A capture filed mid-run follows the same rule and gets no
@@ -780,10 +769,8 @@ python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
     --append Unprocessed --body <scratchpad path>
 ```
 
-Addressed by section rather than by an anchor, so a file that changes underneath
-the write cannot send the capture into the wrong one. The body goes by file
-because a multi-paragraph rationale does not survive shell quoting. **Subordinate
-to the ideation loop above** — this is what runs once the loop releases the write.
+**Subordinate to the ideation loop above** — this is what runs once the loop
+releases the write.
 
 **Narration discipline.** State what was filed in one line and move on, leaving
 the shelving mechanics unsaid. Put timing in the capture-now, design-later frame
@@ -827,13 +814,12 @@ Unprocessed, and that is the only defer.** It covers every "set this aside" case
 — a fresh capture, an unclearable red-flag capture, a /plan skip-to-defer.
 Resolve any pull toward a new state, tag, shelving category, or a "focused chat
 of its own" by recommending skip-to-defer, or by giving a queue-shaped thing that
-isn't work its proper home below. Invented states and categories are a recurring
-failure here, and the user has caught each one.
+isn't work its proper home below.
 
-**Routing never re-opens a fate the user has already decided.** Where an item's
-own prose records that the user asked for something to be kept, the routing
-question is closed before it starts — the table below is for things that have no
-home yet, never a route out of the queue for work whose fate is settled.
+**A fate the user has already decided stays closed through routing.** Where an
+item's own prose records that the user asked for something to be kept, the
+routing question is closed before it starts — the table below is for things
+that have no home yet, and work whose fate is settled keeps it.
 
 **Proper homes for queue-shaped things that aren't work. Decide by what the
 thing IS:**
@@ -887,8 +873,7 @@ spotted during planning is flagged the same way, before any code exists —
 nothing here is build-only.
 
 **Flagging, not fixing.** Name the risk and route it, leaving the decision with
-the user, however obvious the fix looks. Surfacing costs one sentence; silence
-costs a breach the user can't defend because they were never told.
+the user, however obvious the fix looks.
 
 **States and lifecycle:**
 
@@ -981,24 +966,14 @@ each entry must carry:
 ```
 
 **The index is read in full, by Claude, on every retrieve, so its total length is
-a fixed toll rather than something a reader skims past.** That, and not
-scannability, is why an index line's length matters at all. The extreme case is
-the argument in one line: a 337-word line pointing at a 1,710-word entry, where
-reading the pointer costs a fifth of opening the thing it exists to save you
-opening.
+a fixed toll rather than something a reader skims past.**
 
 **Subject to the Authoring standard's length provision above, the bound here is
 the content requirement itself:** an index line carries enough to support the
 open/skip decision, and says it without restating the entry. An entry too short
 to support that decision fails even at one line; a line that reproduces its
-entry fails at any length.
-
-**No replacement number, and the reason it is a judgment test rather than a
-script.** Scoping a cap to entries above some length reintroduces a bare figure,
-and absolute length discriminates nothing — the longest lines in the corpus all
-point at the longest entries and all read correctly. A mechanical check that
-fires against correct work is worse than none, because it is learned past and
-then ignored everywhere.
+entry fails at any length. This stays a judgment test: no mechanical number
+replaces it.
 
 ## Scope
 
@@ -1044,8 +1019,8 @@ CLAUDE.md vs memory =  "this project" vs "all projects"
   user frames something as a behaviour change ("make Claude always do X") that's
   really product truth ("the app does X"), name it as SPEC content and route it
   there.
-- **Executable work lives in the queue as work items — never in a standalone plan
-  doc.** /next runs the queue and only the queue; a side doc of steps is
+- **Executable work lives in the queue as work items.** /next runs the queue
+  and only the queue; a side doc of steps is
   invisible to /next and silently falls through. A task mixing Claude-work and
   user moments **decomposes into queue items**: build items for Claude's parts,
   `[user]` lines for the user's.
@@ -1130,8 +1105,8 @@ the discriminator:  which thing is misbehaving?
     unsure       ->  ask the user which of the three it is
 ```
 
-**Nothing is ever sent or posted without the user seeing the exact text and
-giving an explicit yes** — feedback reports, GitHub issues, and outbound INBOX
+**A send or post goes out only after the user has seen the exact text and
+given an explicit yes** — feedback reports, GitHub issues, and outbound INBOX
 messages alike. Inbound INBOX mail is surfaced by session_start and routed
 through the three-way triage, then archived.
 
@@ -1176,7 +1151,7 @@ this adds is the offer.
 
 **Page the whole queue before any queue-wide reasoning, and the same for any
 file whose *whole* content the reasoning depends on.** A read that stopped short
-is named plainly, never reasoned from quietly. **Check this at the read rather
+is named plainly rather than reasoned from quietly. **Check this at the read rather
 than later**, because a truncated read looks like a complete one to whatever
 reasons over it, so nothing downstream can detect it.
 
@@ -1185,9 +1160,8 @@ and for nothing else** — code that reads the file end to end cannot be silentl
 truncated, which makes it stronger than paging *for those fields*, and it says
 nothing at all about the prose it omits. So where a skill provides one, run it
 **and** read the file: the script gives computed facts, the read gives the
-reasoning. What is never licensed is a partial read dressed up as a summary —
-a digest is generated from the whole file, by a script, never assembled by
-whoever is reading.
+reasoning. A digest is generated from the whole file, by a script; one
+assembled by whoever is reading is the partial read this rule exists to stop.
 
 ## Check our own conformance before blaming the tool
 
@@ -1231,17 +1205,13 @@ the record, in cheapest-first order:
     LOG/index.md, then the one matched entry
 ```
 
-  **The source is the record, not LOG alone.** Most decisions sit in QUEUE prose
-  until a close, so a rule naming only LOG points at the wrong place for the
-  common case — and it misses the case where no retrieve is needed at all,
-  because the decision was made in this chat and you were present for it. A
-  question whose answer already follows from a decision made in this chat is not
-  a new question, however differently it is framed; the test is against the
-  decision's *reason*, not its wording, since a reframe that resolves to the
-  same thing looks different on the surface.
+  **The source is the record, not LOG alone** — most decisions sit in QUEUE
+  prose until a close. A question whose answer already follows from a decision
+  made in this chat is not a new question, however differently it is framed;
+  the test is against the decision's *reason*, not its wording.
 - **When the user proposes a change that would alter or reverse something the
   record already holds** — an existing rule, a shipped feature, a queued or
   logged decision — run the retrieve *before agreeing*, down the ladder above,
   and cite the prior decision rather than agreeing or pushing back generically.
   Trigger stays narrow to bound cost: fire only when the proposal touches
-  something already in the record, never on new-work suggestions.
+  something already in the record.

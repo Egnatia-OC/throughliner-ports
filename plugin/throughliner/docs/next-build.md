@@ -31,10 +31,6 @@ code
     ->  success path stays silent (still no preview)
 ```
 
-Why it's worth surfacing: the exact wording is produced here in /next and was
-never seen in /plan, which agreed only the intent. This is the first time the user
-meets the real words.
-
 **How the reveal renders** follows the view-in-doc rule (skill-nonspecific-rules.md). The
 text is now doc-resident, so: a plain link to the edited file with the line named
 in the prose ("around line 40" — the app ignores a link's line anchor), falling
@@ -63,7 +59,7 @@ worked — routes out via Scope management below.
 
 **What this item's instructions are.** Its build block in the generated view —
 `Changes:`, `Acceptance:`, any `Red flag:` and any `Refused:` lines. That is the
-whole brief. **Do not open QUEUE.md to fill it out**: the scope-lock refuses a
+whole brief. **Leave QUEUE.md closed**: the scope-lock refuses a
 build's reads of it, and the missing detail is not there to be found — an item
 whose block does not say what changes inside its files is underspecified and
 halts, per next.md's self-scoping step.
@@ -97,29 +93,9 @@ built, NOT confirmed     ->  - [x] item description — done, UNCONFIRMED:
                              # nobody has made yet
 ```
 
-**A build that ships code nothing ever ran is not rare enough to leave to
-judgement.** The tick used to mean one thing — the writing finished — and carried
-no claim that anything ran, while a shipped safety rule in `done-plan.md` already
-depends on the built-versus-confirmed distinction: an item whose prose names a
-slug that LOG records as built but not yet verified is held below the readiness
-line. Its input was whatever prose a previous session happened to write. One rule
-wrote the distinction by choice; another read it as though it were guaranteed.
-
-**Written here rather than required of the LOG entry, and that is the whole
-point.** An obligation discharged by remembering to write a sentence at the close
-is indistinguishable from one skipped. The mark is written at the moment the
-knowledge exists — the build has just run or just not run the thing — rather than
-at the close, where it has to be reconstructed. Same reasoning that moved the rule
-gate's disposition onto the queue item.
-
-The tick lives in the build working file, not in QUEUE.md, so no hook parses it
-and the queue lint needs no change — verified rather than assumed.
-
-**Step 4 checks the work against SPEC; it never edits SPEC to fit the work.** SPEC
-was read once at run start (next.md's pre-flight), so this costs almost nothing,
-and a contradiction caught at the item that caused it is far cheaper to fix than
-one found after five more items are built on top of it. **Silent unless it finds
-something** — an unattended run must not narrate a passing check.
+**Step 4 checks the work against SPEC and leaves SPEC unedited.** SPEC was read
+once at run start (next.md's pre-flight), so this costs almost nothing. **Silent
+unless it finds something** — an unattended run narrates no passing check.
 
 ```
 built work agrees with SPEC        ->  say nothing, tick, continue
@@ -150,7 +126,8 @@ a check Claude can run   ->  it stays OUTSTANDING in the run's working file.
 ```
 
 If mid-build you discover the work needs a user-run check that isn't already a
-`[user]` item, route it (see Course-correction) — don't invent a deferral here.
+`[user]` item, route it (see Course-correction) rather than inventing a deferral
+here.
 
 ## File structure — split by independent unit
 
@@ -211,10 +188,7 @@ walkthrough anyway.
 ```
 
 **The reason clause fires every time, not only when the user sounds impatient.**
-Judging whether someone wants it now is a noticing-based trigger, and this method
-has repeatedly found those do not fire — a session that has settled on an answer
-notices nothing. Firing always costs one clause. It is one clause, not a lesson:
-the reason is given so the user can act on it, not taught.
+It is one clause, not a lesson: the reason is given so the user can act on it.
 
 What to say, drawn from what capturing actually buys: it protects the run from
 drift; the item gets weighed against work still to come rather than against
@@ -223,9 +197,7 @@ is written, which is what stops a half-designed change landing mid-run.
 
 **On a second ask for the same thing, yield** — the same intent counts, not the
 same words, and Claude judges that rather than pretending a mechanical test
-exists. Claude's standing rules already hold that where a concern is raised and
-the user repeats the request, that is their decision and the work proceeds; this
-is that pattern reaching build scope.
+exists.
 
 ```
 second ask, MINOR (1-2 files)  ->  carry it through. Append any unlisted file
@@ -259,9 +231,9 @@ significant  ->  propose splitting. Finish what's scoped, /done to close, then
  uncertainty)
 ```
 
-**A SPEC change the build discovers it needs is FILED, never written.** Record the
-sentence you think SPEC owes, file it as a capture, and leave SPEC alone. Don't
-ask to add SPEC.md to scope — that route is repealed.
+**A SPEC change the build discovers it needs is FILED, not written.** Record the
+sentence you think SPEC owes, file it as a capture, and leave SPEC alone. Adding
+SPEC.md to scope is a repealed route.
 
 ```
 build finds SPEC owes a sentence
@@ -270,25 +242,11 @@ build finds SPEC owes a sentence
     ->  carry on building. The run does not stop.
 ```
 
-**The reason is a session boundary, not a scope rule**, and it survives every
-argument from convenience: the session that made a choice is not the session that
-certifies it in product truth, because one instance of Claude describing its own
-work in SPEC is justification rather than specification. **Deferring the write to
-this run's own close was proposed and refused on exactly that ground** — the close
-is the same session, so it moves the self-certification later without crossing
-anything.
-
-**Planning is supposed to have written it already.** The keep-step asks, of every
-item, whether it changes what SPEC says, and writes the sentence there with the
-user present. Reaching this branch means that question was missed, which is why
-the fallback is cheap: one capture, no stop.
+**The reason is a session boundary, not a scope rule**: the session that made a
+choice is not the session that certifies it in product truth.
 
 **The cost, stated rather than discovered:** SPEC lags that one sentence until the
 next planning session. It lags visibly, as a queue item, rather than in silence.
-
-**The evidence the fallback is safe** is that deferring SPEC writes inside a run
-was tried live — four sentences held back and written in one pass, nothing lost,
-and the run never stopped again.
 
 **The SPEC-contradiction halt above is not this and must not be softened to
 match.** That branch is a genuine "something is wrong here" and stays alarming.
@@ -343,9 +301,7 @@ Tell the user plainly what repeated — the exact error, or what wouldn't change
 and hand them the decision via Approach not working.
 
 Judgment, not a counter: three is a rough trigger and the point is to surface a
-stuck item. The old runner's iteration and spend ceilings are deliberately not
-recreated — they were arbitrary and undetectable, and session length is handled at
-plan time.
+stuck item.
 
 ### Approach not working  [DISCUSS, PROMPT]
 
@@ -407,10 +363,10 @@ built (every Claude-work item ticked, any `[user]` item walked through):
 ```
 
 Recording still only happens at the close — that is why nothing else is
-recommended here, and never another build.
+recommended here, another build included.
 
 Tightening means refining done work — not raising new work. Anything new routes
 through the existing paths. **No chat summary of the changes** — the LOG entries
 /done writes are the single session record.
 
-**Do NOT delete the build working file yourself.** That's /done's job.
+**Leave the build working file in place** — deleting it is /done's job.

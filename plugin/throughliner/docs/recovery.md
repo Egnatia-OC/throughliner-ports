@@ -34,7 +34,7 @@ before building it.
 
 **What to do:** before building anything in the first sessions after a rollback,
 check the LOG for the item's slug. If the work shipped, remove the item and say
-so; don't rebuild it. Treat this as the default suspicion for the whole recovery
+so instead of rebuilding it. Treat this as the default suspicion for the whole recovery
 period, not a one-off check.
 
 ## Restore first, diagnose second
@@ -92,7 +92,7 @@ Two cautions that both came from real errors:
   consumed when it is built, so **shipped work survives only in its LOG entry**.
   Unbuilt work is the reverse: it lives in the queue and has no LOG entry at all.
   Looking for one in the wrong place finds nothing and reads as "it wasn't there".
-- **Don't trust the index's own dates.** An index entry is written by hand and can
+- **Check dates against the history rather than trusting the index's own.** An index entry is written by hand and can
   be wrong. One dated a change two days earlier than the history actually shows,
   and a second project repeated the error in good faith because it read the index
   rather than the history. Where a date matters, check the history.

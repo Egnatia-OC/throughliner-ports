@@ -1,4 +1,4 @@
-# [HASH] — Depth lines are slug-bound, and the close reads them by slug rather than position
+# 15e10c9 — Depth lines are slug-bound, and the close reads them by slug rather than position
 
 Build entry; the planning record is `2026-08-21-depth-field-has-no-binding-to-its-item.md`. Two depth lines once landed together and attached to the wrong items; the close reconstructed the intent from context, which a fresh short session cannot do. Built with the binding as the fix: the format is now `Depth: <slug> — short|full`, written at the tick, and done-build.md reads each built item's line by slug — a built slug with no depth line is the discipline-slip flag for free, subsuming the count-check alternative. One discrepancy worth recording: the item named next-build.md as the authoring site, and the build's own grep (which the item required) found the field defined in next.md's per-item completion step — next.md was edited and appended to the run's file list before the write. This run's own working file used the slug-bound form throughout.
 

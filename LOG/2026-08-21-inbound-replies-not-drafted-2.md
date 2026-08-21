@@ -1,4 +1,4 @@
-# [HASH] — The reply obligation is sited into the mail triage and narrowed: a question is owed a reply, a defect report is not
+# 15e10c9 — The reply obligation is sited into the mail triage and narrowed: a question is owed a reply, a defect report is not
 
 Build entry; the planning record is `2026-08-21-inbound-replies-not-drafted.md`. Four inbound messages changed work here and the broad "changes work here" reply rule fired for none — a rule with no site, the corpus's five-times-recorded failure. Built on the item's own honest split: feedback-and-inbox.md's inbound triage gains the fourth outcome (a question is owed a reply, noted at triage, drafted once the question has an answer — in the moment for a planning chat, at the close for a run), and the always-loaded sentence is reworded to the narrowed question-trigger form in the same move, so exactly one statement exists per file. The never-send-unseen guarantee is untouched.
 

@@ -1,4 +1,4 @@
-# [HASH] — /setup's migration now refreshes the plugin-managed CLAUDE.md block, and the marker promises what actually happens
+# 15e10c9 — /setup's migration now refreshes the plugin-managed CLAUDE.md block, and the marker promises what actually happens
 
 Build entry; the planning record is `2026-08-21-managed-claude-md-block-never-refreshed.md`. From a consumer project's INBOX report: the managed block promised "updated on /setup and plugin reinstall" and never was, so for weeks every session there read a retired queue model as current — and four of their own rules had drifted inside the block, which any blind refresh would have deleted.
 

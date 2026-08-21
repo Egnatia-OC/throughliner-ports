@@ -115,14 +115,11 @@ capture records what is left.
 > so this is what I could still see rather than a guarantee I've caught
 > everything.
 
-**Say it as written rather than conveying its sense.** An instruction to explain
-the limit honestly invites improvement, and improving it is what went wrong
-before: a chat once substituted "this has been a long session, so I can only
-re-read what's still in view". Length is a proxy Claude *can* observe, standing
-in for the thing that actually decides the result — whether the conversation has
-been summarised — which is not observable at all. The substitute invites the
-user to discount the result by a factor that is fictional. Never name length,
-duration, message count, or any other observable proxy.
+**Say it as written rather than conveying its sense, and name no observable
+proxy** — length, duration, message count. Each stands in for the thing that
+actually decides the result — whether the conversation has been summarised —
+which is not observable at all, and each invites the user to discount the result
+by a factor that is fictional.
 
 **Nothing found is a result, and it takes one line.**
 

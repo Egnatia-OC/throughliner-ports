@@ -90,8 +90,7 @@ item carries a flag.
 Where /next's pre-flight opened a message that changed work here, draft the reply
 now and show it. The close is the moment the user is reliably present, which
 mid-run is not — and a reply leaves the machine, so it goes out only on their
-explicit yes to the exact wording. Never auto-sent, and never left for them to
-ask for.
+explicit yes to the exact wording, with the draft put in front of them unprompted.
 
 ## Phase 2: Record
 
@@ -122,11 +121,6 @@ built is still in the last commit's copy, whole. Take the one entry the slug nam
 and nothing else; a read of the whole file is what the view exists to avoid, and it
 is not needed to answer one slug.
 
-**This is what keeps the throughline intact across the split.** Withholding the
-history from the build is a projection, not a deletion: it stops a build
-transcribing rationale into shipped rules, and it must not stop the reasoning
-reaching the record.
-
 **Where QUEUE.md is untracked, git holds no copy and this route is closed.** Say
 so plainly in the entry rather than implying the reasoning was carried: write the
 entry from the working file's Changes and the item's own build block, and record
@@ -146,9 +140,9 @@ same settlement are the siblings.
 **Each item's depth field says which form its entry takes — read it, don't judge
 it.** The field is defined at its authoring site, next.md's per-item completion
 step, and is slug-bound: `Depth: <slug> — short|full`. Read each built item's
-depth line **by its slug**, never by its position under a tick. Never judge by
-run size — a twelve-item run can still contain the session's most contested
-decision.
+depth line **by its slug** rather than by its position under a tick, and
+whatever the run's size — a twelve-item run can still contain the session's most
+contested decision.
 
 **A built slug with no depth line is read as short**, and noted at the close as
 a discipline slip rather than passing silently: the field is required, so a
@@ -158,20 +152,17 @@ decaying back into an optional line.
 **Transcribe each item's tick form into its LOG entry, and announce every
 unconfirmed item at the close** [BRIEF]. The tick reads either `done, confirmed`
 or `done, UNCONFIRMED: <what still needs running>` (next-build.md). Carry
-whichever it says into the entry verbatim — never compose one — and where any item
+whichever it says into the entry verbatim — transcribed, not composed — and where any item
 is unconfirmed, say so plainly in the close's narration, naming the item and what
 has not been run.
 
-**The announcement is required rather than left to judgment**, because that is the
-whole gap this closes: an obligation discharged by remembering to mention
-something is indistinguishable from one skipped, and a build that ships code
-nothing ever ran is not rare. `done-plan.md`'s hold-back rule reads this field to
-decide whether dependent work may clear, so an entry that omits it silently
-weakens a safety rule one document away.
+**The announcement is required rather than left to judgment.** `done-plan.md`'s
+hold-back rule reads this field to decide whether dependent work may clear, so an
+entry that omits it silently weakens a safety rule one document away.
 
 **If a `[user]` item's entry was already started**, the walk-through opened it live
 and appended as it went (next.md). Continue that file rather than writing a fresh
-one, and don't treat the existing entry as a duplicate.
+one — the existing entry is the record, not a duplicate.
 
 If a built item carried a red flag, note in this entry that it carried one and
 that it was cleared — the carry-through, since the substantive clearing record was

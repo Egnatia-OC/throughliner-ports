@@ -33,23 +33,14 @@ instead (done-build.md) — it reads what was built against SPEC and reports a
 contradiction rather than editing SPEC to match. Audits land no product changes,
 so an audit close has neither.
 
-Why the build close no longer syncs: a sync on a document the build never read can
-only record what the build did, so it cannot catch a build that contradicted the
-spec. /next now reads SPEC at run start, which is what makes a real check possible,
-and the sync belongs where the decision that changes product truth is made.
-
 **Did this session's work change what SPEC says?** Apply the spec-entry trigger
 test **in plan.md's own wording** — quote it from there rather than keeping a copy
 here, so the two can't drift apart. Read against what this session landed.
 
-If it fires, **stop the close — don't commit yet.** Surface the drift in plain
+If it fires, **stop the close before committing.** Surface the drift in plain
 words, naming which SPEC sentence the session made wrong, get approval to fix it,
-then edit SPEC and commit it **in this same commit**. Don't file it as a capture
-for a later session.
-
-Spec-driven development's contract is that the spec moves in the same commit as
-the behaviour change. Deferring the fix would close a commit with SPEC already
-behind, breaking that atomicity — the exact drift this gate prevents.
+then edit SPEC and commit it **in this same commit** rather than filing it as a
+capture for a later session.
 
 No scope-lock is active at any close reaching this doc, so edit SPEC.md directly
 in-session. Editing SPEC to match a decision the user already made this session is
@@ -76,8 +67,8 @@ committed as their own clean record.
 **1. Read the edits as the user's own expected work.** Uncommitted changes
 the session didn't make are most likely the user's expected work. Run `git status
 --porcelain`, and where what changed isn't self-evident, look. Confirm with the
-user that these are theirs and meant to be saved. **Never report them as a broken
-repo, and never try to undo them.**
+user that these are theirs and meant to be saved. **Read them as expected work
+rather than a broken repo, and leave them intact.**
 
 **2. Decide LOG granularity by judgment.**
 
@@ -107,7 +98,7 @@ repealed — do not reinstate:
     the Unprocessed reorder by unblock-potential
 ```
 
-Do **not** reintroduce `Blocks:` / `Depends on:` headers. The one dependency
+**`Blocks:` / `Depends on:` headers stay retired.** The one dependency
 field that exists is `Blocked by:`, written on the item that is held and naming
 one or more slugs — the item lifts only when every one of them resolves — and
 it is lint-checked precisely so it can't go stale the way those headers did.
@@ -134,19 +125,11 @@ orders the pair. Moving the audit to the end separates it from the tool it runs,
 and the close happens after /next, so the separation arrives in time to break the
 *next* run rather than this one.
 
-**The default's rationale rests on the run not confirming each item, which is
-true**, rather than on a run finishing by itself, which is not — a run pauses at
-`[user]` work, halts on `[freeform]` work, and never closes itself (next.md, What
-a run is). The placement rule is unaffected either way: a stop in the middle of a
-build block is worse than the same stop at its end whatever else the run does.
-
 Order here is low-stakes and reversible, so the narration is the catch-point
 where the user can redirect.
 
-**Use the mechanical mover, passing it the desired order and nothing else.**
-Moving an item by hand means retyping its whole prose block verbatim, which on a
-long queue silently degrades to a partial sort and can corrupt an item with no
-error. Only the *decision* passes through you; the prose stays in the file.
+**Use the mechanical mover, passing it the desired order and nothing else** —
+only the *decision* passes through you; the prose stays in the file.
 
 ```
 locate:  scripts/reorder_queue.py under the PLUGIN ROOT
@@ -201,10 +184,8 @@ dependency BUILT only            ->  NOT enough. Keep the dependent below.
 dependency BUILT and VERIFIED    ->  no hold; it may clear.
 ```
 
-The why is that a cleared item is built without anyone confirming it, so clearing
-one that rests on built-but-unverified work would let the run stack work on a
-foundation that might later fail its check. Narrate it
-when it holds an item back — one line naming which item waits on which.
+Narrate it when it holds an item back — one line naming which item waits on
+which.
 
 **Re-derive prerequisite state from LOG, not from memory, by reading the
 dependency entry's transcribed tick.** Every built item's entry carries either
@@ -214,12 +195,9 @@ at the close (next-build.md, done-build.md). Read that field. This rule and the
 `[user]`-placement rule below both depend on the answer, and a fresh short session
 has no memory to fall back on.
 
-**Read the field, don't infer the answer from the entry's prose.** The field
-replaced exactly that: this rule used to depend on whatever a previous session
-happened to write in sentences, so a rule that must know whether something was
-verified was reading a distinction nothing guaranteed. An entry with no such field
-predates the mechanism — treat it as unconfirmed and say so, rather than reading
-its prose for a claim it may never make.
+**Read the field rather than inferring the answer from the entry's prose.** An
+entry with no such field predates the mechanism — treat it as unconfirmed and say
+so, rather than reading its prose for a claim it may never make.
 
 **Name the holding fact when placing any item below the marker.** One line in
 the item's block, whichever holds it:
@@ -245,11 +223,6 @@ you can't yet say what it        ->  Unprocessed — it still needs thought
     would build
 ```
 
-This is the enabling half of the below-the-line revisit: with a slug the revisit
-is a single check per item, and with a sentence it was an interpretation. It also
-closes a failure the sentence version kept producing — an item waiting on
-something nobody had filed, so the wait could never end.
-
 **Place ready `[user]` walk-through work above the marker.** The marker is the
 single gate for walk-throughs as well as builds — /next walks a `[user]` item
 through only when it sits above the marker.
@@ -261,9 +234,8 @@ prerequisite still pending
     ->  it stays BELOW, exactly like any other not-yet-ready item
 ```
 
-**Anti-pattern: don't hold a `[user]` item below the marker merely because it's the
-user's to run.** Being a `[user]` item is not a reason to shelve it — only a
-pending prerequisite keeps it below. This lives in the /plan close rather than
+**Being a `[user]` item is not a reason to shelve it** — only a pending
+prerequisite keeps it below the marker. This lives in the /plan close rather than
 /next so the marker stays one positional gate, instead of /next growing a second
 readiness check of its own. Narrate it when a `[user]` item moves above the marker
 — one line naming which is now ready.
@@ -329,12 +301,11 @@ git diff HEAD -- QUEUE.md
 That is the mechanical record — every item kept, every item deleted, and the
 reasoning written into each one as it was processed — so the entry's Queue
 changes and Work processed lines are filled from the artifact rather than
-reconstructed. It is the same argument the method already makes for preferring a
-generated digest over a paged read: code cannot silently truncate, and memory can.
+reconstructed.
 
 **Skipped items are the one thing the diff cannot see, and they are deliberately
 not recorded anywhere.** Skipping moves nothing and edits nothing, so it leaves no
-trace; a skipped item simply returns next session. Don't reintroduce a file to
+trace; a skipped item simply returns next session, and no file is reintroduced to
 hold them.
 
 ## 2. Commit
@@ -363,4 +334,5 @@ completed [user] item / handmade    ->  offer push as the commit core does.
 
 Run done.md's **Recommend next** and apply its **Plan / setup close** delta: a
 fresh setup session whose only work item is the rough first build item recommends
-/plan to scope it, never /next; otherwise the shared overlap scan + ladder apply.
+/plan to scope it rather than /next; otherwise the shared overlap scan + ladder
+apply.

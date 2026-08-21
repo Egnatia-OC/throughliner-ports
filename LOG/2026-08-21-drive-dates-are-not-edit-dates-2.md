@@ -1,4 +1,4 @@
-# [HASH] — File-browser reports get a git-log check before Claude reasons from them
+# 15e10c9 — File-browser reports get a git-log check before Claude reasons from them
 
 Build entry; the planning record is `2026-08-21-drive-dates-are-not-edit-dates.md`. A Drive date means "last synced", not "last edited", and both parties reasoned from it as edited — an honestly made, factually wrong report, the worst kind to receive. Built host-only, as kept: this project's CLAUDE.md Handoff-claim provenance section gains one clause — where the user reports file state seen through a file browser, check `git log` and the filesystem before reasoning from it, and name what was checked rather than contradicting the report. An always-loaded shipped rule stays refused until a consumer reports the same.
 

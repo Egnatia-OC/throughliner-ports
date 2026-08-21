@@ -1,4 +1,4 @@
-# [HASH] — Halt text now states the situation without method vocabulary
+# 15e10c9 — Halt text now states the situation without method vocabulary
 
 Build entry; the planning record is `2026-08-21-halt-narration-used-unexplained-jargon.md`. Mixed authorship: the failure was Claude's (a halt opening on four pieces of jargon), the report the user's ("I don't understand"). The vocabulary rule resolved generously in a project whose subject is the method; what it never weighed is that a halt is the one moment the user has no context to lean on. Built as one subordinate clause on the Vocabulary section: text written at a halt or stop, where the user must decide rather than follow along, states the situation in terms needing no method vocabulary — the explained arm does not apply there. Over-firing is bounded by the trigger; halts are rare.
 
