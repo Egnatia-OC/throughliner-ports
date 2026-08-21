@@ -9,7 +9,7 @@ user-invocable: true
 
 The user wants to bring this folder under the Throughliner method.
 
-Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs-b/setup.md`.
+Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs/setup.md`.
 
 Before writing anything, create an empty `.throughliner-setup-active` file in
 this session's scratchpad directory, and delete it when the run ends — including

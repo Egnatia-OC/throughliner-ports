@@ -108,9 +108,9 @@ HEREDOC_APPEND = (
 )
 HEREDOC_SUBSTITUTE = (
     "python - <<'PY'\n"
-    "p = 'plugin/throughliner/docs-b/setup.md'\n"
+    "p = 'plugin/throughliner/docs/setup.md'\n"
     "text = open(p).read()\n"
-    "open('plugin/throughliner/docs-b/setup.md', 'w').write(text.replace('a', 'b'))\n"
+    "open('plugin/throughliner/docs/setup.md', 'w').write(text.replace('a', 'b'))\n"
     "PY"
 )
 COMPUTED_PATH = (
@@ -126,7 +126,7 @@ def main():
     print("test_pre_tool_use_shell_writes")
 
     # 1. The slipped append shape, target OUT of scope during a build -> deny.
-    d = make_project(build_files=["plugin/throughliner/docs-b/plan.md"])
+    d = make_project(build_files=["plugin/throughliner/docs/plan.md"])
     check(
         "heredoc append to out-of-scope file denied",
         decision(d, HEREDOC_APPEND) == "deny",

@@ -8,7 +8,7 @@ multi-section format to the current **two-section** model (`## Processed` / `## 
 behind is a project's `QUEUE.md` format — everything else (LOG, CLAUDE.md, SPEC) needs little or nothing.
 
 **Status — superseded by the shipped checklist.** `[migration-checklist]` has landed: the checklist now
-ships in the plugin as `plugin/throughliner/docs-b/migrate-checklist.md`, loaded on demand (setup.md's Step 2C
+ships in the plugin as `plugin/throughliner/docs/migrate-checklist.md`, loaded on demand (setup.md's Step 2C
 points to it when a project's QUEUE.md is old-format). **Prefer the shipped doc** — a real migration follows
 that, not this file. This host copy is kept only as the historical record of the ad-hoc recipe and its live
 validation (below); it is not the operative procedure any more.

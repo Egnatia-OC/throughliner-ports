@@ -495,7 +495,7 @@ two things:
 
 Read anything still sitting in this project's `INBOX/`, route it through the
 three-way triage, and move each file to `INBOX/archive/`. Full mechanics —
-`${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md`.
+`${CLAUDE_PLUGIN_ROOT}/docs/feedback-and-inbox.md`.
 
 **The close is the site because it is the one skill that always runs**, which is
 the same argument that sited the wind-down re-scan below. /plan and /next open

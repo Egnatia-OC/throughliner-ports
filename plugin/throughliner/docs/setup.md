@@ -167,7 +167,7 @@ close to a sentence or two.
 ```
 existing QUEUE.md uses an old multi-section shape
     (## Red flags · ## Batches · ### Parked · ## Deferred tests · ## Captures)
-        ->  load ${CLAUDE_PLUGIN_ROOT}/docs-b/migrate-checklist.md and follow it,
+        ->  load ${CLAUDE_PLUGIN_ROOT}/docs/migrate-checklist.md and follow it,
             drafting the converted queue and getting approval before writing
 already two-section (## Processed / ## Unprocessed)
         ->  skip

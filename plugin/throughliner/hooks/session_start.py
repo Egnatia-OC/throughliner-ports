@@ -911,7 +911,7 @@ def _behaviour_rules_directive(plugin_root):
     """
     if not plugin_root:
         return ""
-    path = "${CLAUDE_PLUGIN_ROOT}/docs-b/skill-nonspecific-rules.md"
+    path = "${CLAUDE_PLUGIN_ROOT}/docs/skill-nonspecific-rules.md"
     return (
         "=== RULES THAT APPLY WHATEVER IS RUNNING — READ THESE FIRST ===\n"
         "These rules govern every skill and every reply in this session. "

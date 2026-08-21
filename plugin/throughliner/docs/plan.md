@@ -388,7 +388,7 @@ cap costs the session everything else the payload carries.
 
 ```
 mail is waiting      ->  read each named file in full
-                         fetch ${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md
+                         fetch ${CLAUDE_PLUGIN_ROOT}/docs/feedback-and-inbox.md
                          route each message through the triage there, then move
                          the file to INBOX/archive/
 INBOX/ empty         ->  nothing, silently

@@ -9,6 +9,6 @@ user-invocable: true
 
 The user wants to close the current session and record what happened.
 
-Rules that apply whatever is running are at `${CLAUDE_PLUGIN_ROOT}/docs-b/skill-nonspecific-rules.md`, and they govern this skill at a level above the procedure below.
+Rules that apply whatever is running are at `${CLAUDE_PLUGIN_ROOT}/docs/skill-nonspecific-rules.md`, and they govern this skill at a level above the procedure below.
 
-Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs-b/done.md`.
+Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs/done.md`.

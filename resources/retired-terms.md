@@ -45,7 +45,7 @@ mistake. Same cry-wolf failure the `ceiling of 200` entry below records, and the
 same resolution: **listing them would fire against correct work, which is worse
 than not listing them at all.**
 
-Detection for these three lives in `docs-b/setup.md`'s migration instead, which
+Detection for these three lives in `docs/setup.md`'s migration instead, which
 carries its own small table and reads **one file** — the project's own
 CLAUDE.md, where none of the migration prose above exists. A narrower scanner
 over a narrower scope is what makes the check possible; a repo-wide term list is

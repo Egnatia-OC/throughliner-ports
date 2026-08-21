@@ -9,6 +9,6 @@ user-invocable: true
 
 The user wants to do planning work — managing the queue, adding ideas, resolving questions, or checking for drift.
 
-Rules that apply whatever is running are at `${CLAUDE_PLUGIN_ROOT}/docs-b/skill-nonspecific-rules.md`, and they govern this skill at a level above the procedure below.
+Rules that apply whatever is running are at `${CLAUDE_PLUGIN_ROOT}/docs/skill-nonspecific-rules.md`, and they govern this skill at a level above the procedure below.
 
-Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs-b/plan.md`.
+Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs/plan.md`.

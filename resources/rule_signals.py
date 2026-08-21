@@ -115,7 +115,7 @@ for _stream in (sys.stderr, sys.stdout):
 # already carries; its three unique rules migrated into that file, so the
 # corpus this list measures is unchanged in substance and smaller in text.
 SHIPPED_ALWAYS_LOADED = [
-    "plugin/throughliner/docs-b/skill-nonspecific-rules.md",
+    "plugin/throughliner/docs/skill-nonspecific-rules.md",
 ]
 
 HOST_ALWAYS_LOADED = [
@@ -135,14 +135,14 @@ ALWAYS_LOADED = SHIPPED_ALWAYS_LOADED + HOST_ALWAYS_LOADED
 # gets hidden rather than cut; two groups is what makes a relocation read as a
 # relocation instead of as a reduction.
 FETCHED_DOCS = [
-    "plugin/throughliner/docs-b/plan.md",
-    "plugin/throughliner/docs-b/next.md",
-    "plugin/throughliner/docs-b/next-build.md",
-    "plugin/throughliner/docs-b/next-audit.md",
-    "plugin/throughliner/docs-b/done.md",
-    "plugin/throughliner/docs-b/done-build.md",
-    "plugin/throughliner/docs-b/done-plan.md",
-    "plugin/throughliner/docs-b/setup.md",
+    "plugin/throughliner/docs/plan.md",
+    "plugin/throughliner/docs/next.md",
+    "plugin/throughliner/docs/next-build.md",
+    "plugin/throughliner/docs/next-audit.md",
+    "plugin/throughliner/docs/done.md",
+    "plugin/throughliner/docs/done-build.md",
+    "plugin/throughliner/docs/done-plan.md",
+    "plugin/throughliner/docs/setup.md",
 ]
 
 # How far back the growth report looks for its direction of travel. This is a
@@ -155,7 +155,7 @@ GROWTH_WINDOW = 30
 # BORN's trigger — mechanical, with no judgment involved, which is what makes
 # this stage buildable at all.
 RULE_BEARING = [
-    "plugin/throughliner/docs-b/",
+    "plugin/throughliner/docs/",
     "resources/self-authoring-rules.md",
     "resources/rule-maintenance.md",
     "CLAUDE.md",
@@ -491,7 +491,7 @@ def _log_dispositions(root):
 def signal_born(root):
     """Commits that should carry a gate-disposition line and do not.
 
-    Over-fires by design: touching docs-b/ for a typo is not authoring a rule.
+    Over-fires by design: touching docs/ for a typo is not authoring a rule.
     A false fire costs one line — "not needed, typo fix". FAQ-sync makes
     exactly this trade and it is why it works.
 

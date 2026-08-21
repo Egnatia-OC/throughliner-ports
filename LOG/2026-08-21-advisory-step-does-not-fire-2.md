@@ -1,4 +1,4 @@
-# [HASH] — The close's forward recommendation gains a required disposition line, and the step leaves the file's tail
+# ae84933 — The close's forward recommendation gains a required disposition line, and the step leaves the file's tail
 
 The build of [advisory-step-does-not-fire]. The planning entry under the same slug — `2026-08-21-advisory-step-does-not-fire.md` — records the item being processed; this one records it being done.
 

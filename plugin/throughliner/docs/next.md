@@ -226,7 +226,7 @@ user is not, and a run should not stop to explore.
 Read anything waiting in this project's `INBOX/`, before the run is presented.
 That ordering is the point: mail can block work, so it is read while the run can
 still change rather than after scope is locked. Full mechanics —
-`${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md`.
+`${CLAUDE_PLUGIN_ROOT}/docs/feedback-and-inbox.md`.
 
 ```
 /next OPENS, FILES and DEFERS. It never processes.

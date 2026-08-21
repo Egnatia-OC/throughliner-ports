@@ -328,21 +328,21 @@ def test_own_slug_is_not_a_citation():
 def test_shared_file_is_grouped():
     root = project(
         processed=(
-            "#### First [alpha]\n**Files:** `docs-b/plan.md` (a change)\n\n"
-            "#### Second [beta]\n**Files:** `docs-b/plan.md` (another change)\n"
+            "#### First [alpha]\n**Files:** `docs/plan.md` (a change)\n\n"
+            "#### Second [beta]\n**Files:** `docs/plan.md` (another change)\n"
         ),
     )
     _, out = run(root)
     check(
         "a file named by two items is reported with both slugs",
-        "docs-b/plan.md: [alpha], [beta]" in out,
+        "docs/plan.md: [alpha], [beta]" in out,
         out,
     )
     shutil.rmtree(root, ignore_errors=True)
 
 
 def test_single_file_is_not_grouped():
-    root = project(processed="#### Only one [alpha]\n**Files:** `docs-b/plan.md`\n")
+    root = project(processed="#### Only one [alpha]\n**Files:** `docs/plan.md`\n")
     _, out = run(root)
     check(
         "a file named by one item surfaces nothing",

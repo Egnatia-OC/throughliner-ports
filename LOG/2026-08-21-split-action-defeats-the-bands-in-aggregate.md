@@ -1,4 +1,4 @@
-# [HASH] — 360 log index lines rewritten by hand, cutting the retrieve's fixed toll by 27%
+# ae84933 — 360 log index lines rewritten by hand, cutting the retrieve's fixed toll by 27%
 
 The build of [split-action-defeats-the-bands-in-aggregate].
 

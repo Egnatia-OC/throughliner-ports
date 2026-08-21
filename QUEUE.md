@@ -6,62 +6,6 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### Rename `docs-b/` to `docs/`, overturning the refusal recorded the day before [rename-docs-b-folder]
-Filed 2026-08-16 by Claude, on the user's decision, after she challenged the refusal during the planning session that had just cited it.
-
-**Her words, which are the reason this exists:** *"i don't know why it's still called docs b even though i have been asking for that to be changed for weeks. there is no docs a anymore so why would it be called docs b."* She is right on the model — docset A was retired 2026-08-09, nothing picks between docsets, and the letter names a sibling that does not exist.
-
-**The refusal being overturned, and why it does not hold.** [docs-b-name-outlives-the-two-docset-model] shipped 2026-08-16 and refused the folder rename outright, on a grep: 639 occurrences, 215 live, **424 in `LOG/` and one archived message.** The argument was that renaming moves the "B" out of a live path `CLAUDE.md` can explain and into 424 historical references pointing at a folder that no longer exists — "drift by fixing drift."
-
-**That argument treats a session record as though it were supposed to describe the present.** It is not. A LOG entry written in August naming `docs-b/` accurately records what the folder was called in August, which is what a record is for. Nobody proposed rewriting those 424, so the choice was never between renaming and falsifying the record. The Codex-port precedent the refusal cited says the same back: that decision was about **not rewriting** history, an argument for leaving `LOG/` alone rather than against renaming a live folder going forward.
-
-**So the real cost is the 215 live references**, across 22 files: all five skill entry points, `session_start.py`, four of the docs themselves, four test suites, `CLAUDE.md`, `SPEC.md` and the migration recipe. This project has already carried out a larger rename in a single build — "Sovereign Implementer" to "Throughliner" moved the plugin slug, the package folder, both project marker files and the positioning together.
-
-**Who decided what, recorded because the first decision's authorship is the point.** The rename was refused by Claude, at a close, with the user's question as the trigger and no moment where the choice was put to her — the same shape as [rule-admission-has-no-independent-approver], one layer out. This reversal is her decision; the reasoning against the old argument is Claude's, given at her challenge.
-
-**`Runs alone`, and this is the marker's textbook case.** The work moves file paths underneath anything in flight, so a run holding paths in its working file and scope-lock list would find them stale mid-build.
-
-**Trace the ripple by grep before building, per the hook-enforced-format rule** — `docs-b` as a literal across the repository, not a file list written from this item. The counts above are from 2026-08-16 and will have moved.
-
-**Leave `LOG/` and `INBOX/archive/` untouched.** They are the record. `resources/plugin-behaviour-retired.md` is a retired archive and is also left alone.
-
-**`QUEUE.md` IS a live reference and must be updated, which this item's first pass missed.** Open work items carry the old path in their own Files lines — [law-prose-restyle] and [files-line-names-excluded-files] both do at the time of filing — and a queue item is an instruction to a future build, not a record of the past. Left alone they would send a run at a folder that no longer exists. The `LOG/`-is-a-record argument does not extend to the queue: the queue describes what is still to be done.
-
-**Files:** `plugin/throughliner/docs-b/` renamed to `plugin/throughliner/docs/`, with every live reference updated — the five skill entry points, `plugin/throughliner/hooks/session_start.py`, the docs that cross-reference each other, the four suites under `resources/testing/`, `CLAUDE.md`, `SPEC.md` and `plugin/throughliner/docs/migrate-checklist.md`. `CLAUDE.md`'s refusal paragraph is deleted and replaced with a dated line recording the rename and noting that earlier session records name the old path. `QUEUE.md` — every open item's Files line carrying the old path, rewritten to the new one. Exclusions and untouched paths are named in the paragraphs above rather than on this line.
-
-Runs alone
-
-Rule gate: run — no rule authored and none amended. **The disposition is an eviction:** `CLAUDE.md`'s paragraph refusing the rename is deleted outright, along with the reasoning that supported it, and replaced by a dated statement of fact. Failure evidence is the refusal itself failing on its first contact with the user it was written for — she read the explanation and rejected it the next day.
-
---- Build block ---
-Changes:
-  Grep `docs-b` as a literal across the repository FIRST and build the file
-  list from that — the 2026-08-16 counts (639 total, 215 live, 22 files) are
-  stale and are not the file list.
-  Rename `plugin/throughliner/docs-b/` to `plugin/throughliner/docs/`.
-  Update every live reference: the five skill entry points,
-  `plugin/throughliner/hooks/session_start.py`, the docs that cross-reference
-  each other, the four suites under `resources/testing/`, `CLAUDE.md`,
-  `SPEC.md`, and `plugin/throughliner/docs/migrate-checklist.md`.
-  `CLAUDE.md` — delete the paragraph refusing the rename and the reasoning
-  supporting it; replace with a dated line recording the rename and noting
-  that earlier session records name the old path.
-  `QUEUE.md` — rewrite the old path in every open item's Files line.
-  Leave untouched: `LOG/`, `INBOX/archive/`,
-  `resources/plugin-behaviour-retired.md`. They are the record.
-Acceptance: a repo-wide grep for `docs-b` returns hits only in `LOG/`,
-  `INBOX/archive/` and `resources/plugin-behaviour-retired.md`. The suites
-  under `resources/testing/` pass. `CLAUDE.md` carries the dated rename line
-  and no refusal paragraph.
-Refused: leaving the folder named `docs-b` on the drift-by-fixing-drift
-  argument — it treats a session record as though it described the present;
-  nobody proposed rewriting the 424 historical references, so the choice was
-  never between renaming and falsifying the record.
-Refused: extending the leave-it-alone argument to `QUEUE.md` — the queue
-  instructs future builds rather than recording the past, so a stale path
-  there sends a run at a folder that does not exist.
---- End build block ---
-
 #### Claude keeps writing two-column fenced blocks that wrap into nonsense on the user's display [two-column-fences-wrap-unreadably]
 Filed 2026-08-15 by Claude at the close's re-scan, from an instance it caused in this session.
 
@@ -809,13 +753,13 @@ Blocked by: [discord-post-cycle-awareness]
 ## Unprocessed
 
 #### Last session advises a planning session before the next build run [forward-advisory]
-**Replaces a spent advisory rather than sitting alongside it.** The previous note pointed at the freeform epoch-4 conversion, which shipped at `461c999`, and at a queue where most cleared items lacked a build block, which is no longer the case. It was still there because clearing it is the next /plan's job at the moment it reads it, not a close's — so this close deleted the spent one and filed this in its place, rather than leaving two entries under a slug that is reserved and must be unique.
+**Replaces a spent advisory rather than sitting alongside it.** The previous note recommended planning before a build run, partly because [rename-docs-b-folder] would stop that run after one item. It has now shipped, so that reason is consumed; the recommendation survives on the reasons below, and the note is replaced rather than left to be read as still pointing at unbuilt work.
 
-**The next /next run will build exactly one item and stop.** [rename-docs-b-folder] now sits at the top of the cleared region and carries `Runs alone`, so a run reaches it first, builds it, and ends there. That is correct and deliberate — but it means a build run started now clears one item and the rest wait.
+**Two open captures now bear directly on how a run reads its own instructions.** [build-view-drops-runs-alone] is still open, and this run had to read QUEUE.md by hand to find its own bound — the view showed a long cleared region with nothing marking where the run had to stop. [queue-files-lines-name-the-old-docs-path] is new: roughly forty open items name `plugin/throughliner/docs-b/` in their Files lines and build blocks, and that folder no longer exists. A build cannot fix either, because editing the contents of a queue item is planning work and the scope-lock refuses it.
 
-**Planning is the better use of a session, for three specific reasons rather than a general preference.** Three captures filed today bear on how runs and closes work: [build-view-drops-runs-alone], which is why this run had to check the queue by hand to find its own bound; [build-reads-item-through-a-truncated-window], which cost this close a reverted FAQ edit and a withdrawn capture; and [plan-entry-split-refusal-describes-old-mechanism], a stale sentence inside an item that is cleared to run. The first affects every run until it is fixed.
+**The second one has a condition worth stating plainly: it holds until those references are rewritten.** Any run that reaches an item whose Files line names the old folder is working from a path that is not there. That is true however the queue is reordered and whatever is built next.
 
-**One thing to decide rather than build:** [spec-silent-on-advisory-disposition] records that SPEC may owe a sentence about the new `Advisory:` line, filed against the built item's own reading that no SPEC sentence is owed. Both readings are on the record and neither is obviously wrong; it wants a decision, not a build.
+**One thing to decide rather than build.** [spec-silent-on-advisory-disposition] records that SPEC may owe a sentence about the `Advisory:` line, filed against the built item's own reading that no sentence is owed. Both readings are on the record and neither is obviously wrong.
 
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
@@ -1710,4 +1654,122 @@ is a different problem from this one and the fix must not reintroduce it.
 
 Filed at the close of 2026-08-21; commit at filing time is the tip of main at
 `461c999`.
+
+#### Open queue items still name `docs-b/` in their Files lines, and no build can fix them [queue-files-lines-name-the-old-docs-path]
+Filed 2026-08-21 by Claude, mid-run, from the build of [rename-docs-b-folder].
+
+**What happened.** That item's build block instructed the run to rewrite the old path in every open item's Files line, on the recorded reasoning that the queue instructs future builds rather than recording the past, so a stale path there sends a run at a folder that no longer exists. The scope-lock refused the edit: a build does not edit the queue directly, and the queue tool it points at moves, deletes and appends whole entries byte-for-byte, so it cannot rewrite text inside an entry. Every other part of the rename was completed.
+
+**So the item asked a build to do planning work, and the hook was correct to stop it.** Editing the contents of a queue item is processing, which is /plan's. This is not a defect in the scope-lock and must not be filed as one.
+
+**What is left.** Roughly 40 references to `plugin/throughliner/docs-b/` across the Files lines and build blocks of open items — [two-column-fences-wrap-unreadably], [law-prose-restyle], [law-prose-restyle-heavy-docs], [law-prose-restyle-fetched-docs], [rescan-does-not-hand-back], [ask-before-writing-a-user-raised-capture] and others, plus several `Files (rough):` lines on unprocessed captures. Every one points at a folder that no longer exists.
+
+**Do it at a planning session, by grep rather than from this list**, which was counted mid-run and will move as items are built and filed.
+
+**What must NOT be rewritten**, because they are the record rather than instructions: the slugs `[rename-docs-b-folder]` and `[docs-b-name-outlives-the-two-docset-model]`, which are stable identifiers; the historical prose inside [rename-docs-b-folder] itself, which quotes the refusal it overturned; and the capture recording what you saw on your phone, which reports the old folder name as what was on screen at the time.
+
+Commit at filing time is the tip of main at `ae84933`.
+
+#### The work-cycle block explains the commands in sequence and never says who types them [work-cycle-block-omits-who-invokes]
+
+**Raised by you 2026-08-21**, from watching two sessions in a row mishandle how the
+commands relate to each other — *"I keep constantly having these interactions where
+claude doesn't really know how the skills even play out."* The diagnosis below and the
+proposed fix are Claude's.
+
+**What the block does and does not carry.** `skill-nonspecific-rules.md`'s "The work
+cycle" section is the only place the commands are described as a loop rather than one
+at a time: the standing capture step, /plan, /next, /done, the fresh chat that follows,
+and three return edges. It is thorough about *what each command does* and *how work
+moves between them*. It never states that the user types them and Claude does not.
+
+**That fact lives in the same file, about ninety lines away**, as one bullet under
+Communication: *"The method's own skills are one of those cases — name the command and
+hand it over, never attempt it."* A session reading the loop gets the sequence with no
+connected sense that it is never the one driving.
+
+**The fix is to move that bullet into the work cycle block**, not to write a second
+statement of it. Relocation within one file, so no always-loaded slot is spent and
+nothing is duplicated — which matters, because a near-identical second rule is exactly
+what the near-duplicate check exists to catch. A candidate shape, matching the block's
+existing `STANDING` label:
+
+```
+  WHO RUNS THESE — the user types every command. Claude names the one
+     that fits and hands it over.
+```
+
+**A first draft of that line was refused by you at authoring time, and the refusal is
+the useful part.** It read *"You never invoke any of these. The user types them."* —
+a prohibition, which the wording rule bans on the ground that anything stated as what
+not to do means the action was never specified. Correcting it to the positive form
+above produced text nearly identical to the bullet already in the file, which is what
+turned this from "add a line" into "move the existing one".
+
+**Evidence, one instance observed directly and one reported.** The observed one is
+Claude's own: at the close of 2026-08-21 Claude handed you a paste-ready starter prompt
+for a build run with the slash command written into it three times, and the prompt
+addressed a session already inside a run while being given to you to paste into one
+that was not. Neither you nor the receiving session had a clear answer to who acted
+next, and you said the result was *"really fucking confusing"*. That prompt also broke
+the shipped rule about naming a command in words rather than as a slash string.
+
+The reported one is that the receiving session *"didn't seem to understand how the
+skills work"*. **Claude has not seen that session and is inferring that it shares the
+same root, which may be wrong** — the fix below is designed against the observed
+instance only, and the keep-step should weigh whether the reported one needs its own
+item.
+
+**What this does not claim.** Moving the bullet makes the who-invokes fact reachable at
+the moment the sequence is read. It does not make it fire — this is the eighth recorded
+instance in this corpus of a correctly worded rule with a stated site not firing, and
+relocation is a better-siting move rather than an answer to that class.
+
+Filed 2026-08-21 from a chat outside any skill; commit at filing time is `ae84933`.
+
+#### You cannot name the parts of the method you want changed, so you cannot ask for changes to them [user-has-no-handle-on-the-methods-own-parts]
+
+**Raised by you 2026-08-21, in your own words:** *"I have also lost control because I
+don't know what the place were we explain this is called. I have some vague idea it's
+in skill-nonspecific-behaviours but I wouldn't have a clude how to refer to it and
+actually ask for improvements on it that yield better outcomes."*
+
+**The near-miss is the evidence.** The file is `skill-nonspecific-rules.md` and the
+section is "The work cycle". You were close enough to be clearly reaching for the right
+thing and not close enough to name it — and naming it is what a request has to survive
+in order to reach the right place.
+
+**This is the cost side of a rule that is otherwise working.** The vocabulary rule
+keeps internal terms out of what Claude says to you: procedure-doc filenames, step
+numbers, tag names are translated or omitted. That is right for a consumer building an
+app, who never needs them. It has a different effect here, where the method **is** the
+product: the parts you most need to direct are the ones you are never told the names
+of. This project is the unusual case the audience note in CLAUDE.md already describes,
+and this is a consequence of it that nobody had written down.
+
+**Two directions, and they are not exclusive.**
+
+The first is Claude's side and costs you nothing: **a request that describes a behaviour
+should be enough**, and Claude should locate the file. *"When you hand me a prompt to
+paste, never put a command inside it"* is complete and actionable as it stands. Needing
+a filename to make a request land is itself the defect. Whether anything needs writing
+for that, or whether it already follows from rules in place, wants checking rather than
+assuming.
+
+The second is a **map you can hold** — one short list naming the parts and what each
+governs, in your language rather than the corpus's: the always-loaded rules and what
+kinds of behaviour live there, the one doc per command, this project's own CLAUDE.md,
+SPEC. Where it lives is an open question. This project's CLAUDE.md is the obvious home
+and is also already long; the FAQ is consumer-facing and this is not a consumer's
+problem.
+
+**Not designed, and deliberately so.** The right shape depends on which of the two
+actually restores the control you lost, and that is your judgment rather than Claude's.
+
+**One thing worth not losing:** you said you had lost control, not that you were
+confused. Those are different complaints and the second is easier to answer than the
+first. A fix that leaves you able to follow what Claude is doing but still unable to
+direct it has answered the wrong one.
+
+Filed 2026-08-21 from a chat outside any skill; commit at filing time is `ae84933`.
 

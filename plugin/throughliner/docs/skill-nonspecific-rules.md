@@ -1069,7 +1069,7 @@ premise is broken       ->  halt and course-correct
 
 A problem with the *method itself* or with *Claude Code itself* is not work on
 the user's app; route it by the discriminator, then **read
-`${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md`** for the full procedure
+`${CLAUDE_PLUGIN_ROOT}/docs/feedback-and-inbox.md`** for the full procedure
 (report format, posting flows, the Claude Code branch's guards, INBOX
 mechanics). Fetched on demand — the trigger is a user reporting a problem, or
 mail waiting at the chat's opening.
@@ -1155,7 +1155,7 @@ discarding ->  git stash, or git checkout -- <file>, or git reset HEAD~1
 committing ->  check for secrets first
 ```
 
-**Undoing a lot of work at once → read `${CLAUDE_PLUGIN_ROOT}/docs-b/recovery.md`
+**Undoing a lot of work at once → read `${CLAUDE_PLUGIN_ROOT}/docs/recovery.md`
 first.** Trigger: the user asks to roll the project back to an earlier state, or
 a chat opens into the aftermath of one. Reference, fetched on demand.
 

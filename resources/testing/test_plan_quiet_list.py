@@ -88,7 +88,7 @@ CASES = [
     (os.path.join("plugin", "throughliner", ".claude-plugin", "marketplace.json"), False,
      "a sibling in the same folder is still denied"),
     ("README.md", False, "an ordinary project file is denied"),
-    (os.path.join("plugin", "throughliner", "docs-b", "plan.md"), False,
+    (os.path.join("plugin", "throughliner", "docs", "plan.md"), False,
      "a shipped doc is denied"),
     ("QUEUEQ.md", False, "a near-miss name is not on the list"),
 ]

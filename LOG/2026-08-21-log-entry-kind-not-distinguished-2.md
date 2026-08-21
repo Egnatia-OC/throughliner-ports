@@ -1,4 +1,4 @@
-# [HASH] — The digest stops reading a filename as proof work shipped, and reports the record's kind instead
+# ae84933 — The digest stops reading a filename as proof work shipped, and reports the record's kind instead
 
 The build of [log-entry-kind-not-distinguished]. The planning entry under the same slug records the item being processed; this one records it being done.
 

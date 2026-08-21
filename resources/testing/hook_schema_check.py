@@ -166,7 +166,8 @@ def test_session_start_payload_fits_under_the_cap():
 
     This is the check that matters most in this file, because the failure it
     guards was invisible in every other way. session_start once appended
-    plugin-behaviour.md whole — ~50KB in docs-b, ~89KB in docs — and the harness
+    plugin-behaviour.md whole — ~50KB in the lighter docset, ~89KB in the
+    heavier one, back when there were two — and the harness
     silently discarded everything past the preview. Sessions kept working, which
     is exactly why nobody noticed: Claude read CLAUDE.md and the queue directly
     and reconstructed roughly what the hook would have said.
@@ -445,8 +446,8 @@ def test_content_stamp_ignores_the_cli_in_use_marker():
     d = tempfile.mkdtemp(prefix="si-stamp-")
     with open(os.path.join(d, "hook.py"), "w", encoding="utf-8") as fh:
         fh.write("print('hello')\n")
-    os.makedirs(os.path.join(d, "docs-b"), exist_ok=True)
-    with open(os.path.join(d, "docs-b", "plan.md"), "w", encoding="utf-8") as fh:
+    os.makedirs(os.path.join(d, "docs"), exist_ok=True)
+    with open(os.path.join(d, "docs", "plan.md"), "w", encoding="utf-8") as fh:
         fh.write("# plan\n")
 
     before = session_start.content_stamp(d)
@@ -487,7 +488,7 @@ def test_content_stamp_ignores_the_cli_in_use_marker():
           session_start.content_stamp(d) == before)
 
     # The exclusion must be narrow: a real package file still moves it.
-    with open(os.path.join(d, "docs-b", "next.md"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(d, "docs", "next.md"), "w", encoding="utf-8") as fh:
         fh.write("# next\n")
     check("content_stamp: a genuine package file DOES move the stamp",
           session_start.content_stamp(d) != before)
