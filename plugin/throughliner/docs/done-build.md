@@ -133,16 +133,24 @@ entry from the working file's Changes and the item's own build block, and record
 that the decision history could not be recovered. That is one of the consequences
 of an untracked queue, and it is stated rather than discovered.
 
-**One entry per built item is unconditional**, however long the run. A work item's
-queue text is *consumed* when it builds — /next removes it — so after the build the
-LOG entry is the only surviving record of what the work was for.
+**One entry per built item is unconditional in COUNT, not in content**, however
+long the run. A work item's queue text is *consumed* when it builds — /next
+removes it — so after the build the LOG entry is the only surviving record of
+what the work was for. The count rule never forbids done.md's sibling-citation
+provision: where one decision settled several of the run's items, one entry
+carries the reasoning and the sibling entries cite it, each still named for its
+own slug. The close sees the grouping from what it already reads — each built
+item's queue text, read back one at a time — so items whose text records the
+same settlement are the siblings.
 
 **Each item's depth field says which form its entry takes — read it, don't judge
 it.** The field is defined at its authoring site, next.md's per-item completion
-step. Never judge by run size — a twelve-item run can still contain the
-session's most contested decision.
+step, and is slug-bound: `Depth: <slug> — short|full`. Read each built item's
+depth line **by its slug**, never by its position under a tick. Never judge by
+run size — a twelve-item run can still contain the session's most contested
+decision.
 
-**A ticked item with no depth field is read as short**, and noted at the close as
+**A built slug with no depth line is read as short**, and noted at the close as
 a discipline slip rather than passing silently: the field is required, so a
 missing one means the build skipped a step, and saying so is what keeps it from
 decaying back into an optional line.

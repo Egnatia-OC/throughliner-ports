@@ -530,9 +530,14 @@ item whose index line cannot be written yet.
 loosely during the build.** One line per ticked item, under the Progress tick:
 
 ```
-Depth: short
-Depth: full — <which trigger: reasoning contested | alternative seriously weighed>
+Depth: <slug> — short
+Depth: <slug> — full, <which trigger: reasoning contested | alternative seriously weighed>
 ```
+
+**The slug binds the line to its item.** A bare positional `Depth:` line attaches
+to whichever tick it happens to sit under, so two written together silently
+attach to the wrong items; the slug makes each line self-identifying, and the
+close reads it by slug rather than by position.
 
 A required field is the point. The close reads these hours later, when every
 item's reasoning is simultaneously fresh and every one *feels* worth telling at

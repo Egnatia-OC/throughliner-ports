@@ -34,6 +34,8 @@ Orientation, read here and never recited to the user.
 
 ```
 The work cycle. Every piece of work travels the same loop.
+  WHO RUNS THESE — the user types every command. Claude names the one
+     that fits and hands it over.
   STANDING — anything noticed, by anyone, at any moment, becomes a
      capture in Unprocessed. Not a stage: it is available throughout.
      Any chat may file one; only /plan may process one.
@@ -67,8 +69,8 @@ The work cycle. Every piece of work travels the same loop.
 - State a regression in the same plain terms as a success, and move on.
 - Run every command you can run yourself, handing one over only in the cases the
   rules below name.
-- **The method's own skills are one of those cases — name the command and hand it
-  over, never attempt it.** `/setup`, `/plan`, `/next`, `/rescan` and `/done` all
+- **The method's own skills are one of those hand-over cases** (who runs them is
+  in the work cycle above): `/setup`, `/plan`, `/next`, `/rescan` and `/done` all
   ship with model-invocation disabled, so an attempt fails and shows the user a
   red error at the moment they have least context for it. This has happened at a
   close, where the failure landed between "now closing the session" and any
@@ -116,12 +118,19 @@ The work cycle. Every piece of work travels the same loop.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"), and carry straight
-  on. **Inside /plan only, both get an offer, and BOTH are put before any
+  on. **Inside /plan only, an un-agreed idea gets an offer, put before the
   write**: a user-raised one is offered process-now or carry-on, with "anything
   else to add first?" alongside it; a Claude-raised one asks once — file it, or
   work it now? — with working it now recommended, and no further captures
   solicited. Asking after the write costs a write that is thrown away, since a
   capture answered "work it now" is immediately rewritten as a work item.
+  **A thing the user has already agreed to in this exchange is written without a
+  filing question**, in every skill including /plan: report it in one line
+  naming what landed, which the user can reject and have reverted. The offers
+  above are for un-agreed ideas — agreement is the answer the offer exists to
+  get, so asking for it again after it was given is the over-asking this method
+  removes. Delete asks, send asks and the process-now offer are untouched:
+  those decide something other than whether to file.
 - **A verbatim-copy string is a paste target, and paste targets are rendered by
   the View-in-doc rendering section below.** Scope: genuine paste targets only —
   paste-ready prompts, and commands the user runs in a separate terminal. Commit
@@ -294,6 +303,12 @@ a slug shown to    ->  say what that item is FOR, on its first appearance in
                       not holding the scrollback. Output only; inside queue
                       prose a slug stays bare.
 ```
+
+**Text written at a halt or stop — where the user must decide rather than
+follow along — states the situation in terms needing no method vocabulary.**
+The explained arm does not apply there: a halt is the moment the user has least
+context for a new term, and explaining one mid-alarm buries the decision under
+the vocabulary lesson.
 
 **Where the user is asking about the procedure itself, name its parts and
 explain each term once.** A term that names nothing in their world can still earn
@@ -1052,7 +1067,9 @@ a record or finding to be READ  ->  a LOG entry, or a resources/ file
 needed and minor        ->  ask to add it
 needed and significant  ->  propose splitting
 NOT needed              ->  capture and continue    # the common case
-                            # INSIDE /plan: ask before the write — see the
+                            # INSIDE /plan: an un-agreed idea gets the offer
+                            # before the write; an already-agreed thing is
+                            # written without a filing question — see the
                             # /plan carve-out in Communication above
 premise is broken       ->  halt and course-correct
 ```
@@ -1118,9 +1135,10 @@ giving an explicit yes** — feedback reports, GitHub issues, and outbound INBOX
 messages alike. Inbound INBOX mail is surfaced by session_start and routed
 through the three-way triage, then archived.
 
-**When an inbound message changes work here, draft the reply unprompted in the
-same chat** and put it in front of the user. The send stays under the rule above;
-what this adds is the offer.
+**When an inbound message asks a question, a reply is owed: draft it unprompted
+once the question has an answer** and put it in front of the user. A defect
+report is owed nothing by default. The send stays under the rule above; what
+this adds is the offer.
 
 ## Dependency ownership
 

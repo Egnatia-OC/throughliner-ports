@@ -183,6 +183,14 @@ The active build's working file. It does four jobs: carries the work item being 
 
 **If a working file is left behind by a conversation that never closed, Claude tells you at the start of the next session** and never deletes it. A working file can hold the only record of what a crashed session actually did, so throwing it away could lose real work. Run /done if you want what it records written up and committed.
 
+## Why did /setup rewrite part of my CLAUDE.md, and is my own text safe?
+
+The top part of your project's CLAUDE.md sits between two marker lines that say "PLUGIN-MANAGED". Everything between those markers is the method's own description of how your project docs work — and that text goes stale as the plugin improves, which matters because every session reads it as current.
+
+So when you run /setup to bring a project up to date, it compares that region against the plugin's current wording. Where they differ, it tells you what it's replacing and swaps in the current text.
+
+**Your own text is safe.** Anything found between the markers that isn't the plugin's — lines you added yourself — is moved below the end marker rather than deleted, and /setup says so when it does it. Everything below the end marker is yours and is never touched. If you want to add your own rules, put them below the end marker to begin with, and they'll never be involved in a refresh at all.
+
 ## What if my project already has planning docs from another tool or an older version?
 
 /setup handles it as a migration. When it sees your folder has content but none of the method's own docs yet, it treats your existing planning or spec documents as a starting point rather than assuming a blank slate. With your help, it maps that content into the method's docs (SPEC.md, QUEUE.md, and the LOG folder), keeping them at the top level of your project. Before renaming anything, it checks that each old doc actually fits the method doc it's mapped to — and if something doesn't fit, it asks you rather than guessing. It won't blindly rename or overwrite your existing files.
@@ -530,6 +538,14 @@ Messages between your projects carry two things identifying the sender: its **na
 
 **Is the path safe to have in there?** It only ever goes into a mailbox folder that git has been told to ignore — and before writing anything, Claude checks the receiving project's ignore rules and refuses to send if that folder isn't covered. So the path stays on your machine and never reaches a published repository.
 
+## Do I have to type out the other project's folder path?
+
+No. Telling Claude where to look counts the same as typing the path yourself.
+
+When a message needs to reach one of your other projects, Claude needs that project's folder location. You can paste the path — or you can just name the folder ("it's called Recipe Menu, somewhere under Documents") and ask Claude to find it. Claude then runs a narrow search for that name, shows you what it found, and only records or uses the path once you've confirmed it's the right folder.
+
+What never happens is Claude going looking on its own. The search runs only when you ask for it, it searches for the name you gave, and nothing is saved or sent until you've confirmed the match. Once confirmed, the location is remembered in the project's mailbox folder — which git never publishes — so you won't be asked again for that correspondent.
+
 ## Claude mentioned word counts and a missing quote after editing my queue. Is something wrong?
 
 No. Those are notes, not errors — the queue check has always reported things it noticed without stopping anything, and these are two more.
@@ -603,6 +619,14 @@ If Claude has ever pushed back on that, it was reading a rule that has now been 
 **One case where it genuinely matters.** If the thing being repaired is part of the machinery a build run itself uses — the tool that moves items around your queue, the safety check on which files can be edited — then using that machinery to fix itself is the risk. That's an example of freeform work, not the definition of it.
 
 **If you're unsure which you've got**, just work on it and run /done. That's the freeform path, and it needs no decision from you in advance.
+
+## How do I start the freeform work the close told me about?
+
+Paste the starter line Claude gave you into a fresh chat. That's the whole move.
+
+When a session closes and your queue holds a piece of freeform work — work you and Claude do by hand rather than run from the queue — Claude announces it and hands you a short ready-made prompt in a copy-able block. It names the work, says where its entry lives, and says the chat will end with /done. You don't have to remember or explain anything: open a new chat, paste it, and the new session picks the work up from the queue entry.
+
+If you've lost the prompt, that's fine too — the work is still sitting in your queue, so you can tell a fresh chat "let's do the freeform item in the queue by hand" and it will find it.
 
 ## An update told me my CLAUDE.md describes things that no longer exist. What do I do?
 

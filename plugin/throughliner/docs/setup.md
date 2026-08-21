@@ -263,10 +263,21 @@ brings the project up to. Read it from `FORMAT_EPOCH` near the top of
 `${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py` and write that number, on its own,
 into `.throughliner-format-epoch` at the project root.
 
-Do this **last among the migration edits**, once the conversions above have
-actually landed. It is what clears the session-start halt that sent the user
-here, so writing it early would silence the warning while the project was still
-on the old shape — and nothing else would ever raise it again.
+Do this **last among the migration edits**, and **only when the conversions for
+that epoch ran to completion**. It is what clears the session-start halt that
+sent the user here, so writing it early would silence the warning while the
+project was still on the old shape — and nothing else would ever raise it again.
+
+```
+conversion ran to completion   ->  write the new epoch number
+user skipped the conversion    ->  leave the marker at its old value, and say
+                                   plainly that the halt will fire again next
+                                   session because the conversion is still owed
+```
+
+The skip branch is not a punishment — it is the marker telling the truth. A
+marker written ahead of the conversion it certifies is the one state nothing can
+ever detect or repair.
 
 **3b. Read the project's own CLAUDE.md for retired terms, and report what you
 find**  [SILENT] when clean; [BRIEF] when reporting.
@@ -301,6 +312,30 @@ one hit    ->  name the term, what it was, what replaced it
 several    ->  one message listing all of them, then carry on
 ```
 
+**3c. Refresh the plugin-managed block in the project's CLAUDE.md**  [BRIEF].
+
+Compare the region between the PLUGIN-MANAGED markers in the project's CLAUDE.md
+against the same region in the installed `templates/CLAUDE-TEMPLATE.md`.
+
+```
+regions match          ->  nothing to do; say nothing
+regions differ         ->  say what will be replaced, then:
+                           1. any text inside the block that is not the
+                              template's — user-authored lines — moves below
+                              the end marker, and the narration says so
+                           2. the region is replaced with the template's
+                              current text
+no markers found       ->  report it like a retired term (3b): say the managed
+                           block is missing and what it is, edit nothing
+```
+
+This is the one deliberate exception to the never-overwrite rule below: the
+block's own marker promises it is updated on /setup, and the method-owned text
+between the markers is exactly what goes stale as the method evolves — a stale
+queue model there is read as current at the start of every session. The move-
+then-replace order is what keeps the exception safe: nothing the user wrote is
+deleted, only relocated below the marker, and the narration names it.
+
 **4. Skip the interview** — the project is already described in SPEC.md.
 
 **5. Close state-aware.**
@@ -316,7 +351,9 @@ otherwise                        ->  tell the user what was created or updated
 ```
 
 **Do NOT overwrite existing files.** The goal is to add what a newer plugin version
-introduced, not to refresh content.
+introduced, not to refresh content. The one carve-out is the plugin-managed block
+in CLAUDE.md (3c), which is method-owned text the marker promises is kept current
+— and even there, user-authored lines are moved, never deleted.
 
 ## Step 2: Scaffold the docs
 

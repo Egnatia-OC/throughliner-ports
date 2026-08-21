@@ -80,11 +80,17 @@ read it, with a self-check on the reading; the bodies stay out of the payload,
 because hook output is capped at 10,000 characters and past that the harness
 discards the whole payload, so enough unread mail would cost the chat its project
 state and its rules directive as well as its mail. Read each named file in full,
-then run the three-way triage in the behaviour rules: work to do becomes a
-capture in Unprocessed, a finding goes to the LOG, evidence to re-read goes
-under `resources/`. Then move the file to `INBOX/archive/`, so it isn't
-surfaced again at every opening. A project reads only its own INBOX; it
-never goes looking through other projects for mail.
+then run the triage — the three-way routing in the behaviour rules plus one
+outcome of the triage's own: work to do becomes a capture in Unprocessed, a
+finding goes to the LOG, evidence to re-read goes under `resources/`, **and a
+message that asks a question is owed a reply** — note the debt at triage, and
+draft the reply once the question has an answer: at that moment in a planning
+chat, at the close for a run. A defect report is owed nothing by default. The
+never-send-unseen guarantee is untouched — a drafted reply still leaves the
+machine only on the user's explicit yes to the exact wording. Then move the file
+to `INBOX/archive/`, so it isn't surfaced again at every opening. A project
+reads only its own INBOX; it never goes looking through other projects for
+mail.
 
 **`INBOX/sent.md` is the project's outbound register, not waiting mail, and it
 stays where it is.** It lives in the mailbox permanently and is read, appended to
@@ -135,6 +141,12 @@ recipient project's `INBOX/`, but only after the user has seen the exact
 wording and approved it. Sending is outward-facing and both mailboxes may sit
 in repositories that get published, so draft, show, wait — the same guarantee
 the feedback reports keep.
+
+**Where a report's claim has an observable check, run it at drafting** — a URL
+that responds, a file present or absent, a branch gone — and the report states
+what was observed and when. Where nothing observable exists, the report says so
+rather than implying a check: a report drafted from memory can describe a
+problem that was fixed days earlier.
 
 **Work finishing in another project is never learned by notification, and that is
 a decision rather than a gap.** Nothing here is told when work handed elsewhere is
@@ -256,6 +268,10 @@ lives INSIDE INBOX/    ->  `.gitignore` ignores that folder and everything
 records what the user  ->  never a filesystem scan for other projects. The
     gave                   standing rule is to work on the folder the session
                            opened in and never go looking for others.
+                           Supplying includes pointing: on the user's explicit
+                           ask, run a bounded search for the folder name they
+                           give, and confirm the match with the user before
+                           recording or sending. Never search unprompted.
 ```
 
 **The address book and the return path do different jobs and both are kept.**

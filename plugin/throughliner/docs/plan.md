@@ -242,6 +242,11 @@ This is separate from the below-the-line revisit further down, which stays silen
 while an item is still blocked: that silence is about whether the item may move,
 this is about the user knowing the work exists.
 
+**Where this chat's own build working file still exists, say so plainly, once, in
+the opening narration:** this chat has a build that has not closed, so lifts and
+shipped-flags depending on that run's work will not resolve until /done runs. The
+revisit still reads LOG and still skips silently — nothing else changes.
+
 **Each of these reports a fact, never a verdict.** Read them as inputs to your
 own judgment.
 
@@ -273,6 +278,12 @@ the session starts*. It is **not** a work item and never goes through keep/delet
 in Step 2; skip it there. It never narrows the session to only the advised item —
 Step 2 still processes the full queue. One line: "Last session recommends starting
 with [slug]." Orientation, not a command.
+
+**Before this session recommends a course contradicting the advisory it
+surfaced, check the advisory's stated reasons against the current state** — a
+grep or a file read — and say in the recommendation what was found, including
+where a reason is dead. The trigger is a contradicting recommendation, not every
+session: an advisory followed or simply left alone needs no reason-check.
 
 **Delete the advisory from Unprocessed as soon as it has been surfaced**, in this
 same step, unless it names a persist-condition that has not been met:
@@ -1127,13 +1138,18 @@ content belongs in another home — a SPEC sentence, a LOG entry, another item's
 rationale — edit the target first with approval, then remove the standalone item.
 Still a delete, just after its worth-keeping content has been carried across.
 
+**Where an instruction spawns further tool calls beyond its own write, say in
+one clause what that work still belongs to** — "still finishing the delete —
+repairing two references it broke". Without it, follow-on work reads as the next
+item starting, and the user loses track of where the run is.
+
 **4. Checkpoint**  [PROMPT]
 
 After every item, present the next item. That is the whole checkpoint.
 
 **The specimen — this is the shape of the message:**
 
-> Next up:
+> Kept and cleared. Next up:
 >
 > **#### The close invites another /next in the same session [close-invites-same-session-next]**
 > Captured by you (2026-08-13), from a live instance minutes earlier in another
@@ -1146,12 +1162,15 @@ routes, no analysis.
 
 ```
 message order:
-    1. a one-line pointer to the NEXT item, or its verbatim if the user took
+    1. the just-finished item's disposition, in one word or two —
+       "Deleted." / "Kept and cleared." — so the user knows where the last
+       item landed before meeting the next
+    2. a one-line pointer to the NEXT item, or its verbatim if the user took
        the inline offer (item only, no analysis)
        — re-read from QUEUE.md first to confirm the quote matches
-    2. one bold question about THAT item — is it worth doing, or whatever
+    3. one bold question about THAT item — is it worth doing, or whatever
        decision the item actually turns on
-    3. nothing else. No menu of routes.
+    4. nothing else. No menu of routes, no count, no tally.
 ```
 
 **The question is what the user answers; the recital is what was removed.** What

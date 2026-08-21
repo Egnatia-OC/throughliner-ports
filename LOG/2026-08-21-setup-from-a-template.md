@@ -1,4 +1,4 @@
-# [HASH] — Templates in /setup declined by the user, the capture deleted, and the sender told not to write the specification
+# 3102929 — Templates in /setup declined by the user, the capture deleted, and the sender told not to write the specification
 
 The sender's two questions were answered by the user's positioning call: */setup will not gain a template mechanism; starting from nothing is the deliberate design.* Her words: she doesn't really support templates — it was her idea to try, and she is over it. The second question (the unit) therefore never arises. A reply was drafted, approved verbatim, and delivered into the sender's mailbox the same session, mainly so they do not spend the effort writing the full specification they offered; the send is recorded in `INBOX/sent.md` and the sender's path in the address book.
 

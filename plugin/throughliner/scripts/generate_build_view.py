@@ -142,6 +142,40 @@ def parse(lines):
 
 RUNS_ALONE_RE = re.compile(r"^\s*(?:\*\*)?Runs alone(?:\*\*)?\s*$")
 
+# The rule-gate disposition (and any FAQ disposition) an item carries in its
+# prose, outside the build block. The build is required to TRANSCRIBE these,
+# never compose them — so the view must carry them, or a build authoring a rule
+# halts on a disposition it cannot see. Tolerates the bolded label form for the
+# same reason the LOG rule does: `**Rule gate:**` is the ordinary Markdown
+# instinct, and a disposition that silently fails to match is worse than one
+# written two ways.
+DISPOSITION_RE = re.compile(r"^\s*(?:\*\*)?(Rule gate|FAQ):(?:\*\*)?\s*(.*)$")
+
+
+def dispositions(entry):
+    """Every labelled disposition line in the entry's prose, normalised.
+
+    Read from the whole body, including inside the build block — where a
+    keep-step wrote it inside the delimiters it would otherwise appear twice,
+    so lines inside the block are skipped (the block already travels verbatim).
+    """
+    out = []
+    inside = False
+    for line in entry["body"]:
+        stripped = line.strip()
+        if stripped == BLOCK_OPEN:
+            inside = True
+            continue
+        if stripped == BLOCK_CLOSE:
+            inside = False
+            continue
+        if inside:
+            continue
+        m = DISPOSITION_RE.match(line)
+        if m:
+            out.append("%s: %s" % (m.group(1), m.group(2).strip()))
+    return out
+
 
 def runs_alone(entry):
     """True where the entry carries the `Runs alone` marker on its own line.
@@ -231,6 +265,13 @@ def render(entries):
         # the by-name listing would separate the bound from the item it bounds.
         if runs_alone(e):
             out.append("Runs alone")
+            out.append("")
+        # Dispositions travel with the instructions. A build transcribes them
+        # (never composes them), so a view without them makes every
+        # rule-amending item halt on a disposition the item actually carries.
+        dispo = dispositions(e)
+        if dispo:
+            out.extend(dispo)
             out.append("")
         block, err = build_block(e)
         if err:

@@ -241,6 +241,10 @@ Advisory: not needed — <why>
 - file the advisory itself as a capture at the top of Unprocessed, worded as
   advice, where the Recommend-next step made a *concrete* recommendation — a
   generic one files nothing, and the disposition line says which;
+- **where the reserved slot already holds a spent advisory, replace it**: delete
+  the spent note and file this close's own in the freed slot, with the new note
+  saying it replaced one. The reserved slug must be unique — filing alongside a
+  spent note stops the queue mover dead;
 - head the capture with the fixed, reserved slug, always that literal string:
 
 ```
@@ -255,9 +259,9 @@ never:      it sits ninth, with eight items ahead of it
 ```
 
 **The advisory is a transient orientation handoff, not work.** It is read and
-cleared at the next /plan's opening (plan.md), so nothing about clearing it is
-this close's job. It never runs through keep/delete, never moves into Processed,
-and stays in QUEUE.md rather than getting a file of its own.
+cleared at the next /plan's opening (plan.md), so it is never this close's job to
+clear one it is not replacing. It never runs through keep/delete, never moves
+into Processed, and stays in QUEUE.md rather than getting a file of its own.
 
 **One more section, on every flavor: what the chat did outside its work items.**
 
@@ -664,12 +668,26 @@ amend, no two-commit flow.
 
 Every sub-doc's final step points here, adding only its flavor delta.
 
+**Two arms, decided by whether this close filed a concrete advisory:**
+
+```
+advisory FILED       ->  the closing message carries ONE line naming it and
+                         pointing at the queue, and nothing else from the
+                         ladder below. The advisory already says what to do
+                         next; restating it in chat duplicates the record.
+                         The overlap scan still runs — and what it finds is
+                         written INTO the advisory before it is filed, never
+                         narrated alongside it.
+no advisory filed    ->  the full narration below, unchanged.
+```
+
 **Narrate the queue situation in everyday words**, and say how much work is
 waiting to be sorted wherever any is.
 
 **Overlap scan.** Before recommending, scan the still-unprocessed work for overlap
 with the top processed item — work that contradicts, invalidates, or would benefit
-it if sorted first. **State the result either way, not only when it blocks:**
+it if sorted first. It runs in both arms. **State the result either way, not only
+when it blocks** (in the advisory-filed arm, state it inside the advisory):
 
 ```
 nothing unprocessed              ->  say nothing's waiting for /plan
@@ -773,6 +791,23 @@ only where a file        -> post-close conversation that alters nothing has
 **Announce a `[freeform]` item if Processed holds one.** /next halts on one rather
 than building it, so say plainly what the item is and that it needs a session
 where the work is done by hand rather than run from the queue.
+
+**Hand over the words to start it.** With the announcement, give this starter
+prompt verbatim in a fenced block — a paste target, rendered per the view-in-doc
+rules — substituting only the item's slug for `<slug>`:
+
+```
+We're doing the freeform work item [<slug>] by hand in this chat — it's work
+done by hand rather than run from the queue. Its entry is in QUEUE.md (in this
+project's root folder), at the end of the cleared-to-run region of the
+Processed section; read that entry first — it says what the work is and where
+its recipe lives. When we're finished I'll run /done to record and commit.
+```
+
+Verbatim, not a template to adapt: fresh composition by an immersed session is
+the recorded failure — every referring word must resolve inside the prompt
+itself, because the session it's pasted into knows the queue exists and nothing
+else about this conversation.
 
 **Whether this step's recommendation was concrete decides the forward-advisory
 disposition**, which is written in the LOG entry files section above, along with
