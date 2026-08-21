@@ -1,4 +1,4 @@
-# [HASH] — the offer to process a user-raised capture comes after the write, and most of those writes are thrown away
+# d9468f3 — the offer to process a user-raised capture comes after the write, and most of those writes are thrown away
 
 Alex raised this from an instance minutes earlier in the same chat, and gave the shape she wants in her own words: instead of "filing it", *"do you want to capture this now for later, or go straight through to processing?"* Her estimate is the evidence the item rests on — **she would answer processing about 90% of the time**, because the item is in current memory and there is no time like the present, in which case the write need not happen at all.
 

@@ -1,4 +1,4 @@
-# [HASH] — /setup's migration gate tests for a queue shape no live project still has, so every epoch after 3 is unreachable
+# d9468f3 — /setup's migration gate tests for a queue shape no live project still has, so every epoch after 3 is unreachable
 
 Alex asked how items had reached Processed without describing any work. The answer corrected Claude twice, and what survived is worse than what was first filed.
 

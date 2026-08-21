@@ -1,4 +1,4 @@
-# [HASH] — /setup run after an eight-version gap, and it converted nothing it should have
+# d9468f3 — /setup run after an eight-version gap, and it converted nothing it should have
 
 The `[freeform]` item [setup-outstanding-here] is closed. `session_start` had reported the plugin moving 1.12.0 → 1.20.0-test13 since this project was last set up, and the notice had been surfaced at every opening and acted on by nobody. The item was tagged `[freeform]` because /setup refuses outright while a build is in progress, so it cannot execute inside a run — the constraint was the session, not the capability.
 

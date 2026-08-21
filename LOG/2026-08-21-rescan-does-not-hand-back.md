@@ -1,4 +1,4 @@
-# [HASH] — /rescan tells the user a future planning session decides her captures, and the premise behind the complaint turned out to be false
+# d9468f3 — /rescan tells the user a future planning session decides her captures, and the premise behind the complaint turned out to be false
 
 Alex reported that running /rescan before the close of every planning session was not having the effect it was built for: once it ran she was no longer in /plan and had to run /plan again, which defeats the reason it was made a separate skill. Her second point is the sharper one and is hers: what a re-scan turns up is often needed to finish the planning work that just happened, so it should land in the session that still has those items in mind rather than waiting for a planning session that comes after a build.
 

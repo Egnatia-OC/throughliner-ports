@@ -1,4 +1,4 @@
-# [HASH] — this project's own epoch-4 conversion, filed as freeform because the blocks must be written with the user
+# d9468f3 — this project's own epoch-4 conversion, filed as freeform because the blocks must be written with the user
 
 Sibling of `2026-08-21-setup-migration-gate-is-epoch-3-shaped.md`, which carries the reasoning for both; one decision settled the pair, so it is written once and cited rather than restated. That item repairs the recipe, this one runs it here.
 
