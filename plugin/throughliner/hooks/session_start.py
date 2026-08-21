@@ -835,6 +835,22 @@ def sweep_stale_editing_markers(cwd: str) -> None:
         return
 
 
+# Files that live in INBOX/ permanently and are not mail. Matched
+# case-insensitively, because Windows writes `desktop.ini` and `Desktop.ini`
+# interchangeably. `.DS_Store` needs no entry — the leading-dot rule covers it.
+#
+# `sent.md` is this project's own outbound register, and counting it did more
+# than inflate a number: the directive riding the notice tells the session to
+# route each message and then archive it, which — followed literally — files
+# away the one artifact a repeal is checked against.
+#
+# A naming convention for mail was refused. It would make every existing
+# mailbox migrate to keep working, where a deny-list of two OS names plus one
+# register is complete today and costs nothing. Revisit only if INBOX/ gains a
+# third permanent artifact.
+NOT_MAIL = {"desktop.ini", "thumbs.db", "sent.md"}
+
+
 def _waiting_inbox_messages(cwd):
     """Waiting messages as a list of filenames.
 
@@ -866,6 +882,8 @@ def _waiting_inbox_messages(cwd):
         found = []
         for name in sorted(os.listdir(inbox)):
             if name.startswith("."):
+                continue
+            if name.lower() in NOT_MAIL:
                 continue
             if not os.path.isfile(os.path.join(inbox, name)):
                 continue

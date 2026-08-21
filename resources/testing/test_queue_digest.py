@@ -412,6 +412,57 @@ def test_looping_chain_is_reported():
     shutil.rmtree(root, ignore_errors=True)
 
 
+def test_converging_chain_is_not_reported_as_a_loop():
+    """A diamond is an ordering, not a cycle.
+
+    C waits on both A and B, and B also waits on A. A visited-set walk reaches A
+    twice by two routes and calls the second arrival a loop. Nothing here fails
+    to release — A ships, then B, then C — and the false flag invites moving a
+    correctly placed item out of Processed, which is a fate decision made on a
+    premise that is not true. Reported from a consumer project.
+    """
+    root = project(
+        processed=(
+            MARKER + "\n\n"
+            "#### A [alpha]\nProse.\nBlocked by: [groundwork]\n\n"
+            "#### B [beta]\nProse.\nBlocked by: [alpha]\n\n"
+            "#### C [gamma]\nProse.\nBlocked by: [alpha], [beta]\n"
+        ),
+        unprocessed="#### Groundwork [groundwork]\nProse.\n",
+    )
+    _, out = run(root)
+    check(
+        "a converging blocker chain is not reported as a loop",
+        "loop of blockers" not in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_loop_reachable_through_a_second_blocker_is_reported():
+    """The multi-blocker walk must survive the path fix.
+
+    The cycle runs through the SECOND slug on the line, so a walk following only
+    the first named blocker misses it. That was an earlier defect here and the
+    path-tracking fix must not reintroduce it.
+    """
+    root = project(
+        processed=(
+            MARKER + "\n\n"
+            "#### One [alpha]\nProse.\nBlocked by: [harmless], [beta]\n\n"
+            "#### Two [beta]\nProse.\nBlocked by: [alpha]\n\n"
+            "#### Three [harmless]\nProse.\n"
+        ),
+    )
+    _, out = run(root)
+    check(
+        "a loop reachable only through a second named blocker is reported",
+        "loop of blockers" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
 def test_absent_blocker_is_not_a_loop():
     root = project(
         processed=MARKER + "\n\n#### One [alpha]\nProse.\nBlocked by: [ghost]\n",
@@ -701,6 +752,8 @@ if __name__ == "__main__":
     test_backticked_non_path_is_ignored()
     test_terminating_chain_is_not_reported()
     test_looping_chain_is_reported()
+    test_converging_chain_is_not_reported_as_a_loop()
+    test_loop_reachable_through_a_second_blocker_is_reported()
     test_absent_blocker_is_not_a_loop()
     test_built_into_is_not_a_do_not_build_phrase()
     test_do_not_build_still_fires()

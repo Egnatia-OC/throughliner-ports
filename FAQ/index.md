@@ -112,3 +112,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [I complained about how Claude was talking to me, and now it wants to send a report. Why?](faq.md#i-complained-about-how-claude-was-talking-to-me-and-now-it-wants-to-send-a-report-why)
 - [What is the short name in square brackets at the end of each queue item?](faq.md#what-is-the-short-name-in-square-brackets-at-the-end-of-each-queue-item)
 - [The plugin updated to a new version. Do I need to do anything?](faq.md#the-plugin-updated-to-a-new-version-do-i-need-to-do-anything)
+- [Is anything I approve ever gone for good?](faq.md#is-anything-i-approve-ever-gone-for-good)

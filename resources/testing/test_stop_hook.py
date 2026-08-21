@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+"""Regression tests for stop.py's filing-claim check.
+
+Host-only dev artifact — not shipped in the plugin package.
+
+Run:  py resources/testing/test_stop_hook.py
+(Plain script, never pytest — see CLAUDE.md's scripting constraints.)
+
+The hook is driven as a subprocess, because what needs pinning is whether it
+blocks — which is its exit code and its emitted reason, not an internal call.
+"""
+
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+
+for _stream in (sys.stderr, sys.stdout):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError, OSError):
+        pass
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+HOOK = os.path.join(ROOT, "plugin", "throughliner", "hooks", "stop.py")
+
+failures = []
+
+
+def check(label, ok, detail=""):
+    print(("  PASS  " if ok else "  FAIL  ") + label + ("" if ok else f" — {detail}"))
+    if not ok:
+        failures.append(label)
+
+
+QUEUE = """# QUEUE
+
+## Processed
+
+#### An item that is still queued [still-queued]
+Prose.
+
+--- Cleared to run above this line ---
+
+## Unprocessed
+"""
+
+
+def project(log_files=()):
+    d = tempfile.mkdtemp(prefix="stop-hook-test-")
+    with open(os.path.join(d, "QUEUE.md"), "w", encoding="utf-8") as f:
+        f.write(QUEUE)
+    log = os.path.join(d, "LOG")
+    os.makedirs(log)
+    for name in log_files:
+        with open(os.path.join(log, name), "w", encoding="utf-8") as f:
+            f.write("A session record.\n")
+    return d
+
+
+def run(root, message, session_id="s1"):
+    payload = {
+        "last_assistant_message": message,
+        "cwd": root,
+        "session_id": session_id,
+    }
+    r = subprocess.run(
+        [sys.executable, HOOK],
+        input=json.dumps(payload),
+        capture_output=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    return r.returncode, (r.stdout or "") + (r.stderr or "")
+
+
+def blocked(out, code):
+    """The hook blocks by emitting its reason; a clean pass emits nothing."""
+    return "not in QUEUE.md" in out or code != 0
+
+
+def test_cited_shipped_slug_does_not_block():
+    """The recorded defect: five instances, every one a correct citation.
+
+    A built item leaves QUEUE.md, so from the queue alone a citation of finished
+    work is indistinguishable from a report of a write that never happened.
+    """
+    root = project(log_files=["2026-08-21-already-shipped.md"])
+    code, out = run(root, "I've filed [already-shipped] as agreed.")
+    check("a slug with a LOG entry does not block", not blocked(out, code), out)
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_filing_claim_with_no_heading_and_no_log_entry_still_blocks():
+    """The hook's real catch has to survive the fix."""
+    root = project()
+    code, out = run(root, "I've filed [never-written] to Unprocessed.")
+    check("a claim with no heading and no record still blocks",
+          blocked(out, code), out)
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_a_queued_slug_does_not_block():
+    root = project()
+    code, out = run(root, "I've filed [still-queued] to the queue.")
+    check("a slug present as a heading does not block",
+          not blocked(out, code), out)
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_block_still_downgrades_after_one_fire():
+    """Block-once-per-claim is untouched, so a mismatch can't trap the chat."""
+    root = project()
+    first = run(root, "I've filed [never-written] to Unprocessed.")
+    second = run(root, "I've filed [never-written] to Unprocessed.")
+    check("the first claim blocks", blocked(first[1], first[0]), first[1])
+    check("the same claim does not block twice",
+          not blocked(second[1], second[0]) or "not in QUEUE.md" not in second[1]
+          or second[0] == 0,
+          second[1])
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_missing_log_directory_behaves_as_before():
+    """A project with no LOG/ must not start passing everything."""
+    d = tempfile.mkdtemp(prefix="stop-hook-test-")
+    with open(os.path.join(d, "QUEUE.md"), "w", encoding="utf-8") as f:
+        f.write(QUEUE)
+    code, out = run(d, "I've filed [never-written] to Unprocessed.")
+    check("no LOG/ folder leaves the check exactly as it was",
+          blocked(out, code), out)
+    shutil.rmtree(d, ignore_errors=True)
+
+
+if __name__ == "__main__":
+    print("test_stop_hook")
+    test_cited_shipped_slug_does_not_block()
+    test_filing_claim_with_no_heading_and_no_log_entry_still_blocks()
+    test_a_queued_slug_does_not_block()
+    test_block_still_downgrades_after_one_fire()
+    test_missing_log_directory_behaves_as_before()
+    print(f"\n{len(failures)} failure(s)" if failures else "\nall passed")
+    sys.exit(1 if failures else 0)

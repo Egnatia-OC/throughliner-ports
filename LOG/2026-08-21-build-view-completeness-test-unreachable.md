@@ -1,4 +1,4 @@
-# [HASH] — Processed and cleared: the view's completeness count made reachable
+# 00e57f3 — Processed and cleared: the view's completeness count made reachable
 
 Planning entry, sibling of `2026-08-21-autonomous-sweep.md`, which carries the
 sweep's shared reasoning. The disposition and build block are on the queue item.

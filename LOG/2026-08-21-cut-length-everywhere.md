@@ -1,4 +1,4 @@
-# [HASH] — The user repeals the no-length-caps position: cut everything, everywhere
+# 00e57f3 — The user repeals the no-length-caps position: cut everything, everywhere
 
 Planning entry. Kept and cleared to the head of the run.
 

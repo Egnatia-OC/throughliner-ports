@@ -416,12 +416,53 @@ NOT_NEEDED_RE = re.compile(r"^\*{0,2}Rule gate:\*{0,2}\s*not needed",
                            re.IGNORECASE | re.MULTILINE)
 
 
+PLACEHOLDER_HASH = "[HASH]"
+
+
+def _backfill_pending(root):
+    """True where any LOG entry still carries an unfilled `[HASH]` heading.
+
+    An entry is written before its commit exists, so its heading carries a
+    placeholder until the backfill replaces it with the real hash. Between the
+    commit and the backfill the freshest commit has no entry matchable by
+    heading — which is not a missing disposition, it is a disposition that
+    cannot be matched yet.
+    """
+    log_dir = os.path.join(root, "LOG")
+    if not os.path.isdir(log_dir):
+        return False
+    for name in os.listdir(log_dir):
+        if not name.endswith(".md"):
+            continue
+        try:
+            with open(os.path.join(log_dir, name), "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith("#") and PLACEHOLDER_HASH in line:
+                        return True
+        except (OSError, UnicodeDecodeError):
+            continue
+    return False
+
+
 def _rule_bearing_commits(root):
     """Commits after the baseline that touch a rule-bearing file.
 
     Returns (commits, error_message). Each commit is a dict with sha/subject.
     The baseline is what stops the signal reporting history that predates the
     obligation — every commit at or before it owes no disposition.
+
+    **The newest commit is skipped while a backfill is outstanding.** Run
+    immediately after a close, the check otherwise reports the commit just made
+    as carrying no disposition, every single time — the dispositions are there,
+    in entries whose headings still read `[HASH]`, and nothing can match them by
+    heading until the backfill lands. A finding that fires on correct work at a
+    predictable moment is the cry-wolf shape this project has repealed measures
+    for twice.
+
+    Two alternatives were refused. Filename-fallback matching reintroduces the
+    misattribution the heading-only rule was written to fix. Running the check
+    before the commit changes what the close's step means, for the same result
+    this skip gets more cheaply.
     """
     try:
         out = subprocess.run(
@@ -447,6 +488,13 @@ def _rule_bearing_commits(root):
         elif line.strip() and current is not None:
             if any(line.startswith(p) for p in RULE_BEARING):
                 current["hits"] = True
+
+    # `git log` returns newest first, so commits[0] is HEAD. Skipped only while
+    # a placeholder is outstanding, so a repository with every heading
+    # backfilled is checked exactly as before.
+    if commits and _backfill_pending(root):
+        commits = commits[1:]
+
     return [c for c in commits if c["hits"]], None
 
 

@@ -140,6 +140,31 @@ def parse(lines):
     return entries
 
 
+RUNS_ALONE_RE = re.compile(r"^\s*(?:\*\*)?Runs alone(?:\*\*)?\s*$")
+
+
+def runs_alone(entry):
+    """True where the entry carries the `Runs alone` marker on its own line.
+
+    Tolerates the bold form for the same reason the queue lint does: `**Runs
+    alone**` is the ordinary Markdown instinct, and a marker that silently fails
+    to match is worse than one written two ways.
+    """
+    return any(RUNS_ALONE_RE.match(line) for line in entry["body"])
+
+
+def needs_block(entry):
+    """True where this cleared entry is one a run builds from a block.
+
+    `[user]` and `[freeform]` items are never built from a block — one is walked
+    through, the other halts the run — so counting them among the items that
+    need one made the summary's two numbers permanently unequal in any project
+    holding either. A completeness test that can never read equal distinguishes
+    nothing at the moment it is read.
+    """
+    return entry["flavor"] not in ("user", "freeform")
+
+
 def build_block(entry):
     """The entry's build block, verbatim, or None where it carries none.
 
@@ -199,6 +224,14 @@ def render(entries):
         out.append("")
         out.append("Flavor: %s" % e["flavor"])
         out.append("")
+        # `Runs alone` is the run's SECOND bound, and it lives outside the build
+        # block — so the projection dropped it and a run could not see where it
+        # was supposed to stop. Emitted here, beside the block, because that is
+        # where the run reads the work it is about to build; putting it only in
+        # the by-name listing would separate the bound from the item it bounds.
+        if runs_alone(e):
+            out.append("Runs alone")
+            out.append("")
         block, err = build_block(e)
         if err:
             problems.append("[%s]: %s" % (slug, err))
@@ -281,12 +314,20 @@ def main():
     with open(out_path, "w", encoding="utf-8") as f:
         f.write("\n".join(body).rstrip("\n") + "\n")
 
-    cleared = sum(1 for e in entries if e["cleared"])
-    blocked = sum(1 for e in entries
-                  if e["cleared"] and build_block(e)[0] is not None)
-    print("generate_build_view: wrote %s — %d cleared item(s), %d with a build "
-          "block, %d entry(s) listed by name"
-          % (out_path, cleared, blocked, len(entries)))
+    # Count only the flavors a run builds from a block. The two numbers are then
+    # equal exactly when the migration is complete, which is what the epoch-4
+    # completeness test reads them for; counting `[user]` and `[freeform]` items
+    # among them made equal unreachable in any project holding one.
+    needing = [e for e in entries if e["cleared"] and needs_block(e)]
+    blocked = sum(1 for e in needing if build_block(e)[0] is not None)
+    exempt = sum(1 for e in entries if e["cleared"] and not needs_block(e))
+    summary = ("generate_build_view: wrote %s — %d block-needing cleared "
+               "item(s), %d with a build block"
+               % (out_path, len(needing), blocked))
+    if exempt:
+        summary += ("; %d cleared [user]/[freeform] item(s), which need none"
+                    % exempt)
+    print(summary + "; %d entry(s) listed by name" % len(entries))
     for p in problems:
         # A malformed block is reported and never repaired: the block is the
         # user-approved instruction set, and a script that tidies it is a script

@@ -1051,3 +1051,15 @@ Versions go up at every release, and most releases change nothing about your own
 If none of those is mentioned, there is nothing to do. Claude still tells you which version is installed at the start of every session, so you can see what you are on; that line is information, not a prompt.
 
 **This used to work differently, and the change is worth knowing about if you saw the old behaviour.** Any version difference at all produced a line telling you `/setup` wanted a session of its own — and because only `/setup` records the version, that line came back at *every* session until you ran it. So a message that sounded urgent appeared over and over for a reason that was never real. Now the only things that ask are the three above, and each of them is a genuine gap in your project rather than a number that changed.
+
+## Is anything I approve ever gone for good?
+
+Almost never. Deleting something from your queue is your decision, not Claude's — an item is only dropped when you have said so, either by agreeing to a recommendation or by naming it yourself.
+
+**And a deleted item is not really gone.** Your project's history keeps every version of every document, including the one from just before the deletion. If you change your mind an hour later or a month later, ask Claude to bring back the item you deleted, describing it however you remember it. Claude reads it out of the history and puts it back.
+
+That is true of anything written into your project's documents — a queue item, a session record, a sentence in your spec that was reworded. The version before the change is still there.
+
+**There is one exception, and it is one you chose.** When your project was set up you were offered the option of keeping your spec, your queue and your session records *out* of the project's history, so they are never published anywhere. If you took that option for a document, then nothing is recording its earlier versions — so an item deleted from a queue kept that way is genuinely gone, and Claude will tell you plainly at the time rather than promising a recovery it cannot make.
+
+Claude also says which of your documents are in that state at the start of every session, so you are never guessing which case you are in.

@@ -136,11 +136,21 @@ PY_INVOCATION = re.compile(r"\bpython[0-9.]*\b|\bpy\s+-")
 # argument (`-i ''`). Both forms are matched, and every remaining bare token
 # that is not an option or a quoted script is treated as a target.
 SED_INPLACE = re.compile(r"\bsed\b(?=[^;|&\n]*\s-i)")
+# A raw/bytes string prefix is still a LITERAL path. `r'C:\Users\...'` is the
+# ordinary way to write a Windows path in Python, and without this the literal
+# extractor read none of them while has_computed_write_target read all of them
+# as computed — so a scratchpad path spelled out in full was denied by a message
+# promising that a literal scratchpad path passes. `f` is deliberately absent:
+# an f-string interpolates, so it is genuinely computed.
+PY_STR_PREFIX = r"(?:[rRbBuU]{1,2})?"
+
 PY_OPEN_WRITE = re.compile(
-    r"""\bopen\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*,\s*['"][waxr]*[wax]b?\+?['"]"""
+    r"""\bopen\s*\(\s*""" + PY_STR_PREFIX
+    + r"""(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*,\s*['"][waxr]*[wax]b?\+?['"]"""
 )
 PY_PATH_WRITE = re.compile(
-    r"""\bPath\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*\)\s*\.\s*write_(?:text|bytes)\s*\("""
+    r"""\bPath\s*\(\s*""" + PY_STR_PREFIX
+    + r"""(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*\)\s*\.\s*write_(?:text|bytes)\s*\("""
 )
 
 # The same two shapes with the path left unconstrained. Used only to spot a
@@ -365,7 +375,11 @@ def has_computed_write_target(command: str) -> bool:
 
     for m in PY_OPEN_WRITE_ANY.finditer(command):
         arg = m.group("arg").strip()
-        quoted = len(arg) >= 2 and arg[0] in "'\"" and arg[-1] == arg[0]
+        # A raw/bytes prefix is stripped before the quoting test, for the reason
+        # given at PY_STR_PREFIX: `r'...'` is a literal path, and reading it as
+        # computed is what denied a literal scratchpad write.
+        body = re.sub(r"^[rRbBuU]{1,2}(?=['\"])", "", arg)
+        quoted = len(body) >= 2 and body[0] in "'\"" and body[-1] == body[0]
         if not quoted:
             return True
         # A quoted string carrying shell or format substitution is computed

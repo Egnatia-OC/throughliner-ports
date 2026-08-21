@@ -285,6 +285,47 @@ def test_blockquote_counts_as_showing_the_words():
           f"got: {warnings}")
 
 
+def test_bare_origin_claim_is_not_flagged():
+    """The whole of the provenance split, and nothing asserted it until now.
+
+    "Captured by you", with nothing quoted anywhere, is an ORIGIN claim: it says
+    where the item came from, and a paraphrase is the normal way to state it.
+    Everything in these documents is written by Claude, so a rule demanding a
+    quotation for an origin claim would move every un-transcribed idea of the
+    user's into Claude's column — and the cheapest way to satisfy such a rule is
+    to ask the user to prove their own work is theirs.
+
+    Reverting the split — folding the origin phrases back into
+    QUOTE_CLAIM_PHRASES — makes this case fail, which is what makes it a test of
+    the split rather than of the lint in general.
+    """
+    lint = load_lint()
+    for claim in ("Captured by you 2026-08-15.",
+                  "You raised this, and the reasoning is yours.",
+                  "Filed on your instruction."):
+        item = CLEAN.replace("Filed by Claude. Rationale for alpha.",
+                             claim + " Rationale for alpha.")
+        warnings = [w for w in lint(item) if "quotes nothing" in w]
+        check(f"a bare origin claim ({claim.split(',')[0][:24]}…) is accepted",
+              not warnings, f"got: {warnings}")
+
+
+def test_quote_claim_without_verbatim_text_is_still_flagged():
+    """The other side of the same split, pinned alongside it.
+
+    Narrowing the phrase list must not narrow it to nothing: a claim about how
+    something was PHRASED, with no phrasing shown, is exactly what the check
+    exists for.
+    """
+    lint = load_lint()
+    for claim in ("In your words, this should be done differently.",
+                  "Her own words settled it: the ordering was wrong."):
+        item = CLEAN.replace("Filed by Claude. Rationale for alpha.", claim)
+        warnings = [w for w in lint(item) if "quotes nothing" in w]
+        check(f"a quote claim with nothing quoted ({claim[:18]}…) is flagged",
+              bool(warnings), f"got: {warnings}")
+
+
 def test_uncredited_item_is_not_asked_for_a_quote():
     """The other half — an unmarked item reads as Claude's and owes nothing."""
     lint = load_lint()
@@ -338,6 +379,8 @@ if __name__ == "__main__":
     test_credit_without_a_quote_is_flagged()
     test_credit_with_a_quote_is_not_flagged()
     test_blockquote_counts_as_showing_the_words()
+    test_bare_origin_claim_is_not_flagged()
+    test_quote_claim_without_verbatim_text_is_still_flagged()
     test_uncredited_item_is_not_asked_for_a_quote()
     test_growth_reports_a_delta_per_edited_item()
     print(f"\n{len(failures)} failure(s)" if failures else "\nall passed")

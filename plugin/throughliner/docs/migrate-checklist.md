@@ -170,8 +170,35 @@ inline and whole — that is what the throughline requires, and the generated vi
 is regenerated rather than merged, so nothing is ever reconciled back.
 
 **Check it landed:** run the generator and read its summary line — it prints how
-many cleared items it found and how many carried a block. Equal numbers mean the
-migration is complete.
+many **block-needing** cleared items it found and how many carried a block.
+Equal numbers mean the migration is complete.
+
+Cleared `[user]` and `[freeform]` items are counted separately, on the same
+line, as items that need no block. They are excluded from the two numbers
+deliberately: neither is built from a block, so counting them made equal
+unreachable in any project holding one, and a completeness test that can never
+read equal distinguishes nothing at the moment it is read.
+
+## Section preambles — run this at every epoch
+
+**Quote a plain-prose section preamble.** Where the paragraph directly under
+`## Processed` or `## Unprocessed` is ordinary prose, prefix each of its lines
+with `> `. The wording is left exactly as it is.
+
+The lint reads un-quoted, un-headed prose inside a section as an orphaned
+rationale and warns that a heading may have been overwritten. A preamble
+legitimately has no heading, so any project scaffolded before 2026-08-15 carries
+two standing warnings on text /setup wrote itself — and a lint that always warns
+is one its user learns to read past.
+
+```
+already a blockquote  ->  nothing to do
+plain prose           ->  quote it, wording untouched
+no preamble at all    ->  nothing to do
+```
+
+**Check it landed:** the lint reports no "prose belongs to no entry" warning for
+either section heading.
 
 ## Preserve everything real
 

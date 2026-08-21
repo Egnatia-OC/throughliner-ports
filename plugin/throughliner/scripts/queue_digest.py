@@ -585,24 +585,31 @@ def _blocker_loop(item, items):
     fix that session.
     """
     by_slug = {i["slug"]: i for i in items if i["slug"]}
+
     # Depth-first over the blocker graph, because an item may name several
-    # blockers and a cycle can run through any one of them. The single-successor
-    # walk this replaces followed only the first named blocker, so a loop
-    # reachable through the second was invisible.
-    seen = set()
-    stack = [item]
-    while stack:
-        current = stack.pop()
-        if current is None or not current["blocked_by"]:
-            continue
-        if current["slug"] in seen:
+    # blockers and a cycle can run through any one of them.
+    #
+    # The set tracked is the CURRENT PATH — added on descent, removed on unwind
+    # — and never every node visited. A visited-set reports a converging chain
+    # as a loop: where C is blocked by A and B, and B is also blocked by A, A is
+    # reached twice by two different routes and the second arrival looks
+    # identical to a cycle. Nothing in that shape fails to release — A ships,
+    # then B, then C — and it is an ordinary way to express "these three must
+    # land in this order". A slug on the current path is genuinely waiting on
+    # itself; a slug merely seen before is not.
+    def walk(node, path):
+        if node is None or not node["blocked_by"]:
+            return False
+        if node["slug"] in path:
             return True
-        seen.add(current["slug"])
-        for ref in current["blocked_by"]:
-            nxt = by_slug.get(ref)
-            if nxt is not None:
-                stack.append(nxt)
-    return False
+        path.add(node["slug"])
+        for ref in node["blocked_by"]:
+            if walk(by_slug.get(ref), path):
+                return True
+        path.discard(node["slug"])
+        return False
+
+    return walk(item, set())
 
 
 def not_before_state(raw):

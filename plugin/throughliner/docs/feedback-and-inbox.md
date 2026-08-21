@@ -86,6 +86,15 @@ under `resources/`. Then move the file to `INBOX/archive/`, so it isn't
 surfaced again at every opening. A project reads only its own INBOX; it
 never goes looking through other projects for mail.
 
+**`INBOX/sent.md` is the project's outbound register, not waiting mail, and it
+stays where it is.** It lives in the mailbox permanently and is read, appended to
+and left alone — the archive instruction above reaches inbound message files
+only. Archiving it would file away the one artifact a repeal is checked against,
+which is what /plan's keep-step greps when work repeals something already
+announced. The scan excludes it by name as well, so the two halves agree; the
+scan is the load-bearing half, because a directive is a step and a step can be
+skipped.
+
 **A capture or LOG entry made from a message describes its source generically** —
 "a consumer project running this method" — rather than naming it. The mailbox is
 gitignored, so a sender identifying itself inside a message is safe; a capture is

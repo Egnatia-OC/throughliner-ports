@@ -1,4 +1,4 @@
-# [HASH] — Fourteen captures kept and cleared in one autonomous sweep, to the user's 20-cleared goal
+# 00e57f3 — Fourteen captures kept and cleared in one autonomous sweep, to the user's 20-cleared goal
 
 Planning entry. The user set a standing goal — process the queue in standard
 order until 20 items are cleared, checking LOG and research for prior

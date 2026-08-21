@@ -346,6 +346,56 @@ def main():
         "got: " + decision(d3, SED_READ),
     )
 
+    # --- raw-string paths: literal passes, computed still denied -------------
+    #
+    # `r'C:\...'` is the ordinary way to write a Windows path in Python. The
+    # literal extractor could not read one and the computed check read every one
+    # as computed, so a scratchpad path spelled out in full was denied by a
+    # message that promises a literal scratchpad path passes. Both halves are
+    # pinned here, because fixing one and not the other is what produced the
+    # disagreement in the first place.
+    d4 = make_project()
+    scratch = os.path.join(
+        tempfile.gettempdir(), "claude", "proj", "sess", "scratchpad", "x.md"
+    ).replace("\\", "/")
+
+    raw_scratch = "py -c \"open(r'%s', 'w').write('hi')\"" % scratch
+    check(
+        "a scratchpad path written as a raw string passes",
+        decision(d4, raw_scratch) == "pass",
+        "got: " + decision(d4, raw_scratch),
+    )
+
+    plain_scratch = "py -c \"open('%s', 'w').write('hi')\"" % scratch
+    check(
+        "a scratchpad path written plainly still passes",
+        decision(d4, plain_scratch) == "pass",
+        "got: " + decision(d4, plain_scratch),
+    )
+
+    raw_queue = "py -c \"open(r'%s', 'w').write('hi')\"" % (
+        os.path.join(d4, "QUEUE.md").replace("\\", "/")
+    )
+    check(
+        "a raw-string path inside the project is still denied",
+        decision(d4, raw_queue) == "deny",
+        "got: " + decision(d4, raw_queue),
+    )
+
+    computed = "py -c \"open(p, 'w').write('hi')\""
+    check(
+        "a computed target is still denied",
+        decision(d4, computed) == "deny",
+        "got: " + decision(d4, computed),
+    )
+
+    fstring = "py -c \"open(f'{d}/x.md', 'w').write('hi')\""
+    check(
+        "an f-string target is still denied, prefix or not",
+        decision(d4, fstring) == "deny",
+        "got: " + decision(d4, fstring),
+    )
+
     print()
     if _failures:
         print("FAILURES: " + ", ".join(_failures))

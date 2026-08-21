@@ -110,6 +110,16 @@ def generate(root):
         return f.read()
 
 
+def summary(root):
+    """The generator's own stdout summary line."""
+    out = os.path.join(root, "BUILD-VIEW.md")
+    r = subprocess.run(
+        [sys.executable, SCRIPT, os.path.join(root, "QUEUE.md"), "--out", out],
+        check=True, capture_output=True, encoding="utf-8",
+    )
+    return r.stdout.strip()
+
+
 def test_block_is_copied_byte_for_byte():
     """The instruction set the user approved is what the run acts on.
 
@@ -234,8 +244,114 @@ def test_slug_is_not_printed_twice():
     shutil.rmtree(root, ignore_errors=True)
 
 
+MARKER_LINE = "--- Cleared to run above this line ---"
+
+RUNS_ALONE_QUEUE = """# QUEUE
+
+## Processed
+
+#### A cleared item that must run on its own [solo]
+Prose.
+Runs alone
+
+--- Build block ---
+Changes: `a.md` — something.
+Acceptance: it worked.
+--- End build block ---
+
+""" + MARKER_LINE + """
+
+## Unprocessed
+"""
+
+WALKTHROUGH_QUEUE = """# QUEUE
+
+## Processed
+
+#### A build item with a block [alpha]
+Prose.
+
+--- Build block ---
+Changes: `a.md` — something.
+Acceptance: it worked.
+--- End build block ---
+
+#### [user] A step only the user can run [beta]
+Prose.
+
+#### [freeform] Work a run must not build [gamma]
+Prose.
+
+""" + MARKER_LINE + """
+
+## Unprocessed
+"""
+
+BLOCKLESS_QUEUE = """# QUEUE
+
+## Processed
+
+#### A build item with a block [alpha]
+Prose.
+
+--- Build block ---
+Changes: `a.md` — something.
+Acceptance: it worked.
+--- End build block ---
+
+#### A build item with no block at all [delta]
+Prose.
+
+""" + MARKER_LINE + """
+
+## Unprocessed
+"""
+
+
+def test_runs_alone_reaches_the_view():
+    """The run's second bound has to be visible where the run reads.
+
+    The marker sits outside the build block, so the projection dropped it and a
+    run could not see where it was supposed to stop — /next reads the literal.
+    """
+    root = project(RUNS_ALONE_QUEUE)
+    view = generate(root)
+    cleared = view.split("## Everything in the queue")[0]
+    check("the Runs alone marker appears in the cleared-items region",
+          "Runs alone" in cleared, cleared[:500])
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_completeness_can_read_equal_with_walkthrough_items():
+    """Equal must be reachable in a project holding [user]/[freeform] work.
+
+    Both are cleared and neither is built from a block, so counting them among
+    the items that need one made the two numbers permanently unequal — and a
+    number that can never match distinguishes nothing at the moment it is read.
+    """
+    root = project(WALKTHROUGH_QUEUE)
+    line = summary(root)
+    check("the two counted numbers are equal",
+          "1 block-needing cleared item(s), 1 with a build block" in line, line)
+    check("the exempt items are still reported, not hidden",
+          "2 cleared [user]/[freeform] item(s), which need none" in line, line)
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_a_genuinely_blockless_build_item_still_reads_unequal():
+    """The test must still fail when a migration is actually incomplete."""
+    root = project(BLOCKLESS_QUEUE)
+    line = summary(root)
+    check("a build item with no block makes the numbers differ",
+          "2 block-needing cleared item(s), 1 with a build block" in line, line)
+    shutil.rmtree(root, ignore_errors=True)
+
+
 if __name__ == "__main__":
     print("test_build_view")
+    test_runs_alone_reaches_the_view()
+    test_completeness_can_read_equal_with_walkthrough_items()
+    test_a_genuinely_blockless_build_item_still_reads_unequal()
     test_block_is_copied_byte_for_byte()
     test_decision_history_is_absent()
     test_refusal_travels()

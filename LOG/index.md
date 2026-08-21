@@ -2,24 +2,41 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — chat-level record for the 2026-08-21 planning chat: the user repeals the no-length-caps position after three narrowed fixes in one session, an autonomous sweep clears fourteen captures to reach a 20-cleared goal, two audits lift behind confirmed blockers, and a fresh capture's heading breaks the word-order rule in front of the user → 2026-08-21-chat-6.md
-- [HASH] — QUEUE.md — [cut-length-everywhere] kept and cleared to the head of the run: the user's knowing repeal of SPEC's no-length-caps position, covering rules, queue, log, FAQ, SPEC and chat, with bounds derived as proportions of measured distributions → 2026-08-21-cut-length-everywhere.md
-- [HASH] — QUEUE.md — [law-prose-pass-missed-mid-sentence-prohibitions] kept and cleared: remainder re-counted at 310 (double the estimate), evidence settled as a per-occurrence coverage list, the general keep-step clause refused on timing per [keep-step-accretes-from-five-items] → 2026-08-21-law-prose-pass-missed-mid-sentence-prohibitions.md
-- [HASH] — QUEUE.md — fourteen captures kept and cleared in one autonomous sweep under the user's 20-cleared goal; prior-work checks reframed the lint-scaffolding fix as a migration step and pinned the digest fix to the 2026-08-15 loop walk; dispositions on the items, sibling stubs per slug → 2026-08-21-autonomous-sweep.md
-- [HASH] — sibling stub → 2026-08-21-digest-diamond-read-as-a-loop.md
-- [HASH] — sibling stub → 2026-08-21-lint-flags-its-own-scaffolding.md
-- [HASH] — sibling stub → 2026-08-21-inbox-scan-counts-os-metadata-files.md
-- [HASH] — sibling stub → 2026-08-21-sent-record-surfaced-as-waiting-mail.md
-- [HASH] — sibling stub → 2026-08-21-build-view-drops-runs-alone.md
-- [HASH] — sibling stub → 2026-08-21-build-view-completeness-test-unreachable.md
-- [HASH] — sibling stub → 2026-08-21-origin-claim-has-no-test.md
-- [HASH] — sibling stub → 2026-08-21-stop-hook-fires-on-cited-slugs.md
-- [HASH] — sibling stub → 2026-08-21-rule-gate-dispositions-missing.md
-- [HASH] — sibling stub → 2026-08-21-shell-write-guard-blocks-the-scratchpad.md
-- [HASH] — sibling stub → 2026-08-21-claude-config-points-at-dead-layout.md
-- [HASH] — sibling stub → 2026-08-21-parent-claude-md-version-claim-stale.md
-- [HASH] — sibling stub → 2026-08-21-host-claude-md-names-retired-batches.md
-- [HASH] — sibling stub → 2026-08-21-no-faq-entry-on-deletion-and-recovery.md
+- [HASH] — chat-level record for the 2026-08-21 build chat: a 20-item run halts twice on its own scope, the build view is caught stripping the gate disposition it exists to carry (the live instance [build-view-strips-the-gate-disposition] predicted), QUEUE.md shifts mid-session from a second chat, and three defects are found by building rather than planning → 2026-08-21-chat-7.md
+- [HASH] — SPEC.md + skill-nonspecific-rules.md + plan.md — the no-length-caps position repealed and replaced with a per-shape bound = the median of that shape's measured distribution; plan.md cut 1,565→1,315 lines, rule statements 328→319 with the nine evictions named; thirteen docs uncut → 2026-08-21-cut-length-everywhere-2.md
+- [HASH] — plan.md — 68 prohibitions re-counted (not the ~150 claimed), 45 restyled to the action required, 23 left as protected kinds; full per-occurrence coverage list with line numbers; stopped at the file boundary, thirteen docs unread → 2026-08-21-law-prose-pass-missed-mid-sentence-prohibitions-2.md
+- [HASH] — queue_digest.py `_blocker_loop` — rewritten to track the current path rather than every visited node, so a converging chain (C on A and B, B on A) stops reporting as an unresolvable loop; multi-blocker cycle detection pinned by a new test → 2026-08-21-digest-diamond-read-as-a-loop-2.md
+- [HASH] — setup.md + migrate-checklist.md — migration step added to quote a plain-prose section preamble as a blockquote; the item's premise of thirteen standing flags here found false (lint reports zero), so only the shipped half was built → 2026-08-21-lint-flags-its-own-scaffolding-2.md
+- [HASH] — session_start.py `_waiting_inbox_messages` — a NOT_MAIL deny-list skips desktop.ini, thumbs.db and sent.md case-insensitively; naming-convention alternative refused as forcing every mailbox to migrate; new test suite → 2026-08-21-inbox-scan-counts-os-metadata-files-2.md
+- [HASH] — feedback-and-inbox.md — the archive directive gains the clause naming INBOX/sent.md as the outbound register that is never waiting mail and never archived; the scan exclusion stays the load-bearing half → 2026-08-21-sent-record-surfaced-as-waiting-mail-2.md
+- [HASH] — generate_build_view.py — `Runs alone` now emitted beside each cleared item's block, tolerating the bold form, so a run can read its own second bound; emitting it only in the by-name listing refused → 2026-08-21-build-view-drops-runs-alone-2.md
+- [HASH] — generate_build_view.py + migrate-checklist.md — the completeness summary counts block-needing flavors only, reporting cleared [user]/[freeform] separately, so equal is reachable; epoch-4 test reworded; a blockless build item still reads unequal → 2026-08-21-build-view-completeness-test-unreachable-2.md
+- [HASH] — test_queue_lint_flags.py — two cases pinning the provenance split: a bare origin claim goes unflagged, a quote claim with nothing quoted still fires; the revert-makes-it-fail acceptance executed rather than asserted → 2026-08-21-origin-claim-has-no-test-2.md
+- [HASH] — stop.py — a slug absent from QUEUE.md but present as a LOG entry no longer blocks, so a citation of shipped work passes; date-prefix stripping bug found in build; sentence-parsing alternative stayed refused; new test suite → 2026-08-21-stop-hook-fires-on-cited-slugs-2.md
+- [HASH] — rule_signals.py `_rule_bearing_commits` — skips the newest commit while any LOG heading still carries the hash placeholder, ending a false finding on every close; filename-fallback and pre-commit-run alternatives refused; new test suite → 2026-08-21-rule-gate-dispositions-missing-2.md
+- [HASH] — pre_tool_use.py — raw-string path prefixes now read as literal by both the extractor and the computed-target check, so a spelled-out scratchpad path passes as its message promises; f-strings still denied; five cases pinned → 2026-08-21-shell-write-guard-blocks-the-scratchpad-2.md
+- [HASH] — .claude/ — launch.json deleted (served an absent directory) and 52 of 66 allow-entries removed as naming the retired layout or the pre-move user path; a wildcard over-reach caught and reverted → 2026-08-21-claude-config-points-at-dead-layout-2.md
+- [HASH] — ../CLAUDE.md and Desktop/CLAUDE.md — the "v37, plugin version 0.37.0" claim dropped and the Throughliner rename applied in both; Desktop's file was not clean as the item allowed for → 2026-08-21-parent-claude-md-version-claim-stale-2.md
+- [HASH] — CLAUDE.md — six "batch" descriptions rewritten to the work-item model (one more than the item predicted, found by re-grepping rather than trusting drifted line numbers); requirements unchanged → 2026-08-21-host-claude-md-names-retired-batches-2.md
+- [HASH] — faq-template.md + faq-index-template.md + FAQ/ — new entry "Is anything I approve ever gone for good?" covering deletion, git recovery and the untracked-docs exception; naming a recovery command refused; both copies byte-identical → 2026-08-21-no-faq-entry-on-deletion-and-recovery-2.md
+- 00e57f3 — chat-level record for the 2026-08-21 planning chat: the user repeals the no-length-caps position after three narrowed fixes in one session, an autonomous sweep clears fourteen captures to reach a 20-cleared goal, two audits lift behind confirmed blockers, and a fresh capture's heading breaks the word-order rule in front of the user → 2026-08-21-chat-6.md
+- 00e57f3 — QUEUE.md — [cut-length-everywhere] kept and cleared to the head of the run: the user's knowing repeal of SPEC's no-length-caps position, covering rules, queue, log, FAQ, SPEC and chat, with bounds derived as proportions of measured distributions → 2026-08-21-cut-length-everywhere.md
+- 00e57f3 — QUEUE.md — [law-prose-pass-missed-mid-sentence-prohibitions] kept and cleared: remainder re-counted at 310 (double the estimate), evidence settled as a per-occurrence coverage list, the general keep-step clause refused on timing per [keep-step-accretes-from-five-items] → 2026-08-21-law-prose-pass-missed-mid-sentence-prohibitions.md
+- 00e57f3 — QUEUE.md — fourteen captures kept and cleared in one autonomous sweep under the user's 20-cleared goal; prior-work checks reframed the lint-scaffolding fix as a migration step and pinned the digest fix to the 2026-08-15 loop walk; dispositions on the items, sibling stubs per slug → 2026-08-21-autonomous-sweep.md
+- 00e57f3 — sibling stub → 2026-08-21-digest-diamond-read-as-a-loop.md
+- 00e57f3 — sibling stub → 2026-08-21-lint-flags-its-own-scaffolding.md
+- 00e57f3 — sibling stub → 2026-08-21-inbox-scan-counts-os-metadata-files.md
+- 00e57f3 — sibling stub → 2026-08-21-sent-record-surfaced-as-waiting-mail.md
+- 00e57f3 — sibling stub → 2026-08-21-build-view-drops-runs-alone.md
+- 00e57f3 — sibling stub → 2026-08-21-build-view-completeness-test-unreachable.md
+- 00e57f3 — sibling stub → 2026-08-21-origin-claim-has-no-test.md
+- 00e57f3 — sibling stub → 2026-08-21-stop-hook-fires-on-cited-slugs.md
+- 00e57f3 — sibling stub → 2026-08-21-rule-gate-dispositions-missing.md
+- 00e57f3 — sibling stub → 2026-08-21-shell-write-guard-blocks-the-scratchpad.md
+- 00e57f3 — sibling stub → 2026-08-21-claude-config-points-at-dead-layout.md
+- 00e57f3 — sibling stub → 2026-08-21-parent-claude-md-version-claim-stale.md
+- 00e57f3 — sibling stub → 2026-08-21-host-claude-md-names-retired-batches.md
+- 00e57f3 — sibling stub → 2026-08-21-no-faq-entry-on-deletion-and-recovery.md
 
 - cc33c1e — chat-level record for a seventeen-item build run: a Discord post rewritten by the user and published (mixed authorship recorded), this project's own user caught in a draft consumer-facing FAQ entry before it copied, a passing suite misreported as failing by a bad grep in the check itself, and three captures identified as one defect — a pass that searches by grep leaves no trace of what it missed → 2026-08-21-chat-5.md
 - cc33c1e — `session_start.py` + `next.md` + new `test_session_start_version_notice.py` — the version-change notice and its `version_mismatch` flag deleted outright, so a version-only difference now emits nothing and recommends no /setup; `next.md`'s overtake guard retargeted onto the stale-epoch and missing-document signals; the new suite pins BOTH the silence and that the two genuine /setup signals still fire → 2026-08-21-version-notice-recommends-setup-with-no-cause-2.md

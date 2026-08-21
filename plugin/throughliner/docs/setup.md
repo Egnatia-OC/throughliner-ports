@@ -226,6 +226,29 @@ holds anything the user clearly added
 
 Where their own content goes is the user's call, not yours.
 
+**2a. Rewrite a plain-prose section preamble as a blockquote.** Where the
+paragraph directly under `## Processed` or `## Unprocessed` in the project's
+QUEUE.md is ordinary prose, prefix each of its lines with `> ` so it becomes a
+blockquote. Leave the wording alone — this changes the shape, not the text.
+
+The queue lint reads any un-quoted, un-headed prose inside a section as an
+orphaned rationale and warns that an item's heading may have been overwritten. A
+preamble legitimately has no heading, so a project scaffolded before 2026-08-15
+— when the scaffold started shipping these as blockquotes — carries two standing
+warnings from the moment it was created, on text /setup wrote itself. Both fire
+at every queue edit, which is what teaches a user to read past the lint.
+
+```
+preamble is already a blockquote  ->  nothing to do
+preamble is plain prose           ->  quote it, wording untouched
+no preamble under the heading     ->  nothing to do; the scaffold's own
+                                      wording is not backfilled here
+```
+
+**Widening the lint's exemption to any first paragraph was refused, and stays
+refused (2026-08-15):** it would exempt genuinely orphaned prose, which is the
+thing the check exists to catch.
+
 **3. Update `.throughliner-version`** to the current plugin version.
 
 If the project instead carries the pre-rename marker `.si-version`, write the

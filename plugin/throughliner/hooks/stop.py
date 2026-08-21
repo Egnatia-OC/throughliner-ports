@@ -120,6 +120,40 @@ def _slugs_in_queue(queue_path):
     return slugs
 
 
+def _slugs_with_a_log_entry(cwd):
+    """Every slug that names recorded work, read off LOG/ filenames.
+
+    A session record is named `<date>-<slug>.md`, so a slug with an entry names
+    work that shipped rather than a filing that failed. Once an item is built it
+    leaves QUEUE.md, so from the queue alone a citation of finished work and a
+    report of a write that never happened look identical — which is the whole
+    defect: five recorded instances, every one a session correctly citing its own
+    completed work and being blocked for it.
+
+    Returns an empty set where `LOG/` is absent or unreadable, so a project
+    without one behaves exactly as before.
+    """
+    log_dir = os.path.join(cwd, "LOG")
+    found = set()
+    try:
+        names = os.listdir(log_dir)
+    except OSError:
+        return found
+    for name in names:
+        if not name.endswith(".md"):
+            continue
+        # The date prefix is stripped rather than matched around. A slug
+        # contains dashes, so a plain "text after the last dash" read of
+        # `2026-08-21-already-shipped.md` yields `08-21-already-shipped` — the
+        # leftmost match wins and the date is swallowed into the slug.
+        match = re.match(
+            r"^(?:\d{4}-\d{2}-\d{2}-)?([a-z0-9][a-z0-9-]*)\.md$", name
+        )
+        if match:
+            found.add(match.group(1))
+    return found
+
+
 def _already_blocked(cwd, session_id, slug):
     """True if this exact claim was blocked once already this session.
 
@@ -172,7 +206,17 @@ def main():
         # The overwhelming majority of turns. No work done.
         sys.exit(0)
 
-    missing = sorted(slug for slug in claimed if slug not in queue_slugs)
+    # A slug absent from the queue but present in LOG/ names recorded work, so
+    # the message is citing something that shipped rather than reporting a
+    # filing that failed. Suppressing on the record rather than on the sentence
+    # is deliberate: the item's own finding is that a citation and a
+    # filing-claim are identical at the level this detector reads, so parsing
+    # the sentence to tell them apart cannot work.
+    recorded = _slugs_with_a_log_entry(cwd)
+    missing = sorted(
+        slug for slug in claimed
+        if slug not in queue_slugs and slug not in recorded
+    )
     if not missing:
         sys.exit(0)
 

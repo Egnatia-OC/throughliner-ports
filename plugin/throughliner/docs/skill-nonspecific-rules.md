@@ -719,34 +719,33 @@ a DELIVERABLE written to disk — a report, a summary, a document for a reader
     summary of what the document already said, boilerplate.
 ```
 
-**Length follows from what the shape must carry, and this is the one statement
-of it — every other length rule in the method is subject to this one.** Three
-provisions:
+**Every written shape is bounded, and this is the one statement of it — every
+other length rule in the method is subject to this one.** Three provisions:
 
-- a record runs to whatever carries its facts, references, conditions and
-  reasoning;
-- a deliverable runs to whatever the task needs;
-- an index line runs to whatever supports the open/skip decision, per Index
-  entries below.
+- a record — a capture, a queue item, a session entry — is bounded by the median
+  of its own shape in this project's measured distribution;
+- a deliverable written to disk is bounded by what the task needs;
+- an index line is bounded by the median index line, per Index entries below.
 
-Both failures are real — a record too thin to rebuild intent from fails as
-surely as one too long to get through, and the second is the one this method has
-actually produced at scale. Length is still the thing that has to be earned.
-What is gone is any claim to have located the line to within a word count.
+**Read the bound off the corpus, never off memory:** `scripts/
+measure_written_shape_length.py` prints each shape's current median. A median is
+a proportion of what is already written rather than an invented figure, and it
+ratchets — writing to it pulls it down.
+
+Both failures are real: a record too thin to rebuild intent from fails as surely
+as one too long to get through, and the second is what this method has produced
+at scale.
 
 **A plan entry splits per item processed, exactly as a build entry splits per
-item built.** A planning decision IS a disposition on a queue item, and that item
-carries a slug, a filename and an index line — so the build case's machinery
-applies unchanged and nothing new is defined. What is genuinely chat-level — a
-correction given, an error found and fixed, a decision belonging to no item — has
-its own home in the `Also in this chat:` section.
+item built.** A planning decision is a disposition on a queue item, and that item
+carries a slug, a filename and an index line. What is genuinely chat-level — a
+correction given, an error found and fixed, a decision belonging to no item —
+goes in the `Also in this chat:` section.
 
-**The lever is where text lives, not how it is worded.** A prose instruction to
-be brief was tried first and measurably did nothing, which is why figures were
-introduced at all — so the answer to a failed number is not a return to a failed
-adjective. What replaces both is structure: a work item is divided into the
-instructions a build reads and the decision history a person reads, and history is
-relocated to the record and cited from the item rather than carried inside it.
+**The lever is where text lives as much as how much of it there is.** A work item
+is divided into the instructions a build reads and the decision history a person
+reads; history is relocated to the record and cited from the item rather than
+carried inside it.
 
 **Run `<plugin-root>/scripts/measure_written_shape_length.py .` to report this
 project's own distributions.** It prints how long your captures, work items,
