@@ -77,37 +77,6 @@ a `[user]` work item, which never enters a build working file — so /done doesn
 *as a build*, but once the user has run it, /done records its completion and
 removes it from the queue through done-plan.md.
 
-## Verify completion  [SILENT] when every item is ticked; [PROMPT] when any is not
-
-The build and audit close-outs point here for their completion check.
-
-Read the build working file. Is every item ticked — each build item done, each audit finding
-captured or dropped?
-
-```
-yes             ->  proceed
-some unticked   ->  [PROMPT] ask: finish the rest (/next), or close partial?
-                    Wait for the user's call.
-```
-
-**Close partial by deleting the build working file and leaving the queue alone.**
-An item is removed from QUEUE.md only as it is ticked, so an unticked item is
-still sitting in Processed exactly where it was — there is no copy-back step and
-no count to reconcile.
-
-Before deleting the build working file, confirm the two halves agree: every ticked item is
-gone from QUEUE.md, and every unticked one is still there. A mismatch means an
-interruption landed between the tick and the removal — say what you found and fix
-that one item, rather than proceeding.
-
-**Build-close delta — reconcile against memory.** At a build close, where the
-session is still remembered, reconcile the build working file against what you recall. If the
-file and memory disagree — work that happened but went unticked, a Changes note
-missing something memory knows was done — **that mismatch is itself a finding
-about build discipline**, and it routes to Unprocessed. It's the only routine
-check the build working file's accuracy gets before a fresh session has to rely on it. An audit
-close carries no such reconcile.
-
 ## The close's checks report as one narration  [BRIEF]
 
 Several checks fire across a close — verify completion, the staleness sweep, the
@@ -200,20 +169,13 @@ Claude's reasoning as Claude's (skill-nonspecific-rules.md, rationale provenance
 ```
 per-flavor body fields — the only delta between flavors:
 
-build       **Files touched:**       from the build working file Changes
-            **Routed to Captures:**  items added, or "none"
-
-audit       **Files touched:**       the target artifacts READ (an audit edits
-                                     nothing)
-            **Routed to Captures:**  findings captured, or "none"
-            **Approval outcomes:**   what happened at bulk approval — findings
-                                     dropped or reworded, each with the user's
-                                     reason; or "all findings approved as-is"
-
 plan/setup  **Queue changes:**       work processed, reordered, or modified
                                      (for setup: the first rough build item and
                                      the docs scaffolded)
             **Work processed:**      kept / deleted, with slugs, or "none"
+
+build and audit body fields live in done-build.md and done-audit.md, beside
+the entry-writing steps that use them.
 ```
 
 **The forward-recommendation advisory — one field on every flavor, and five
@@ -347,22 +309,6 @@ just-written entry — edit its "Routed to Captures:" line to include it, as a
 working-tree edit with no separate commit. It rides into the next session's
 commit, exactly as the hash backfill does.
 
-## The record a routing step sweeps
-
-Both close sub-docs route leftovers to Unprocessed, and both sweep the same
-record. Defined once here; each points at it.
-
-```
-the RECORD a routing step sweeps:
-    the build working file's notes
-    any captures already appended at the moment of noticing
-conversation memory  ->  a same-session BONUS pass, never a source the step
-                         depends on
-```
-
-An audit run has a build working file like any other run — its findings are
-ticked there — so the first line applies to both closes unchanged.
-
 ## Checks the closing session couldn't run
 
 The deferred-tests section is retired — there is no separate test queue.
@@ -377,37 +323,6 @@ move: if the closing session discovers a needed verification that isn't already 
 `[user]` item, file it as a `[user]` capture appended to Unprocessed. Nothing
 tracks it in a dedicated section, and **no LOG-only prose stands in for the queue
 line** — an unrun check recorded only in a log entry never surfaces again.
-
-## Red-flag lifecycle at close
-
-The sub-doc close-outs point here when the closing item carries a marker.
-Clearing happened at processing, so the close **records** and does not re-decide.
-
-Where a flag was cleared *this session*, record **how** in the session's LOG
-entry:
-
-```
-designed out / fixed  ->  how the risk was removed
-consciously accepted  ->  the informed-consent trail: what the user was warned
-                          about, and that they chose to proceed
-```
-
-The LOG is where the how-it-cleared lives; the marker on the work item carries
-only `State: cleared`. **Recording is unconditional once a flag clears** — the
-record lands in the LOG, because chat and the marker are the only other homes
-and no later session re-reads either for clearing history.
-
-At a build or audit close the flag was cleared in an earlier /plan session, so
-two things:
-
-```
-1. carry the cleared flag into this item's LOG entry
-   # note it carried a red flag and that it was cleared. The substantive
-   # how-it-cleared record was written at the /plan close that cleared it.
-2. BACKSTOP [PROMPT]: marker still reads State: uncleared?
-   # should be impossible. STOP and surface it rather than committing — an
-   # uncleared flag at a ship close means the model was bypassed.
-```
 
 ## Triage any waiting mail  [SILENT] when the mailbox is empty; [BRIEF] when it isn't
 
@@ -562,7 +477,7 @@ any OTHER out-of-scope dirty path
 committing** — "staging QUEUE.md, SPEC.md and two log entries". One sentence, no
 diff, no file-by-file account. The check above compares dirty paths against the
 build's file list, so it cannot see anything inside a file the session already
-owns — and QUEUE.md is the file a planning session edits by design.
+owns — and QUEUE.md is the file a planning run edits by design.
 
 **Two limits, and neither may be softened.** Naming the staged files makes a
 swept edit **visible**, not **detected** — nothing cheap will ever tell the user
@@ -624,19 +539,6 @@ or the user decides.
 
 **6. Commit with `git commit -F`.** No fresh okay needed. Then offer push only
 when a remote exists, and push only if the user accepts.
-
-**6a. An isolated session names its branch and warns about "remove"** [BRIEF].
-Fires only where session_start reported this session is in its own worktree; in a
-shared tree, say nothing. After committing, say plainly which branch the work is
-on and that **it is not merged back** — the harness never merges a session
-worktree, and choosing **remove** at exit deletes the worktree and the branch with
-all the work in them. Use that word, because it is the word the exit prompt uses
-and a user reads it as tidying up.
-
-**Leave the merge to a main-checkout session's start**, where session_start
-reports worktrees carrying unmerged commits — git refuses to update a branch
-checked out in another working tree. Say that too, so the user knows the work has
-somewhere to go.
 
 The LOG entry keeps its placeholder. The session-start hook backfills it at the
 next session, as a working-tree edit folding into that session's commit — no

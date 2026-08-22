@@ -127,13 +127,13 @@ by a factor that is fictional.
 
 ## Step 3: Say what happens next, then hand back  [BRIEF]
 
-Name what the captures are waiting for — **the planning session this chat is in,
+Name what the captures are waiting for — **the planning run this chat is in,
 where one is running, and otherwise the next one.** Processing a capture is
 exactly what /plan does, so a session still open can settle what was just filed.
 Say it once, plainly.
 
 **Then resume whatever was running and carry on from where it was.** A scan run
-inside a build or a planning session interrupts that work and returns it; the
+inside a build or a planning run interrupts that work and returns it; the
 hand-back is a return, not a close, and nothing has to be restarted — the skill's
 instructions are still in the conversation.
 

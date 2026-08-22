@@ -22,18 +22,24 @@ which is source data — a recorded event, authored once — not derived state.
 
 ## Six entries, in two classes
 
-Two REPORTS (MEASURED, AUDITED) measure and can never fire. Four SIGNALS (BORN,
-CONTRADICTED, MAINTAINED, REPEALED) have a trigger and do fire. Only signals are
-counted in the header: a denominator including the reports invites the reading
-that six things are watched when four are, and a check that over-claims makes
-the corpus look guarded when it is only partly guarded.
+One REPORT (MEASURED) measures and can never fire. Five SIGNALS (BORN,
+CONTRADICTED, MAINTAINED, REPEALED, AUDIT-LAG) have a trigger and do fire. Only
+signals are counted in the header: a denominator including the report invites
+the reading that six things are watched when five are, and a check that
+over-claims makes the corpus look guarded when it is only partly guarded.
+
+The AUDITED entry — "whether a corpus sweep is due" — is deleted, not renamed.
+Its trigger was the ceiling, the ceiling was repealed, and a measurement that
+can never fire is a measurement nobody reads. AUDIT-LAG supersedes it with a
+trigger that needs no threshold: rule-bearing commits since the most recent
+compliance-audit LOG entry.
 
 MEASURED   a structural rule-statement count across the always-loaded files,
            reported per audience as a growth report. No threshold, no verdict:
            it never fires. See GROWTH_NOTE for why the ceiling was removed.
-AUDITED    never fires either, for the same reason — its trigger was the
-           ceiling, and no defensible replacement threshold exists. It reports
-           the counts and leaves the sweep to judgment.
+AUDIT-LAG  rule-bearing commits made since the most recent compliance-audit
+           LOG entry. Fires while any exist; the capture it files is one
+           [audit] scoped to the changed files (delta scope, never the corpus).
 BORN       commits that should carry a gate-disposition line and do not,
            matched against commits touching the rule-bearing file set.
 CONTRADICTED
@@ -158,6 +164,7 @@ RULE_BEARING = [
     "plugin/throughliner/docs/",
     "resources/self-authoring-rules.md",
     "resources/rule-maintenance.md",
+    "resources/method-compliance-audit-checklist.md",
     "CLAUDE.md",
 ]
 
@@ -367,32 +374,83 @@ def signal_measured(root):
     }
 
 
-# --- AUDITED ------------------------------------------------------------
+# --- AUDIT-LAG ----------------------------------------------------------
 
-def signal_audited(root, measured):
-    """No longer fires, and says so plainly rather than pretending to a trigger.
+COMPLIANCE_AUDIT_ENTRY_RE = re.compile(r"compliance-audit", re.IGNORECASE)
 
-    Its trigger was the ceiling. With the ceiling gone and no defensible
-    replacement available, inventing one here would be exactly the bare-number
-    failure the method bans — so this reports the number and leaves the sweep
-    to judgment. Deciding a sweep is due is now a person's call, informed by
-    MEASURED's direction of travel and by MAINTAINED, which catches the drift
-    that is not growth.
+
+def signal_audit_lag(root):
+    """Rule-bearing commits made since the most recent compliance-audit entry.
+
+    Supersedes the AUDITED measurement, which lost its trigger when the
+    ceiling was repealed and could never fire. This needs no threshold: the
+    boundary is an artifact — the newest LOG entry whose filename names a
+    compliance audit — and the trigger is any rule-bearing commit after it.
+
+    The capture it files is one [audit] scoped to the files those commits
+    changed — delta scope, never the corpus; the one full pass is its own
+    item, filed separately. Satisfied while an open item carries the slug,
+    like every other check here. Over-fires by design, exactly as BORN does: a
+    typo commit to docs/ summons an audit whose finding is "nothing to audit",
+    which costs one line.
     """
-    total, _ = count_statements(root)
+    log_dir = os.path.join(root, "LOG")
+    boundary = None
+    if os.path.isdir(log_dir):
+        for name in sorted(os.listdir(log_dir)):
+            if name.endswith(".md") and COMPLIANCE_AUDIT_ENTRY_RE.search(name):
+                boundary = name
+    # The date prefix on the entry's filename is the boundary. Same-day
+    # commits before the audit re-report — the over-fire direction, accepted.
+    since = None
+    if boundary:
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})", boundary)
+        since = m.group(1) if m else None
+
+    cmd = ["git", "log", "--format=%H%x00%s", "--name-only"]
+    if since:
+        cmd += ["--since", since]
+    else:
+        cmd += [DISPOSITION_BASELINE + "..HEAD"]
+    try:
+        out = subprocess.run(cmd, cwd=root, capture_output=True, text=True,
+                             timeout=20)
+    except (OSError, subprocess.SubprocessError):
+        out = None
+    if out is None or out.returncode != 0:
+        return {"stage": "AUDIT_LAG", "firing": False, "value": 0,
+                "slug": "compliance-audit-lag",
+                "message": "git unavailable; AUDIT-LAG not computed."}
+
+    commits, files, current_sha = [], set(), None
+    for line in out.stdout.splitlines():
+        if "\x00" in line:
+            sha, _subject = line.split("\x00", 1)
+            current_sha = sha[:7]
+        elif line.strip() and current_sha is not None:
+            if any(line.startswith(p) for p in RULE_BEARING):
+                if current_sha not in commits:
+                    commits.append(current_sha)
+                files.add(line.strip())
+
     return {
-        "stage": "AUDITED",
-        # A REPORT, not a signal — same reason as MEASURED: its trigger was the
-        # ceiling, the ceiling is gone, and no replacement is defensible.
-        "kind": "report",
-        "value": total,
-        "slug": "three-lens-compliance-sweep-due",
+        "stage": "AUDIT_LAG",
+        "firing": bool(commits),
+        "value": len(commits),
+        "slug": "compliance-audit-lag",
         "message": (
-            "No automatic trigger: the ceiling this fired on is gone and no "
-            "replacement threshold is defensible. The three-lens sweep in "
-            "resources/method-compliance-audit-checklist.md is run by judgment "
-            "— the direction of travel in the rule-text count, and the "
-            "near-duplicate check, are the inputs."
+            "%d rule-bearing commit(s) since %s have not been covered by a "
+            "compliance audit. The capture is one [audit] scoped to the "
+            "changed files (delta scope): %s" % (
+                len(commits),
+                boundary if boundary else
+                ("the disposition baseline — no compliance-audit entry exists "
+                 "at all"),
+                ", ".join(sorted(files)[:8]),
+            )
+            if commits else
+            "No rule-bearing commits since the last compliance-audit entry"
+            + (" (%s)." % boundary if boundary else ".")
         ),
     }
 
@@ -935,7 +993,7 @@ def board(root):
     measured = signal_measured(root)
     return [
         measured,
-        signal_audited(root, measured),
+        signal_audit_lag(root),
         signal_born(root),
         signal_contradicted(root),
         signal_maintained(root),
@@ -951,7 +1009,7 @@ def board(root):
 # the user was never the intended audience of this output.
 CHECK_LABELS = {
     "MEASURED": "How much rule text there is",
-    "AUDITED": "Whether a corpus sweep is due",
+    "AUDIT_LAG": "Rule changes are covered by a compliance audit",
     "BORN": "Rule-bearing commits carry a gate line",
     "CONTRADICTED": "No commit says 'gate not needed' while rules grew",
     "MAINTAINED": "No two rules say nearly the same thing",
@@ -963,20 +1021,56 @@ CHECK_LABELS = {
 # session — a bare number shipped into the output style, the turn-by-turn asks
 # removed from every session, the rule gate having no site in the build, this
 # board having no trigger, and a shipped component missing from the project
-# map. Not one of the four checks asks whether a rule is CORRECT, whether it
+# map. Not one of the five checks asks whether a rule is CORRECT, whether it
 # FIRES, or whether it improved anything: they ask whether a required line
-# exists, whether two artifacts contradict, whether two rules read alike, and
-# whether a rule names a retired word. So a clean run is evidence the paperwork
-# was completed, and reporting that as health is the over-claiming this
-# project's own standard forbids.
+# exists, whether two artifacts contradict, whether two rules read alike,
+# whether a rule names a retired word, and whether rule changes have been
+# audited. So a clean run is evidence the paperwork was completed, and
+# reporting that as health is the over-claiming this project's own standard
+# forbids.
 CLEAN_RUN_NOTE = (
-    "What a clean result means: these four things were checked and nothing was "
+    "What a clean result means: these five things were checked and nothing was "
     "found.\nIt is not evidence the rules are correct, that they fire, or that "
     "they made anything better —\nno check here asks any of those questions."
 )
 
 
 PLANNING_ENTRY_RE = re.compile(r"-plan(-\d+)?\.md$", re.IGNORECASE)
+
+# A planning entry's body fields, per done.md's plan/setup template. Since the
+# per-entry split a planning close writes one entry PER ITEM PROCESSED, named
+# by the item's slug — so the filename pattern above matches nothing and the
+# window silently became full history (176 entries at two real openings). The
+# body fields are what a planning entry carries whatever it is named.
+PLANNING_BODY_RE = re.compile(
+    r"^\*{0,2}(Queue changes|Work processed):", re.IGNORECASE | re.MULTILINE)
+
+# A disposition recording a refusal — the outcome the /plan-opening surface
+# exists for. Matched on the line's own text.
+REFUSAL_RE = re.compile(r"refus|reject", re.IGNORECASE)
+
+
+def _latest_planning_entry(log_dir, names):
+    """Newest LOG entry written by a planning close.
+
+    Filename match first (pre-split entries), then body-field match — reading
+    newest-first so the scan usually stops after a few files.
+    """
+    boundary = None
+    for name in names:
+        if PLANNING_ENTRY_RE.search(name):
+            boundary = name
+    for name in reversed(names):
+        if boundary is not None and name <= boundary:
+            break
+        try:
+            with open(os.path.join(log_dir, name), "r", encoding="utf-8") as f:
+                text = f.read()
+        except OSError:
+            continue
+        if PLANNING_BODY_RE.search(text):
+            return name
+    return boundary
 
 
 def dispositions(root, window=True):
@@ -1007,10 +1101,7 @@ def dispositions(root, window=True):
 
     names = sorted(n for n in os.listdir(log_dir) if n.endswith(".md")
                    and n != "index.md")
-    boundary = None
-    for name in names:
-        if PLANNING_ENTRY_RE.search(name):
-            boundary = name
+    boundary = _latest_planning_entry(log_dir, names)
     scope = names
     note = None
     if window:
@@ -1037,6 +1128,7 @@ def dispositions(root, window=True):
                 found.append({
                     "entry": name, "sha": sha, "outcome": outcome,
                     "text": line.strip(),
+                    "refusal": bool(REFUSAL_RE.search(line)),
                 })
     found.reverse()
     return found, note
@@ -1059,8 +1151,14 @@ def print_dispositions(root, window=True):
     if not found:
         print("- none recorded in this window.")
     for d in found:
-        print(f"- {d['entry']} [{d['sha']}] — {d['outcome']}")
+        mark = " — REFUSAL" if d.get("refusal") else ""
+        print(f"- {d['entry']} [{d['sha']}] — {d['outcome']}{mark}")
         print(f"    {d['text']}")
+    refusals = sum(1 for d in found if d.get("refusal"))
+    print()
+    # The /plan opening surfaces this listing only where the window holds a
+    # refusal; this line is what that check reads.
+    print(f"Refusal-bearing dispositions in window: {refusals}")
     print()
     print(DISPOSITION_GUARD)
     return 0

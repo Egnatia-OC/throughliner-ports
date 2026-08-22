@@ -163,12 +163,45 @@ loading procedure docs from a docset that had already been retired. Bumping to
    so she must fully quit (confirming the process has exited, via Task Manager if
    needed) and relaunch. Say: "Host refreshed via the CLI — nothing has been
    published. Fully restart the app to load it for private testing."
-9. **In the first session after the restart, prove the hooks are alive** — this is
-   the delivery half that step 3 cannot give. Ask that fresh session what the
-   session-start hook actually reported to it, and confirm the answer matches what
-   the hook emits. A hook that is well-formed, installed, and silently dropped looks
-   exactly like a working one from this side; only a session saying what it received
-   distinguishes them.
+9. **Prove the hooks are alive after the restart** — the delivery half that
+   step 3 cannot give. A hook that is well-formed, installed, and silently
+   dropped looks exactly like a working one from this side.
+
+   **The primary proof is the re-fired `[Throughliner]` session-start payload
+   arriving in the rezip chat itself after the full restart.** The restart
+   re-fires session start into the chat that is already open, so read the
+   block there — no fresh chat needed. (Observed working on the
+   -test13/-test14 rezips of 2026-08-21: the payload arrived in-chat carrying
+   the new build stamp, and the stamp matched the source.)
+
+   **Where no payload re-fires in-chat, the fallback is a fresh session in a
+   project whose state reproduces the check** — version marker stale, epoch
+   current, nothing missing. Paste this block verbatim into that fresh
+   session — it is fixed text, not a template to adapt; fresh composition is
+   the recorded failure and fixed is also cheaper:
+
+   ```
+   Quote the [Throughliner] block from your session start verbatim. If no
+   such block arrived, say so plainly rather than reconstructing what it
+   would have said. If you can only paraphrase, answer these four instead:
+   (1) What plugin version did it report? (2) What build stamp? (3) Did it
+   halt you, or let the session proceed? (4) What did it say about waiting
+   mail?
+   ```
+
+   **How to read the answer:**
+   - the block quoted, with the new `-testN` version and a build stamp
+     matching the source's -> the fix landed; done.
+   - a halt about the document format or a missing doc -> a real halt, not a
+     delivery failure — the project's state, not the rezip, is what is
+     speaking.
+   - the old version number, or no block at all -> the restart was
+     incomplete (the process never exited) or the update was the silent
+     no-op the bump rule describes — re-check the cache and the stamp before
+     touching anything else.
+
+   **Known false positive, not a finding:** the returned block currently
+   reports `INBOX/sent.md` as waiting mail. Already known — do not file it.
 
 ## Release (on request)
 

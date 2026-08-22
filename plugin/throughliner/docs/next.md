@@ -142,7 +142,7 @@ one belonging to *this* session and no other, matching that exact name — a
 pattern written for the retired bare `_build.md` matches only the old name and
 can never find a current one, which makes the check report "no interrupted
 build" every time, silently, forever. A build running in another chat has its
-own, and its file list is not this session's scope — a planning session that
+own, and its file list is not this session's scope — a planning run that
 read another session's working file used to conclude it was inside that build.
 
 **Before creating any file at the project root, read the untracked list in the
@@ -471,9 +471,10 @@ build item (no tag)  ->  read and follow next-build.md
 Between build items, keep going autonomously — the user confirmed the whole run
 at the Step 1 off-ramp, so there's no per-item re-confirmation.
 
-**As each item completes, do four things before starting the next:** tick it in
-the working file's Progress, record that item's depth field, write that item's
-index-entry candidate, then remove that one item from QUEUE.md with the
+**As each item completes, make four writes in the working file, then remove the
+item:** tick it in Progress, record that item's depth field, write that item's
+index-entry candidate, and write that item's `Changes:` entry — the files it
+touched, one line each — then remove that one item from QUEUE.md with the
 mechanical mover, addressed by its slug.
 
 **Where the project's own instructions require a rule-gate disposition and the
@@ -483,8 +484,8 @@ halt and say so: the gate's site is planning, and a disposition written now coul
 only describe what is already built.
 
 **The tick is the accumulation point.** `Progress:`, `Index entry candidates:`
-and `Changes:` all grow one item at a time, so the working file only ever
-describes work that actually happened. The index candidate is artifact touched +
+and `Changes:` all grow one item at a time, at the tick and never later, so the
+working file only ever describes work that actually happened. The index candidate is artifact touched +
 nature of change (skill-nonspecific-rules.md, Index entries), and written here it
 *describes* the build rather than predicting it.
 
@@ -626,11 +627,11 @@ helps either way.
 
 ## Ending before scope-lock
 
-Any session end before Step 2 locks scope — a soft-stop at the marker, the user
+Any run end before Step 2 locks scope — a soft-stop at the marker, the user
 calling it off:
 
 **1. Route any reshape direction to Unprocessed** [PROMPT]. The trigger is
-mechanical: *session ending + no scope locked + a reshape direction or learning
+mechanical: *run ending + no scope locked + a reshape direction or learning
 the queue needs in conversation = capture needed.* Append it naming the item's
 slug; write it, then report what was filed. Unrouted, the direction survives only
 in the LOG entry, which /plan doesn't read at planning time, so the work

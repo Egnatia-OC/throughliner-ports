@@ -6,15 +6,11 @@ The standing criteria for a periodic compliance audit of the method's own proced
 
 It is a dev artifact. It audits the method's own docs, so it is host-only — not shipped in the plugin package, no FAQ, no SPEC entry — the same status as the gate it builds on.
 
-**What triggers a sweep — a judgment, since 2026-08-12.** There is no automatic trigger any more. The board's **AUDITED** signal used to fire when the always-loaded rule-statement count went over a ceiling of 200; that ceiling was removed when the 150–200 instruction figure it derived from was re-validated against the 5-series and found roughly an order of magnitude too tight (`research/instruction-ceiling-revalidated-for-5-series.md`). No replacement threshold is defensible, and inventing one is the bare-number failure the method bans — so AUDITED now reports rather than fires.
+**What triggers an audit — the board's AUDIT-LAG check, since 2026-08-22.** `resources/rule_signals.py` fires when rule-bearing commits exist that no compliance audit has covered — the boundary is the most recent compliance-audit LOG entry, an artifact rather than a threshold. The check files one `[audit]` capture scoped to the changed files and stays quiet while it is open. (The earlier arrangement — a person deciding by judgment after the AUDITED ceiling was repealed — meant nothing ran the sweep, for the same reason the checks themselves once had no trigger. The count-based ceiling stays repealed: the 150–200 instruction figure it derived from was re-validated against the 5-series and found roughly an order of magnitude too tight, `research/instruction-ceiling-revalidated-for-5-series.md`, and a sweep every N sessions stays rejected as a bare number with no derivation.)
 
-A sweep is therefore decided by a person, on two inputs the board still computes: **MEASURED**'s direction of travel, per audience and per document group, and **MAINTAINED**, which catches near-duplicate rules — the drift that is not growth. The case for sweeping is now relevance rather than volume: irrelevant content degrades the treatment of every instruction around it, and near-identical rules are optimal distractors for one another. Neither is something a count measures, which is why losing the number costs less here than it first appears.
+**The routine form is DELTA SCOPE: audit the rule files changed since the last audit, against every lens, at parent axis.** The corpus-wide sweep is not the standing shape — one full pass exists as its own separately filed item, and after it the delta is the unit. Delta scope is what keeps each audit small enough to actually run, which the full-sweep duty never was.
 
-The obvious alternative, a sweep every N sessions, was rejected twice over: N would be a bare number with no derivation, which the authoring gate now bans; and a periodic duty is the post-legislative-scrutiny shape the research condemns, which achieved 7.6% coverage of eligible Acts. Before this, the sweep had no trigger at all and ran only when a /plan happened to file an `[audit]` item, which is how the corpus reached ~218 before anyone counted.
-
-**The gap this leaves, stated rather than discovered.** Below the ceiling no sweep ever fires, so drift that is *not growth* — a rule going stale, a prohibition that should have been an action — goes uncaught until the corpus grows across the line. That hole belongs to the board's MAINTAINED signal, which watches for near-duplicate rules independently of the count.
-
-Run all three lenses over each doc in scope. One read of the doc serves all three. Findings route to Captures for a later /plan to scope — an audit produces findings, not edits to the docs it reads.
+Run all four lenses over each doc in scope. One read of the doc serves all four. Findings route to Captures for a later /plan to scope — an audit produces findings, not edits to the docs it reads.
 
 ## State the axis before you start, and it is the parent axis
 
@@ -104,6 +100,12 @@ Check what the doc causes Claude to *say to the user* against the communication 
 - **Multi-finding openings that should consolidate** — a doc that fires several scans, watches, or narrations at one skill opening without consolidating them into one narration. The rule is stated per skill, in that skill's own opening step: plan.md's read-state, next.md's pre-flight, done.md's close.
 
 **Not a target: a purpose clause.** Where a sentence is welded into a rule's operative text because the rule cannot be applied correctly without it, that sentence *is* the rule, not rationale riding it. An eviction sweep must leave it alone. The test in reverse: delete it and read what remains — a complete instruction means it was rationale, an unfinished one means it was operative.
+
+## Lens 4 — decision history in operative text
+
+**The detector is the delete-and-read test, run sentence by sentence over operative text.** Delete the sentence and read what remains: a complete instruction means what was deleted was rationale or history, and it belongs in the record — the deciding LOG entry, or git history — not in the rule. An unfinished instruction means the sentence was operative and stays.
+
+This lens catches **disguised rationale**: decision history written in the syntax of a rule — a dated "reinstated by the user's decision of…", a "was tried and retired on measured grounds", an alternative's defeat narrated inside the operative statement. The SPEC output-style paragraph found and rewritten on 2026-08-22 is the founding instance: it survived every earlier audit because the earlier lenses looked for rationale *clauses* riding rules, and this was history wearing a whole paragraph's worth of rule syntax. No "because" is required for a sentence to fail this lens — history is rationale whatever conjunction it travels under.
 
 ## The doubled communication rules — what this project's own narration cannot test
 

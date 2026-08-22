@@ -19,10 +19,22 @@ a run may contain SEVERAL audit items:
 
 ## Phase 1: Judgment (while context is fresh)
 
-### 1.1 Verify completion
+### 1.1 Verify completion  [SILENT] when every finding is ticked; [PROMPT] when any is not
 
-Run done.md's **Verify completion**. An audit close carries **no** memory-reconcile
-delta — a finding is ticked when captured or dropped.
+Read the build working file. Is every finding ticked — captured or dropped?
+
+```
+yes             ->  proceed
+some unticked   ->  [PROMPT] ask: finish the rest (/next), or close partial?
+                    Wait for the user's call.
+```
+
+Close partial by deleting the build working file and leaving the queue alone —
+an unticked item is still sitting in Processed exactly where it was. Before
+deleting it, confirm the two halves agree: every ticked item is gone from
+QUEUE.md, every unticked one still there; fix a mismatch rather than proceeding.
+An audit close carries **no** memory-reconcile delta — a finding is ticked when
+captured or dropped.
 
 ### 1.2 Route stragglers to Unprocessed  [PROMPT]
 
@@ -31,8 +43,16 @@ one numbered report.
 
 The findings themselves were appended during the audit; this
 sweeps anything *else* flagged along the way — observations outside the audit's
-criteria, process issues. What it sweeps is done.md's **The record a routing
-step sweeps**.
+criteria, process issues.
+
+```
+the RECORD this step sweeps:
+    the build working file's notes — an audit run has one like any other run,
+    its findings ticked there
+    any captures already appended at the moment of noticing
+conversation memory  ->  a same-session BONUS pass, never a source the step
+                         depends on
+```
 
 Append each to Unprocessed, placed per the Captures placement rule (narrate the
 placement).
@@ -47,8 +67,15 @@ Follow done.md's **LOG entry files** section, using its **Audit** body fields:
 ```
 Files touched       the target artifacts READ — the audit edited nothing
 Routed to Captures  findings captured, or "none"
-Approval outcomes   what happened at bulk approval
+Approval outcomes   what happened at bulk approval — findings dropped or
+                    reworded, each with the user's reason; or "all findings
+                    approved as-is"
 ```
+
+**An audit item that itself carries a `Red flag · State:` marker:** its flag was
+cleared at an earlier /plan run, so carry the cleared flag into its entry; a
+marker still reading uncleared is the impossible case — stop and surface it
+rather than committing.
 
 **An audit doesn't clear red flags** — clearing happens at processing. A security,
 privacy or breach risk this audit surfaces is filed as an ordinary **uncleared**

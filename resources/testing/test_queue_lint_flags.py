@@ -53,7 +53,7 @@ CLEAN = """# QUEUE
 
 ## Processed
 
-#### A perfectly ordinary work item [alpha]
+#### Perfectly ordinary work item [alpha]
 Filed by Claude. Rationale for alpha.
 
 --- Build block ---
@@ -80,8 +80,8 @@ def test_clean_queue_is_silent():
 
 def test_slugless_heading_is_flagged():
     lint = load_lint()
-    bad = CLEAN.replace("#### A perfectly ordinary work item [alpha]",
-                        "#### A work item nobody gave a slug")
+    bad = CLEAN.replace("#### Perfectly ordinary work item [alpha]",
+                        "#### Work item nobody gave a slug")
     warnings = lint(bad)
     hit = any("no [slug]" in w for w in warnings)
     check("a heading with no slug is flagged", hit, f"got: {warnings}")
@@ -128,7 +128,7 @@ def test_orphaned_prose_is_flagged():
 
 HELD = CLEAN.replace(
     "## Unprocessed",
-    "#### A held item [gamma]\nRationale for gamma.\n{hold}\n\n## Unprocessed",
+    "#### Held item [gamma]\nRationale for gamma.\n{hold}\n\n## Unprocessed",
 )
 
 

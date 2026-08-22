@@ -39,17 +39,45 @@ new scope (a redesign, a new feature, a change to something that already worked)
 
 /done records and commits; it doesn't take on new build scope.
 
-### 1.1 Verify completion
+### 1.1 Verify completion  [SILENT] when every item is ticked; [PROMPT] when any is not
 
-Run done.md's **Verify completion**. Its build-close delta applies: reconcile
-the build working file against memory where the session is still remembered, and route any
-mismatch to Unprocessed per 1.2.
+Read the build working file. Is every item ticked — each build item done?
+
+```
+yes             ->  proceed
+some unticked   ->  [PROMPT] ask: finish the rest (/next), or close partial?
+                    Wait for the user's call.
+```
+
+**Close partial by deleting the build working file and leaving the queue alone.**
+An item is removed from QUEUE.md only as it is ticked, so an unticked item is
+still sitting in Processed exactly where it was — there is no copy-back step and
+no count to reconcile.
+
+Before deleting the build working file, confirm the two halves agree: every
+ticked item is gone from QUEUE.md, and every unticked one is still there. A
+mismatch means an interruption landed between the tick and the removal — say
+what you found and fix that one item, rather than proceeding.
+
+**Reconcile against memory.** Where the session is still remembered, reconcile
+the build working file against what you recall. If the file and memory disagree
+— work that happened but went unticked, a Changes note missing something memory
+knows was done — **that mismatch is itself a finding about build discipline**,
+and it routes to Unprocessed per 1.2. It's the only routine check the build
+working file's accuracy gets before a fresh session has to rely on it.
 
 ### 1.2 Route findings to Unprocessed  [PROMPT]
 
 Each finding is written to Unprocessed first, then reported — the whole set as
-one numbered report. What this step sweeps is done.md's **The record a routing
-step sweeps**.
+one numbered report.
+
+```
+the RECORD this step sweeps:
+    the build working file's notes
+    any captures already appended at the moment of noticing
+conversation memory  ->  a same-session BONUS pass, never a source the step
+                         depends on
+```
 
 Append each finding to Unprocessed, placed per the Captures placement rule
 (narrate the placement). Append any fix a build check surfaced too.
@@ -69,7 +97,7 @@ run CONTRADICTS SPEC   ->  name the SPEC sentence and the work that contradicts
 
 **Where the build found that SPEC owes a sentence, it filed a capture and wrote
 nothing** (next-build.md, Scope management). Confirm the capture exists and say
-in one line that SPEC lags that sentence until the next planning session. **Do
+in one line that SPEC lags that sentence until the next planning run. **Do
 not write it here:** the close is the same session as the build, so writing it
 now moves the self-certification later rather than crossing the session boundary
 the rule exists for.
@@ -79,11 +107,19 @@ stands — a different thing from a sentence SPEC does not yet carry.
 
 ### 1.4 Red-flag close  [SILENT] when no flag; [PROMPT] when an item carries one
 
-Per built item: if it carries a `Red flag · State: …` marker, run done.md's
-**Red-flag lifecycle at close** before the item leaves the queue. Its flag was
-cleared at processing, so carry the cleared flag into this item's LOG entry (2.1);
-the backstop stops only if the marker still reads uncleared. Silent when no built
-item carries a flag.
+Per built item carrying a `Red flag · State: …` marker, before the item leaves
+the queue. Its flag was cleared at an earlier /plan run, so two things:
+
+```
+1. carry the cleared flag into this item's LOG entry (2.1)
+   # note it carried a red flag and that it was cleared. The substantive
+   # how-it-cleared record was written at the /plan close that cleared it.
+2. BACKSTOP [PROMPT]: marker still reads State: uncleared?
+   # should be impossible. STOP and surface it rather than committing — an
+   # uncleared flag at a ship close means the model was bypassed.
+```
+
+Silent when no built item carries a flag.
 
 ### 1.5 Reply to mail the run opened  [SILENT] when no mail arrived; [PROMPT] when it did
 
@@ -101,8 +137,12 @@ carried from the build working file into the LOG entry — the file's last job b
 deletes it.
 
 Write **one LOG entry file per built item**, each named after that item's slug.
-Follow done.md's **LOG entry files** section, using its **Build** body fields
-(`Files touched` from the build working file Changes; `Routed to Captures`).
+Follow done.md's **LOG entry files** section, with the build body fields:
+
+```
+Files touched       from the build working file Changes
+Routed to Captures  items added, or "none"
+```
 
 **Read each built item's reasoning back, one entry at a time** [SILENT]. The run
 built from the view, which carries instructions and no decision history, so the
@@ -117,9 +157,16 @@ git show HEAD:QUEUE.md
 ```
 
 The run has not committed yet — the close is what commits — so every item this run
-built is still in the last commit's copy, whole. Take the one entry the slug names
-and nothing else; a read of the whole file is what the view exists to avoid, and it
-is not needed to answer one slug.
+built is still in the last commit's copy, whole. **Take the item's whole block —
+from its `#### ` heading to the next heading, or the section's end** — and
+nothing else; a read of the whole file is what the view exists to avoid, and it
+is not needed to answer one slug. A hand-sized grep or line window is not used:
+a window shorter than the item once truncated the read twice in one close, and
+both outputs reasoned from the cut-off text, one reaching the user.
+
+**Where the fetched item's own text already dispositions a question the close is
+about to put to the user, transcribe the disposition instead of asking** — and
+an ask that deliberately re-opens one names the recorded decision it re-opens.
 
 **Where QUEUE.md is untracked, git holds no copy and this route is closed.** Say
 so plainly in the entry rather than implying the reasoning was carried: write the

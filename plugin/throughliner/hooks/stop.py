@@ -154,6 +154,39 @@ def _slugs_with_a_log_entry(cwd):
     return found
 
 
+def _slugs_ticked_in_working_file(cwd, session_id):
+    """Slugs ticked in THIS session's build working file.
+
+    Between an item's tick and the close it is in neither the queue (the run
+    removed it at the tick) nor LOG/ (the close writes the entry), so a
+    citation of work built minutes earlier in the same run still drew a block
+    — a guard false-firing at the moment of highest confidence. A tick line
+    reads `- [x] <description>` under Progress, and the run's items carry
+    their slugs in the `Run:` line and per-entry lines, so any bracketed slug
+    on a ticked line or in the file at all is read as this run's own work.
+
+    Deliberately broad: over-suppressing here only quiets the guard about
+    slugs this session's own working file names, which are this session's own
+    work by construction. A missing or unparseable working file returns an
+    empty set, so a session without one behaves exactly as before.
+    """
+    if not session_id:
+        return set()
+    safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id)
+    path = os.path.join(cwd, "_build-%s.md" % safe_id)
+    found = set()
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            text = f.read()
+    except (OSError, UnicodeDecodeError):
+        return found
+    for match in re.finditer(r"\[([a-z0-9][a-z0-9-]*)\]", text):
+        slug = match.group(1)
+        if "-" in slug:
+            found.add(slug)
+    return found
+
+
 def _already_blocked(cwd, session_id, slug):
     """True if this exact claim was blocked once already this session.
 
@@ -213,9 +246,15 @@ def main():
     # filing-claim are identical at the level this detector reads, so parsing
     # the sentence to tell them apart cannot work.
     recorded = _slugs_with_a_log_entry(cwd)
+    # ...and a slug named in this session's own build working file is work this
+    # run built (or is building): between its tick and the close it is in
+    # neither the queue nor LOG/, so without this the guard fired on a run
+    # correctly citing its own finished work.
+    ticked = _slugs_ticked_in_working_file(cwd, session_id)
     missing = sorted(
         slug for slug in claimed
         if slug not in queue_slugs and slug not in recorded
+        and slug not in ticked
     )
     if not missing:
         sys.exit(0)

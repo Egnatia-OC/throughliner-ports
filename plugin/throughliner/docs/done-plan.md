@@ -271,7 +271,8 @@ mentioning it is already a supported path.
    # whose completion isn't visible simply stays where it is
 2. write a LOG entry per completed item, named after its slug
    # records what the user did and its outcome; write it, then report it
-   # if it carried a red-flag marker -> run done.md's Red-flag lifecycle
+   # if it carried a red-flag marker -> carry the cleared flag into the entry;
+   # a marker still reading uncleared is the impossible case — stop and surface it
 3. remove each completed item from Processed
    # this is what stops it being re-presented
 ```
@@ -287,10 +288,20 @@ Follow done.md's **LOG entry files** section, using its **Plan / setup** body
 fields (`Queue changes`; `Work processed`). Planning sessions carry no
 index-entry candidate — author the index entry fresh.
 
-If a red flag was cleared this session, record **how** per done.md's Recording a
-cleared red flag: for a design-out, how it was eliminated; for an acceptance, what
-the user was warned about and that they chose to proceed. Clearing happens at
-processing, so /plan is where this record is written.
+If a red flag was cleared this session, record **how** in the session's LOG
+entry. Clearing happens at processing, so /plan is where this record is written
+— the close **records** and does not re-decide:
+
+```
+designed out / fixed  ->  how the risk was removed
+consciously accepted  ->  the informed-consent trail: what the user was warned
+                          about, and that they chose to proceed
+```
+
+The LOG is where the how-it-cleared lives; the marker on the work item carries
+only `State: cleared`. **Recording is unconditional once a flag clears** — the
+record lands in the LOG, because chat and the marker are the only other homes
+and no later session re-reads either for clearing history.
 
 **Read what this session did off the queue itself, not off memory:**
 
@@ -329,6 +340,20 @@ planning / setup / method-doc-only  ->  commit, and DON'T offer push. Planning
 completed [user] item / handmade    ->  offer push as the commit core does.
                                         Both are real project progress.
 ```
+
+**An isolated session names its branch and warns about "remove"** [BRIEF].
+Fires only where session_start reported this session is in its own worktree; in
+a shared tree, say nothing. After committing, say plainly which branch the work
+is on and that **it is not merged back** — the harness never merges a session
+worktree, and choosing **remove** at exit deletes the worktree and the branch
+with all the work in them. Use that word, because it is the word the exit prompt
+uses and a user reads it as tidying up.
+
+**Leave the merge to a main-checkout session's start**, where session_start
+reports worktrees carrying unmerged commits — git refuses to update a branch
+checked out in another working tree. Say that too, so the user knows the work
+has somewhere to go. (The always-loaded rules carry this same instruction for
+every session shape, so a build or audit close in a worktree is covered there.)
 
 ## 3. Recommend next  [BRIEF, PROMPT]
 

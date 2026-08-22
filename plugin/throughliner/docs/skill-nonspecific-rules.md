@@ -494,7 +494,7 @@ filed; include the reasoning, not just what was noticed.
 **A capture may be a single line whose only job is to release held work**, and
 its content may be no more than what must happen before that work can move. It
 is still real work and still passes the ordinary tests; what it does not have to
-be is substantial. So a plan session holding work back and finding nothing in the
+be is substantial. So a plan run holding work back and finding nothing in the
 queue to name as its blocker writes one.
 
 **Line format — write an entry in this exact shape**, which is what the hooks
@@ -670,7 +670,12 @@ real and equally bad; neither warning may be louder than the other. (How a
 
 The `[freeform]` tag names **work done by hand rather than by /next** — because it
 is large, or because it characteristically cannot run inside a run. Its main job
-is telling the close what kind of work it is looking at.
+is telling the close what kind of work it is looking at. **Before its first
+edit, a freeform session working a queued item writes a scope file —
+`_freeform-<session-id>.md` in the project root, with a `Files:` section
+listing the paths the item's build block names — and reports it in one line.**
+The safety check reads that file and permits the listed paths for this session;
+without it, edits outside the standing planning surface are refused.
 
 **Most freeform work never passes through /plan at all.** The user and Claude do
 it by hand in a chat of its own, and /done reads the resulting edits as their
@@ -1063,13 +1068,13 @@ premise is broken       ->  halt and course-correct
 - **One build at a time.** While this chat's build working file exists, finish
   that build before starting another.
 - **One chat runs /plan and /next as many times as the work needs, one after
-  another.** A plan session and a next session are runs of a command inside a
+  another.** A plan run and a next run are runs of a command inside a
   chat, not the chat itself. Run whichever the user asks for, whatever ran
   before it in the chat. The boundary that binds is filing vs processing,
   stated in the rule above.
 
   **/done closes the CHAT**, once, when the chat is finished — it records
-  everything the chat did, across every plan session and next session in it.
+  everything the chat did, across every plan run and next run in it.
 
   **Work on a project from one chat at a time**, because a capture filed in one
   chat is invisible to the other and the two disagree about the queue from the

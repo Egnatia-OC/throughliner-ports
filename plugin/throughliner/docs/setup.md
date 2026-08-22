@@ -185,6 +185,10 @@ Check each, and make it so if it isn't:
 ```
 INBOX/ present          ->  `.gitignore` carries an `INBOX/` line
 .gitignore present      ->  it carries a `.throughliner/` line
+no outputStyle set in the project's .claude/settings.local.json
+                        ->  make the brevity-style offer from Step 2, exactly
+                            as a fresh setup would — this project was set up
+                            before the style shipped
 ```
 
 **Where the project has INBOX files already in git history, say so plainly.**
@@ -270,10 +274,18 @@ retired terms to search for, with their replacements:
                                      with a flavor tag; there are no batches
                                      and no sub-headings inside one
     "Deferred tests"             ->  deferred verification is a `[user]` work
-                                     line, revisited each planning session
+                                     line, revisited each planning run
     "Parked:"                    ->  work is held below the cleared-to-run line
                                      by `Blocked by:` or `Not before:`
 ```
+
+**Also read the project's SPEC.md for a "Project docs" section** — the old
+scaffold wrote one describing the method's own machinery into the user's
+product truth, and it goes stale in a way no refresh repairs, because SPEC is
+the user's document and is never rewritten by a migration. Report it the same
+way: say the section describes the method rather than their product, that the
+same description now lives in the managed block of their CLAUDE.md, and edit
+nothing — removing it is their call.
 
 **Report only — edit nothing.** The file is the user's, and reconciling its
 wording against the current template would clobber whatever they wrote into it.
@@ -348,14 +360,6 @@ Create these files (empty structure; content comes from the interview),
 ## How it works
 [filled by Q2]
 
-## Project docs
-
-Three project docs structure each project:
-- `SPEC.md` — product truth. What the project is, who it's for, how it works.
-- `QUEUE.md` — processed work (vetted, ready to build) and unprocessed work
-  (captured ideas not yet fully processed).
-- `LOG/` — per-session records of what was built, tested, and decided.
-
 ## Principles
 [filled by Q3]
 ````
@@ -382,7 +386,7 @@ Three project docs structure each project:
 
 ## Unprocessed
 
-> Captured ideas and tasks not yet fully processed. The next /plan session goes
+> Captured ideas and tasks not yet fully processed. The next /plan run goes
 > through these with you and decides each one's fate — keep it (move it up to
 > Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows
 > up in an editor's outline.
@@ -519,6 +523,34 @@ documents they name.
 **This adds no sixth interview question.** It is part of scaffolding, where the
 files are being created, and it is answerable without knowing anything about the
 project.
+
+**The brevity-style offer**  [BRIEF, PROMPT]. The plugin ships an output style
+called Throughliner Brevity — a setting that keeps Claude's replies short and
+decision-led in this project. Offer it once, as part of scaffolding, opt-out
+with acceptance as the default:
+
+1. Check whether the project (or the user's own settings) already sets an
+   output style. Where one is set, name it and say plainly where it and the
+   brevity style would pull in different directions.
+2. Give the reason acceptance is strongly preferable: on projects with this
+   much documentation, models that run verbose bury the one thing the user
+   must see under narrative, and a style is the strongest lever there is
+   against that.
+3. State the scope: this applies to this project only — nothing outside it
+   changes, and the user's own style file is never edited.
+4. Invite discussion, then act on the answer:
+
+```
+user accepts (the default)  ->  write "outputStyle": "Throughliner Brevity"
+                                into the project's .claude/settings.local.json
+                                (creating the file if absent, merging if not)
+user declines               ->  say nothing further; every session opening
+                                will carry one short line noting the style is
+                                not enabled
+```
+
+Say once that the style takes effect at the next session or /clear — styles
+never apply mid-conversation.
 
 **The public-repository offer — one subject, four provisions** [DISCUSS,
 PROMPT]. Make it only where the user asks for a public repository, and then:

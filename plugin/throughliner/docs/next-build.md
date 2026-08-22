@@ -156,7 +156,9 @@ together stays in a single file — splitting it would make the AI's job harder.
 
 Stay within the active run's described work. Growing past it needs approval first.
 
-**Accumulate close notes** as you go, so /done needn't re-explore:
+**The item's `Changes:` entry is one of the four per-item completion writes**
+(next.md's per-item completion step) — written at the tick, never loosely along
+the way, so /done needn't re-explore:
 
 ```
 Changes:
@@ -246,7 +248,7 @@ build finds SPEC owes a sentence
 choice is not the session that certifies it in product truth.
 
 **The cost, stated rather than discovered:** SPEC lags that one sentence until the
-next planning session. It lags visibly, as a queue item, rather than in silence.
+next planning run. It lags visibly, as a queue item, rather than in silence.
 
 **The SPEC-contradiction halt above is not this and must not be softened to
 match.** That branch is a genuine "something is wrong here" and stays alarming.

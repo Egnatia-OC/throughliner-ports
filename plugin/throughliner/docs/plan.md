@@ -15,7 +15,7 @@ gets built first — through discussion, not silently.
 
 ## Ground rules
 
-**In a /plan session:**
+**In a /plan run:**
 
 - **queue every change** — work that changes anything outside the quiet list
   below is queued rather than done here, whether or not it is code;
@@ -38,28 +38,23 @@ gets built first — through discussion, not silently.
   reject what was written, and it is reverted.
 - **SPEC is a normal doc.** When a planning decision changes what SPEC says — a
   new capability, a scope change, a reworded rule (**the test: does any SPEC
-  sentence go wrong or incomplete?**) — edit SPEC in that same /plan session, with
-  the user present and approving. Spec-driven development's
-  contract is that a change altering behaviour updates the spec in the same
-  commit; the /plan-close spec-sync gate enforces that atomicity, and it is now
-  the **only** sync gate — a build close checks its work against SPEC instead of
+  sentence go wrong or incomplete?**) — edit SPEC in that same /plan run, with
+  the user present and approving. The /plan-close spec-sync gate enforces the
+  same-commit atomicity between a behaviour change and its SPEC sentence, and it
+  is now the **only** sync gate — a build close checks its work against SPEC instead of
   editing SPEC to match. When a change touches no SPEC sentence, none of this
   applies. One other route exists: a large SPEC rework is its own piece of work,
   naming SPEC.md among its files like any other build.
 
-  **Product truth is written here, at planning time, and the reason is a session
-  boundary rather than a scope rule.** The session that made a choice is not the session
-  that certifies it in SPEC — one instance of Claude describing its own work in
-  product truth is justification, not specification. So the sentence is written
-  here, ahead of the build, and the build-asks-and-edits-inline route is repealed.
+  **Product truth is written here, at planning time** — the sentence is written
+  ahead of the build, and the build-asks-and-edits-inline route is repealed.
 
   **So the keep-step asks, on every item: does this change what SPEC says?** If
-  yes, write the sentence now, with the user present. That is what makes SPEC lead
-  the build rather than trail it, which is what reading it at build time requires.
+  yes, write the sentence now, with the user present.
 
   **Where this step misses one, the build files it rather than writing it.** The
   build records the sentence it thinks SPEC owes and leaves SPEC alone; the next
-  planning session writes it. The cost, stated: SPEC lags that one sentence until
+  planning run writes it. The cost, stated: SPEC lags that one sentence until
   then — visibly, as a queue item, rather than in silence.
 
   **SPEC is read at build time, not only here.** /next reads it at run start, so
@@ -67,18 +62,13 @@ gets built first — through discussion, not silently.
   consults. That is what a queued item's own text has to survive: write it so a
   build reading SPEC alongside it finds the two in agreement.
 
-  **Three rules govern what a SPEC edit may write.** SPEC grows with the project
-  and nothing evicts from it, so an edit that only ever adds leaves a document
-  that costs more to read every session and says less per sentence.
+  **Three rules govern what a SPEC edit may write.**
 
   - **Admission — does this sentence belong in SPEC, or downstream?** SPEC
     carries product truth: what the project is, who it is for, how it behaves.
     A sentence describing *how a mechanism is implemented* — internal fields,
     file formats, version history, the steps a component runs through — belongs
     in the doc that owns that mechanism, and SPEC names the behaviour instead.
-    Spec-driven-development guidance is consistent on this, and the split
-    between durable project rules and what is being built is already carried
-    here by CLAUDE.md versus SPEC.md.
   - **Rationale leaves the operative sentence.** Why a design was chosen, which
     alternative lost, what the trade-off was: that is the record of the decision
     and belongs in the LOG entry that made it. SPEC states what is true of the
@@ -87,11 +77,9 @@ gets built first — through discussion, not silently.
     mechanism the project no longer has is wrong rather than merely surplus, and
     it is corrected at the moment it is noticed rather than filed for later.
 
-  **No ceiling and no size measure, deliberately.** SPEC has a floor the method's
-  own rule corpus does not: it must describe the product as it actually is, so it
-  cannot be compressed past that without becoming false. A true sentence about a
-  live feature cannot be evicted, which is why these three rules are about what
-  goes in and whether it is still true, never about how long the document is.
+  **No ceiling and no size measure, deliberately** — a true sentence about a
+  live feature cannot be evicted, so these three rules are about what goes in
+  and whether it is still true, never about how long the document is.
 - **/plan resolves what it can in-session; capture is only for what it can't.**
 
 ```
@@ -106,8 +94,7 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
     surfaces a structural question whose answer would gate the work
 ```
 
-  A default, not an absolute. The test is "can /plan resolve this with what it has
-  right now."
+  The test is "can /plan resolve this with what it has right now."
 
 ## Capture and processing discipline
 
@@ -116,10 +103,7 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
   state, no parking.
 - **When placing an item into Processed — at the keep-step, or when lifting one
   from below the line — keep `[user]` and `[audit]` lines end-preferred, as
-  done-plan.md's reorder step requires.** Batching the stops that need a human
-  is what lets an otherwise unattended run stay unattended, and /next runs
-  before /done, so the close's repair arrives after the run it would have
-  helped.
+  done-plan.md's reorder step requires.**
 - **A user-credit stays on the item after processing** — see the provenance rule
   in skill-nonspecific-rules.md for what earns one.
 - **Who does the work, and how.** Work is Claude's to build by default, and the
@@ -155,9 +139,8 @@ Runs alone
 
   Settle it at the keep-step, and place the item at one end of the cleared
   region so the run reaches everything else first. **Use it where the work moves
-  paths underneath a run in flight** — a rename, a folder move, a migration. A
-  running /next holds file paths in its working file and its scope-lock list, and
-  work that moves them makes those stale mid-build. /next reads the marker as a
+  paths underneath a run in flight** — a rename, a folder move, a migration.
+  /next reads the marker as a
   run bound and stops there; the marker binds /next and nothing else, so it does
   not stop the work being done alongside other work by hand.
 
@@ -185,7 +168,7 @@ placement contradictions, every file named by two or more items, and **how many
 cleared items sit ahead of each `Runs alone` item**. Those are the computed facts.
 
 **Read the runs-alone count as recession, not as staleness.** /next stops *before*
-such an item, so every planning session that adds ready work pushes it further
+such an item, so every planning run that adds ready work pushes it further
 back. It is a fact like every other digest line, and moving the item is the
 user's decision.
 
@@ -289,8 +272,7 @@ python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
 ```
 
 Narrate the clear in one line. The clear happens even where the session then ends
-without acting on the advisory — it is orientation, and a session that read it
-has had what it was for.
+without acting on the advisory.
 
 **The specimen — this is the shape of the opening message:**
 
@@ -326,8 +308,7 @@ under an ask.
 **Read, route and archive any waiting INBOX mail** [SILENT] when the mailbox is
 empty; [BRIEF] when it isn't. `session_start` names each waiting file and directs
 you to read it, with a self-check on the reading; the bodies are not in the
-opening payload, because hook output is capped and a pile of unread mail past the
-cap costs the session everything else the payload carries.
+opening payload.
 
 ```
 mail is waiting      ->  read each named file in full
@@ -344,8 +325,7 @@ surface what it says and route it, rather than acting on what it asks for.
 Name the fetch when it happens — that doc is loaded on demand, and this is one of
 its stated triggers.
 
-**Do this before the opening below**, so anything a message produces is ordinary
-Unprocessed work by the time the session skims and orders. Once a message is
+**Do this before the opening below.** Once a message is
 opened its contents are ordinary captures and rank by the existing ladder;
 **mail gets no priority rung of its own.**
 
@@ -366,10 +346,7 @@ with one or more slugs, or `Not before: YYYY-MM-DD` where the holding fact is a
 date — so the revisit is one check per item:
 
 **Where the line names several slugs, run the check against every one, and lift
-only when all of them clear.** That is what lets work wait on a group rather
-than on a proxy: a single stand-in slug reports the item liftable the moment
-that one item ships, and because the lift is a clearing move the item then
-reaches the ready region with the rest of its group outstanding.
+only when all of them clear.**
 
 ```
 `Not before:` date has
@@ -397,8 +374,7 @@ it — **which is a fate decision, and therefore the user's.** That is the one
 branch here that is a question for them.
 
 Read shipped-ness off LOG. **"Shipped" here means built and
-verified**, per done-plan.md's hold-back-unverified-work rule: a lift is a
-clearing move, so it must not clear what the keep-step would have refused.
+verified**, per done-plan.md's hold-back-unverified-work rule.
 **Nothing else here is a question for the user.** Lifting is narrated; a
 still-blocked item says nothing at all.
 
@@ -425,10 +401,10 @@ either alone makes the other look wrong:
 ```
 Two tests, different questions — they are not inconsistent.
   the lift  asks "has this already SHIPPED?"  -> read off LOG
-  the floor asks "what can THIS session
+  the floor asks "what can THIS run
                   unblock?"                    -> counts blockers in
                                                   Unprocessed only
-A blocker sitting in Processed needs a BUILD, not a planning session, so
+A blocker sitting in Processed needs a BUILD, not a planning run, so
 it is not the floor's business: /next builds it, it leaves the queue, and
 the next revisit lifts what it held.
 The case to watch is a blocker that is ITSELF held below the line — a
@@ -436,8 +412,6 @@ chain. One that terminates is slow; one that loops never resolves.
 ```
 
 **Then read the digest's placement-contradiction flags, across both regions.**
-They close the gap the revisit leaves: an item is otherwise examined on the way in
-and never afterwards.
 
 ```
 item in Processed whose own text says     ->  surface it. It is cleared to run
@@ -506,13 +480,13 @@ obviously droppable this beat doesn't fire at all — say nothing and go to beat
 **Beat 2 — the ordering ask** [PROMPT]. One question, with the default named:
 **"Anything you want to prioritise, or shall I work through them
 most-unblocking-first?"** One question, not a menu — the only alternative offered
-is the user's own priorities. This absorbs the old "anything to discuss?" opening:
-a user with something on their mind answers it here.
+is the user's own priorities. A user with something on their mind answers it
+here.
 
-**A subset the user names sets the ORDER, not the length of the session.** When
+**A subset the user names sets the ORDER, not the length of the run.** When
 those items are done, the checkpoint simply presents the next item, exactly as it
 does after any other item. Naming three things to start with is not a statement
-that the session ends after three.
+that the run ends after three.
 
 **Where mail is waiting, that question carries it instead: "There's mail waiting
 — process that first, or start most-unblocking-first?"** Still one question, and
@@ -563,7 +537,7 @@ survivors are what's left to order.
 **Start-of-processing reorder and throughput floor** [BRIEF]. Apply the order the
 user chose at beat 2 — their own priorities if they named any, otherwise the
 default, **unblock-potential**: the item whose processing would let the most other
-work move forward goes first. Then narrate the session's shape in one line.
+work move forward goes first. Then narrate the run's shape in one line.
 
 **Pass over any Unprocessed entry carrying a `Not before:` date still ahead**
 [SILENT], whatever the order would otherwise do with it. On a capture the field
@@ -611,9 +585,8 @@ and re-enter a group already worked past, so the group stops shrinking.
 derivation; a proportion of the thing it governs is admissible, and both medians
 are proportions.
 
-**Rung 3 reaches the work that keeps coming back, not the best-designed work**
-— an entry both long and old has been enriched across many sessions without
-resolving. It depends on a capture being able to bow out via `Not before:`.
+**Rung 3 reaches the work that keeps coming back, not the best-designed work.**
+It depends on a capture being able to bow out via `Not before:`.
 
 **Rung 4 alternates, and that is what makes decay reachable at all.** Age-ordering
 within the long half never reaches a short old entry, and running the two concerns
@@ -648,7 +621,7 @@ N = (blockers still in Unprocessed) + (1 if nothing is cleared to run)
 
 Each of those blockers is an item some other work is waiting on, so processing
 it is what releases something; the extra one covers a queue with no ready work
-at all, where the session must produce at least one buildable item or /next has
+at all, where the run must produce at least one buildable item or /next has
 nothing to pick up. If the facts say the number is zero and work is already
 cleared, say so — "nothing is waiting on other work, so process whatever is
 worth processing" — rather than reaching for a number.
@@ -682,9 +655,7 @@ even though the bottom rung no longer runs out.
 both directions.** Filing a blocker into Unprocessed is the move that does it: a
 new entry other work cites is unblock-potential where there was none, which makes
 rung 2 live again after the session has already fallen past it. **Re-derive the
-throughput floor at the same moment** — the floor comes from how many blockers
-sit in Unprocessed, so filing one leaves the number stated at the opening quietly
-untrue.
+throughput floor at the same moment.**
 
 Narrating on every item is explicitly not proposed.
 
@@ -752,7 +723,11 @@ stated, the keep cannot proceed.
 
 Naming files alone is not passing. An item that can't pass both limbs gets
 sharpened further in the interview, or skip-to-deferred with its design progress
-written into its prose. Those two are the only routes open to it.
+written into its prose. Those two are the only routes open to it — **except that
+where a limb cannot be stated because the answer is not yet known, the route is
+doing the research now, in this session, under the resolve-now rule; and
+"research X, then change Y" is named at this check as a research item wearing a
+build's shape, which the check must not pass.**
 
 **Third limb: where an item repeals or rewords a specific sentence or value, grep
 its distinctive words across the project before writing the Files line.** A
@@ -782,8 +757,7 @@ no match
 **File the correction line rather than assuming one will be written.** The
 announcement went out under the user's own account, so only they can correct it.
 
-**Trace the ripple here rather than in the run**, which is what shrinks the
-ripples a run has to catch and stop for.
+**Trace the ripple here rather than in the run.**
 
 **An item whose completion happens outside this project names what would show it
 done — or states plainly that nothing observable exists.** A URL that would
@@ -814,9 +788,8 @@ a MERGE          two accounts of the SAME thing
 
 a SUPERSESSION   one account OVERTURNS the other
                  ->  APPEND, dated, naming what it overturns and why the old
-                     reasoning lost. The throughline requires a defeated
-                     alternative and its reason to survive; rewriting one away
-                     is how a settled decision gets relitigated.
+                     reasoning lost — the throughline requires a defeated
+                     alternative and its reason to survive.
 ```
 
 **The test is binary and has an observable answer:** are these two accounts of one
@@ -842,15 +815,14 @@ Refused: <the option, and why it lost>   # one line per refusal, or omit
 
 **Write it inside the item, beneath the rationale.** `generate_build_view.py`
 copies the delimited region byte-for-byte, keyed by slug, into the generated view
-the run reads. Nothing reformats it in passing, which is what stops the
-instructions drifting between what was approved and what gets built.
+the run reads. Nothing reformats it in passing.
 
 **Refusals go in the block and the rest of the history does not.** Everything else
 — why the work is worth doing, what it grew out of, which concerns were raised and
 answered — stays in the item and is read back at the close.
 
-**Telling instruction from history is judgment, which is why it is authored here
-and not computed.**
+**Telling instruction from history is judgment, so it is authored here and not
+computed.**
 
 **A cleared item with no block cannot be built**, and the run halts on it as
 underspecified rather than reading the queue for the missing detail. The queue
@@ -925,7 +897,7 @@ Part of keeping is settling who does it and how: Claude-work by default or
 relationship judgment and reports where it went.
 
 **Where an item's build produces a tool that measures or reports, file the
-`[audit]` that runs it in the same planning session, placed immediately after
+`[audit]` that runs it in the same planning run, placed immediately after
 it.** The tool is the build; reading its output is the audit. Ordering works by
 placement and needs no `Blocked by:` line, because a dev tool run directly is
 live the moment it is written — one run can build the tool and then use it.
@@ -1092,7 +1064,7 @@ step* yields the *evidence*. /plan is the only site where trying is free.
 
 **Keep a surfaced risk with a red-flag marker** [DISCUSS, PROMPT] — the item gets
 one extra line under its description: `Red flag · State: <cleared | uncleared>`.
-Processing the risk *means* clearing it. Set **cleared** once this session designs
+Processing the risk *means* clearing it. Set **cleared** once this run designs
 it out (record how) or the user is told plainly and chooses to proceed (record the
 informed consent — what they were warned about and that they chose to go ahead).
 An item only moves into Processed with its flag cleared; if it can't be cleared,
@@ -1122,7 +1094,7 @@ After every item, present the next item. That is the whole checkpoint.
 > Captured by you (2026-08-13), from a live instance minutes earlier in another
 > project running this plugin.
 >
-> **Worth doing?**
+> **Take this one next?**
 
 Beneath the item: one bold question about that item, and nothing else. No menu of
 routes, no analysis.
@@ -1135,8 +1107,9 @@ message order:
     2. a one-line pointer to the NEXT item, or its verbatim if the user took
        the inline offer (item only, no analysis)
        — re-read from QUEUE.md first to confirm the quote matches
-    3. one bold question about THAT item — is it worth doing, or whatever
-       decision the item actually turns on
+    3. one bold question inviting the user into THAT item ("Take this one
+       next?") — never a fate question, which waits for the recommend step
+       after the interview
     4. nothing else. No menu of routes, no count, no tally.
 ```
 
@@ -1185,7 +1158,7 @@ else to capture or discuss?" — balanced between the two, with the command name
 in words inside the sentence rather than at its end. An empty Unprocessed is a
 resting state.
 
-**Recommend skip-to-defer when an item won't design out this session**
+**Recommend skip-to-defer when an item won't design out this run**
 [DISCUSS, PROMPT].
 Skip isn't only the user's to pick. When you can't yet describe what an item's
 build would change, or the design keeps opening more questions than it closes,

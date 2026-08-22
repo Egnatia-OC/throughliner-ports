@@ -950,6 +950,43 @@ def _behaviour_rules_directive(plugin_root):
 CORE_DOCS = ("SPEC.md", "QUEUE.md", "LOG/")
 
 
+def _brevity_style_notice(cwd):
+    """One short line when the project's brevity output style is not enabled.
+
+    The plugin ships an output style (Throughliner Brevity) offered at /setup
+    and written into the project's own settings file on acceptance. This checks
+    that setting at every opening: enabled -> nothing (silence is the enabled
+    state); not enabled -> one short line, so the state is visible without
+    nagging — the line states a fact and asks for nothing.
+
+    Reads `.claude/settings.local.json` then `.claude/settings.json`, first
+    match wins — the same precedence Claude Code itself gives them. Matched on
+    the style name containing "throughliner" case-insensitively rather than an
+    exact string, so a namespaced value ("throughliner:Throughliner Brevity")
+    still reads as enabled. Never raises: an unreadable settings file reports
+    the notice, the direction that surfaces rather than hides.
+    """
+    for name in ("settings.local.json", "settings.json"):
+        path = os.path.join(cwd, ".claude", name)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                settings = json.load(f)
+        except (OSError, ValueError):
+            continue
+        style = settings.get("outputStyle")
+        if isinstance(style, str) and "throughliner" in style.lower():
+            return ""
+        if isinstance(style, str) and style:
+            return (
+                "[Throughliner] The brevity output style is not enabled for "
+                f"this project (current style: {style}). /setup offers it."
+            )
+    return (
+        "[Throughliner] The brevity output style is not enabled for this "
+        "project. /setup offers it."
+    )
+
+
 def _untracked_core_docs(cwd: str) -> list:
     """Which of SPEC.md, QUEUE.md and LOG/ git has been told to ignore.
 
@@ -1251,6 +1288,10 @@ def main() -> int:
                 "since the most recent host-side change, so host-side tests aren't "
                 "live yet. This catches edits that bump no version."
             )
+
+    style_notice = _brevity_style_notice(cwd)
+    if style_notice:
+        context_parts.append(style_notice)
 
     # Waiting mail, surfaced in one line. Short and state-bearing, so it sits up
     # here with the rest of the project state rather than at the bottom.

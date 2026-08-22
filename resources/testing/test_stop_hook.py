@@ -123,6 +123,41 @@ def test_block_still_downgrades_after_one_fire():
     shutil.rmtree(root, ignore_errors=True)
 
 
+def test_ticked_slug_in_working_file_does_not_block():
+    """[stop-hook-blind-between-tick-and-close]: a slug built earlier in the
+    same run is in neither the queue nor LOG/ until the close — its tick in
+    this session's working file is what says it's finished work being cited.
+    """
+    root = project()
+    with open(os.path.join(root, "_build-s1.md"), "w", encoding="utf-8") as f:
+        f.write("# Active Build\n\nProgress:\n- [x] built earlier "
+                "[built-this-run] — done, confirmed\n")
+    code, out = run(root, "I've filed [built-this-run] earlier this run.")
+    check("a slug ticked in this run's working file does not block",
+          not blocked(out, code), out)
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_unticked_absent_slug_still_blocks_with_working_file():
+    """The working-file suppression must not quiet the guard generally."""
+    root = project()
+    with open(os.path.join(root, "_build-s1.md"), "w", encoding="utf-8") as f:
+        f.write("# Active Build\n\nProgress:\n- [x] built earlier "
+                "[built-this-run] — done\n")
+    code, out = run(root, "I've filed [never-written] to Unprocessed.")
+    check("an absent slug not in the working file still blocks",
+          blocked(out, code), out)
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_no_working_file_behaves_as_before():
+    root = project()
+    code, out = run(root, "I've filed [never-written] to Unprocessed.")
+    check("no working file leaves the check exactly as it was",
+          blocked(out, code), out)
+    shutil.rmtree(root, ignore_errors=True)
+
+
 def test_missing_log_directory_behaves_as_before():
     """A project with no LOG/ must not start passing everything."""
     d = tempfile.mkdtemp(prefix="stop-hook-test-")
@@ -140,6 +175,9 @@ if __name__ == "__main__":
     test_filing_claim_with_no_heading_and_no_log_entry_still_blocks()
     test_a_queued_slug_does_not_block()
     test_block_still_downgrades_after_one_fire()
+    test_ticked_slug_in_working_file_does_not_block()
+    test_unticked_absent_slug_still_blocks_with_working_file()
+    test_no_working_file_behaves_as_before()
     test_missing_log_directory_behaves_as_before()
     print(f"\n{len(failures)} failure(s)" if failures else "\nall passed")
     sys.exit(1 if failures else 0)

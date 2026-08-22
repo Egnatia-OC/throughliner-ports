@@ -1087,3 +1087,13 @@ That is true of anything written into your project's documents — a queue item,
 **There is one exception, and it is one you chose.** When your project was set up you were offered the option of keeping your spec, your queue and your session records *out* of the project's history, so they are never published anywhere. If you took that option for a document, then nothing is recording its earlier versions — so an item deleted from a queue kept that way is genuinely gone, and Claude will tell you plainly at the time rather than promising a recovery it cannot make.
 
 Claude also says which of your documents are in that state at the start of every session, so you are never guessing which case you are in.
+
+## What is the brevity style Claude offered me at setup?
+
+It's a setting that keeps Claude's replies in this project short and decision-led — the first thing in every message is the thing you need to see or act on, with the explanation available when you ask for it. On projects like these, which carry a lot of documentation, Claude tends to run long, and long replies bury the one thing you needed to catch.
+
+**Saying yes changes this project only.** The setting is written into this project's own settings file. Nothing outside the project changes, and if you already had a style of your own set, your style file is never edited — though while the brevity style is the project's setting, your own choice isn't the one applying here, which is why Claude names your style and any differences before you decide.
+
+It takes effect at the next session (or after /clear) — styles never change a conversation already under way.
+
+**If you said no**, nothing is set, and each session opens with one short line noting the style is not enabled — a statement, not a nag. You can take the offer later by running /setup again, or set it yourself in the project's settings.

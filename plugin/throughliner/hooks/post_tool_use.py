@@ -197,6 +197,32 @@ def _check_slugs(blocks, warnings):
             )
 
 
+ARTICLE_HEADING_RE = re.compile(r"^####\s+(?:\[[a-z]+\]\s+)?(?:The|A|An)\b",
+                                re.IGNORECASE)
+
+
+def _check_heading_articles(blocks, warnings):
+    """Advisory: a heading whose first word is The, A or An.
+
+    The heading word-order rule puts distinguishing words first, because the
+    queue is read through an outline that truncates each heading — and the
+    rule did not fire on a fresh capture, which the user then could not find
+    in her outline. This flags the article case only, not a generically
+    front-loaded heading: detecting generic front-loading needs judgment a
+    lint cannot have, and the message states that limit. New-heading scoping
+    comes from the lint's existing split against HEAD.
+    """
+    for b in blocks:
+        if ARTICLE_HEADING_RE.match(b["heading"]):
+            warnings.append(
+                f"line {b['idx'] + 1}: entry {b['heading'][:60]!r} starts "
+                "with an article (The/A/An) — put the heading's "
+                "distinguishing words first, since the outline view truncates "
+                "each heading mid-phrase. Advisory, and it reaches the "
+                "article case only, not every front-loaded heading."
+            )
+
+
 def _check_sections(annotated, warnings):
     """Check 2: both ## Processed and ## Unprocessed headings are present."""
     present = {h2 for _i, _l, h2, _ih in annotated if h2}
@@ -625,6 +651,7 @@ def lint(content: str) -> list[str]:
     blocks = _workline_blocks(annotated)
     warnings = []
     _check_slugs(blocks, warnings)
+    _check_heading_articles(blocks, warnings)
     _check_sections(annotated, warnings)
     _check_red_flag_states(annotated, warnings)
     _check_readiness_marker(annotated, blocks, warnings)

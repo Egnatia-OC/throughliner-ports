@@ -3,9 +3,14 @@
 PreToolUse hook — enforces three rules:
 
 4. With NO build running (a planning or freeform session), a write outside
-   the quiet list — QUEUE.md, SPEC.md, LOG/, the session's own notes — asks
-   the user first. Ask, never deny. An unscoped build (a working file with
-   no Files: section) is surfaced once for the same reason.
+   the standing list — QUEUE.md, SPEC.md, LOG/, FAQ/, the session's own
+   notes, plus the always-editable paths — is DENIED, never asked: an ask
+   that gets waved through is not consent, and a planning session is where
+   a change becomes queued work instead of an edit. A freeform session
+   extends the standing list by declaring a scope file
+   (_freeform-<session-id>.md) listing the paths its queue item names.
+   An unscoped build (a working file with no Files: section) is surfaced
+   once.
 
 1. During a build, the session's own build working file
    (_build-<session-id>.md) has a Files: section governing which files are
@@ -731,7 +736,10 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     # deleted from the method (2026-08-14). A session with no build working file
     # is now writing QUEUE.md, SPEC.md and LOG/ and nothing else by design, so a
     # `_plan-` write is exactly the surprise this gate should surface.
-    if re.match(r"^_build-[a-z0-9._-]+\.md$", rel):
+    # `_freeform-<id>.md` is matched alongside it: a freeform session's first
+    # write is its own scope file, which must pass before the paths it declares
+    # can.
+    if re.match(r"^_(build|freeform)-[a-z0-9._-]+\.md$", rel):
         return True
     if rel.startswith(os.path.normcase("LOG") + "/"):
         return True
@@ -795,6 +803,32 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     ).replace("\\", "/"):
         return True
     return False
+
+
+def _freeform_scope_files(cwd: str, session_id: str) -> list[str]:
+    """Paths this session's freeform scope file declares editable.
+
+    A freeform session runs with no build working file, so Rule 4's standing
+    list used to deny it the very files its own queue item names — the
+    2026-08-21 freeform sitting was worked around by hand, on approval, once
+    per file. The fix mirrors the build's mechanism rather than inventing one:
+    the session writes `_freeform-<session-id>.md` (same location and naming
+    shape as the build working file) carrying a `Files:` section copied from
+    its queue item's build block, and those paths EXTEND the standing list for
+    that session only.
+
+    Reuses _parse_build_files, deliberately — one parser, one format, one set
+    of parsing bugs. Returns an empty list when no scope file exists (standing
+    list unchanged) or when one exists but lists nothing: an empty declaration
+    widens nothing, the fail-safe direction.
+
+    Reusing the build working file itself was refused at the keep-step: the
+    close and the one-build-at-a-time rule read that file as a build's.
+    """
+    path = working_file(cwd, "freeform", session_id)
+    if not os.path.isfile(path):
+        return []
+    return _parse_build_files(path) or []
 
 
 SETUP_MARKER_NAME = ".throughliner-setup-active"
@@ -1352,6 +1386,10 @@ def main() -> int:
             or _is_research_dir(filepath, cwd)
             or _is_scratchpad_dir(filepath, cwd)
             or _is_inbox_dir(filepath)
+            or _is_build_file(
+                filepath, cwd,
+                _freeform_scope_files(cwd, data.get("session_id", "")),
+            )
         ):
             return _deny(
                 "[Throughliner] BLOCKED: planning sessions can only change a "
