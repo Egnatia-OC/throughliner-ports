@@ -1,4 +1,4 @@
-# [HASH] — Length cut across thirteen procedure docs and CLAUDE.md: 528 lines of decision history out, every operative rule kept
+# 9c98504 — Length cut across thirteen procedure docs and CLAUDE.md: 528 lines of decision history out, every operative rule kept
 
 The remainder of the cut admitted at [cut-length-everywhere], done by hand as the `[freeform]` item required, in one sitting with its pair [law-prose-remaining-thirteen-docs] — one read of each file, two lenses. Method as the item recorded it: delete plain-prose decision history; keep every bullet, bold-led rule statement, typed block, honest-limit statement and why-it-lost record; where a bold-led paragraph was pure explanation, absorb its one operative clause into the rule above it. Net across thirteen files: 253 insertions, 528 deletions.
 

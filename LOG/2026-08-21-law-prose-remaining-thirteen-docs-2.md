@@ -1,4 +1,4 @@
-# [HASH] — Law-prose restyle across the thirteen remaining docs: prohibitions reworded into the action, the three protected kinds left standing
+# 9c98504 — Law-prose restyle across the thirteen remaining docs: prohibitions reworded into the action, the three protected kinds left standing
 
 The remainder of the restyle admitted at [law-prose-pass-missed-mid-sentence-prohibitions], run in the same sitting as [cut-length-remaining-docs] so one read of each file served both lenses. The pass the parent item taught held across the corpus: most occurrences are "X, never Y" where X already states the action, so the tail comes straight out — restyling and shortening in one move — while the few prohibitions carrying the only content became the positive rule they imply ("Do not open QUEUE.md" → "Leave QUEUE.md closed"; "never auto-send" → "every send waits for approval"; "Routing never re-opens a fate the user has already decided" → "A fate the user has already decided stays closed through routing").
 
