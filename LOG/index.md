@@ -2,7 +2,25 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — setup — refresh to 1.20.0-test16: version marker updated, all scaffold checks clean, brevity style declined (Fable-only project) → 2026-08-22-setup.md
+- [HASH] — chat-level record for the multi-day planning session (22nd–23rd): 12 items processed, four sends out, two consumer reports in, brevity style confirmed live with Opus, session continues until ~20 cleared items or Wed 10am → 2026-08-23-chat.md
+- [HASH] — plan — [cycles-due-check-verification] filed and cleared: live test of the cycles due-check in a test project; [weekly-release-cycle] repointed to lift on it → 2026-08-23-cycles-due-check-verification.md
+- [HASH] — plan — [readme-mermaid-diagrams] kept and cleared: three one-idea mermaid diagrams for the README (structure, work cycle, throughline); combined view refused → 2026-08-23-readme-mermaid-diagrams.md
+- [HASH] — plan — [same-message-design-no-fold] kept and cleared: keep-fold narrowed — a design first shown in the offer message waits for its own agree/defer turn → 2026-08-23-same-message-design-no-fold.md
+- [HASH] — plan — [end-of-queue-gate-fires-once] kept and cleared: the close-or-continue question asks once per rest, re-fires only after new work empties the queue again → 2026-08-23-end-of-queue-gate-fires-once.md
+- [HASH] — plan — [close-amending-items-boundary] kept and cleared: user-directed amendment at a close permitted, Claude-noticed stays a filing with the collision named; reply sent to the asking project → 2026-08-23-close-amending-items-boundary.md
+- [HASH] — plan — [lint-possessive-words-false-positive] kept and cleared: quote-claim lint narrows to introducer shapes ("Her words:", "in her own words") on a consumer's mailed false positive → 2026-08-23-lint-possessive-words-false-positive.md
+- [HASH] — plan — [understudy-companion-at-launch] dissolved: launch proceeds without waiting, Understudy debuts with the YouTube videos; ordering written on both launch items, debut-slot mail sent → 2026-08-23-understudy-companion-at-launch.md
+- [HASH] — plan — [procedure-docs-cannot-tell-finished-from-interrupted] deleted with finding: the shipped /rescan hand-back is the repair pattern and the other docs' endings already conform → 2026-08-23-procedure-docs-cannot-tell-finished-from-interrupted.md
+- [HASH] — plan — [slug-references-unfindable-in-outline] kept and cleared: chat names queue items by their heading's opening words, slug secondary — the outline is what the user navigates → 2026-08-23-slug-references-unfindable-in-outline.md
+- [HASH] — plan — [heading-leading-tag-collision] deleted: one occurrence, covered by the shipped missing-walkthrough halt → 2026-08-23-heading-leading-tag-collision.md
+- [HASH] — plan — [powershell-append-mojibake] kept and cleared: the encoding constraint widens to PowerShell's own file reads, as an amendment to the existing clause → 2026-08-23-powershell-append-mojibake.md
+- [HASH] — plan — [log-record-kind-suffix] kept and cleared: LOG filenames carry the full slug, with -plan/-build kind suffixes when the bare name is taken; digest attribution widened to match → 2026-08-23-log-record-kind-suffix.md
+- [HASH] — plan — [marketplace-submission] dated to 2026-09-22: posture ends on her decision, gated by company registration (dependency note sent); listing updates re-enter review, so the listing trails stable on submit-and-wait → 2026-08-23-marketplace-submission.md
+- [HASH] — plan — [beta-launch-announcement] filed and held behind the beta channel; draft arrives from that build → 2026-08-23-beta-launch-announcement.md
+- [HASH] — plan — [beta-tester-pathway] kept and held: ref-pinned `#beta` marketplace installs for testers, one release cycle with beta as a step inside the Wednesday turn → 2026-08-23-beta-tester-pathway.md
+- [HASH] — plan — [adhd-memory-prosthetic-article] kept and cleared: personal memory-prosthetic article for flintcraft.tech, science verified before drafting, story by interview → 2026-08-23-adhd-memory-prosthetic-article.md
+- [HASH] — plan — [article-walkthrough-missing] deleted after its walkthrough was authored onto the article item → 2026-08-23-article-walkthrough-missing.md
+- 1b0f8f7 — setup — refresh to 1.20.0-test16: version marker updated, all scaffold checks clean, brevity style declined (Fable-only project) → 2026-08-22-setup.md
 - c904687 — chat-level record for the twenty-item build run: all Claude-work built and confirmed (one unconfirmed behaviour on cycles), both [user] items deferred to tomorrow, the article item's missing walkthrough captured → 2026-08-22-chat-4.md
 - c904687 — build — skill-nonspecific-rules.md Communication: quiet-work and regression-tone bullets removed, evicted to the shipped brevity style → 2026-08-22-style-dedup-evictions-build.md
 - c904687 — build — skill-nonspecific-rules.md: plan-only capture-offer text relocated; sole home now plan.md's process-now section, two references repointed → 2026-08-22-plan-only-rule-relocation-build.md
