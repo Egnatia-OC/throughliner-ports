@@ -1,4 +1,4 @@
-# [HASH] — First compliance audit of the rewritten corpus: six findings across four lenses, the history sweep run over everything including SPEC
+# 576506c — First compliance audit of the rewritten corpus: six findings across four lenses, the history sweep run over everything including SPEC
 
 The standing set's first instance, run in the same session that built the set — the restyle audited by a party other than the restyler, which is the risk the programme required designing around. Scope: the whole rule corpus (every rule file post-dates the 2026-08-10 audit after the folder rename and restyle passes), read in full — fifteen procedure and resources docs plus CLAUDE.md — against the four lenses at parent axis, with the history lens run once over the full corpus and SPEC.md, as the user instructed, so nothing gets baked in before the delta cadence starts.
 

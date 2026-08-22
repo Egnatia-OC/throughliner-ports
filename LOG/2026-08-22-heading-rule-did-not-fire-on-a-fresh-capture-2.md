@@ -1,4 +1,4 @@
-# [HASH] — The queue lint flags article-first headings on fresh captures
+# 576506c — The queue lint flags article-first headings on fresh captures
 
 The always-loaded word-order rule did not fire on a capture headed "The brevity work went to…" filed into an outline of eleven consecutive "The" headings, and the user could not find it — the ninth recorded instance of a correctly worded rule with a stated site not firing, so per the record the fix is mechanical rather than louder wording. Two facts made the lint arm clean at the keep: an article at heading start is always wrong under the rule, so there is no legitimate case to false-positive on; and the lint's existing new-versus-HEAD split keeps existing headings quiet.
 

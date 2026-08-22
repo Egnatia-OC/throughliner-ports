@@ -1,4 +1,4 @@
-# [HASH] — The compliance-audit checklist joins the gate's trigger set at all three sites, with the in-repo-only limit stated
+# 576506c — The compliance-audit checklist joins the gate's trigger set at all three sites, with the in-repo-only limit stated
 
 The checklist's entire content is rules, and a session editing it summoned no gate — surfaced when an item amended it and the gate ran only because the session happened to notice. The prior question the item raised (should the trigger be a path list at all?) was answered by its own fallback at the keep: no fail-safe shape exists that does not guess at what "holds rules" means, so the path is added and the limit said. The second instance — a rule amended in a folder-level CLAUDE.md above this project — gets the honest-limit treatment: the trigger reaches files in this repository only, and a rule living outside it gets no gate, stated where the trigger is described.
 

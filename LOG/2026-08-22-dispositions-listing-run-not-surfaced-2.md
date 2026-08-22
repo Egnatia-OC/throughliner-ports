@@ -1,4 +1,4 @@
-# [HASH] — The dispositions window fixed and the surfacing narrowed to refusals-only with a required close line
+# 576506c — The dispositions window fixed and the surfacing narrowed to refusals-only with a required close line
 
 Two defects merged at the keep: a planning opening ran the listing and never surfaced it, and the listing itself printed "176 on record (since the last planning session)" — the window claim false. The cause, established by reading the code as the item required: the planning-entry finder matched `...-plan.md` filenames, which no longer exist since the per-entry split named planning records by slug, so the boundary was never found and the window silently became full history.
 

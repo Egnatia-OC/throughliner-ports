@@ -1,4 +1,4 @@
-# [HASH] — The rezip's liveness step rewritten whole: same-chat payload as primary proof, a fixed verbatim prompt as fallback
+# 576506c — The rezip's liveness step rewritten whole: same-chat payload as primary proof, a fixed verbatim prompt as fallback
 
 The user was tired of Claude redesigning the verification prompt at every rezip, and the recorded failure — a fresh session unable to resolve "its" in a relayed instruction — showed fresh composition by an immersed session is the defect, the compaction-caveat precedent over again. The merged-in half was her -test15 observation: the restarted app re-fires the session-start payload into the rezip chat itself.
 

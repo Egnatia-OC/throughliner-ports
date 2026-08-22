@@ -1,4 +1,4 @@
-# [HASH] — The method map exists and a behaviour description is a complete request
+# 576506c — The method map exists and a behaviour description is a complete request
 
 The user's own words (2026-08-21): she had lost control because she couldn't name the parts of the method she wanted changed — close enough to reach for "skill-nonspecific-behaviours", not close enough to land a request. Her complaint was control, not confusion, and the design targets that: the map lists what she can *direct*. Asked where she actually looks things up, she said: asking Claude in chat — so the map is a file a fresh session answers from consistently, and its trigger is her asking, the surface she already uses.
 

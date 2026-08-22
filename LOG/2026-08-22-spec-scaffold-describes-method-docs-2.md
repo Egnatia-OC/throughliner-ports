@@ -1,4 +1,4 @@
-# [HASH] — Fresh SPECs no longer get a "Project docs" section; the migration reports one where it stands
+# 576506c — Fresh SPECs no longer get a "Project docs" section; the migration reports one where it stands
 
 A consumer's user noticed her SPEC describing the workflow's files rather than her product, and the staleness was the sharper half: the section copies the queue's structure, which is what changes between format epochs, and the migration correctly never touches it — so the stale copy survives every migration by design. The keep chose dropping the section: the managed CLAUDE.md block is the right home for the three-doc description (method-owned and refreshable), and SPEC can never get a managed region, because method-owned text in the user's product truth is the defect itself.
 

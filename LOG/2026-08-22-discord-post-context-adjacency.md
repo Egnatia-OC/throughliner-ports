@@ -1,4 +1,4 @@
-# [HASH] — Ladder-post walk-through: third subject rewrite drafted, posting deferred to tomorrow on the pacing rule
+# 576506c — Ladder-post walk-through: third subject rewrite drafted, posting deferred to tomorrow on the pacing rule
 
 `[user]` item [discord-post-context-adjacency], walked through in the 2026-08-22 multi-item /next run. The item's required third subject rewrite happened here: the post's subject is now the whole sequence — six rungs cut to three, the bottom rung then found unreachable in practice, and the ladder rebuilt as four rungs so it cannot starve — the got-wrong-twice-and-corrected register the item asked for.
 

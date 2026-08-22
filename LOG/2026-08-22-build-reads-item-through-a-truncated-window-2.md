@@ -1,4 +1,4 @@
-# [HASH] — The close's per-item fetch is now the whole block, and a dispositioned question is transcribed rather than re-asked
+# 576506c — The close's per-item fetch is now the whole block, and a dispositioned question is transcribed rather than re-asked
 
 A close once read queue items through a ~36-line window against items running past 50, and two wrong outputs followed — a false capture, and an FAQ question put to the user that the item's own text had already dispositioned the other way, costing an approved entry that was then reverted. The paging rule that would have caught it is shipped and did not fire, joining the recorded class; per that record the fix makes the fetch mechanical rather than the rule louder.
 

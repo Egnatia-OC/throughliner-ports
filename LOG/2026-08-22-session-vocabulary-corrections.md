@@ -1,4 +1,4 @@
-# [HASH] — Every run-meaning "session" renamed to "run" across nine docs, from the audit's line list
+# 576506c — Every run-meaning "session" renamed to "run" across nine docs, from the audit's line list
 
 The settled vocabulary (the user's decision, 2026-08-17): a run is a command executing, a session is the chat. The 2026-08-21 audit classified all 941 occurrences and listed ~50 run-meaning ones per file and line; this build renamed exactly those. Because the files had drifted since the audit's commit, each listed line was fetched from `15e10c9` by line number and matched by its text in the current file — no occurrence was re-classified and the stop-list was honoured rather than re-derived.
 

@@ -1,4 +1,4 @@
-# [HASH] — The Changes entry joins the per-item completion set as its fourth required write
+# 576506c — The Changes entry joins the per-item completion set as its fourth required write
 
 The 2026-08-17 reconcile found a twenty-item gap: ticks, depth fields and index candidates all held because they are an enumerated set the close reads, while `Changes:` — described only as accumulate-as-you-go — carried almost nothing, costing the close its `Files touched:` source in exactly the fresh-session case the method designs for. The keep chose the per-item write over the close-side mismatch check, because detection at the close arrives when a crashed or fresh session can no longer fill the gap.
 

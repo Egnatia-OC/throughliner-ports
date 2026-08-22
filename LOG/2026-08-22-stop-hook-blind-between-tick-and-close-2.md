@@ -1,4 +1,4 @@
-# [HASH] — The filing-claim hook no longer false-fires on work ticked earlier in the same run
+# 576506c — The filing-claim hook no longer false-fires on work ticked earlier in the same run
 
 Between an item's tick (which removes it from the queue) and the close (which writes its LOG entry), a slug is in neither file, so the stop hook's filing-claim check read a citation of the run's own finished work as a report of a write that never happened — a false block at the moment of highest confidence, which is how a guard teaches sessions to distrust it. The keep dissolved the item's open question from the record: pre_tool_use.py already reads this session's build working file, so the stop hook reading the same per-session file is precedented and correctly scoped, and the window closes itself when the close deletes the file.
 

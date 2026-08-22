@@ -1,4 +1,4 @@
-# [HASH] — Freeform sessions declare a scope file the scope-lock reads, extending the standing list to their item's files
+# 576506c — Freeform sessions declare a scope file the scope-lock reads, extending the standing list to their item's files
 
 Found live 2026-08-21: a queued `[freeform]` item's own files were denied by Rule 4's standing list, because a freeform session has no build working file and the deny message's advice — queue the work — described work already queued. The keep shaped the fix as a sanctioned declaration mirroring the build's mechanism: the session writes `_freeform-<session-id>.md` from its item's build block, and the hook permits the listed paths for that session. The list still originates at planning, so nothing widens without an agreed item behind it.
 

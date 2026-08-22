@@ -1,4 +1,4 @@
-# [HASH] — The checkpoint question is now "Take this one next?" — an invitation, not a fate ask
+# 576506c — The checkpoint question is now "Take this one next?" — an invitation, not a fate ask
 
 The user's report (2026-08-22): "worth doing" was supposed to mean worth *processing*, and her yes only opened an item — yet the phrasing had been folding items straight to kept-and-cleared for a couple of sessions, twice in the session that caught it. The diagnosis was plan.md contradicting itself: the fold rule already says the checkpoint's continue answers which item comes next, never a disposition, while the specimen three paragraphs away ended on a fate question. The fix is alignment.
 

@@ -1,4 +1,4 @@
-# [HASH] — The keep check now routes unknown-answer limbs to in-session research and names the research-as-build disguise
+# 576506c — The keep check now routes unknown-answer limbs to in-session research and names the research-as-build disguise
 
 The user's framing (2026-08-14): research is never planned into work items — if /plan can do it now, it does. The mechanism, confirmed from git: the two-limb keep check hardened on 2026-08-10 rewards "research X, then change Y" as the cheapest way to pass both limbs exactly where the answer is unknown, and three instances followed in one day across two projects. Both colliding rules are right, so neither was weakened; the clause landed where the pressure lands.
 

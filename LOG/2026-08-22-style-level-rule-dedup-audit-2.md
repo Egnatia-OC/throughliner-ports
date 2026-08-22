@@ -1,4 +1,4 @@
-# [HASH] — Style-level dedup audit: nine rules compared against their lower sites, two evictions proposed, seven keeps
+# 576506c — Style-level dedup audit: nine rules compared against their lower sites, two evictions proposed, seven keeps
 
 The eviction half of the brevity style's gate, run immediately after the style shipped, parent-axis only. Each of the style's nine rules was traced to its lower sites in skill-nonspecific-rules.md and the skill docs, with the caveat weighed on every finding: the style applies only in projects that accepted it, only in the main conversation, and only from the next session, so wholesale eviction would leave declined-style projects and subagent runs ungoverned.
 

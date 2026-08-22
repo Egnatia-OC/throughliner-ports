@@ -1,4 +1,4 @@
-# [HASH] — Walk-through of the comparison-article item: draft not yet returned from the polishing project
+# 576506c — Walk-through of the comparison-article item: draft not yet returned from the polishing project
 
 `[user]` item [competition-comparison-article], walked through in the 2026-08-22 multi-item /next run after its 19 Claude-work items were built. Appended live as the walk-through progresses.
 

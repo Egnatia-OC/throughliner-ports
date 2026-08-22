@@ -1,4 +1,4 @@
-# [HASH] — The rationale lens ran over the whole of plan.md: seventeen removals, with the coverage ledger the acceptance demanded
+# 576506c — The rationale lens ran over the whole of plan.md: seventeen removals, with the coverage ledger the acceptance demanded
 
 The 2026-08-21 pass covered done.md whole and plan.md only by signature-grep (~40% read), the same shortcut that produced the mid-sentence-prohibition misses found the same day. This build discharged the restated acceptance: one straight-through read, every paragraph through the delete-and-reread test, and a per-heading coverage ledger so a silent skip is distinguishable from a clean judgment.
 

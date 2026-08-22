@@ -1,4 +1,4 @@
-# [HASH] — The seven flavour-specific close blocks moved out of done.md into the per-flavour close docs
+# 576506c — The seven flavour-specific close blocks moved out of done.md into the per-flavour close docs
 
 The user asked (2026-08-21) why a planning close ran to ~6,000 tokens; the measurement (`resources/research/why-the-close-is-heavy.md`) showed that close reading 10,297 words of procedure to write 3,603 of record, and named done.md's flavour-specific material as the unqueued lever. This build is the distribution pass the keep settled: the seven blocks its table lists moved into the sub-doc for their flavour, each placed where its entry-writing or judgment step reads — verify-completion (with the memory reconcile) and the routing-sweep record and the build body fields and the red-flag carry-plus-backstop into done-build.md; the audit variants of each into done-audit.md, with approval-outcomes now carried in full there; the cleared-flag recording block into done-plan.md. The entry template stays whole in done.md, per the divergent-copies refusal, with only the plan/setup fields remaining in its per-flavour table.
 
