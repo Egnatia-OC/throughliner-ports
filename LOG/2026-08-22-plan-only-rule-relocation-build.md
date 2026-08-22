@@ -1,4 +1,4 @@
-# [HASH] — skill-nonspecific-rules.md capturing-mid-skill bullet — plan-only offer text relocated; sole home is now plan.md's process-now section
+# c904687 — skill-nonspecific-rules.md capturing-mid-skill bullet — plan-only offer text relocated; sole home is now plan.md's process-now section
 
 From the post-restyle compliance audit, findings 1 and 2 ([plan-only-rule-in-always-loaded-file]): the "Inside /plan only, an un-agreed idea gets an offer" block was a /plan-only rule in the file whose own admission test requires firing in all four skills or with no skill running, and plan.md's process-now section already states the same offer in full — both branches, the recommendation, the write-saving reason, the no-further-solicitation bar. The always-loaded copy therefore deleted with nothing relocated. The close-by-who-raised-it rule and the already-agreed carve-out stay, both genuinely firing everywhere; two references (the "offers above" sentence and the discovery table's INSIDE /plan comment) now point at plan.md's process-now section.
 

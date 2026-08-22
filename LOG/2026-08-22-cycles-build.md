@@ -1,4 +1,4 @@
-# [HASH] — Cycles shipped: due-ness checks at plan/next/done, keep-step authoring route and one-time suggest clause, FAQ entry
+# c904687 — Cycles shipped: due-ness checks at plan/next/done, keep-step authoring route and one-time suggest clause, FAQ entry
 
 The user's concept, raised 2026-08-22 in the planning session; the definitions/position split is Claude's. A user can put an artifact on a cycle — recurring work with its own rhythm, independent of the work cycle's — by defining it once: posts, articles, videos, and this project's own release timing were her examples. Her framing set the constraints: no new skill, a template-like concept, checks at the openings and closes for what cycles exist and where each is up to.
 

@@ -1,4 +1,4 @@
-# [HASH] — Lint check shipped: an item block with two or more `Rule gate:` lines is flagged by slug
+# c904687 — Lint check shipped: an item block with two or more `Rule gate:` lines is flagged by slug
 
 Built in this run's three-check lint extension. The reasoning and design are in the shared entry [2026-08-22-lint-three-checks-build.md](2026-08-22-lint-three-checks-build.md); this entry names the item for its own slug per the sibling-citation rule.
 

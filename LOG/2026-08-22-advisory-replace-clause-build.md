@@ -1,4 +1,4 @@
-# [HASH] — FAQ "Last session advises…" entry — replace-branch clause added (a close replacing a spent advisory)
+# c904687 — FAQ "Last session advises…" entry — replace-branch clause added (a close replacing a spent advisory)
 
 Filed by the build close of [advisory-step-collides-with-a-spent-note], which shipped the replace branch ([spec-owes-advisory-replace-sentence]): SPEC's forward-recommendation paragraph gained the owed sentence at planning, and the FAQ half waited on a build because the template is canonical and a planning session cannot edit it. The entry now states both clearing routes: reading it at the next /plan uses it up, and a close with its own advice replaces a spent note, with read-clears-it covering only notes a close is not replacing.
 

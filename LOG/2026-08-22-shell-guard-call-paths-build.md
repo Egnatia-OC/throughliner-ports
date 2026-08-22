@@ -1,4 +1,4 @@
-# [HASH] — pre_tool_use.py — call-built open() paths now read as computed and denied
+# c904687 — pre_tool_use.py — call-built open() paths now read as computed and denied
 
 The hole ([shell-guard-blind-to-call-built-paths]): `open(os.path.join(d, 'x.md'), 'w')` passed the guard entirely — the literal extractor found no path, and the computed detector's pattern excludes parens and commas, so a call-built argument matched neither and the command ran. This is the exact failure the guard was written for; the bare-variable form of the same path was already denied. Found and verified by direct drive while reproducing a sibling defect, deliberately not fixed there because widening the general pattern with `.+?` risks matching across unrelated arguments — the fragile general-parsing the module rejects, refused again here.
 

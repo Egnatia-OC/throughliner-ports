@@ -2,28 +2,29 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — chat-level record for the twenty-item build run: all Claude-work built and confirmed (one unconfirmed behaviour on cycles), both [user] items deferred to tomorrow, the article item's missing walkthrough captured → 2026-08-22-chat-4.md
-- [HASH] — build — skill-nonspecific-rules.md Communication: quiet-work and regression-tone bullets removed, evicted to the shipped brevity style → 2026-08-22-style-dedup-evictions-build.md
-- [HASH] — build — skill-nonspecific-rules.md: plan-only capture-offer text relocated; sole home now plan.md's process-now section, two references repointed → 2026-08-22-plan-only-rule-relocation-build.md
-- [HASH] — build — skill-nonspecific-rules.md one-chat rule: history clause deleted, operative rule reads whole → 2026-08-22-snr-one-chat-history-clause-build.md
-- [HASH] — build — done-build.md reply step: trigger narrowed from message-changed-work to message-asked-a-question → 2026-08-22-done-build-reply-trigger-build.md
-- [HASH] — build — rescan.md and done.md: re-scan candidates shown as a numbered set before the writes land; write-first exemption sentence deleted → 2026-08-22-rescan-candidates-show-first-build.md
-- [HASH] — build — migrate-checklist.md: tag-free declaration added, mirroring setup.md's → 2026-08-22-migrate-checklist-declaration-build.md
-- [HASH] — build — cycles shipped: due-ness checks at plan/next/done from each definition's observable, keep-step authoring route and one-time suggest clause, FAQ entry; one behaviour unconfirmed (needs a live CYCLES.md) → 2026-08-22-cycles-build.md
-- [HASH] — build — README and FAQ throughline entries (rename entry included): total-amnesia claim replaced with the vouched-versus-private delta → 2026-08-22-throughline-claim-restated-build.md
-- [HASH] — build — README and feedback-and-inbox.md: INBOX described with its delta over live session messaging → 2026-08-22-inbox-delta-clause-build.md
-- [HASH] — build — FAQ advisory entry: replace-branch clause added (a close replacing a spent note) → 2026-08-22-advisory-replace-clause-build.md
-- [HASH] — build — CLAUDE.md rename note: lost old folder name (docs-b/) restored → 2026-08-22-rename-note-old-name-build.md
-- [HASH] — build — plan.md keep-step: read-the-mechanism clause extended — reversibility claims checked against the actual target → 2026-08-22-reversibility-check-build.md
-- [HASH] — build — plan.md keep-step: research-index restatement merged into a pointer at the always-loaded rule → 2026-08-22-index-check-merger-build.md
-- [HASH] — build — plan.md floor narration: must quote the digest's two opening medians → 2026-08-22-floor-medians-build.md
-- [HASH] — build — post_tool_use.py lint: three new advisory checks (duplicate gate lines, cleared rule-path item with no disposition, cleared item naming QUEUE.md); shared reasoning entry → 2026-08-22-lint-three-checks-build.md
-- [HASH] — build — lint check shipped: duplicate Rule gate: lines flagged (sibling of the shared lint entry) → 2026-08-22-duplicate-gate-line-on-a-processed-item-2.md
-- [HASH] — build — lint check shipped: cleared rule-path item with no gate disposition flagged (sibling) → 2026-08-22-keep-step-skipped-gate-disposition-3.md
-- [HASH] — build — lint check shipped: cleared item naming QUEUE.md flagged, any flavor (sibling) → 2026-08-22-queue-content-items-are-unbuildable-by-a-run-2.md
-- [HASH] — build — pre_tool_use.py: call-built open() paths (os.path.join form) now read as computed and denied → 2026-08-22-shell-guard-call-paths-build.md
-- [HASH] — build — generate_build_view.py and next.md: [user] walkthroughs travel into the view verbatim; missing block prints a halt line → 2026-08-22-walkthrough-into-view-build.md
-- [HASH] — build — rule_signals.py audit-lag boundary: candidate bodies read, only genuine audit records accepted → 2026-08-22-audit-lag-boundary-build.md
+- [HASH] — setup — refresh to 1.20.0-test16: version marker updated, all scaffold checks clean, brevity style declined (Fable-only project) → 2026-08-22-setup.md
+- c904687 — chat-level record for the twenty-item build run: all Claude-work built and confirmed (one unconfirmed behaviour on cycles), both [user] items deferred to tomorrow, the article item's missing walkthrough captured → 2026-08-22-chat-4.md
+- c904687 — build — skill-nonspecific-rules.md Communication: quiet-work and regression-tone bullets removed, evicted to the shipped brevity style → 2026-08-22-style-dedup-evictions-build.md
+- c904687 — build — skill-nonspecific-rules.md: plan-only capture-offer text relocated; sole home now plan.md's process-now section, two references repointed → 2026-08-22-plan-only-rule-relocation-build.md
+- c904687 — build — skill-nonspecific-rules.md one-chat rule: history clause deleted, operative rule reads whole → 2026-08-22-snr-one-chat-history-clause-build.md
+- c904687 — build — done-build.md reply step: trigger narrowed from message-changed-work to message-asked-a-question → 2026-08-22-done-build-reply-trigger-build.md
+- c904687 — build — rescan.md and done.md: re-scan candidates shown as a numbered set before the writes land; write-first exemption sentence deleted → 2026-08-22-rescan-candidates-show-first-build.md
+- c904687 — build — migrate-checklist.md: tag-free declaration added, mirroring setup.md's → 2026-08-22-migrate-checklist-declaration-build.md
+- c904687 — build — cycles shipped: due-ness checks at plan/next/done from each definition's observable, keep-step authoring route and one-time suggest clause, FAQ entry; one behaviour unconfirmed (needs a live CYCLES.md) → 2026-08-22-cycles-build.md
+- c904687 — build — README and FAQ throughline entries (rename entry included): total-amnesia claim replaced with the vouched-versus-private delta → 2026-08-22-throughline-claim-restated-build.md
+- c904687 — build — README and feedback-and-inbox.md: INBOX described with its delta over live session messaging → 2026-08-22-inbox-delta-clause-build.md
+- c904687 — build — FAQ advisory entry: replace-branch clause added (a close replacing a spent note) → 2026-08-22-advisory-replace-clause-build.md
+- c904687 — build — CLAUDE.md rename note: lost old folder name (docs-b/) restored → 2026-08-22-rename-note-old-name-build.md
+- c904687 — build — plan.md keep-step: read-the-mechanism clause extended — reversibility claims checked against the actual target → 2026-08-22-reversibility-check-build.md
+- c904687 — build — plan.md keep-step: research-index restatement merged into a pointer at the always-loaded rule → 2026-08-22-index-check-merger-build.md
+- c904687 — build — plan.md floor narration: must quote the digest's two opening medians → 2026-08-22-floor-medians-build.md
+- c904687 — build — post_tool_use.py lint: three new advisory checks (duplicate gate lines, cleared rule-path item with no disposition, cleared item naming QUEUE.md); shared reasoning entry → 2026-08-22-lint-three-checks-build.md
+- c904687 — build — lint check shipped: duplicate Rule gate: lines flagged (sibling of the shared lint entry) → 2026-08-22-duplicate-gate-line-on-a-processed-item-2.md
+- c904687 — build — lint check shipped: cleared rule-path item with no gate disposition flagged (sibling) → 2026-08-22-keep-step-skipped-gate-disposition-3.md
+- c904687 — build — lint check shipped: cleared item naming QUEUE.md flagged, any flavor (sibling) → 2026-08-22-queue-content-items-are-unbuildable-by-a-run-2.md
+- c904687 — build — pre_tool_use.py: call-built open() paths (os.path.join form) now read as computed and denied → 2026-08-22-shell-guard-call-paths-build.md
+- c904687 — build — generate_build_view.py and next.md: [user] walkthroughs travel into the view verbatim; missing block prints a halt line → 2026-08-22-walkthrough-into-view-build.md
+- c904687 — build — rule_signals.py audit-lag boundary: candidate bodies read, only genuine audit records accepted → 2026-08-22-audit-lag-boundary-build.md
 
 - 2625fa0 — chat-level record for the 2026-08-22 planning session: 27 items processed (21 kept, 6 deleted), 7 SPEC edits in-session, cycles designed, three-channel release model settled, marketplace research filed → 2026-08-22-chat-3.md
 - 2625fa0 — plan — [style-dedup-evictions] kept, cleared: quiet-work + regression-tone bullets evicted from skill-nonspecific-rules.md for the style; count-clause finding refuted, scope narrowed → 2026-08-22-style-dedup-evictions-2.md

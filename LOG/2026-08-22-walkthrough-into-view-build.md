@@ -1,4 +1,4 @@
-# [HASH] — generate_build_view.py and next.md — [user] items' Walkthrough blocks travel into the view verbatim; a missing block prints a halt line
+# c904687 — generate_build_view.py and next.md — [user] items' Walkthrough blocks travel into the view verbatim; a missing block prints a halt line
 
 Finding from the previous run ([user-walkthrough-missing-from-view]): the view printed "no build block" for a [user] item, the run may not read QUEUE.md, yet next.md's walk-through branch said to drive the steps the item records — which lived only in queue prose. The alternative, letting the walk-through branch read the queue, was refused: it breaches the run-never-reads-the-queue design for one flavor, and the reasons that design exists (transcription into shipped docs, whole-queue reads) apply to [user] items too. The mechanism mirrors the disposition carry: the view copies the block led by the item's Walkthrough label (bold or plain, `.` or `:`) byte-for-byte, from the label to the end of the entry; where none exists it prints that no walkthrough travelled and the run halts on the item. next.md's walk-through branch now names the view as where the steps come from.
 

@@ -1,4 +1,4 @@
-# [HASH] — plan.md keep-step — research-index restatement merged into a pointer at the always-loaded rule
+# c904687 — plan.md keep-step — research-index restatement merged into a pointer at the always-loaded rule
 
 Finding from [keep-step-accretes-from-five-items] ([keep-step-index-check-restated]): the shelf bullet restated the always-loaded "read resources/research/index.md" rule — two rules on one subject at two sites, the law-prose shape. The merger keeps the keep-step's what-is-on-the-shelf moment (that siting is right) and replaces the restated instruction with a cross-reference to the always-loaded Research rule, keeping only the clause new at that site: a finding the reasoning draws on is cited by filename.
 

@@ -1,4 +1,4 @@
-# [HASH] — post_tool_use.py queue lint — three new advisory checks: duplicate gate lines, cleared rule-path item with no gate disposition, cleared item naming QUEUE.md
+# c904687 — post_tool_use.py queue lint — three new advisory checks: duplicate gate lines, cleared rule-path item with no gate disposition, cleared item naming QUEUE.md
 
 Three sibling escalations to the hook, each refused as method text and settled at processing; this entry carries the shared reasoning and the design detail, and the three items' grounds are below. All three checks are judgment-free reads of item blocks, flagged by slug, and the lint stays advisory — it reports, never blocks. One implementation decision made here: the two path-scoped checks read only an item's `Files:`/`Changes:` lines, not the whole block, because a path mentioned in rationale prose is not a claim the build touches it and whole-block matching would flag every item that merely discusses the queue or a doc.
 
