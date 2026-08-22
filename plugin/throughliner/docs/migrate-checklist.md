@@ -9,6 +9,11 @@ note: >
 
 # QUEUE.md migration checklist — old format → two-section
 
+**This doc carries no response-shape tags** (the bracketed `[BRIEF]`-style
+markers other procedure docs use); the prose in each step carries the behaviour
+directly instead. **It stays tag-free**, for setup.md's reason: it runs during
+/setup, where the rules defining those tags may not be loaded.
+
 No new skill and no hook change: this is a guided manual pass, working item by
 item, drafting the converted queue and **getting the user's approval before
 writing, because a project being migrated may have been adopted moments ago and

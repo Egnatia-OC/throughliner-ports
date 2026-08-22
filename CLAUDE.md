@@ -39,7 +39,7 @@ The docset serves the **5-series — Fable 5 and Opus 5** — which converge on 
 
 **The frontmatter stamp on each `docs/` file reads `docset: current`, renamed from `docset: B` on 2026-08-16.** The stamp itself stays and must: session_start's behaviour-rules redirect self-checks against it, so it is the one guard proving the always-loaded rules reached the session at all. What changed is only the value, which used to name a sibling that no longer exists — a self-check asserts a new value exactly as well as an old one.
 
-**The folder was renamed from `docs/` to `docs/` on 2026-08-21.** Session records, archived INBOX messages and `resources/plugin-behaviour-retired.md` still name the old path, and correctly so: an entry written before that date records what the folder was called at the time. Dated findings under `resources/research/` keep it too, because they quote file-and-line as evidence.
+**The folder was renamed from `docs-b/` to `docs/` on 2026-08-21.** Session records, archived INBOX messages and `resources/plugin-behaviour-retired.md` still name the old path, and correctly so: an entry written before that date records what the folder was called at the time. Dated findings under `resources/research/` keep it too, because they quote file-and-line as evidence.
 
 ## Host and target
 

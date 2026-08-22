@@ -354,6 +354,8 @@ You'll see it ends with `[forward-advisory]`, the same way your real work items 
 
 It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. Mentioning it is what uses it up: the note is deleted automatically at that point, whether or not you follow it. It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
 
+There's one other way a note disappears: a session's close that has its own advice to leave, and finds a spent note still sitting in the slot, replaces it — deleting the old note and saying it did. The read-uses-it-up rule covers only notes a close isn't replacing.
+
 ## Claude offered to delete some files when I closed a session. What's that?
 
 When you close a session with /done, Claude offers to clean up throwaway files it made during that session — a scratch file, a one-off working file with no further use. It only ever offers files *it* created this session that have no future purpose, it asks about each one singly, and it never deletes anything without your yes. It won't touch files you made yourself — those are treated as your own work, never as rubbish. When a file is tracked in your project's history, Claude says so (you could get it back if needed); when it isn't tracked, or it's outside your project, Claude warns you the deletion is permanent before you approve. Most of the time there's nothing to clean up, because Claude writes its temporary files to a scratch area outside your project in the first place — so they never land in your folder, and they clear themselves.
@@ -397,7 +399,7 @@ Why it changed: pasting every draft into the chat and then writing it wrote ever
 
 ## Why does the method record the reasoning behind every decision, not just the decision?
 
-Because Claude forgets. Every session starts from nothing — Claude has no memory of the last one, and no idea why your project is the way it is. The record of *why* is what carries your intent across that gap. It's the reason a fresh, short, even cheaper session still builds the project the way you meant, instead of reading your files, guessing at the intent behind them, and guessing wrong.
+Because the record has to be yours, not Claude's. Claude Code now keeps some memory of its own between sessions — private notes and summaries you never see or approve, kept lossily and on no schedule you control. The recorded *why* is different in kind: a structured record you vouched for, carried alongside the work — so any session, including a fresh one that carries nothing forward, still builds the project the way you meant, instead of guessing from your files or from Claude's own unvouched notes and guessing wrong.
 
 That's worth separating from the thing it sits alongside. Your work *moves* through a pipeline: an idea is captured, discussed and kept, then built. The reasoning is what travels *with* that work and outlives it. Two different things, and the second is easy to miss because the first is the visible one.
 
@@ -467,7 +469,7 @@ Either way it ends up with a run of its own.
 
 Install it once under the new name, and that's it. Everything you've built stays exactly where it is.
 
-The plugin used to be called Sovereign Implementer. The name changed because it was describing the wrong thing: the real value here is the **throughline** — the reasoning behind every decision, carried from the moment you capture an idea, through the work item, into the session record. Claude's memory resets every session. The throughline is why a fresh session still builds your project the way you meant, instead of re-reading your code and guessing at what you wanted.
+The plugin used to be called Sovereign Implementer. The name changed because it was describing the wrong thing: the real value here is the **throughline** — the reasoning behind every decision, carried from the moment you capture an idea, through the work item, into the session record. Whatever Claude happens to remember between sessions, the throughline is the record you vouched for — it is why any session, including a fresh one, still builds your project the way you meant, instead of re-reading your code and guessing at what you wanted.
 
 **What happens on your side.** Claude Code notices the old name and follows it to the new one automatically, rewriting its own settings and showing you a one-line notice. But because the plugin comes from GitHub, it also needs fetching under the new name, so you'll be asked to install it once. Ask Claude to install `throughliner@flintcraft` and then fully restart the app. That's the whole job.
 
@@ -1097,3 +1099,11 @@ It's a setting that keeps Claude's replies in this project short and decision-le
 It takes effect at the next session (or after /clear) — styles never change a conversation already under way.
 
 **If you said no**, nothing is set, and each session opens with one short line noting the style is not enabled — a statement, not a nag. You can take the offer later by running /setup again, or set it yourself in the project's settings.
+
+## What is a cycle?
+
+A cycle is a named piece of recurring work — a weekly release, a posting rhythm, a maintenance pass — defined once and then driven by the queue like everything else. Ask for one during a planning session and Claude writes the definition with you into a `CYCLES.md` file your project gains the first time: the thing the cycle produces, the steps of one turn, how often it runs, and the visible sign that a turn was completed (a release's date, a line in a sent-record).
+
+Nothing keeps a schedule or stores a position. At the openings and closes of planning and build sessions, Claude reads the definitions, checks each cycle's visible sign, and — where a turn is overdue — files one item into your queue for it. That item is then weighed and built like any other work, and no duplicate is filed while one is still open. A project with no cycles has no `CYCLES.md` and pays nothing.
+
+Claude may also offer a cycle once when it notices you working the same artifact repeatedly — creating one is always your call.

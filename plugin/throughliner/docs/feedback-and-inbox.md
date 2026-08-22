@@ -73,7 +73,9 @@ yes — and only the mechanics differ.
 
 Each project has an `INBOX/` folder, scaffolded at /setup. It's how two
 projects the same user runs send each other messages directly, instead of the
-user carrying them between chats by hand.
+user carrying them between chats by hand. Its delta over Claude Code's own
+live session messaging: durable, offline, approval-gated mail, reaching a
+project whether or not anything is running there.
 
 **Inbound.** session_start names each waiting message and directs the chat to
 read it, with a self-check on the reading; the bodies stay out of the payload,

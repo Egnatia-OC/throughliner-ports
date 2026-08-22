@@ -165,6 +165,18 @@ PY_OPEN_WRITE_ANY = re.compile(
 )
 PY_WRITE_METHOD_ANY = re.compile(r"""\.\s*write_(?:text|bytes)\s*\(""")
 
+# An `open(` whose first argument is BUILT BY A CALL — `os.path.join(...)`,
+# `Path(...)` and the like — followed by a write mode. PY_OPEN_WRITE_ANY's
+# argument class excludes parentheses and commas, so a call-built path matched
+# neither the literal extractor nor the computed detector and sailed through
+# both. The argument may contain at most ONE level of nested parentheses; a
+# deeper nesting is not matched, which is an accepted limit of text-matching
+# rather than parsing. A call-built path is computed by definition.
+PY_OPEN_WRITE_CALL = re.compile(
+    r"""\bopen\s*\(\s*(?P<arg>[A-Za-z_][\w.]*\s*\((?:[^()]|\([^()]*\))*\))"""
+    r"""\s*,\s*['"][waxr]*[wax]b?\+?['"]"""
+)
+
 PATTERN_AS_DATA_NOTE = (
     "\n\nNote: this check matches the command's text, not its intent — a "
     "command that merely contains the pattern as data (a test string, "
@@ -377,6 +389,12 @@ def has_computed_write_target(command: str) -> bool:
     """
     if not PY_INVOCATION.search(command):
         return False
+
+    # A call-built first argument (`open(os.path.join(...), "w")`) is computed
+    # by definition — there is no literal to read. Checked first because the
+    # general pattern below cannot match an argument containing parentheses.
+    if PY_OPEN_WRITE_CALL.search(command):
+        return True
 
     for m in PY_OPEN_WRITE_ANY.finditer(command):
         arg = m.group("arg").strip()

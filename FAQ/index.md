@@ -117,3 +117,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [The plugin updated to a new version. Do I need to do anything?](faq.md#the-plugin-updated-to-a-new-version-do-i-need-to-do-anything)
 - [Is anything I approve ever gone for good?](faq.md#is-anything-i-approve-ever-gone-for-good)
 - [What is the brevity style Claude offered me at setup?](faq.md#what-is-the-brevity-style-claude-offered-me-at-setup)
+- [What is a cycle?](faq.md#what-is-a-cycle)

@@ -378,6 +378,28 @@ def signal_measured(root):
 
 COMPLIANCE_AUDIT_ENTRY_RE = re.compile(r"compliance-audit", re.IGNORECASE)
 
+# A filename naming a compliance audit is not enough: a planning session that
+# PROCESSES an audit item writes a record named for that item's slug, so the
+# filename match alone took a processing record as the boundary and silenced
+# the check. The body decides: an audit record routes findings ("Routed to
+# Captures:") or states what it touched ("Files touched:"), while a processing
+# record carries "Work processed:" and neither of those necessarily. An entry
+# carrying "Work processed:" is a planning record whatever else it carries.
+AUDIT_RECORD_MARKERS = ("Routed to Captures:", "Files touched:")
+PROCESSING_RECORD_MARKER = "Work processed:"
+
+
+def _is_audit_record(path):
+    """True where the entry's body reads as an audit's own record."""
+    try:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            body = f.read()
+    except OSError:
+        return False
+    if PROCESSING_RECORD_MARKER in body:
+        return False
+    return any(m in body for m in AUDIT_RECORD_MARKERS)
+
 
 def signal_audit_lag(root):
     """Rule-bearing commits made since the most recent compliance-audit entry.
@@ -397,9 +419,15 @@ def signal_audit_lag(root):
     log_dir = os.path.join(root, "LOG")
     boundary = None
     if os.path.isdir(log_dir):
-        for name in sorted(os.listdir(log_dir)):
+        # Newest first, and the filename match is only the candidate set: each
+        # candidate's body must read as a genuine audit record, or the search
+        # continues older. A planning record named for the audit item it merely
+        # processed silenced this check once.
+        for name in sorted(os.listdir(log_dir), reverse=True):
             if name.endswith(".md") and COMPLIANCE_AUDIT_ENTRY_RE.search(name):
-                boundary = name
+                if _is_audit_record(os.path.join(log_dir, name)):
+                    boundary = name
+                    break
     # The date prefix on the entry's filename is the boundary. Same-day
     # commits before the audit re-report — the over-fire direction, accepted.
     since = None

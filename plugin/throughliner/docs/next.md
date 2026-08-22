@@ -234,6 +234,15 @@ Nothing in the scope-lock blocks this: `pre_tool_use` treats any project's
 `INBOX/` as always editable, so reading and archiving mail during a locked run
 cannot be denied.
 
+### 3b. Cycles due-ness check  [SILENT] when no cycles doc exists or nothing is due; [BRIEF] when a capture is filed
+
+If the project has a cycles doc (`CYCLES.md` at the project root), read it and
+compute each cycle's due-ness from the observable its definition names — filing
+ONE capture in Unprocessed under the cycle's slug where a turn is due and no
+open capture with that slug exists, and nothing otherwise. Filing only: what to
+do with the capture stays planning work. A project with no cycles doc pays
+nothing here.
+
 ### 4. Present the run and offer the off-ramp  [BRIEF, PROMPT]
 
 Put the run in front of the user and invite a last-glance change **in the same
@@ -549,7 +558,10 @@ item strands in Processed and the next /next presents it again as if unbuilt.
 ### Walk-through branch — the `[user]` items  [SEQUENCE, PROMPT]
 
 Once the Claude-work is built (or if the run had none), walk the user through each
-`[user]` item still in the cleared region. Walking one through does **not** end
+`[user]` item still in the cleared region. **The steps come from the view**,
+which carries each `[user]` item's Walkthrough block verbatim; where the view
+says no walkthrough travelled, halt on the item rather than reading the queue
+for the missing steps. Walking one through does **not** end
 the run — it's the last pass of a run whose Claude work is already done.
 
 **One item at a time**, each in its own message, led by its own walk-through. Finish one fully — or record that the user deferred it — before

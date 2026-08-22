@@ -351,6 +351,14 @@ close picks up whatever came after the last one. Invoke it shortly before
 closing and this costs a line. With no /rescan run, the close does the full job,
 scanning the whole chat.
 
+**Cycles due-ness check first** [SILENT] when no cycles doc exists or nothing
+is due; [BRIEF] when a capture is filed. If the project has a cycles doc
+(`CYCLES.md` at the project root), read it and compute each cycle's due-ness
+from the observable its definition names — filing ONE capture in Unprocessed
+under the cycle's slug where a turn is due and no open capture with that slug
+exists, and nothing otherwise. Filing only: routing stays planning work. A
+project with no cycles doc pays nothing here.
+
 Before committing, re-read that stretch of the chat and surface candidate
 captures — things the user thought out loud but never flagged.
 
@@ -361,11 +369,9 @@ captures — things the user thought out loud but never flagged.
 # routing is planning, /plan's alone
 ```
 
-**Write every candidate to Unprocessed first, then report them as ONE numbered
-set.** Nothing waits on approval before reaching disk — a capture in a
-git-tracked QUEUE.md is recoverable without the user's help, which is the
-write-first test. The user contests by number, and a contested item is reverted
-or reworked one at a time.
+**Show the candidate set as ONE numbered message before anything is written.**
+The user contests by number or says go; the writes then land, and a contested
+item is dropped or reworked one at a time.
 
 Add them to this session's LOG entry's "Routed to Captures:" line as a
 working-tree edit riding this commit.

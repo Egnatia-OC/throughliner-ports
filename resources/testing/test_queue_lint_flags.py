@@ -359,6 +359,114 @@ def test_growth_reports_a_delta_per_edited_item():
           f"{before.get('beta')} -> {after.get('beta')}")
 
 
+def test_duplicate_gate_lines_are_flagged():
+    """Two `Rule gate:` lines on one item make its disposition ambiguous."""
+    lint = load_lint()
+    bad = CLEAN.replace("Filed by Claude. Rationale for alpha.",
+                        "Filed by Claude. Rationale for alpha.\n"
+                        "Rule gate: run — the full disposition.\n"
+                        "Rule gate: run — the full")
+    warnings = lint(bad)
+    hit = any("duplicate Rule gate" in w for w in warnings)
+    check("two Rule gate: lines on one item are flagged", hit, f"got: {warnings}")
+
+
+def test_single_or_absent_gate_line_is_not_flagged():
+    lint = load_lint()
+    one = CLEAN.replace("Filed by Claude. Rationale for alpha.",
+                        "Filed by Claude. Rationale for alpha.\n"
+                        "Rule gate: run — the disposition.")
+    for label, content in (("one gate line", one), ("no gate line", CLEAN)):
+        warnings = [w for w in lint(content) if "duplicate Rule gate" in w]
+        check(f"{label} is not flagged as duplicate", not warnings,
+              f"got: {warnings}")
+
+
+GATED = CLEAN.replace(
+    "Changes: `somefile.md` — the thing the item describes.",
+    "Changes: `plugin/throughliner/docs/plan.md` — reword a rule.")
+
+
+def test_cleared_rule_path_item_without_gate_line_is_flagged():
+    lint = load_lint()
+    warnings = lint(GATED)
+    hit = any("no gate disposition" in w for w in warnings)
+    check("a cleared rule-path item with no gate line is flagged", hit,
+          f"got: {warnings}")
+
+
+def test_cleared_rule_path_item_with_gate_line_is_not_flagged():
+    lint = load_lint()
+    ok = GATED.replace("Filed by Claude. Rationale for alpha.",
+                       "Filed by Claude. Rationale for alpha.\n"
+                       "Rule gate: run — eviction named.")
+    warnings = [w for w in lint(ok) if "no gate disposition" in w]
+    check("a cleared rule-path item with a gate line is not flagged",
+          not warnings, f"got: {warnings}")
+
+
+def test_held_rule_path_item_is_not_asked_for_a_gate_line():
+    """Held work is not yet through the keep-step, so it owes nothing."""
+    lint = load_lint()
+    held = CLEAN.replace(
+        "## Unprocessed",
+        "#### Held rule item [gdelta]\nRationale.\n"
+        "Changes: `plugin/throughliner/docs/plan.md` — reword.\n"
+        "Blocked by: [alpha]\n\n## Unprocessed")
+    warnings = [w for w in lint(held) if "no gate disposition" in w]
+    check("a rule-path item below the line is not flagged", not warnings,
+          f"got: {warnings}")
+
+
+def test_non_rule_path_item_without_gate_line_is_not_flagged():
+    lint = load_lint()
+    warnings = [w for w in lint(CLEAN) if "no gate disposition" in w]
+    check("a non-rule-path item without a gate line is not flagged",
+          not warnings, f"got: {warnings}")
+
+
+def test_cleared_item_naming_queue_is_flagged():
+    lint = load_lint()
+    bad = CLEAN.replace(
+        "Changes: `somefile.md` — the thing the item describes.",
+        "Changes: `QUEUE.md` — reword three item headings.")
+    warnings = lint(bad)
+    hit = any("names QUEUE.md" in w for w in warnings)
+    check("a cleared item naming QUEUE.md is flagged", hit, f"got: {warnings}")
+
+
+def test_cleared_audit_item_naming_queue_is_flagged():
+    lint = load_lint()
+    bad = CLEAN.replace(
+        "#### Perfectly ordinary work item [alpha]",
+        "#### [audit] Perfectly ordinary work item [alpha]").replace(
+        "Changes: `somefile.md` — the thing the item describes.",
+        "Changes: `QUEUE.md` — read and report on item wording.")
+    warnings = lint(bad)
+    hit = any("names QUEUE.md" in w for w in warnings)
+    check("a cleared [audit] item naming QUEUE.md is flagged", hit,
+          f"got: {warnings}")
+
+
+def test_held_item_naming_queue_is_not_flagged():
+    lint = load_lint()
+    held = CLEAN.replace(
+        "## Unprocessed",
+        "#### Held queue item [qheld]\nRationale.\n"
+        "Changes: `QUEUE.md` — reword headings.\n"
+        "Blocked by: [alpha]\n\n## Unprocessed")
+    warnings = [w for w in lint(held) if "names QUEUE.md" in w]
+    check("the same item below the line is not flagged", not warnings,
+          f"got: {warnings}")
+
+
+def test_cleared_item_naming_other_files_is_not_flagged():
+    lint = load_lint()
+    warnings = [w for w in lint(CLEAN) if "names QUEUE.md" in w]
+    check("a cleared item naming other files is not flagged", not warnings,
+          f"got: {warnings}")
+
+
 if __name__ == "__main__":
     print("test_queue_lint_flags")
     test_clean_queue_is_silent()
@@ -383,5 +491,15 @@ if __name__ == "__main__":
     test_quote_claim_without_verbatim_text_is_still_flagged()
     test_uncredited_item_is_not_asked_for_a_quote()
     test_growth_reports_a_delta_per_edited_item()
+    test_duplicate_gate_lines_are_flagged()
+    test_single_or_absent_gate_line_is_not_flagged()
+    test_cleared_rule_path_item_without_gate_line_is_flagged()
+    test_cleared_rule_path_item_with_gate_line_is_not_flagged()
+    test_held_rule_path_item_is_not_asked_for_a_gate_line()
+    test_non_rule_path_item_without_gate_line_is_not_flagged()
+    test_cleared_item_naming_queue_is_flagged()
+    test_cleared_audit_item_naming_queue_is_flagged()
+    test_held_item_naming_queue_is_not_flagged()
+    test_cleared_item_naming_other_files_is_not_flagged()
     print(f"\n{len(failures)} failure(s)" if failures else "\nall passed")
     sys.exit(1 if failures else 0)

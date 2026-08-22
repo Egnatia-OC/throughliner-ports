@@ -92,6 +92,20 @@ def project(recorded_version="0.0.1", epoch=None, drop=()):
     return d
 
 
+def without_style_offer(out):
+    """The output minus the brevity-style offer sentence.
+
+    That sentence legitimately names /setup ("The brevity output style is not
+    enabled for this project. /setup offers it.") and fires in any project
+    without the style setting — these fixtures included. This suite guards
+    VERSION-driven /setup recommendations, so the style sentence is removed
+    before the no-/setup assertions rather than counted against them.
+    """
+    return out.replace(
+        "The brevity output style is not enabled for this project. "
+        "/setup offers it.", "")
+
+
 def run(cwd):
     env = dict(os.environ, CLAUDE_PLUGIN_ROOT=PLUGIN_ROOT)
     payload = json.dumps({"cwd": cwd, "session_id": "version-notice-test"})
@@ -109,7 +123,7 @@ def test_version_only_difference_says_nothing():
           "version changed since this project was" not in out,
           out[:800])
     check("a version-only difference recommends no /setup",
-          "/setup" not in out, out[:800])
+          "/setup" not in without_style_offer(out), out[:800])
     shutil.rmtree(d, ignore_errors=True)
 
 
@@ -121,7 +135,7 @@ def test_matching_version_also_says_nothing():
     check("a project opening at all produces output",
           "[Throughliner]" in out, out[:400])
     check("a matching-version project recommends no /setup",
-          "/setup" not in out, out[:800])
+          "/setup" not in without_style_offer(out), out[:800])
     shutil.rmtree(d, ignore_errors=True)
 
 

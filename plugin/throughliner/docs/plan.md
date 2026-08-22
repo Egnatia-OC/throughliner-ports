@@ -453,6 +453,30 @@ captures, then report what was seeded.
 
 This step belongs to /plan alone; /setup stays scaffolding and interview.
 
+**Cycles due-ness check** [SILENT] when the project has no cycles doc or nothing
+is due; [BRIEF] when a capture is filed. If the project has a cycles doc
+(`CYCLES.md` at the project root), read it. Each definition names an artifact,
+the steps of one turn, a cadence, and **the observable that marks a completed
+turn** — a release's date, a sent-record line. Compute each cycle's due-ness
+from its observable: read the observable's current state, and where a full
+cadence interval has passed since the last completed turn, the cycle is due.
+
+```
+cycle due, no open capture with its slug  ->  file ONE capture in Unprocessed
+                                              under the cycle's slug, naming
+                                              the due step
+cycle due, open capture already exists    ->  satisfied; file nothing
+cycle not due                             ->  nothing, silently
+no cycles doc                             ->  nothing, silently — a project
+                                              with no cycles pays nothing
+```
+
+Position is never stored: due-ness is recomputed from the observable every
+time, so a forgotten check costs nothing and a state file cannot lie. The
+capture then ranks by the ladder like any other work. The same check runs at
+/next's pre-flight and /done's wind-down, filing only — this is the one site
+that also processes what it files.
+
 ### The opening — two beats, drop then order
 
 **Beat 1 — the droppable set** [SEQUENCE — bulk-approval inversion]. Skim
@@ -537,7 +561,10 @@ survivors are what's left to order.
 **Start-of-processing reorder and throughput floor** [BRIEF]. Apply the order the
 user chose at beat 2 — their own priorities if they named any, otherwise the
 default, **unblock-potential**: the item whose processing would let the most other
-work move forward goes first. Then narrate the run's shape in one line.
+work move forward goes first. Then narrate the run's shape in one line, quoting
+the opening medians the digest printed — the section's line-count median and its
+first-seen median — which are the figures the ladder's membership stays fixed to
+for the whole pass.
 
 **Pass over any Unprocessed entry carrying a `Not before:` date still ahead**
 [SILENT], whatever the order would otherwise do with it. On a capture the field
@@ -852,14 +879,17 @@ there and delete the queue item.
 
 **And where an item asserts how a mechanism behaves, read the mechanism before
 describing the build.** A capture's account of how something works is a claim to
-test, not a fact to build on.
+test, not a fact to build on. An assertion that an operation is reversible or
+recoverable is such a claim, and checking it means inspecting the actual target
+— what would be destroyed, and whether it is genuinely held elsewhere — before
+the item clears.
 
 **Two questions are settled before the build is described, and each is answered
 in the item's prose:**
 
-- **what is already on the shelf** — check `resources/research/index.md` for an
-  entry covering this item's subject, and where the reasoning draws on a
-  finding, cite the file rather than restating it;
+- **what is already on the shelf** — run the always-loaded research-index check
+  (skill-nonspecific-rules.md, Research and evidence filing), and where the
+  reasoning draws on a finding, cite the file rather than restating it;
 - **what level the fix belongs at** — where the item fixes an instance of
   something more general, name whether the fix belongs at that instance, in a
   rule, or in a hook, and where a lower level is chosen over a higher one, say
@@ -891,6 +921,18 @@ neither.
 
 This is where a design item is caught: an item whose build list is *the design's
 own output* fails the second limb by construction, so it never clears to run.
+
+**Where the user asks to put work on a cycle, author the definition here, with
+them present.** Write it into the project's cycles doc (`CYCLES.md` at the
+project root, created on first use): the artifact, the steps of one turn, the
+cadence — declared by the user or derived from the record, and the definition
+says which — and **the observable that marks a completed turn**. The openings
+and closes then compute due-ness from that observable and file a capture when a
+turn is due; nothing stores a position.
+
+**And where an item is recurring-shaped — the same artifact worked repeatedly —
+offer a cycle once, in the message already discussing that item, never as a turn
+of its own.** Creating one stays the user's call.
 
 Part of keeping is settling who does it and how: Claude-work by default or
 `[user]`; and for Claude-work, its flavor. Claude places the item in Processed by

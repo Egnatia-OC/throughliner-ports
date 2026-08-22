@@ -187,6 +187,33 @@ def runs_alone(entry):
     return any(RUNS_ALONE_RE.match(line) for line in entry["body"])
 
 
+# The label leading a [user] item's walk-through steps, bold or plain, with a
+# `.` or `:` after the word. Tolerating the bold form for the same reason the
+# other labels here do.
+WALKTHROUGH_RE = re.compile(r"^\s*\*{0,2}Walkthrough[.:]\*{0,2}", re.IGNORECASE)
+
+
+def walkthrough(entry):
+    """The block led by the entry's Walkthrough label, byte-for-byte, or None.
+
+    A [user] item is driven live from the view, so its steps must travel the
+    same way a build item's block does — copied verbatim from the label line to
+    the end of the entry, trailing blanks trimmed. Where no label exists the
+    caller says so, and the run halts on the item.
+    """
+    start = None
+    for i, line in enumerate(entry["body"]):
+        if WALKTHROUGH_RE.match(line):
+            start = i
+            break
+    if start is None:
+        return None
+    block = entry["body"][start:]
+    while block and not block[-1].strip():
+        block.pop()
+    return block
+
+
 def needs_block(entry):
     """True where this cleared entry is one a run builds from a block.
 
@@ -273,6 +300,20 @@ def render(entries):
         if dispo:
             out.extend(dispo)
             out.append("")
+        # A [user] item is not built from a block — it is walked through live,
+        # and the steps travel into the view so the run never reads the queue.
+        if e["flavor"] == "user":
+            steps = walkthrough(e)
+            if steps is None:
+                out.append(
+                    "**No walkthrough travelled.** This item carries no "
+                    "Walkthrough block, so the view has no steps to drive it "
+                    "with and the run halts on it."
+                )
+            else:
+                out.extend(steps)
+            out.append("")
+            continue
         block, err = build_block(e)
         if err:
             problems.append("[%s]: %s" % (slug, err))

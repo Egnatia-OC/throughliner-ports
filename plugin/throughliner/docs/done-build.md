@@ -123,8 +123,8 @@ Silent when no built item carries a flag.
 
 ### 1.5 Reply to mail the run opened  [SILENT] when no mail arrived; [PROMPT] when it did
 
-Where /next's pre-flight opened a message that changed work here, draft the reply
-now and show it. The close is the moment the user is reliably present, which
+Where /next's pre-flight opened a message that asked a question, a reply is owed:
+draft it now and show it. A defect report is owed nothing by default. The close is the moment the user is reliably present, which
 mid-run is not — and a reply leaves the machine, so it goes out only on their
 explicit yes to the exact wording, with the draft put in front of them unprompted.
 

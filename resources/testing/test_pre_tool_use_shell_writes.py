@@ -396,6 +396,48 @@ def main():
         "got: " + decision(d4, fstring),
     )
 
+    # --- call-built paths: computed by definition, denied ---------------------
+    #
+    # `open(os.path.join(...), "w")` matched neither the literal extractor nor
+    # PY_OPEN_WRITE_ANY (whose argument class excludes parens and commas), so a
+    # write whose path was built by a call sailed through both halves of the
+    # guard. A call-built argument is computed by definition — there is no
+    # literal to read — so it denies. Matching reaches one level of nested
+    # parentheses inside the call.
+    joined = "py -c \"open(os.path.join('QUEUE', 'x.md'), 'w').write('hi')\""
+    check(
+        "a call-built target (os.path.join) is denied",
+        decision(d4, joined) == "deny",
+        "got: " + decision(d4, joined),
+    )
+
+    # Direct drive: the detector itself reports the join form as computed.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("pre_tool_use", HOOK)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    check(
+        "has_computed_write_target sees the join form",
+        mod.has_computed_write_target(joined) is True,
+    )
+    check(
+        "has_computed_write_target still sees the bare-variable form",
+        mod.has_computed_write_target("py -c \"open(p, 'w').write('x')\"")
+        is True,
+    )
+    check(
+        "a literal path is still not computed",
+        mod.has_computed_write_target("py -c \"open('a.md', 'w').write('x')\"")
+        is False,
+    )
+    check(
+        "a read-mode open with a call-built path does not trigger",
+        mod.has_computed_write_target(
+            "py -c \"open(os.path.join('a', 'b.md'), 'r').read()\""
+        )
+        is False,
+    )
+
     print()
     if _failures:
         print("FAILURES: " + ", ".join(_failures))

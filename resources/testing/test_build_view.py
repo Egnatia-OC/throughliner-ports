@@ -347,6 +347,45 @@ def test_a_genuinely_blockless_build_item_still_reads_unequal():
     shutil.rmtree(root, ignore_errors=True)
 
 
+WALK_STEPS = """**Walkthrough.** Two steps.
+1. Open the settings page — you should see the version number.
+2. Click Update — the number should change."""
+
+USER_QUEUE = QUEUE.replace(
+    "#### A cleared item with no block [beta]\nRationale only. No instructions were ever authored for this one.",
+    "#### [user] A step for the user [beta]\nRationale nobody should see. USERSECRET.\n\n"
+    + WALK_STEPS
+    + "\n\n#### [user] A step with no walkthrough [epsilon]\nRationale only.",
+)
+
+
+def test_user_walkthrough_travels_verbatim():
+    """A [user] item is driven from the view, so its steps must be in it."""
+    root = project(USER_QUEUE)
+    view = generate(root)
+    check("the walkthrough block appears verbatim", WALK_STEPS in view,
+          repr(view[view.find("Walkthrough"):][:300]))
+    check("the [user] item's rationale is still absent",
+          "USERSECRET" not in view, view[:400])
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_user_item_without_walkthrough_gets_the_halt_line():
+    root = project(USER_QUEUE)
+    view = generate(root)
+    check("a [user] item with no walkthrough is stated as halting",
+          "No walkthrough travelled" in view, view[:400])
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_build_items_are_unaffected_by_walkthrough_handling():
+    root = project(USER_QUEUE)
+    view = generate(root)
+    check("the build item's block still travels byte-for-byte",
+          BLOCK_BODY in view, repr(view[view.find("Changes:"):][:300]))
+    shutil.rmtree(root, ignore_errors=True)
+
+
 if __name__ == "__main__":
     print("test_build_view")
     test_runs_alone_reaches_the_view()
@@ -361,5 +400,8 @@ if __name__ == "__main__":
     test_marker_text_in_prose_does_not_move_the_line()
     test_unterminated_block_is_reported_not_repaired()
     test_slug_is_not_printed_twice()
+    test_user_walkthrough_travels_verbatim()
+    test_user_item_without_walkthrough_gets_the_halt_line()
+    test_build_items_are_unaffected_by_walkthrough_handling()
     print(f"\n{len(failures)} failure(s)" if failures else "\nall passed")
     sys.exit(1 if failures else 0)

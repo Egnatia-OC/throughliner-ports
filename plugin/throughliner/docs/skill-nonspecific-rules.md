@@ -66,7 +66,6 @@ The work cycle. Every piece of work travels the same loop.
 
 - Write in plain language, using a term of art only after the user has used it.
 - Say so where an approach is wrong, rather than agreeing.
-- State a regression in the same plain terms as a success, and move on.
 - Run every command you can run yourself, handing one over only in the cases the
   rules below name.
 - **The method's own skills are one of those hand-over cases** (who runs them is
@@ -111,25 +110,17 @@ The work cycle. Every piece of work travels the same loop.
   NOT an inversion: [user] walk-through items     # driven live, always sequential
   ```
 
-- **Speak when something warrants it, and work quietly between.** What warrants
-  it: one sentence before the first tool call, saying what is about to happen; a
-  note mid-work on finding something important or changing direction; and the
-  finish, led by the outcome. Between those the work speaks for itself.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"), and carry straight
-  on. **Inside /plan only, an un-agreed idea gets an offer, put before the
-  write**: a user-raised one is offered process-now or carry-on, with "anything
-  else to add first?" alongside it; a Claude-raised one asks once — file it, or
-  work it now? — with working it now recommended, and no further captures
-  solicited. Asking after the write costs a write that is thrown away, since a
-  capture answered "work it now" is immediately rewritten as a work item.
+  on. The /plan-time offer for an un-agreed idea lives in plan.md's process-now
+  section.
   **A thing the user has already agreed to in this exchange is written without a
   filing question**, in every skill including /plan: report it in one line
-  naming what landed, which the user can reject and have reverted. The offers
-  above are for un-agreed ideas — agreement is the answer the offer exists to
-  get, so asking for it again after it was given is the over-asking this method
-  removes. Delete asks, send asks and the process-now offer are untouched:
+  naming what landed, which the user can reject and have reverted. The
+  plan-time offer is for un-agreed ideas — agreement is the answer the offer
+  exists to get, so asking for it again after it was given is the over-asking
+  this method removes. Delete asks, send asks and the process-now offer are untouched:
   those decide something other than whether to file.
 - **A verbatim-copy string is a paste target, and paste targets are rendered by
   the View-in-doc rendering section below.** Scope: genuine paste targets only —
@@ -1049,8 +1040,8 @@ needed and significant  ->  propose splitting
 NOT needed              ->  capture and continue    # the common case
                             # INSIDE /plan: an un-agreed idea gets the offer
                             # before the write; an already-agreed thing is
-                            # written without a filing question — see the
-                            # /plan carve-out in Communication above
+                            # written without a filing question — see
+                            # plan.md's process-now section
 premise is broken       ->  halt and course-correct
 ```
 
@@ -1078,8 +1069,7 @@ premise is broken       ->  halt and course-correct
 
   **Work on a project from one chat at a time**, because a capture filed in one
   chat is invisible to the other and the two disagree about the queue from the
-  moment either writes to it — a shape supported here for a period, which fell
-  over every time it was tried. Where a second chat is open on the same project,
+  moment either writes to it. Where a second chat is open on the same project,
   say so and let the user close it or come back to it.
 
   **What happens to an isolated chat's work at close, which is the case that

@@ -81,11 +81,9 @@ re-reading it is re-reading, not duplicate items.
 to do, or something that already happened. Both get written; they go to different
 files.
 
-**Work still to do → Unprocessed.** Write every candidate first, then report them
-as ONE numbered set. Nothing waits on approval before reaching disk: a capture in
-a git-tracked QUEUE.md is recoverable without the user's help, which is the
-write-first test. The user contests by number, and a contested item is reverted or
-reworked one at a time.
+**Work still to do → Unprocessed.** Show the candidate set as ONE numbered
+message before anything is written. The user contests by number or says go; the
+writes then land, and a contested item is dropped or reworked one at a time.
 
 Placement is the standing one — appended to the bottom of Unprocessed, no
 judgment, no narration of the mechanics.

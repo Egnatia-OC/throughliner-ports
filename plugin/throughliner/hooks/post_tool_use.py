@@ -589,6 +589,105 @@ def _check_quote_claim_without_quote(blocks, warnings):
         )
 
 
+RULE_GATE_LINE = re.compile(r"^\*{0,2}Rule gate:?\*{0,2}\s", re.IGNORECASE)
+
+# The rule gate's own trigger-path set, as enumerated in the host CLAUDE.md.
+# Literal substrings, matched against an item's whole block: an item whose
+# work touches any of these is authoring or amending a method rule.
+GATE_TRIGGER_PATHS = (
+    "plugin/throughliner/docs/",
+    "resources/self-authoring-rules.md",
+    "resources/rule-maintenance.md",
+    "resources/method-compliance-audit-checklist.md",
+    "CLAUDE.md",
+)
+
+
+# The lines that name what an item's build changes. Only these are read by the
+# two path-scoped checks below — a path mentioned in rationale prose is not a
+# claim that the build touches it, and matching the whole block would flag
+# every item that merely discusses the queue or a doc.
+FILES_LINE = re.compile(r"^\*{0,2}(Files|Changes):?\*{0,2}\s", re.IGNORECASE)
+
+
+def _files_text(b):
+    return "\n".join(l for l in b["lines"][1:] if FILES_LINE.match(l))
+
+
+def _block_slug(b):
+    m = SLUG_AT_END.search(b["heading"])
+    return m.group(1) if m else b["heading"][:40]
+
+
+def _check_duplicate_gate_lines(blocks, warnings):
+    """Check 9: an item block carries its `Rule gate:` line at most once.
+
+    A processed item was found carrying the line twice, the second a truncated
+    copy of the first — two dispositions on one item make the record ambiguous
+    about which one was authored. Advisory: flagged by slug, never repaired.
+    """
+    for b in blocks:
+        gate_lines = [l for l in b["lines"][1:] if RULE_GATE_LINE.match(l)]
+        if len(gate_lines) >= 2:
+            warnings.append(
+                f"line {b['idx'] + 1}: [{_block_slug(b)}] carries "
+                f"{len(gate_lines)} 'Rule gate:' lines — duplicate Rule gate: "
+                "line; keep the authored one."
+            )
+
+
+def _check_cleared_gate_disposition(annotated, blocks, warnings):
+    """Check 10: a cleared rule-touching item carries a gate disposition.
+
+    The gate's site is the keep-step, and /next only transcribes — so an item
+    that names a gate-trigger path and clears with no `Rule gate:` line sends a
+    build into a halt the keep-step should have prevented. Scoped to cleared
+    items only: held work and captures are not yet through the keep-step.
+    """
+    marker_idx = next(
+        (i for i, line, _h2, _ih in annotated if line == CLEARED_MARKER), None
+    )
+    if marker_idx is None:
+        return
+    for b in blocks:
+        if b["section"] != "Processed" or b["idx"] > marker_idx:
+            continue
+        files = _files_text(b)
+        if not any(p in files for p in GATE_TRIGGER_PATHS):
+            continue
+        if any(RULE_GATE_LINE.match(l) for l in b["lines"][1:]):
+            continue
+        warnings.append(
+            f"line {b['idx'] + 1}: [{_block_slug(b)}] — rule-touching item "
+            "cleared with no gate disposition. Its work names a rule-gate "
+            "trigger path, so the keep-step owes it a 'Rule gate:' line; "
+            "without one the build halts rather than composing a disposition."
+        )
+
+
+def _check_cleared_names_queue(annotated, blocks, warnings):
+    """Check 11: a cleared item whose work names QUEUE.md cannot be built.
+
+    A run never reads or edits the queue — the scope-lock refuses it — so an
+    item whose described work is queue content can be cleared but never built,
+    whatever its flavor. Queue content is planning work. Flagged by slug.
+    """
+    marker_idx = next(
+        (i for i, line, _h2, _ih in annotated if line == CLEARED_MARKER), None
+    )
+    if marker_idx is None:
+        return
+    for b in blocks:
+        if b["section"] != "Processed" or b["idx"] > marker_idx:
+            continue
+        if "QUEUE.md" not in _files_text(b):
+            continue
+        warnings.append(
+            f"line {b['idx'] + 1}: [{_block_slug(b)}] names QUEUE.md — a run "
+            "cannot reach the queue; queue content is planning work."
+        )
+
+
 BUILD_BLOCK_OPEN = "--- Build block ---"
 BUILD_BLOCK_CLOSE = "--- End build block ---"
 
@@ -659,6 +758,9 @@ def lint(content: str) -> list[str]:
     _check_orphaned_prose(annotated, warnings)
     _check_quote_claim_without_quote(blocks, warnings)
     _check_build_blocks(annotated, blocks, warnings)
+    _check_duplicate_gate_lines(blocks, warnings)
+    _check_cleared_gate_disposition(annotated, blocks, warnings)
+    _check_cleared_names_queue(annotated, blocks, warnings)
     return warnings
 
 
