@@ -953,11 +953,22 @@ now") and go straight to sub-step 3.
 ```
 A recommend may fold into the action ONLY when the agreement was
   - about THIS item, and
-  - given in the exchange now happening.
+  - given in the exchange now happening, and
+  - preceded by at least one earlier turn on this item's substance.
 Not a prior turn. Not an adjacent item. Not a general "keep going",
 "continue", or "yes" answering a different question.
 Absent that, the recommendation stands alone and WAITS.
 ```
+
+**A design first shown in the offer message cannot fold.** The third condition
+is what says so: where the item's substance reaches the user for the first time
+in the same message that proposes its disposition, they have had no turn in
+which to disagree, and agreement given there is agreement to a thing just met.
+The disposition waits for its own agree / defer / something-else turn.
+
+An unconditional extra turn on every keep was refused — it re-adds the
+over-asking removed from this step, in the ordinary case where the substance
+was already discussed across several turns.
 
 The checkpoint's "continue" answers *which item comes next*, never a disposition
 of that item.
@@ -1198,7 +1209,8 @@ item there's no next verbatim, so the message is just the off-ramps — worded
 **neutrally** — "we can close the session and record it, or is there anything
 else to capture or discuss?" — balanced between the two, with the command named
 in words inside the sentence rather than at its end. An empty Unprocessed is a
-resting state.
+resting state. That is the end-of-queue gate's first firing, subject to the
+once-per-rest bound stated at the gate.
 
 **Recommend skip-to-defer when an item won't design out this run**
 [DISCUSS, PROMPT].
@@ -1285,6 +1297,11 @@ item straight into Processed.
 No anything-else clause on this branch: asking would be soliciting further
 captures off the back of Claude's own, which the always-loaded rule bars.
 
+**Either branch, once it loops into present-and-interview, is subject to the
+fold conditions above** — and a thing raised in this message has had no earlier
+turn on its substance, so its disposition cannot fold into the same message
+that introduced it.
+
 ### After all items
 
 Unprocessed should be empty except items skipped this session; Processed holds the
@@ -1304,9 +1321,15 @@ Unprocessed is a resting state, not a stop signal. Ask one neutral question
 — "we can close the session and record it, or is there anything else to capture
 or discuss?" — and wait. The command is named in words and does not end the
 sentence: the app lifts a trailing slash command into the composer, so an ask
-ending on one is a keystroke from being answered by accident. If the
-user raises a further capture, file it and **return to this same neutral gate**,
-in the same wording as before.
+ending on one is a keystroke from being answered by accident.
+
+**Ask once per rest.** The gate fires when the queue first empties. If the user
+raises a further capture, file it and return to this same gate, but end plainly
+this time — say the queue is clear again and stop, with no second ask. It fires
+again only after further work has filled the queue and emptied it once more.
+The bound is held in the conversation; nothing is stored, which is all a
+per-stretch bound needs. Asked three times in one stretch, the same neutral
+question stops reading as neutral and starts reading as a prompt to leave.
 
 New items from conversation follow the same loop — check QUEUE.md for overlap
 first. If you notice a gap: "I notice [X] — want to hear a suggestion?"

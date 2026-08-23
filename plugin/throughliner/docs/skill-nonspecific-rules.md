@@ -286,10 +286,13 @@ explained          ->  use it, and explain it once. Where the term names
                       something you can show — a line in a file, an entry in
                       the queue — showing it is usually the shortest
                       explanation there is.
-a slug shown to    ->  say what that item is FOR, on its first appearance in
-  the user             each message. Per message, not per chat — a reader is
-                      not holding the scrollback. Output only; inside queue
-                      prose a slug stays bare.
+a queue item named ->  lead with its heading's opening words — what the
+  in output            outline shows — and put the slug after them. On its
+                      first appearance in each message, say what the item is
+                      FOR where the heading doesn't already carry it. Per
+                      message, not per chat — a reader is not holding the
+                      scrollback. Output only; inside queue prose a slug
+                      stays bare.
 ```
 
 **Text written at a halt or stop — where the user must decide rather than

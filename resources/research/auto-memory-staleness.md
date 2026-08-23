@@ -11,6 +11,36 @@ Re-checked before drafting [competition-comparison-article], because the finding
 
 **"Obsidian memory systems" is a category, not a project, and must not be described as one thing.** There are many independent implementations — vault-as-memory guides, several separate open-source projects offering things like hybrid semantic search, self-rewriting notes and scheduled maintenance agents, and a Claude Code skill distributed through a marketplace. Obsidian's own official Agent Skills, released January 2026, teach Claude Code to handle wikilinks, frontmatter, Bases and JSON Canvas correctly. So a comparison must either name the specific project it is comparing against or describe the general vault-as-memory pattern and say that is what it is doing.
 
+## Re-verified 2026-08-23 — one claim above is now too strong
+
+Re-checked before drafting [competition-comparison-article], eight days after the
+block above, because the article rests on both of its claims.
+
+**The Obsidian finding stands, and is reinforced.** "Obsidian memory systems" is
+still a category rather than a project, and the search turned up further
+independent implementations (`obsidian-second-brain`, now at 45 commands and
+citing 408 forks; `claude-obsidian-memory`; `claude-code-memory-setup`) alongside
+the ones already listed. The article must still name a specific project or say
+plainly it is describing the general vault-as-memory pattern.
+
+**"A manual `/dream` command is available to everyone" has fallen.** Two sources
+now say the command itself is still behind the gradual rollout — "the `/dream`
+command exists but hasn't rolled out to everyone yet", and a second describing it
+as shown in the `/memory` UI but absent from the base release. Third parties are
+shipping plugins and skills that replicate it, which is itself evidence it is not
+universally reachable.
+
+**What survives, and it is the part the article needs.** Consolidation is still
+reachable by every user — by asking Claude for it in plain words ("dream",
+"consolidate my memory files") rather than by a command — and AutoDream is
+Anthropic's own feature, introduced March 2026. So the article's concession holds:
+automatic curation ships in the base tool and is not something only competitors
+have. What the article must **not** say is that everyone has a `/dream` command.
+
+**Sources are conflicting rather than settled**, and this section says so instead
+of picking a winner: the rollout is gradual, so availability legitimately differs
+between accounts and any single report is true of whoever wrote it.
+
 ## Finding
 
 Yes, this is a recognised failure mode of Claude Code auto-memory as of 2026 — not a one-off. Auto-memory accumulates well but doesn't curate itself: snapshots of project state ("V47 promoted X," "ideas scoped to V51/V52") rot fast because the underlying state moves while the memory doesn't. Behavioural/preference memories don't have this problem and stay durable.

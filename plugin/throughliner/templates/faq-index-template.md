@@ -118,3 +118,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Is anything I approve ever gone for good?](faq.md#is-anything-i-approve-ever-gone-for-good)
 - [What is the brevity style Claude offered me at setup?](faq.md#what-is-the-brevity-style-claude-offered-me-at-setup)
 - [What is a cycle?](faq.md#what-is-a-cycle)
+- [At the end of a session Claude said a piece of ready work has a problem. What are my options?](faq.md#at-the-end-of-a-session-claude-said-a-piece-of-ready-work-has-a-problem-what-are-my-options)

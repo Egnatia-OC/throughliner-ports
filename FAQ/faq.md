@@ -1107,3 +1107,15 @@ A cycle is a named piece of recurring work — a weekly release, a posting rhyth
 Nothing keeps a schedule or stores a position. At the openings and closes of planning and build sessions, Claude reads the definitions, checks each cycle's visible sign, and — where a turn is overdue — files one item into your queue for it. That item is then weighed and built like any other work, and no duplicate is filed while one is still open. A project with no cycles has no `CYCLES.md` and pays nothing.
 
 Claude may also offer a cycle once when it notices you working the same artifact repeatedly — creating one is always your call.
+
+## At the end of a session Claude said a piece of ready work has a problem. What are my options?
+
+Two, and it's worth knowing which one you're being offered.
+
+**If you tell Claude to fix the item, it can.** When you direct a change to a piece of work during a close — its reasoning, or what it says should be built — Claude makes that change and records it in the session record under that item's name. You're there and deciding, which is the same authority a planning session runs on.
+
+**If Claude is the one who spotted the problem, it won't quietly fix it.** Instead it writes the problem into your queue as something to look at, and tells you plainly that the item in question is ready to build — so it will run in your next build session, as written, unless you direct the change now.
+
+That second message isn't Claude asking permission to do its job. It's there because a piece of ready work is about to be built, and this is the last moment anyone can say otherwise. Either answer is fine: direct the change and it happens, or leave it and the work runs as it stands, with the concern sitting in your queue for the next planning session.
+
+What Claude won't do is change a piece of ready work on its own judgement at a close. Work is agreed with you during planning, and a close is the point in a session where your attention is lowest.

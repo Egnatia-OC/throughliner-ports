@@ -6,104 +6,6 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### Second LOG record for a slug is invisible to the digest — kind-suffixed filenames fix the attribution [log-record-kind-suffix]
-Noticed by Claude 2026-08-22 during processing, worked the same session on your say-so. The digest attributes a record to a queue item only when the filename is exactly `<date>-<slug>.md`, so two common shapes are invisible: the overwrite guard's numeric suffix (`-2`), and build records filed under shortened names (`2026-08-22-cycles-build.md` for [cycles-definitions-and-due-checks]). Consequence observed live: [weekly-release-cycle]'s blocker printed as "only processed — not built" when its build record exists — the exact misreading the record-kind field exists to prevent, feeding the lift decision.
-**The suffix scheme is yours: kind, not number.** A bare `<date>-<slug>.md` for the first record; when that name is taken, the second record carries its kind — `-plan` for a planning record, `-build` for a build's — because a number is arbitrary where a kind explains itself. Legacy `-N` names stay tolerated so existing history still reads.
-Rule gate: run — amendment to done.md's record-naming instruction (parent named); nothing freestanding, nothing evicted; the digest change is script behaviour, not a rule.
-
---- Build block ---
-Changes: `plugin/throughliner/scripts/queue_digest.py` — `shipped_slugs` also attributes `<date>-<slug>-plan.md`, `<date>-<slug>-build.md` and legacy `<date>-<slug>-<N>.md` to the slug. `plugin/throughliner/docs/done.md` (and done-plan.md if it carries its own naming line) — the record-naming step gains: a record about a queue item carries that item's full slug in its filename, never shortened or reworded; where the bare name is taken, suffix the record's kind (`-plan` / `-build`). Rename today's nonconforming `-build.md` records in `LOG/` to `<date>-<full-slug>-build.md` and update each one's `LOG/index.md` line in the same move (bounded set: the 2026-08-22 `*-build.md` files whose name is not `<full-slug>-build`).
-Acceptance: the digest reports [cycles-definitions-and-due-checks] as built (Cites shipped); a grep of `LOG/index.md` finds no dangling old filename; renamed files' git history is intact (rename, not delete-and-recreate, where the tools allow).
-Refused: numeric suffixes for new records — arbitrary where a kind explains itself (your call); prefix-matching arbitrary suffixes in the digest — a slug that extends another slug would misattribute.
---- End build block ---
-**Files:** `plugin/throughliner/scripts/queue_digest.py`, `plugin/throughliner/docs/done.md` (possibly `done-plan.md`), `LOG/` renames plus `LOG/index.md`.
-
-#### PowerShell text-splitting mangled queue appends — encoding not declared on the read [powershell-append-mojibake]
-Filed 2026-08-22 by Claude at its own close. Mid-session, three appended queue items arrived with every em-dash as mojibake ("â€”"): a PowerShell step read a UTF-8 scratchpad file with `Get-Content -Raw` and no `-Encoding`, mangled the text, and wrote the mangled bytes back out through a correctly-UTF-8 write. Repaired in-session by a replace-all, verified clean by reading raw bytes per the existing check-`ascii()`-first rule. The existing scripting constraints cover subprocess reads and stdout reconfiguration but not PowerShell's own file reads.
-**Kept 2026-08-22.** The one-occurrence bar would stop this as a freestanding rule, and it is not one: the parent is the subprocess-read encoding constraint, and the family — Windows encoding defaults silently mangling text — has bitten three times at three layers (hook stdout, subprocess reads, now `Get-Content`). Admitted as an amendment merging into the existing bullet; a build item rather than an edit here because the scope-lock rightly refuses a planning session's write to CLAUDE.md — /plan admits, the build types.
-Rule gate: run — amendment to the scripting-constraints subprocess-read clause (parent named); one clause reworded, no new bullet, nothing evicted.
-
---- Build block ---
-Changes: `CLAUDE.md`, scripting constraints — reword the subprocess-read bullet to: any subprocess read, and any PowerShell read of a text file, names UTF-8 explicitly (`encoding="utf-8"` / `-Encoding utf8`). One bullet, both cases.
-Acceptance: the constraints list has the same bullet count as before; the reworded bullet covers both cases; the LOG entry cites the mojibake instance.
-Refused: a freestanding new clause — fails the more-than-once bar on its own; a hook — the write reaches the file through arbitrary shell text no hook can parse for encoding flags reliably.
---- End build block ---
-**Files:** `CLAUDE.md`.
-
-#### Chat references to queue items lead with the heading's words, not the slug — the outline is what the user navigates [slug-references-unfindable-in-outline]
-**Raised by you 2026-08-22, from repeated live failures: you keep being unable to find items in your outline view (reading the queue in Understudy) because Claude names them by slug.** The outline shows heading text; a slug is not in it, so the name given in chat is not a name the reader can find. The existing vocabulary rule only requires saying what a slug is FOR, which explains the item without locating it.
-**Kept the same session, on the process-now offer.** The fix amends the vocabulary table's slug arm in the always-loaded rules: a queue item named in output leads with its heading's opening words — the same words the outline shows, which the put-distinguishing-words-first heading rule already front-loads — with the slug after it for the record. Queue prose is untouched: slugs in prose remain the cross-reference mechanism, and this governs chat output only.
-Rule gate: run — amendment to the vocabulary slug arm (parent named); the arm is reworded in place, nothing freestanding, nothing evicted; recurring user-reported failure clears the more-than-once bar.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md`, Vocabulary table, the slug arm — reword to: a queue item named in output leads with its heading's opening words (what the outline shows), slug after it; on first appearance per message still say what it is for where the heading doesn't carry it.
-Acceptance: the table has the same number of arms; the reworded arm names both the heading-first form and the per-message scope; queue-prose slugs are explicitly untouched.
-Refused: dropping slugs from chat entirely — the slug is what stays grep-able and what LOG traceability keys on; a new rule bullet — the existing arm is the parent and absorbs it.
---- End build block ---
-**Files:** `plugin/throughliner/docs/skill-nonspecific-rules.md`. Host-side: live after the next rezip and restart.
-
-#### Queue lint reads any possessive-plus-"words" as a claim about the user's wording [lint-possessive-words-false-positive]
-Filed 2026-08-22 from a consumer project's mailed defect report (archived in `INBOX/archive/`). Three correct items were flagged with the quote-claim warning because their prose said "her words" about a third party — items of the shape "ask how she put the question, and her words as closely as he can recall" — where obtaining the quote IS the work. Two already carried "captured by you", the escape the flag itself offers, and flagged regardless. The sting in the report: the flag cannot be cleared by writing correctly, and the lint re-runs on every queue write, so it re-fired roughly ten times in one session — an advisory that fires permanently on correct text trains the reader to skim it. Reported as a false positive, no fix proposed by the sender.
-**Kept 2026-08-22, checked against current code the same session: the report holds — not a stale-build artifact.** The check fires on any listed possessive-plus-"words" phrase in a block with no quote shape, never looks at who the possessive names, and does not honour an origin claim as an escape (the message only suggests one). The repetition half of their complaint is already mitigated on current builds, where the lint splits flags against the last commit and compresses pre-existing ones to a single line. The fix narrows the trigger to the introducer shapes — the phrase followed by a colon ("Her words: …"), or the "in her own words" form — which are the shapes this project's own recorded failures took (the 2026-08-18 repair was "Her words:" over a paraphrase), while their obtain-the-words sentence escapes both. The accepted miss, stated: a colon-less bare claim now passes unflagged, on an advisory check whose alternative is firing forever on correct text. **This is also the single-user assumption biting** — the check can only imagine possessives naming the user; the wider territory is captured as the GitHub-identity naming idea ("Refer to people by their GitHub-published identity").
-Rule gate: not needed — a hook script's match pattern is narrowed; no method rule text changes.
-
---- Build block ---
-Changes: `plugin/throughliner/hooks/post_tool_use.py` — the quote-claim check fires only on introducer shapes: a listed phrase immediately followed by a colon, or the "in <possessive> own words" form; bare phrase-in-block no longer fires. The check's docstring states the accepted miss. `resources/testing/` — the lint suite gains the consumer's sentence ("her words as closely as he can recall them") as a must-not-fire case and "Her words:" over unquoted text as a must-fire case.
-Acceptance: the suites pass run as plain scripts (`py`, never pytest); the must-fire and must-not-fire cases both hold; the close runs the suites since hooks/ is staged.
-Refused: dropping third-person phrases from the list — "Her words:" over a paraphrase is this project's own recorded failure and stays caught; a who-does-the-possessive-name test — not mechanically decidable.
---- End build block ---
-**Files:** `plugin/throughliner/hooks/post_tool_use.py`, the lint suite under `resources/testing/`.
-
-#### Close may amend a work item on the user's direction — the re-scan bound gains its third case [close-amending-items-boundary]
-Filed 2026-08-22 from a consumer project's mailed question (archived in `INBOX/archive/`); settled the same day with your agreement. Their close met a cleared item recording only half a position their user had stated; on that user's instruction it amended the item's rationale and build block, and the docs were silent — "may file, never routes" has no category for amending, so the session had to invent an answer. Their arguments both ways are preserved in the archived message.
-**The settlement, on the method's existing spine — the user owns fate and scope.** (1) A user-directed amendment at a close is permitted: the keep-step's authority is the user being present and deciding, and when the user directs an edit at the close that authority is in the room; the close records the amendment in the LOG entry under the item's name. (2) A Claude-noticed problem with a cleared item stays a filing — and the close states the collision plainly: this cleared item will run before the next planning session; direct me to amend it now, or it runs as written. That puts the decision to the user at the only moment it exists; a directed fix becomes case 1, and a decline is an informed run. Refused: silent Claude amendment at a close (skips the keep-step's checks with the user's attention at its lowest), and a bare capture-only rule (defers the half-specified build by one step, which is the failure the re-scan exists to prevent).
-**A reply is owed and drafted this session** — sent on your approval to the sending project once its identity is confirmed.
-Rule gate: run — amendment to done.md's wind-down re-scan bound (parent named: the may-file/never-routes block); the recorded instance is the archived consumer message, cited per the reclassify-don't-exempt clause; nothing evicted — the block is extended, not doubled.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/done.md`, wind-down re-scan — the typed may-FILE/never-ROUTES block gains the third case: may AMEND an existing item on the user's direction given this session, recorded in the LOG entry under that item's name; a Claude-noticed defect in a cleared item is filed as a capture AND the close names the collision (the item runs before the next planning session unless the user directs the amendment now).
-Acceptance: the block reads as one bound with three cases; grep finds no second statement of the bound elsewhere in docs/ (verified at processing: SPEC.md's /rescan sentence describes /rescan, not the close, and needs no change); the FAQ disposition is written at the close.
-Refused: silent Claude amendment; capture-only.
---- End build block ---
-**Files:** `plugin/throughliner/docs/done.md`. FAQ: likely an entry — the close now asks users a new question at the collision; decide at the build against the does-the-user-act test.
-
-#### End-of-queue gate fires once at rest, not on every return to it [end-of-queue-gate-fires-once]
-**Raised by you 2026-08-22, from live experience minutes earlier: the close-or-continue question re-fired three times in one sitting and reads as naggy for someone working slowly in /plan.** The gate was designed when nobody had ever reached an empty queue — your queues ran sixty items deep until Fable-only development started yesterday — so its repetition was never observable before now. Processed the same session on the process-now offer.
-**The fix keeps the gate's job and drops the repetition.** The gate's original point stands: an empty queue is a resting state and the session must not presume it is over. What changes is the return edge: the neutral question is asked once, when the queue first comes to rest; after that the session stays quietly available, ending its messages plainly without re-asking, and the question fires again only when the state has actually changed — new work was processed back down to empty — never on each return to rest within the same stretch.
-Rule gate: run — amendment to plan.md's end-of-queue gate (parent named); the return-to-this-same-gate edge is reworded rather than a rule added; nothing evicted. The recorded instance is this session's three firings, reported by the user.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/plan.md` — the end-of-queue gate: state the once-per-rest bound (ask once when the queue first empties; on later returns to rest in the same stretch, end plainly with no re-ask; re-fire only after further work empties the queue again); reword the return edge after a further capture to match; the last-item off-ramps wording is the gate's first firing and needs no change beyond pointing at the bound.
-Acceptance: plan.md states the once-per-rest bound at the gate and the return edge agrees with it; grep finds no other doc asserting the repeat behaviour.
-Refused: removing the gate — its precondition guard (never fire with a full queue) is load-bearing and stays; a stored flag — the bound is held in the conversation, which is all a per-stretch bound needs.
---- End build block ---
-**Files:** `plugin/throughliner/docs/plan.md`. FAQ: not needed — the change removes a repeated question; no user action changes.
-
-#### Same-message designs get their own agree/defer turn — the keep-fold narrows [same-message-design-no-fold]
-**Raised by you 2026-08-22: processing should involve one more turn — agree/defer/other — before finalisation.** Settled the same session as a narrowing of the existing fold rule rather than an unconditional turn, on Claude's recommendation and your agreement: the unconditional version re-adds a turn to exchanges where you already engaged the substance, the over-asking shape this method removes.
-**The rule as settled.** A keep may fold into the action only where the user has had at least one earlier turn on the item's substance. Where the design is first shown in the same message as the offer — the user has seen it once and answered only "process now" — the disposition gets its own agree/defer/other turn before anything is written. "Process it now" answers whether to work an item, never its fate; the existing rule already says a general yes answering a different question cannot fold, and this states the same-message case that was stretched past it.
-**The recorded instances, from this session:** the gate-once item ("End-of-queue gate fires once at rest") and the slug-reference item ("Chat references to queue items lead with the heading's words") were each designed and written in one breath after a bare "process now", with no turn on the design itself. Both outcomes stood when reported, which is why this is a narrowing and not an incident — but the seam your instruction protects was skipped.
-Rule gate: run — amendment to plan.md's fold rule (parent named: the may-fold conditions block); one condition added to an existing enumeration, nothing evicted; the recorded instances are this session's two same-message folds, user-reported.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/plan.md` — the fold-conditions block in the recommend step gains one condition: the agreement must follow at least one earlier turn on the item's substance; a design first shown in the offer message cannot fold, and the disposition waits for its own agree/defer/other turn. The process-now branch text points at the bound.
-Acceptance: the fold block reads as one enumeration including the new condition; the process-now branches agree with it; grep finds no other doc restating the fold conditions.
-Refused: an unconditional extra turn on every keep — re-adds the removed over-asking where substance was already discussed (your agreement, this session).
---- End build block ---
-**Files:** `plugin/throughliner/docs/plan.md`. FAQ: not needed — the change adds a pause in Claude's own flow; no user action changes.
-
-#### Three mermaid diagrams in the README: project structure, the work cycle, the throughline [readme-mermaid-diagrams]
-**Your idea, 2026-08-22, scoped by you the same session: three separate diagrams, one idea each — no combined high-level view.** The combined infographic drafted that day didn't make sense to you, and the correction is the design principle: one idea per diagram, simplicity before any combining. Placement is yours too: the README, where GitHub renders mermaid natively.
-**Why mermaid, recorded from the discussion:** it is text, so one source serves both audiences — GitHub and Claude Code render it as a diagram, and Claude reads the node-and-edge declarations directly, unlike an image (vision, lossy) or SVG (coordinate noise). The bounds, stated at processing: diagrams are for user-facing surfaces — the method's own steering already uses typed text blocks internally — and a diagram carries structure, never reasoning; the throughline's why stays prose, with the diagram as the map beside it.
-Rule gate: not needed — README content, no method rule text.
-
---- Build block ---
-Changes: `README.md` — add three small mermaid diagrams, each in its own existing-or-new section with one intro sentence: (1) project structure — the three project docs plus FAQ/ and INBOX/, and the plugin's skills and hooks as one package node; (2) the work cycle — capture → /plan → /next → /done and back to a fresh session, with the two return edges (audit findings and mid-build discoveries re-entering as captures); (3) the throughline — intent in the spec, rationale riding each queue item, history in the log, one flow labelled as the why travelling with the work (the three doc names appear as diagram node labels only). Each diagram stays under roughly a dozen nodes, per the one-idea-each scope.
-Acceptance: the README renders on GitHub with all three diagrams displaying (mermaid fences, no syntax errors); each diagram expresses only its one idea; the README's existing feature list is untouched.
-Refused: a combined high-level diagram — your call, simplicity first; image or SVG embeds in the README — text serves both audiences and stays editable.
---- End build block ---
-**Files:** `README.md`.
-
 #### [user] Write the article comparing Throughliner to memory-system approaches, finishing with what shipped [competition-comparison-article]
 **Captured by you 2026-08-15**, from a discussion prompted by Discord talk about "Obsidian memory systems" and "dreaming". **Your framing and your decision: the analysis reads as an article starter for the Throughliner site, and rather than sending it now it should be captured and finished with our shipped solutions, with the announcement doubling as a Discord post.**
 
@@ -150,35 +52,6 @@ Refused: a combined high-level diagram — your call, simplicity first; image or
 7. You confirm both are up; the send is recorded in `INBOX/sent.md` and this line closes.
 
 **Files:** none in this project — the artifacts are an article for the Throughliner site and a Discord post. Relates to [digest-reports-computed-fields-not-summaries] (shipped) and `resources/research/auto-memory-staleness.md` (verified and corrected).
-
-#### [user] Discord post: the ordering ladder cut from six rungs to three, and every rung now costs no judgment [discord-post-context-adjacency]
-Captured by you 2026-08-12; the angle is yours — the ladder and how much it improves the workflow. **Subject replaced 2026-08-15 — see the correction below. The slug is unchanged because slugs are immutable.**
-
-**The subject this post had was deleted before it was ever posted, and that is the correction.** It was written to announce the cheap-to-settle rung — "/plan offers you the work closest to what this session has already read". Commit `0e62afe` on 2026-08-15 cut the ladder from six rungs to three and deleted that rung, the rung-6 offer and the decay rung with it. The item was sitting **cleared to run** when found, so a /next run reaching it would have walked you through drafting and posting a public claim about a mechanism that no longer exists. Caught by reading the item during processing; the digest's placement check matches a fixed set of known phrases and does not reach this shape, which it says of itself.
-
-**The replacement subject is the deletion, and it is the better post.** Six rungs became three: an uncleared red flag, then unblock-potential by citation count, then longest-first by line count. **Every surviving rung either reads a field the digest already computes or subtracts two line numbers**, so ordering costs no judgment at all. Longest-first was also re-grounded — on cost-of-reading rather than on length predicting how finished an item is, because the settling session's own data contradicted the latter.
-
-**What makes it worth saying rather than a changelog line.** The honest version is about subtraction: three rungs asked Claude to weigh something, and weighing is where a mechanism quietly stops being reproducible. The tool got simpler and more predictable in the same move — a harder and more interesting claim than "we added a feature".
-
-**A judgment for you at drafting time.** The before-picture is that some deleted rungs were things this project built, used, then decided were not carrying their weight. Whether that goes public is your call; it is what makes the change legible rather than arbitrary.
-
-**Verify before posting, not merely before drafting.** Every claim must be true of the *installed* plugin at the moment it goes out. Compare the installed host's build stamp against the target's before you post, since the cut is committed but a host that has not been reinstalled still runs six rungs.
-**Walkthrough.** 1. Feature ships. 2. Claude drafts inside 2,000 characters. 3. You say what to change. 4. You post. 5. You confirm, and this line closes.
-**Unblocked 2026-08-13.** [ladder-rung-for-context-adjacent-items] shipped and has since been refined once — the offer now leads with a recommendation rather than a flat menu (`LOG/2026-08-12-context-adjacency-offer-is-a-flat-menu.md`, `e5d169b`). Draft against the refined behaviour. Sat blocked unnoticed; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries], which absorbed the item recording this.
-
-**Paced 2026-08-14 on the user's decision: head of a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Nothing here is unready — pacing alone held it. **The framing was repaired 2026-08-18** — it read "Her words:" over a paraphrase, which is a quote claim the text cannot support, and the three sibling post items carry the hedged form. Found by the tersification write-up's own §7, which predicted exactly this upgrade.
-
-**Correction, 2026-08-15, in the user's own words: no post went out on 2026-08-14, "because it wasn't presented to me in next."** This item's earlier claim that she had already posted that day was wrong, and so is the same claim in [announcement-cadence-clear-to-resume]. What happened is worse than a delay: holding the item below the line made it invisible to /next, so the pacing did not slow the post down, it stopped it happening at all. That is the failure [held-items-invisible-during-normal-use] describes, observed live.
-
-**Lifted 2026-08-15.** The holding fact — a day has passed since the last announcement — is true regardless of whether one went out on the 14th, and more clearly true if none did.
-
-**Held again 2026-08-19, on your instruction, and its subject has now been overtaken a second time.** The post announces a ladder of three rungs where every rung costs no judgment. [decay-rung-unreachable-in-practice] was settled the same day and replaces that ladder with four rungs — an intersection rung and an alternating one — so the claim survives only until that work ships. **Posting it first would have announced a mechanism this project had already decided to replace**, which is [repeal-falsifies-a-posted-claim] happening rather than being guarded against. [discord-post-cycle-awareness] took the head of the chain instead.
-
-**Waiting improves the post rather than merely deferring it.** The honest subject becomes the whole sequence: six rungs cut to three, then the bottom rung found to be unreachable in practice and the ladder rebuilt so it cannot starve. A mechanism got wrong twice and corrected in public is the register that has worked here before. **Rewrite the subject when this lifts — it will be the third.**
-
-**Blocker repointed 2026-08-21, and the old one is resolved rather than merely replaced.** [decay-rung-unreachable-in-practice] has shipped and been confirmed, so the fact it named is gone — but the post is still held, by the one-a-day pacing chain, and [discord-post-cycle-awareness] sits at its head unposted. The field named a fact that had resolved instead of the fact actually holding the work, so every below-the-line revisit read this item as ready to lift and every one of them was wrong. Repointed at the item that genuinely holds it: the post now lifts by itself when the one ahead of it goes out, and no session has to remember today's reasoning. Claude's decision, deferred to by you. The subject rewrite is unaffected and stays required — see the paragraph above.
-
-**Lifted 2026-08-21.** [discord-post-cycle-awareness] was posted and closed — `INBOX/sent.md` records the send on 2026-08-21, for completion, with the posted text in that item's LOG entry — so the head of the pacing chain is done and nothing holds this item. Under the one-a-day pacing this post goes out no earlier than 2026-08-22; the walkthrough's drafting step is where the required third subject rewrite happens.
 
 #### [user] Article: Throughliner as a memory prosthetic — built by someone with bad recall, for a brain that avoids looking back [adhd-memory-prosthetic-article]
 **Your idea, 2026-08-22, seeded from a grab bag of paragraphs from a conversation you had with Gemini** — processed the same session. Your own caveats set the editing brief: the parallels it draws between AI and human memory, and between the method's docs and memory types, are not all trusted; the 15-year-project storytelling is under-developed; there is a lot of lecturing and probable doubling-up.
@@ -285,9 +158,6 @@ Blocked by: [beta-tester-pathway]
 
 ## Unprocessed
 
-#### Last session advises processing [cycles-due-check-verification] next [forward-advisory]
-The cycles verification is what the Wednesday release timing hangs on: it is a cleared [user] walk-through (a throwaway CYCLES.md test in any project being tested), and [weekly-release-cycle] lifts by itself when it closes. Eight builds sit cleared ahead of the walk-throughs and want one /next run. Overlap scan: only the four sleeping captures wait in Unprocessed (three dated, one deliberately parked), and none touches the cleared work — nothing blocks it.
-
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
 **The cost, narrowed to where it still exists.** Showing text in chat and writing it to a file are both the model producing those tokens, so text doing both is produced twice. That used to hit every approval moment; it no longer does — write-first shipped, and the post-write report is one line naming what landed, never a re-paste.
@@ -341,4 +211,114 @@ Not before: 2026-09-22
 **Your idea, 2026-08-22**, raised while processing the consumer report about the lint misreading possessives ("Queue lint reads any possessive-plus-'words'…"). Your reasoning: Claude tends to refer to users by first name or by pronoun, and that habit was designed for the private desktop environment — but the method's documents are committed and can be public, so the register should follow what each person has chosen to publish on GitHub: username, pronouns where supplied, first name only where they put it there. More consistent with people's wishes where privacy is concerned.
 **Why it is a capture rather than work:** multi-user Throughliner has never been developed — verified in the record this session: SPEC assumes one user throughout, the provenance conventions ("captured by you") and the lint's possessive list hard-code a single addressee, and no queue or log entry designs for more. This idea is the first designed piece of that territory, and it needs the multi-user frame to exist before its build can be described: where the identity is read from (git config? the GitHub remote? asked at /setup?), what happens with no GitHub profile, and how it meets the scrub rule that keeps personal names out of committed docs — which currently pushes the same direction by omission rather than by design.
 Relates to the lint item and to the close-amending question ("May a close amend an existing work item?"), both from the same multi-person consumer project.
+
+#### Search leg over LOG/, added beneath the recent-lines read and the ladder's lookups [log-retrieve-search-leg]
+Raised by you 2026-08-23, mid-run, out of a question about what the memory-system tools do that this one does not. Filed for a later /plan; the design is half-formed and the first step is a measurement rather than a build.
+
+The queue is bounded and complete, and that is the property the retrieve ladder rests on. `LOG/` is neither: it grows without limit, and `LOG/index.md` is read in full on every retrieve, which the always-loaded rules already describe as a fixed toll rather than something a reader skims past. Two legs of retrieval exist today and both are live — the five newest index lines read unprompted at a /plan opening ([plan-reads-recent-log-index]), which gives orientation, and the ladder's targeted lookups, which answer "has this been decided". Neither reaches a finding that is relevant but old, because a targeted lookup needs the word to look for and the recency read only reaches the top of the file.
+
+**Additive, and the item is written this way because the alternative was raised and rejected in the same conversation.** A search must not displace the recent-lines read. Search returns only what someone knew to ask about, so replacing an unprompted orientation read with a query-driven one reintroduces exactly the gap the orientation read was built to close — your objection, and it is the reason this is a third leg rather than a redesign of the ladder.
+
+**Emphatically not over QUEUE.md.** The queue's value is that a session reads all of it, so a sampled read of the queue would trade a complete input for a partial one, which is the property the comparison article spends two paragraphs defending.
+
+**First step is measurement, not a build.** Nobody has measured what `LOG/index.md` actually costs to read at its current length, and this project bans limits it cannot derive — so "the index is too long now" is not yet a claim anyone here can make. Measure the current toll and the growth rate first; the result decides whether a search leg is worth building at all, and a null result closes the item.
+
+**Relates to** [index-line-length-proportional-cap], which bounds what each index line costs, where this asks what the whole file costs. Different questions, and the cap landing does not answer this one.
+
+#### Purpose statement for the method, absent from every consumer project [method-purpose-orientation]
+Captured by you 2026-08-23, from writing the comparison article and the ladder announcement in the same session. Your observation: authoring those pieces revealed how badly Claude understands what the method is for, and you were at a loss how to remedy it. Your proposal was skill intros plus a plugin intro in the always-loaded rules; the finding below is Claude's, and it sharpens the diagnosis rather than replacing the proposal.
+
+**Nothing in the shipped package states what the method is for.** Verified at capture time. `CLAUDE-TEMPLATE.md` opens "This project uses the Throughliner method" and goes straight to mechanics. Each skill doc opens with what it does — plan.md "is where unprocessed work becomes processed work", next.md "You are building the cleared work from the queue", done.md "Close the current session", setup.md "You are setting up a project folder". All four are operating instructions. No sentence anywhere says why any of it exists.
+
+**The reason this went unnoticed here is that this project is the exception.** In a consumer project `SPEC.md` describes the consumer's app. The purpose material — intent surviving whatever Claude remembers, the throughline as a reasoning spine, approving as the product rather than overhead — lives in this project's SPEC only because this project's product happens to be Throughliner. Every consumer session runs on procedure with no purpose statement at all.
+
+**Evidence, all from the session that raised it.** A Discord draft that narrated how the ordering ladder was built rather than what a user gets, rejected in your words as "not a useful post about what users can now get out of Throughliner". A concession written into the comparison article that semantic search "will beat anything a structured queue can do", which gave away the queue's defining property — you caught it. A rung described as a bare mechanism until you supplied the reason long entries are served. Each is a session that knew the rules and not the point.
+
+**Why prose is the right mechanism here, against this project's own record.** The recorded class of correctly-worded rules that do not fire are rules asking a session to remember a step; prose is weak at that. This is comprehension rather than compliance, and framing what a thing is for is the one job prose does well. Stated because the gate will otherwise read this as the weak-mechanism pattern it resembles.
+
+**It need not consume a rule slot.** `skill-nonspecific-rules.md` already carries one piece of non-rule orientation — the work-cycle block, marked read-here-not-recited. A purpose statement is the same kind of object and the precedent is set. Whether the admission test for rules applies to orientation at all is a question for the keep-step.
+
+**Recommended shape:** one purpose statement in the always-loaded file, modelled on the work-cycle block, plus a single what-this-is-for line at the top of each of the four skill docs. Start with the always-loaded one — it is the only text every session reads, including chats with no skill running, which is where the problem was noticed.
+
+**The honest limit, and it should be weighed before this is kept.** There is no way to tell whether it worked. Nothing fires when Claude misunderstands the point, which is why every instance above reached you rather than a check. This buys better odds and no guarantee, and it must not be described as fixing comprehension.
+
+#### Walk-through re-did a step already done, because nothing sends a session to the record first [walkthrough-repeats-completed-steps]
+Found by Claude 2026-08-23, in the run that hit it. The [competition-comparison-article] walk-through ran step 2 — "Claude drafts the full article" — and drafted a full article from scratch. That step had already been performed the previous day: a draft was written, approved by the user in her own words ("works ok"), and delivered into the site project's mailbox, all recorded in `LOG/2026-08-22-competition-comparison-article.md` and on the `INBOX/sent.md` register. Roughly an hour of drafting and three rounds of the user's editing were spent before the collision surfaced, and it surfaced by accident — only because `INBOX/sent.md` was opened for an unrelated reason.
+
+**The item was legitimately still open, which is what makes this a real hole rather than a stale queue entry.** Its last two steps are the user publishing and confirming, so it correctly survived the previous close. A multi-step `[user]` item can therefore be partly done, and nothing in the walk-through records which steps those were.
+
+**Three mechanisms each looked away, and none of them is at fault alone.** The build view carries no decision history by design, so it could not mention an earlier draft. The item's walkthrough pointed at one artifact to re-read, the research file, and at no record. And the always-loaded retrieve ladder does require checking the record, but it is framed around answering a design question — "why does this exist" — rather than around "has this step already been performed", so a session driving a walkthrough does not recognise itself as being in its scope.
+
+**Candidate directions, none designed.** A walk-through step could check `LOG/` for the item's slug before acting, which is one directory listing and reaches exactly the case that failed here. Or the view could carry, for a `[user]` item, whether any record already exists under its slug — the digest already resolves slugs against LOG filenames, so the machinery exists. Or the walkthrough itself could record progress against its own steps, which is the largest change and the one that actually answers "which steps are done".
+
+**Relates to** [log-record-kind-suffix] (shipped this session), which made a second record for a slug visible to the digest at all — the same attribution machinery any fix here would read.
+
+#### Address book the method describes does not exist in this project's INBOX [inbox-address-book-absent]
+Found by Claude 2026-08-23 while sending a message to the site project. SPEC states that a correspondent's folder path is recorded on first use inside `INBOX/`, so continuing a conversation does not make the user retrieve the path again. `INBOX/` here holds `sent.md` and `archive/` and nothing else — there is no address book, and `sent.md` names correspondents in prose ("flintcraft.tech (the site project), its `INBOX/`") without recording any path.
+
+**What happened instead, which is the tell.** The site project's folder was resolved from the Desktop-level `CLAUDE.md`, which happens to name the projects under it. That worked here and is not a general route: it works only because this project sits inside a parent folder whose own doc lists its siblings. A consumer whose correspondent lives anywhere else has nothing to resolve from, so the session would have to ask the user for the path again — the exact thing the record exists to prevent.
+
+**Two readings, and the item should settle which before anything is built.** Either the address book was never implemented and SPEC describes an intention, or it was implemented and this project predates it — a check of the shipped `setup.md` and `feedback-and-inbox.md` for what creates the file answers it. The second reading makes this a migration gap for existing projects rather than a missing feature, and the fix differs accordingly.
+
+**Worth weighing at the keep-step:** whether the sent register should carry the path itself rather than a separate file existing alongside it. `sent.md` already records who was written to, is already inside the gitignored folder for the same privacy reason, and is written at every send — so it is the artifact that already has the habit. Against that, SPEC currently describes two things and merging them is a SPEC change, not just a build.
+
+#### SPEC owes two sentences from the 2026-08-23 build run [spec-owes-close-amend-and-gate-once]
+Filed by Claude 2026-08-23 at the build close, per the rule that a build records the sentence SPEC owes and files it rather than writing it — the session that made a choice is not the session that certifies it as product truth. Both are user-visible behaviour changes that shipped this run; SPEC lags them until a planning session writes them.
+
+**From [close-amending-items-boundary].** SPEC's `/done` paragraph describes what the close does in some detail, down to offering once to append post-close work to the record, and says nothing about amending a work item. The behaviour now: at a close, a user-directed amendment to an existing work item is permitted and is recorded in the session record under that item's name; where Claude rather than the user notices a problem with a cleared item, it stays a filing and the close names the collision plainly — this item runs before the next planning session unless you direct the amendment now. The second half is the part that reaches the user, since it puts a decision to them at a moment that previously had none.
+
+**From [end-of-queue-gate-fires-once].** SPEC's processing-flow paragraph states that a planning run never offers to stop while unprocessed work remains, and that the wrap-up question is available only once nothing is left but items set aside. It does not state how often that question may fire. The behaviour now: it is asked once when the queue first comes to rest, and on later returns to rest in the same stretch the session ends plainly with no re-ask, firing again only after further work has emptied the queue again.
+
+**Neither sentence is drafted here deliberately** — drafting it would be the self-certification the rule prevents, one step removed. What is recorded is which paragraph is short of what, and of what.
+
+#### Last session advises processing [walkthrough-repeats-completed-steps] next [forward-advisory]
+Advice, not work. It replaces a spent note that advised processing [cycles-due-check-verification], which has already been processed and is sitting cleared.
+
+The reason it is worth going first: three `[user]` items remain cleared to run — the comparison article, the ADHD article and the cycles verification — and the next build run will walk through them. One of those, the comparison article, is the item that produced this finding: a walk-through re-performed a drafting step that had been done the previous day, and nothing in the run could see it. The other two have multi-step walkthroughs of the same shape. So the next run is the one most likely to hit it again, and this capture is what would stop it.
+
+It touches no other unprocessed work, and it names no fix — three candidate directions are recorded on the item and none is designed.
+
+#### Staleness sweep tells a build close to fix pointer drift, and the scope-lock forbids the only way to do it [pointer-drift-unfixable-at-a-build-close]
+Found by Claude 2026-08-23 at a build close, by hitting it. `done.md`'s staleness sweep splits its findings by fix path: a fate decision defers to planning, but **pure pointer drift — a file reference whose target content is unchanged — is "mechanical. Fix it HERE, report in one line, riding this commit, with no approval ask."** That instruction cannot be carried out.
+
+**What happened.** This run renamed fifteen session records to their full slugs. Two queue items name one of those records in their prose (`2026-08-22-cycles-build.md`, now `2026-08-22-cycles-definitions-and-due-checks-build.md`) — textbook pointer drift, same content, new name. The edit was refused by `pre_tool_use`, correctly and by design: a build does not edit QUEUE.md directly, and the sanctioned route is `reorder_queue.py`, which moves, deletes and appends **whole entries by slug** and has no way to change text inside one.
+
+**The workaround available is worse than the drift.** Deleting the entry and re-appending it with corrected text would relocate it — one of the two items is held below the readiness line, so it would land at the bottom of the wrong region and lose its position. Nothing about a stale filename justifies that.
+
+**So the sweep's mechanical arm is unreachable from the close it is written for.** It is reachable from a planning close, where the scope-lock permits QUEUE.md — which suggests either the arm belongs only to planning closes, or the queue tool needs a narrow in-entry replace, or the sweep should file drift as a capture from a build close and say so. All three are directions, none is designed.
+
+**Worth checking at the keep-step: how long this has been true.** The instruction reads as though someone expected it to work, so it may predate the shell-write guard or the build's queue-write refusal. The two stale pointers this found are left in place and named here, so whatever is decided has a concrete case to fix.
+
+#### [audit] Compliance audit of the rule changes made since the last one [compliance-audit-lag]
+Filed by the audit-lag check in `resources/rule_signals.py`, run at the 2026-08-23 build close because that close staged rule-bearing paths. The check reported one rule-bearing commit since the most recent compliance-audit record (`2026-08-22-post-restyle-compliance-audit-2.md`) that no audit has covered, and it files exactly one capture under its own slug — which nothing in the queue carried.
+
+**Scope is the delta the check printed, not the whole corpus:** `CLAUDE.md`, and under `plugin/throughliner/docs/`, `done.md`, `done-build.md`, `feedback-and-inbox.md`, `migrate-checklist.md`, `next.md`, `plan.md`, `rescan.md`.
+
+**The scope will have grown by the time this runs.** The close that filed it then committed a further rule-bearing change of its own — amendments to `done.md`, `plan.md`, `skill-nonspecific-rules.md` and `CLAUDE.md` from this run's eight built items. Re-run the check when the audit starts and audit what it reports then, rather than the list above, which is a snapshot taken one commit early.
+
+**Criteria are not re-derived here.** `resources/method-compliance-audit-checklist.md` holds the four standing lenses — self-authoring compliance, response-shape tag placement, narration drift, and decision history sitting in operative text via the delete-and-read test.
+
+An `[audit]` edits nothing: it reads and reports, and its findings return as ordinary captures.
+
+#### Overwrite guard suggests the retired numeric suffix, not the kind suffix the naming rule now requires [guard-suggests-legacy-record-suffix]
+Found by Claude 2026-08-23 at the close that shipped the naming rule, by being handed the wrong suggestion. `pre_tool_use` refuses a write onto an existing session record and names a free filename instead — it offered `2026-08-23-log-record-kind-suffix-2.md`. [log-record-kind-suffix] shipped hours earlier and says the second record for an item carries its **kind** (`-plan` / `-build`), with the numeric form kept only so existing history still reads. The record was written as `-build` against the guard's advice.
+
+**Nothing broke, and that is the concern.** The guard's suggestion is a plain-English filename in a refusal message, so a session that follows it produces a legacy-shaped name that the digest still attributes correctly — the stripper matches `-N` too. The cost is not attribution but drift: a helpful message that quietly recommends the retired convention will reproduce it, and the guard fires at exactly the moment a session is deciding what to call a record.
+
+**Worth deciding at the keep-step whether the guard should know the kind at all.** It can see the filename it refused and the names already taken; it cannot see whether the session writing is a plan or a build, so it could offer both kind forms and let the session pick, or offer the numeric only when both kind names are taken. Offering a suffix it cannot justify is what a smaller fix would avoid — the message could simply say the name is taken and point at the naming rule, leaving the choice where the rule already puts it.
+
+**Relates to** [log-record-kind-suffix], shipped 2026-08-23, whose own record documents this collision as the rule's first live test.
+
+#### [user] Approved Discord post about the comparison article now describes a superseded draft [comparison-article-post-needs-rewrite]
+Found by Claude 2026-08-23 while walking the comparison-article item. A Discord post was drafted and approved on 2026-08-22 and has not gone out — it is recorded on `INBOX/sent.md` as approved and not yet posted, with its text verbatim in `LOG/2026-08-22-competition-comparison-article.md`. Its second paragraph announces the article and describes it as closing "on the coherence-over-scale trade", which was true of the 2026-08-22 draft.
+
+That draft is superseded. The 2026-08-23 rewrite names a specific project rather than a category, adds a section on Papi as the nearest comparable tool, and ends on a shipped mechanism instead of a general trade-off — roughly 1,400 words against 900. A hold-note has already gone to the site project asking that the old one not be published.
+
+**So the post cannot go out as approved.** Its first paragraph, about builds reading a generated view rather than the queue, is unaffected and still true. Only the second needs rewriting, and it needs rewriting after the article settles — it is currently out for review with the maker of one of the tools it names, and that review may change what the article ends on.
+
+**Walkthrough.** 1. The article settles (external review back, revised text final). 2. Claude rewrites the post's second paragraph against the final article and shows the whole post. 3. You say what to change. 4. You post it, with the live article URL pasted in — Claude has no route to Discord. 5. You confirm, `INBOX/sent.md` is updated from approved-not-posted to posted, and this line closes.
+
+**This is the repeal-falsifies-an-announcement case caught before it fired**, rather than after: the claim was recorded on the sent register, and the register is what made the collision findable when the article changed. It is also why the register records what a post claimed rather than merely that one exists.
+
+**Ordering, written here rather than as a field:** this follows [competition-comparison-article] and cannot be worked before it, because the rewrite has to be against the final article. A capture carries no `Blocked by:` — that field belongs to the held region — so the relationship lives in prose, and the same sentence belongs on the article item if it is not already there.
 

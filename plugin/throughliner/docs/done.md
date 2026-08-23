@@ -277,8 +277,17 @@ session closing work items    ->  LOG/<YYYY-MM-DD>-<slug>.md
     (build, audit)                # one entry file per item, all sharing the date
 session with no slug          ->  LOG/<YYYY-MM-DD>-<type>.md
     (planning, setup, handmade)   # e.g. 2026-06-09-plan.md
-name already taken            ->  append -2, -3, …
+name already taken            ->  LOG/<YYYY-MM-DD>-<slug>-<kind>.md
+                                  # -plan / -build
+that name taken too           ->  append -2, -3, …
 ```
+
+**A record about a queue item carries that item's full slug in its filename,
+never shortened or reworded.** Where the bare name is taken, the record's kind
+is what distinguishes it. The digest attributes a record to its slug by reading
+the filename, so a shortened name attributes to a slug nothing cites and the
+item reads as never written about — which is how a whole planning session's
+worth of records went unseen.
 
 **Every date written at a close is the close date** — today's date, at the moment
 you are closing. That covers the filename prefix and every date written into the
@@ -364,10 +373,20 @@ captures — things the user thought out loud but never flagged.
 
 ```
 /done  ->  may FILE the surfaced captures
+       ->  may AMEND an existing work item, on the user's direction given
+           this session, recording the amendment in the LOG entry under
+           that item's name
        ->  never ROUTES them (keep / delete)
 # filing is capture-making, allowed in any session;
+# amending is carrying out a direction the user has already given;
 # routing is planning, /plan's alone
 ```
+
+**Where the defect in a cleared item is one you noticed rather than one the
+user directed, file it as a capture AND name the collision**: that item runs
+before the next planning session unless the user directs the amendment now.
+Saying so is what gives them the chance to; a capture alone leaves the item to
+be built as it stands.
 
 **Show the candidate set as ONE numbered message before anything is written.**
 The user contests by number or says go; the writes then land, and a contested

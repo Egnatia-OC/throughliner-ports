@@ -24,6 +24,21 @@ Want an email when a new version ships? GitHub can send you one. On the [plugin'
 
 Non-coders who know what their project should do but need a framework to keep Claude on track through multi-session builds.
 
+## What a project looks like
+
+Setup gives your project folder a small set of plain-text documents, alongside the plugin itself:
+
+```mermaid
+graph TD
+    P["Your project folder"]
+    P --> S["SPEC.md — what you're building"]
+    P --> Q["QUEUE.md — what to work on next"]
+    P --> L["LOG/ — what happened, session by session"]
+    P --> F["FAQ/ — how the workflow works"]
+    P --> I["INBOX/ — mail from your other projects"]
+    P -.->|installed alongside| T["Throughliner — five commands,<br/>plus hooks that run in the background"]
+```
+
 ## What it does
 
 The plugin splits your project into a build queue and walks you through it. Five slash commands drive the workflow:
@@ -60,6 +75,33 @@ Run **/setup** once, when you first set up a project. After that you work in ses
 - **/next** — build: it picks the top piece of ready work and builds it. You'll run /next many times, working down the queue. When several pieces are cleared, one /next can build them back-to-back without you confirming each one.
 
 The habit that matters: always /done before /clear, so each session is saved before the context resets.
+
+Every piece of work travels the same loop, and two things can send you back to the start of it:
+
+```mermaid
+graph LR
+    C["Something you notice —<br/>filed as a capture"] --> P["/plan — agree it,<br/>and decide how it runs"]
+    P --> N["/next — build it"]
+    N --> D["/done — record it,<br/>and commit"]
+    D --> F["A fresh session"]
+    F --> P
+    N -.->|found something mid-build| C
+    N -.->|a review pass reports findings| C
+```
+
+## How the why travels
+
+The reasoning behind a decision is carried alongside the work rather than kept in one place — which is what the plugin is named for:
+
+```mermaid
+graph LR
+    W["Why you want it<br/>this way"] --> S["SPEC.md —<br/>your intent"]
+    W --> Q["QUEUE.md —<br/>the reasoning on<br/>every item"]
+    W --> L["LOG/ —<br/>the history"]
+    S --> B["Any session, fresh ones<br/>included, builds it<br/>the way you meant"]
+    Q --> B
+    L --> B
+```
 
 ## Operating conditions
 

@@ -133,6 +133,14 @@ FLAVOR_TAGS = frozenset({"audit", "user", "freeform"})
 # A LOG entry filename: <date>-<slug>.md. A slug having an entry means it
 # shipped, which is the whole resolve — no history scan needed.
 LOG_ENTRY_RE = re.compile(r"^\d{4}-\d{2}-\d{2}-([a-z0-9][a-z0-9-]*)\.md$")
+# A record's kind suffix, or the legacy numeric one. A slug's second record
+# cannot reuse the bare filename, so the close suffixes the record's kind —
+# and older records took a bare number instead. Both are stripped so the
+# record still attributes to its slug; without this a second record is
+# invisible to the digest and its item reads as never written about.
+# Only these three exact shapes are stripped. Prefix-matching arbitrary
+# suffixes was refused: a slug that extends another slug would misattribute.
+RECORD_SUFFIX_RE = re.compile(r"-(?:plan|build|\d+)$")
 # A bare date on its own line in the git log pass below: the commit's date,
 # emitted by --format=%as ahead of that commit's patch.
 GIT_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -357,6 +365,11 @@ def shipped_slugs(root, wanted=None):
         "unknown"    it carries neither — an older format, reported as found
                      but unclassified rather than guessed at
 
+    A slug's second record cannot take the bare `<date>-<slug>.md` name, so it
+    carries a kind suffix (`-plan` / `-build`) or, in older records, a bare
+    number. Those suffixes are stripped before the slug is read, so a second
+    record attributes to its item instead of to a slug nothing cites.
+
     `wanted` bounds which entries are opened, to the slugs the caller will
     actually print. Reading every entry costs megabytes to answer a handful of
     citations. Passing None reads them all. Degrades to an empty mapping where
@@ -374,7 +387,7 @@ def shipped_slugs(root, wanted=None):
         match = LOG_ENTRY_RE.match(name)
         if not match:
             continue
-        slug = match.group(1)
+        slug = RECORD_SUFFIX_RE.sub("", match.group(1))
         if wanted is not None and slug not in wanted:
             continue
         try:

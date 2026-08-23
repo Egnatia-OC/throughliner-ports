@@ -316,14 +316,36 @@ def test_quote_claim_without_verbatim_text_is_still_flagged():
     Narrowing the phrase list must not narrow it to nothing: a claim about how
     something was PHRASED, with no phrasing shown, is exactly what the check
     exists for.
+
+    The cases are the two introducer shapes the check now fires on. "Her
+    words:" over a paraphrase is this project's own recorded failure and is
+    pinned here so a later narrowing cannot drop third-person phrases from the
+    list.
     """
     lint = load_lint()
-    for claim in ("In your words, this should be done differently.",
-                  "Her own words settled it: the ordering was wrong."):
+    for claim in ("In your own words, this should be done differently.",
+                  "Her words: the ordering was wrong."):
         item = CLEAN.replace("Filed by Claude. Rationale for alpha.", claim)
         warnings = [w for w in lint(item) if "quotes nothing" in w]
         check(f"a quote claim with nothing quoted ({claim[:18]}…) is flagged",
               bool(warnings), f"got: {warnings}")
+
+
+def test_possessive_words_in_ordinary_prose_is_not_flagged():
+    """A possessive plus "words" is not by itself a claim about wording.
+
+    The consumer's sentence that exposed this: a paraphrase explicitly
+    disclaiming verbatimness was read as claiming it. Only an introducer — the
+    phrase followed by a colon, or "in <possessive> own words" — fires now, and
+    this case is what stops the bare-phrase match coming back.
+    """
+    lint = load_lint()
+    for claim in ("Recorded as her words as closely as he can recall them.",
+                  "The item keeps their words out of the operative rule."):
+        item = CLEAN.replace("Filed by Claude. Rationale for alpha.", claim)
+        warnings = [w for w in lint(item) if "quotes nothing" in w]
+        check(f"ordinary prose ({claim[:22]}…) is not flagged",
+              not warnings, f"got: {warnings}")
 
 
 def test_uncredited_item_is_not_asked_for_a_quote():
@@ -489,6 +511,7 @@ if __name__ == "__main__":
     test_blockquote_counts_as_showing_the_words()
     test_bare_origin_claim_is_not_flagged()
     test_quote_claim_without_verbatim_text_is_still_flagged()
+    test_possessive_words_in_ordinary_prose_is_not_flagged()
     test_uncredited_item_is_not_asked_for_a_quote()
     test_growth_reports_a_delta_per_edited_item()
     test_duplicate_gate_lines_are_flagged()

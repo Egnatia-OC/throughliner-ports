@@ -29,8 +29,10 @@ is optional and an AI label is absent by design, there is nothing to
 enforce — so the lint neither requires a label nor forbids one (a
 leftover "by Claude" on an old item is harmless).
 
-  4. What IS checked is narrower: a claim about the user's WORDING
-     ("your words", "in her own words") that shows no quoted text. An
+  4. What IS checked is narrower still: a claim about the user's WORDING
+     made as an INTRODUCER — "Her words:" or "in her own words" — that
+     shows no quoted text. A possessive plus "words" in ordinary prose
+     claims nothing about wording and is left alone. An
      ORIGIN claim ("captured by you") is never checked, because it says
      where the item came from rather than how it was phrased, and a
      paraphrase is the normal way to state that.
@@ -550,6 +552,19 @@ QUOTE_CLAIM_PHRASES = (
     "their words",
     "the user's own words",
 )
+# The phrase alone is not the claim. A possessive plus "words" appears in
+# ordinary prose that claims nothing about wording — "her words as closely as
+# he can recall them" is a consumer's sentence this check flagged, and it is a
+# disclaimer of verbatimness rather than a claim of it. What makes it a quote
+# claim is an INTRODUCER: the phrase followed by a colon ("Her words:"), or
+# the "in <possessive> own words" form. Only those two shapes fire.
+_QUOTE_PHRASE_ALT = "|".join(re.escape(p) for p in QUOTE_CLAIM_PHRASES)
+QUOTE_CLAIM_INTRODUCERS = (
+    re.compile(r"(" + _QUOTE_PHRASE_ALT + r")\s*:", re.IGNORECASE),
+    re.compile(
+        r"in\s+(your|her|his|their|the user's)\s+own\s+words", re.IGNORECASE
+    ),
+)
 # What counts as showing them: a quoted string of any of the three shapes this
 # corpus actually uses. Deliberately generous — the check exists to catch a
 # credit with NOTHING quoted anywhere in the item, not to police quote style.
@@ -571,13 +586,22 @@ def _check_quote_claim_without_quote(blocks, warnings):
 
     Why it fires here rather than in a digest read hours later: the failure
     happens at the moment of writing, so the report belongs at the write.
+
+    The accepted miss, stated rather than discovered: only an introducer shape
+    fires — the phrase followed by a colon, or "in <possessive> own words". A
+    quote claim made in some other construction goes uncaught. That is the
+    price of not flagging ordinary prose that merely contains a possessive and
+    "words", which this check did until a consumer's sentence was flagged.
     """
     for b in blocks:
         text = "\n".join(b["lines"])
-        low = text.lower()
-        claimed = next((p for p in QUOTE_CLAIM_PHRASES if p in low), None)
-        if not claimed:
+        match = next(
+            (m for m in (r.search(text) for r in QUOTE_CLAIM_INTRODUCERS) if m),
+            None,
+        )
+        if not match:
             continue
+        claimed = match.group(0).strip()
         if any(shape.search(text) for shape in QUOTE_SHAPES):
             continue
         warnings.append(
