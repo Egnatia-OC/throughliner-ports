@@ -1,4 +1,4 @@
-# [HASH] — Built: the FAQ guts to a shell and refills from posted announcements
+# 3ed3db1 — Built: the FAQ guts to a shell and refills from posted announcements
 
 Your decision, built as designed: you have never read an FAQ entry — the discipline failed at its one job — while announcements are read and acted on, and the channel's members need teaching material; so the FAQ and posting rhythms become one cycle. The transition cost was chosen with it: every project runs an empty FAQ until re-seeding catches up, made survivable by the answering rule's fallback chain.
 

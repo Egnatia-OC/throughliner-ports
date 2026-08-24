@@ -1,4 +1,4 @@
-# [HASH] — Built: `Runs alone` ends the run only when this run performed the work
+# 3ed3db1 — Built: `Runs alone` ends the run only when this run performed the work
 
 From the consumer report where a run correctly closed an already-done marked item and then still ended, leaving buildable work unbuilt — the hazard (paths moving under a run) had already happened outside any run. next.md's marker rule gained the arm: an item whose observable check finds all of it already satisfied closes, and the run continues; plan.md's definition carries the same clause. The rule stays mechanical, which the report rightly named as the point. The digest and view are untouched — they report the marker's position only. FAQ's runs-alone entry gained the already-done exception.
 

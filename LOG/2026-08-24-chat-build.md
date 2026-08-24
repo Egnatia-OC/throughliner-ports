@@ -1,4 +1,4 @@
-# [HASH] — Chat-level record for the 2026-08-24 build marathon: 18 rule amendments and the FAQ rebirth built, the audit run, four walk-throughs addressed, and nine captures from live testing
+# 3ed3db1 — Chat-level record for the 2026-08-24 build marathon: 18 rule amendments and the FAQ rebirth built, the audit run, four walk-throughs addressed, and nine captures from live testing
 
 One /next run built all 18 cleared build items and ran the compliance audit, then walked the run's four [user] items: [competition-comparison-article] resumed from its record, its never-sent external review voided, the Papi draft recovered from a prior session's temp folder and saved by you, then deferred; [adhd-memory-prosthetic-article] and [discord-post-session-start-strength] deferred with it under [articles-wait-for-faq-cycle] — your reason: drafting without reference material on how Throughliner works is exhausting, and the announcement-driven FAQ shipped this session will accumulate exactly that; [cycles-due-check-verification] walked partway, finding two defects, and deferred at your call with its clean opening test still unrun.
 

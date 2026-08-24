@@ -1,4 +1,4 @@
-# [HASH] — Built: the merge arm requires the host item to carry the folded facts in its own text
+# 3ed3db1 — Built: the merge arm requires the host item to carry the folded facts in its own text
 
 You corrected a fold that summarised-plus-pointed instead of incorporating; the merge arm as shipped could be satisfied by a pointer. It now reads: rewrite the host item so it carries the folded item's facts in its own text — a pointer to another file is extra information, never the incorporation — and state what came out. The clause survives delete-and-read as operative (removing it loosens the rule), and no "because" clause entered the block, per the item's refusal of a why-sentence.
 

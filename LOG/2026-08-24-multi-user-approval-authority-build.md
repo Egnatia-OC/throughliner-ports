@@ -1,4 +1,4 @@
-# [HASH] — Built: in multi-person sessions, fate decisions belong to the execution-authority holder
+# 3ed3db1 — Built: in multi-person sessions, fate decisions belong to the execution-authority holder
 
 Your ask, ahead of the method's first scheduled multi-person use; the frame that settles it (Claude's, agreed by you): the queue IS state — a keep is a deferred build authorization, so gating only file-writes lets a non-owner's yes load the cleared region. The dependency-ownership fate bullet gains the clause: with more than one person present, keep/delete, scope expansion, red-flag clearing and off-machine approvals belong to the execution-authority holder, while filing captures stays open to anyone. plan.md's fold conditions gained the authority-holder's-own-turn line; the containment test was checked and needed no clause — it judges authorship, not authority. Single-user sessions read unchanged.
 

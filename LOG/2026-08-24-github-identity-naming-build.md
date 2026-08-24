@@ -1,4 +1,4 @@
-# [HASH] — Built: third persons in committed docs appear by their GitHub-published identity
+# 3ed3db1 — Built: third persons in committed docs appear by their GitHub-published identity
 
 Your idea (2026-08-22), scoped on your decision to the narrow buildable rule: the first-name habit was designed for a private desktop environment, but these documents can be public, so the register follows what each person has chosen to publish — username, pronouns where supplied, first name only where they put it there. The scrub checklist's personal-names line gained the published-identity arm; anything unpublished is still rewritten away. The FAQ's scrub entry gained the matching sentence (now announcement material after the reseed built later in this run). `scrub_sweep.py`'s docstring describes shape-matching only, so it needed no change — the item's condition, checked and answered no.
 

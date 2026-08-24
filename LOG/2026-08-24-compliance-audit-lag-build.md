@@ -1,4 +1,4 @@
-# [HASH] — Audited: the rule changes since the 2026-08-22 audit — six findings, all filed
+# 3ed3db1 — Audited: the rule changes since the 2026-08-22 audit — six findings, all filed
 
 Delta-scope compliance audit, parent axis, closing [compliance-audit-lag]. Commits covered: c904687 and 3cc6f44, plus a2ce359's rule-bearing CLAUDE.md edits (the docs-b correction and the PowerShell-encoding clause, both clean) — so this record is the audit-lag check's new baseline for all three. Files read: CLAUDE.md, done-build.md, done.md, feedback-and-inbox.md, migrate-checklist.md, next.md, plan.md, rescan.md, against the four lenses in `resources/method-compliance-audit-checklist.md`. Instruction count read from the board's growth report: 335 always-loaded consumer, 485 with the host's 150.
 
