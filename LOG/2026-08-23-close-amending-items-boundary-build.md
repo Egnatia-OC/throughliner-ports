@@ -1,4 +1,4 @@
-# [HASH] — The close's re-scan bound gains a third case: amend on the user's direction
+# 3cc6f44 — The close's re-scan bound gains a third case: amend on the user's direction
 
 From a consumer project's mailed question. Their close met a cleared item that recorded only half a position their user had stated; on that user's instruction it amended the item's rationale and build block, and the docs were silent — "may file, never routes" has no category for amending, so the session had to invent an answer.
 

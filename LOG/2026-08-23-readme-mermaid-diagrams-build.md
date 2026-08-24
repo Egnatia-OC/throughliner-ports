@@ -1,4 +1,4 @@
-# [HASH] — Three mermaid diagrams in the README: project structure, the work cycle, the throughline
+# 3cc6f44 — Three mermaid diagrams in the README: project structure, the work cycle, the throughline
 
 The user's idea, scoped by her the same session: three separate diagrams, one idea each, no combined high-level view. A combined infographic drafted that day did not make sense to her, and the correction became the design principle — simplicity before any combining. Placement is hers too: the README, where GitHub renders mermaid natively.
 

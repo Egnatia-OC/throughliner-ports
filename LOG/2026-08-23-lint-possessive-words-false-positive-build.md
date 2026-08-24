@@ -1,4 +1,4 @@
-# [HASH] — Quote-claim lint narrowed to introducer shapes, so ordinary prose stops firing it
+# 3cc6f44 — Quote-claim lint narrowed to introducer shapes, so ordinary prose stops firing it
 
 From a consumer project's mailed defect report. Three of their correct items were flagged because the prose said "her words" about a third party — items of the shape "ask how she put the question, and her words as closely as he can recall" — where obtaining the quote *is* the work. Two of the three already carried the origin credit the flag itself offers as an escape, and were flagged anyway. The sting in their report is the part that decided this: the flag could not be cleared by writing correctly, and the lint re-runs on every queue write, so it re-fired roughly ten times in one session. An advisory that fires permanently on correct text is one the reader learns to skim, which costs the check its real findings too.
 

@@ -1,4 +1,4 @@
-# [HASH] — A queue item named in output leads with its heading's words, slug after
+# 3cc6f44 — A queue item named in output leads with its heading's words, slug after
 
 The user's reported failure, repeatedly: she reads her queue through an outline view, the outline shows heading text, and Claude names items by slug — so the name given in chat is not a name she can find. The existing vocabulary rule only required saying what a slug is *for*, which explains the item without locating it, and explanation was never the missing half.
 

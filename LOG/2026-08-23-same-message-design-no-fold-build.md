@@ -1,4 +1,4 @@
-# [HASH] — A design first shown in the offer message can no longer fold into its own disposition
+# 3cc6f44 — A design first shown in the offer message can no longer fold into its own disposition
 
 Raised by the user: processing should involve one more turn — agree, defer, or something else — before a disposition is finalised. It ships as a narrowing of the existing fold rule rather than the unconditional turn she first described, on Claude's recommendation and her agreement, because the unconditional version re-adds a turn to every exchange where she had already engaged the substance, which is the over-asking this method has spent months removing.
 

@@ -1,4 +1,4 @@
-# [HASH] — Record filenames carry the item's full slug with a kind suffix, and the digest reads them
+# 3cc6f44 — Record filenames carry the item's full slug with a kind suffix, and the digest reads them
 
 The digest attributed a record to a queue item only where the filename was exactly `<date>-<slug>.md`, so two ordinary shapes were invisible to it: the overwrite guard's numeric suffix, and build records filed under shortened names. The consequence was observed live before this was filed — [weekly-release-cycle]'s blocker printed as "only processed, not built" when its build record existed, which is the misreading the record-kind field exists to prevent, and it was feeding a lift decision.
 

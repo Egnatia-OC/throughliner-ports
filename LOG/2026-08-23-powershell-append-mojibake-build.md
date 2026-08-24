@@ -1,4 +1,4 @@
-# [HASH] — Scripting constraints: the encoding bullet now covers PowerShell's own file reads
+# 3cc6f44 — Scripting constraints: the encoding bullet now covers PowerShell's own file reads
 
 The instance, from the close that filed it: three appended queue items arrived with every em-dash as mojibake, because a PowerShell step read a UTF-8 scratchpad file with `Get-Content -Raw` and no `-Encoding`, mangled the text, and wrote the mangled bytes back out through a write that was itself correctly UTF-8. It was repaired in-session and verified by reading raw bytes, per the existing check-`ascii()`-first constraint.
 

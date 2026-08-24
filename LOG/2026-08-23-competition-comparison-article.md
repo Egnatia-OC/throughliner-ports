@@ -1,4 +1,4 @@
-# [HASH] — The comparison article rewritten around Papi and a corrected AutoDream claim; item stays open
+# 3cc6f44 — The comparison article rewritten around Papi and a corrected AutoDream claim; item stays open
 
 `[user]` item, walked through live and **not completed** — its last steps wait on an external review, then publication and confirmation. The item stays in Processed.
 

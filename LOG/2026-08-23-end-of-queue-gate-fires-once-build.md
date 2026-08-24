@@ -1,4 +1,4 @@
-# [HASH] — The end-of-queue gate asks once per rest, not on every return to it
+# 3cc6f44 — The end-of-queue gate asks once per rest, not on every return to it
 
 Raised by the user from live experience minutes before it was filed: the close-or-continue question re-fired three times in one sitting, and reads as naggy for someone working slowly through a planning session. The gate was designed when nobody had ever reached an empty queue — her queues ran sixty items deep until Fable-only development began the day before — so its repetition had never been observable.
 
