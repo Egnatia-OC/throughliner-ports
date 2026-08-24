@@ -12,6 +12,8 @@ decision fails at any length; a line that reproduces its file fails too.
 a line is invisible to every later session, which is the blindness this index
 exists to end.
 
+- **Discord-verified GitHub identity for multi-user sessions — the handshake exists natively** — Discord Connections + Linked Roles let a server stamp a member with a role attesting to a real GitHub login, no custom bot; the method's side only needs "identity is what the authenticated channel supplies", and GitHub-side credit is commit co-author trailers, no branches. Limit: what metadata a bot can read (vs gate on) is unverified → `discord-github-linked-roles.md`
+
 **A `Superseded by:` line at the top of a file is noted here too**, so a session
 scanning the index sees the correction before it opens the file.
 

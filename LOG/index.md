@@ -2,6 +2,29 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — chat-level record for the 2026-08-25 planning marathon: 20 items cleared (2 cycles defects, 6 audit findings with 3 merged, multi-user + subprojects designs, correspondence/reporting overhaul, 5 testing captures), consent redesign decided live and applied, 5 dated post drafts filed at the close, Chagora mailed the multi-user design → 2026-08-25-chat-plan.md
+- [HASH] — plan — articles held to 2026-09-21 on dates (FAQ material accumulates as announcements post), session-start post stays cleared to feed it, spent capture deleted → 2026-08-25-articles-wait-for-faq-cycle-plan.md
+- [HASH] — plan — CYCLES.md joins the standing planning surface (hook + 2 docs; SPEC done at keep); file-as-build reworded refused → 2026-08-25-cycles-write-refused-by-scope-lock-plan.md
+- [HASH] — plan — [audit] filed+cleared: brevity style vs rule corpus both directions plus the two unapplied research levers; fresh research refused as on the shelf → 2026-08-25-style-corpus-two-way-audit-plan.md
+- [HASH] — plan — summary-first consent: item discussions open with a plain summary, recommendations ask in plain words, "the ready list" fixed as the standing term (plan.md build; SPEC done) → 2026-08-25-keep-approval-reading-burden-plan.md
+- [HASH] — plan — inline-reading switch retired: summaries replace verbatim (user accepted by name); all sites grepped, no announcement claimed it → 2026-08-25-retire-inline-text-offer-plan.md
+- [HASH] — plan — done.md cycles check gets a fresh-disk-read trigger; demo transcript proved the close skipped the check, never read CYCLES.md → 2026-08-25-cycles-close-check-did-not-fire-plan.md
+- [HASH] — plan — write-first justification reworded (cost + in-chat consent), /rescan-and-close candidate-set exception admitted, SPEC who-it's-for reframed on the user's walked-back reading premise → 2026-08-25-audit-write-first-contradiction-plan.md
+- [HASH] — plan — three lens-4 findings merged: strip the history sentences from plan.md (fold block, end gate) and done.md (record-naming) → 2026-08-25-plan-fold-refused-alternative-history-plan.md
+- [HASH] — plan — [PROMPT] tags for the two untagged waits (done.md wind-down set, rescan.md filing step) → 2026-08-25-done-rescan-candidate-set-untagged-plan.md
+- [HASH] — plan — reorder narration drops the two medians; the digest printout carries checkability → 2026-08-25-plan-reorder-median-narration-plan.md
+- [HASH] — plan — multi-user design: channel-authenticated identity (Discord linked roles, research filed), credit follows the message under existing tests, co-author trailers; Chagora mailed → 2026-08-25-multi-user-identity-layer-plan.md
+- [HASH] — plan — build view lifecycle specified: silent delete at close, gitignored by setup on both paths → 2026-08-25-build-view-delete-ask-at-close-plan.md
+- [HASH] — plan — walkthrough checks report as see-or-means, never code (user's fallback refinement) → 2026-08-25-plan-code-verification-narration-plan.md
+- [HASH] — plan — end-of-queue gate: refill-reset made operative, keep-open-to-capture intent silences the wrap-up, chat-held → 2026-08-25-end-of-queue-gate-refill-and-standing-intent-plan.md
+- [HASH] — plan — correspondence scan shipped into plan.md's mail step: answers on filed issues + incoming repo issues, computed newness, gh-optional; register-vs-GitHub question answered on the item → 2026-08-25-plan-open-github-issue-check-plan.md
+- [HASH] — plan — method reports go issue-first with the form fallback; reply-check scheduled at send on a dated capture where wanted (SPEC done) → 2026-08-25-method-feedback-issue-first-plan.md
+- [HASH] — plan — subprojects designed: pop-out at setup, mailbox mediation, one-way blocking kept on examined grounds, no stored list, child-log check at the parent revisit (SPEC paragraph added) → 2026-08-25-subprojects-pop-out-plan.md
+- [HASH] — plan — posts draft at the planning close as dated captures with a benefit-framed brief and a post-time staleness check; daily cycle refused; sweep ordered after the wind-down and run by hand this close → 2026-08-25-plan-close-post-drafting-plan.md
+- [HASH] — plan — fully-relocated item removals become narrated, not asked; true deletes keep the ask → 2026-08-25-spent-item-delete-narration-plan.md
+- [HASH] — plan — /rescan in a planning chat gains the process-now arm, one conditional sentence keyed on a prior /plan invocation → 2026-08-25-rescan-offers-processing-in-plan-plan.md
+- [HASH] — plan — Chagora's three defects designed: keep-private follow-through, visibility answer recorded in CLAUDE.md, the two-repositories rule (freestanding, slot cost owned); follow-up mail drafts at the build close → 2026-08-25-setup-visibility-remote-and-forks-plan.md
+- [HASH] — plan — explicit user-directed queue moves carry through in a build (yield-rule amendment); the dare narration was the gap's improvisation → 2026-08-25-build-refuses-user-queue-move-plan.md
 - 3ed3db1 — chat-level record for the 2026-08-24 build marathon: 18 rule amendments and the FAQ rebirth built in one run, the compliance audit run (6 findings), four [user] items walked or deferred, two inbound reports triaged, and nine chat-level captures from live consumer testing → 2026-08-24-chat-build.md
 - 3ed3db1 — build — FAQ guts to a shell: ANNOUNCEMENT-IDEAS.md created from all former entries, templates and FAQ/ reduced to shells, FAQ-sync gate and keep-step FAQ rule evicted from CLAUDE.md for the announcement-time authoring rule, shipped how/why answering rule added → 2026-08-24-faq-reseed-from-announcements-build.md
 - 3ed3db1 — build — LOG index split by month (index.md keeps 2026-08; index-2026-07/06.md created, 1,175 lines reconcile); retrieval goes search-first over index*.md with the missed-phrasing limit; done.md gains the rollover; FORMAT_EPOCH not bumped → 2026-08-24-log-retrieve-search-leg-build.md
