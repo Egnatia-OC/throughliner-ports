@@ -970,17 +970,24 @@ def _fire_once(cwd: str, session_id: str, marker_name: str) -> bool:
 
 
 def _log_collision_suggestion(filepath: str) -> str:
-    """The next free `-2`, `-3`, … filename beside an existing LOG entry.
+    """The free name(s) beside an existing LOG entry, in the naming rule's order.
 
-    Named rather than merely reported: the close's own rule already says a taken
-    name gets a numeric suffix, so the denial hands back the exact name that rule
-    would have produced.
+    Named rather than merely reported: the record-naming rule says a slug's
+    second record carries the kind of session as a suffix — `-plan` or
+    `-build` — so the denial hands back whichever of those is free. The
+    numeric `-2`, `-3`, … form is the legacy fallback and is offered only when
+    both kind names are already taken. The hook cannot see which kind this
+    session is, so where both are free it names both and the session picks.
     """
     root, ext = os.path.splitext(filepath)
+    kind_free = [f"{root}-{kind}{ext}" for kind in ("plan", "build")
+                 if not os.path.exists(f"{root}-{kind}{ext}")]
+    if kind_free:
+        return " or ".join(os.path.basename(p) for p in kind_free)
     n = 2
     while os.path.exists(f"{root}-{n}{ext}") and n < 100:
         n += 1
-    return f"{root}-{n}{ext}"
+    return os.path.basename(f"{root}-{n}{ext}")
 
 
 def _is_log_entry_overwrite(tool_name: str, filepath: str, cwd: str) -> bool:
@@ -1254,10 +1261,11 @@ def main() -> int:
             "name, and writing over it would destroy it with no sign that "
             "anything went wrong.\n\n"
             f"Existing: {os.path.basename(filepath)}\n"
-            f"Free name: {os.path.basename(_log_collision_suggestion(filepath))}\n\n"
-            "Records are named from the date and the kind of session, so two "
-            "sessions of the same kind on one day want the same name. Write the "
-            "new record under the free name above.\n\n"
+            f"Free name: {_log_collision_suggestion(filepath)}\n\n"
+            "The record-naming rule: a second record for the same name carries "
+            "the kind of session as a suffix (-plan or -build); a number is the "
+            "fallback only when both kind names are taken. Write the new record "
+            "under the free name above that matches this session's kind.\n\n"
             "If you meant to add to the existing record rather than replace it, "
             "use Edit — appending to a record is always allowed."
         )

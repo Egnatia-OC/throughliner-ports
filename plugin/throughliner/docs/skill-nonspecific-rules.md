@@ -28,6 +28,23 @@ Active in every chat where the plugin is installed and the project is set up.
 folder — and these rules are not loaded there; they govern its migration and
 top-up runs, which happen in projects already set up.
 
+## What the method is for
+
+Orientation, read here; it is not recited to the user.
+
+```
+The point, carried by every session whether or not a skill is running:
+  1. The user's intent keeps running the project whatever Claude remembers.
+     The reasoning travels as prose — capture, work item, record — so a
+     fresh session builds what the user meant instead of guessing from code.
+  2. Reading and approving the record IS the product, not overhead. The
+     approving is what makes the record the user's, and so trustworthy.
+  3. Settled things stay settled: a rejected option carries why it lost,
+     so it is not proposed again and decisions are not relitigated.
+  4. Recorded intent is what makes drift visible — a contradiction can only
+     be caught against something written down.
+```
+
 ## The work cycle
 
 Orientation, read here; it is not recited to the user.
@@ -305,6 +322,15 @@ the vocabulary lesson.
 explain each term once.** A term that names nothing in their world can still earn
 one explanation, because the alternative is a longer sentence in its place every
 time it comes up.
+
+**A "how does this work?" question is answered from the procedure rules; a
+"why?" or "what is this for?" question is answered from the FAQ first.** Open
+`FAQ/index.md` and use the matching entry where one exists; where none does,
+answer honestly from what you can read and say that is what you are doing. For
+what the plugin does as a whole, the plugin's README is the reference, and new
+features are announced on the project's Discord
+(https://discord.gg/Z7ftKnSjR) — the FAQ fills from those announcements, which
+is why a young FAQ is short.
 
 **How to explain is yours to judge.** Answer the question you were actually
 asked, in the form that answers it.
@@ -646,7 +672,13 @@ real and equally bad; neither warning may be louder than the other. (How a
   is where the user's part gets its `[user]` line.
 - **Walk a `[user]` item through whenever it is reached, and learn completion
   from what the user volunteers.** That is its whole lifecycle in every skill —
-  /plan, /next and /done alike. Where the item names an observable result, check
+  /plan, /next and /done alike. A filed `[user]` line may be walked the moment
+  it is filed, with the user present, where walking it now clears a red flag or
+  unblocks work this session is doing; the line is written before its first
+  step is driven, so an interrupted walk survives in the queue. Before walking,
+  list `LOG/` for records under the item's slug and read any found; say which
+  steps the record shows done, and resume at the first that is not. Where the
+  item names an observable result, check
   the world for it: a file present or absent, a branch gone, a URL responding.
   Where it names none, the item stays in place until the user mentions it.
 - **A `[user]` line carries a walkthrough** — which steps, in what order, what to
@@ -689,7 +721,11 @@ definition.
 says so where it applies):
 
 ```
-personal names (the user's collaborators, clients, anyone not in the room)
+personal names (the user's collaborators, clients, anyone not in the room) —
+    except that a third person is referred to by the identity they have
+    published on GitHub: username, pronouns where supplied, first name only
+    where they put it there. Anything they have not published is rewritten
+    away like any other personal detail.
 case or matter details that identify a real situation
 third-party data of any kind
 credentials, keys, tokens
@@ -943,9 +979,11 @@ keep the nuance, not a typed taxonomy          # a taxonomy is never complete, a
 
 **Retrieve.** When asked why something exists, work the cheapest-first ladder in
 Prior decisions below — it is the canonical retrieve order. When the ladder
-reaches LOG: `LOG/index.md`'s one-line-per-entry shape points to candidates
-faster than scanning prose, and the matched entry's file is opened directly (the
-index line ends with its filename). Pre-split entries live in `LOG/log.md` and
+reaches LOG: search the index files (`LOG/index*.md`) for the subject's words —
+their one-line-per-entry shape points to candidates faster than scanning prose
+— and open the matched entry's file directly (the index line ends with its
+filename). A search only finds lines carrying the words tried, so where it
+comes back empty, widen the terms before concluding nothing is recorded. Pre-split entries live in `LOG/log.md` and
 `LOG/log-v*.md` — find those by the index line's hash or title. Only fall back to
 inferring from code if the whole ladder has nothing.
 
@@ -964,8 +1002,14 @@ each entry must carry:
     the entry's filename      # at the end of the line
 ```
 
-**The index is read in full, by Claude, on every retrieve, so its total length is
-a fixed toll rather than something a reader skims past.**
+**The index is split by month — the current month's lines in `LOG/index.md`,
+each completed month's in `LOG/index-YYYY-MM.md` — and a targeted retrieve
+searches the index files rather than reading them whole**, so the archive can
+grow without any single read growing with it. The limit is stated rather than
+hidden: a search reaches lines that carry the words searched for, and an entry
+indexed under phrasing the search never tries is missed — which whole-reading
+did not risk. The handful of newest lines in `LOG/index.md` are still read
+unprompted at a planning session's opening.
 
 **Subject to the Authoring standard's length provision above, the bound here is
 the content requirement itself:** an index line carries enough to support the
@@ -1143,7 +1187,10 @@ this adds is the offer.
   sentence, since silent ownership reads as no ownership. An append to
   Unprocessed is unnarrated.
 - **The user owns whether an item is kept or deleted**, and whether a build
-  expands its scope.
+  expands its scope. With more than one person in the session, those decisions
+  — and clearing a red flag, and approving anything that leaves the machine —
+  belong to the one person holding execution authority, while filing captures
+  stays open to anyone present.
 
 ## Reading a whole file before reasoning over it
 

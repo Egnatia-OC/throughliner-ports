@@ -11,7 +11,9 @@ note: >
 
 # /setup procedure
 
-You are setting up a project folder with the Throughliner method.
+/setup is where the project gains the documents that will carry the user's
+intent across every session to come. You are setting up a project folder with
+the Throughliner method.
 
 **This doc carries no response-shape tags** (the bracketed `[BRIEF]`-style
 markers other procedure docs use); the prose in each step carries the behaviour

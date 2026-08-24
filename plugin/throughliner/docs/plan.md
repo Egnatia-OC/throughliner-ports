@@ -9,7 +9,9 @@ note: >
 
 # /plan procedure
 
-/plan is where unprocessed work becomes processed work through discussion. **No
+/plan is where the user's intent gets written down well enough to outlive the
+conversation — the reasoning agreed here is what every later session builds
+from. /plan is where unprocessed work becomes processed work through discussion. **No
 building happens here.** Claude owns sequencing — the order work sits in, what
 gets built first — through discussion, not silently.
 
@@ -141,7 +143,10 @@ Runs alone
   region so the run reaches everything else first. **Use it where the work moves
   paths underneath a run in flight** — a rename, a folder move, a migration.
   /next reads the marker as a
-  run bound and stops there; the marker binds /next and nothing else, so it does
+  run bound and stops there — except that an item the run finds already done,
+  its observable check satisfied before any step is driven, closes and the run
+  continues, since the bound keys on the run performing the work; the marker
+  binds /next and nothing else, so it does
   not stop the work being done alongside other work by hand.
 
   This is not `[freeform]`. `[freeform]` marks work /next must **not** build;
@@ -284,8 +289,7 @@ without acting on the advisory.
 > held below the line. If you're reading this away from your computer, say so and
 > I'll paste text inline rather than linking to it.
 >
-> **Anything you want to prioritise, or shall I work through them
-> most-unblocking-first?**
+> **Anything you want to prioritise, or shall I pick the order?**
 
 **Position carries this, not a message of its own** — a separate advisory message
 was tried and dropped, because it left the first message with nothing to answer.
@@ -501,11 +505,18 @@ obviously droppable this beat doesn't fire at all — say nothing and go to beat
 > targeted was cut. 2. **[dupe-slug]**: duplicates **[other-slug]**. Drop both, or
 > name any to keep?"
 
-**Beat 2 — the ordering ask** [PROMPT]. One question, with the default named:
-**"Anything you want to prioritise, or shall I work through them
-most-unblocking-first?"** One question, not a menu — the only alternative offered
-is the user's own priorities. A user with something on their mind answers it
-here.
+**Beat 2 — the ordering ask** [PROMPT]. One question: **"Anything you want to
+prioritise, or shall I pick the order?"** One question, not a menu — the only
+alternative offered is the user's own priorities. A user with something on their
+mind answers it here. The question names no order, because the order used is
+often the fallback rather than any nameable default; the one-line narration that
+follows the reorder names, in plain words, the order picked.
+
+**Where an uncleared red flag tops the order, the ask is asymmetric instead:
+lead with the flag as what comes first unless the user names something
+definitely more important** — e.g. "An unaddressed privacy risk is first up
+unless something else is definitely more important — anything you want ahead of
+it?"
 
 **A subset the user names sets the ORDER, not the length of the run.** When
 those items are done, the checkpoint simply presents the next item, exactly as it
@@ -513,7 +524,7 @@ does after any other item. Naming three things to start with is not a statement
 that the run ends after three.
 
 **Where mail is waiting, that question carries it instead: "There's mail waiting
-— process that first, or start most-unblocking-first?"** Still one question, and
+— process that first, or shall I pick the order?"** Still one question, and
 it is what gives the mail step its teeth: a question the user answers, rather
 than a step that can be passed over.
 
@@ -809,9 +820,11 @@ one you are doing, because they want opposite treatments:**
 
 ```
 a MERGE          two accounts of the SAME thing
-                 ->  REWRITE the host item, and state what came out.
-                     Adding names what it replaces — the rule gate's eviction
-                     step, one level down.
+                 ->  REWRITE the host item so it carries the folded item's
+                     facts in its own text — a pointer to another file is
+                     extra information, never the incorporation — and state
+                     what came out. Adding names what it replaces — the rule
+                     gate's eviction step, one level down.
 
 a SUPERSESSION   one account OVERTURNS the other
                  ->  APPEND, dated, naming what it overturns and why the old
@@ -882,7 +895,9 @@ describing the build.** A capture's account of how something works is a claim to
 test, not a fact to build on. An assertion that an operation is reversible or
 recoverable is such a claim, and checking it means inspecting the actual target
 — what would be destroyed, and whether it is genuinely held elsewhere — before
-the item clears.
+the item clears. An assertion that a file or folder is absent is checked with a
+listing that shows hidden files, since absence is the one claim a normal
+listing gets wrong silently.
 
 **Two questions are settled before the build is described, and each is answered
 in the item's prose:**
@@ -957,6 +972,9 @@ A recommend may fold into the action ONLY when the agreement was
   - preceded by at least one earlier turn on this item's substance.
 Not a prior turn. Not an adjacent item. Not a general "keep going",
 "continue", or "yes" answering a different question.
+In a multi-person session, the agreement that folds is the
+execution-authority holder's own turn — another participant's yes
+does not fold.
 Absent that, the recommendation stands alone and WAITS.
 ```
 
@@ -1111,7 +1129,10 @@ and reference that slug from the original.
 
 *Where the item's walkthrough is authored here, confirm the step can
 actually produce the observation the item names* — where running the command is
-harmless, run it. This is a different question from the capability check above:
+harmless, run it. Trying is the smallest observation that settles the claim; a
+try that produces the item's own deliverable has become the build, and stops —
+the two-limb check asks for a description of the build, never a demonstration.
+This is a different question from the capability check above:
 that one asks whether Claude could do the *work*, this asks whether the *user's
 step* yields the *evidence*. /plan is the only site where trying is free.
 
@@ -1258,7 +1279,9 @@ next item in place of its verbatim, off-ramps below it unchanged.
 ### Process-now offer after a user raises something  [PROMPT]
 
 When the *user* raises something fresh mid-/plan, offer the branch **before
-writing anything** — and close on the offer rather than on a bare "anything
+writing anything — and before any analysis, design, or other work on the raised
+thing: work delivered ahead of the offer spends the choice**. Close on the
+offer rather than on a bare "anything
 else?", which can read as parking their idea:
 
 ```
@@ -1285,8 +1308,10 @@ this branch only — it is what stops a user's idea being closed off before they
 have finished the thought.
 
 **When *Claude* raises something mid-/plan that may be work, ask once, at the
-moment it is raised, before any write: file it for later, or work it now — and
-recommend working it now.** The reason is identical on both branches: the capture
+moment it is raised, before any write and before any analysis, design, or other
+work on it: file it for later, or work it now — and
+recommend working it now.** An applied correction that may be method work still
+gets the offer. The reason is identical on both branches: the capture
 exists because this session's context produced it. **Recommend the route and
 nothing else** — no clause inviting anything further, since this branch is barred
 from soliciting further captures and a recommendation is the easiest place for

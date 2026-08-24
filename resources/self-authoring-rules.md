@@ -26,6 +26,8 @@ Sources: [instruction-file-bloat-and-subtraction.md](research/instruction-file-b
 
 **On the hook question.** Every hook adds friction every session forever. The cost of the failure decides, not the fact that a rule slipped.
 
+**Question 1's "more than once" count was repealed on 2026-08-24.** The question now reads "Has this actually failed, in a way you can point to?" — one pointable failure admits, and speculation still stops at the same clause. The count fell because two same-day amendments were each admitted on a single recorded instance, and each also satisfied the outgoing test on its own terms — the count was neither what admitted them nor what stops a speculative rule, which the pointable-instance clause does alone. The clause the question keeps is the guard; the count was a bare number riding it.
+
 ### Declaring a limit — the record
 
 An absolute number is not the defect. The worked example is the **10,000-character hook output cap**: it is imposed by Claude Code, the derivation is one sentence, and anyone can check it against the tool. What is banned is the undeclared derivation, because a limit nobody can trace is a limit nobody dares change, and it fires against correct work.

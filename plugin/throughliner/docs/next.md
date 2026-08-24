@@ -9,7 +9,9 @@ note: >
 
 # /next procedure
 
-You are building the cleared work from the queue. /next works the Processed
+/next is where recorded intent becomes the built thing — the run executes what
+the user already agreed, exactly as agreed, which is why it need not stop to
+ask. You are building the cleared work from the queue. /next works the Processed
 section top-down — building Claude-work items, walking the user through user-work
 — scope-locked to the files that work touches.
 
@@ -108,6 +110,9 @@ marker on an item, run has already built something
     ->  stop before it. The run ends there.
 marker on the run's FIRST item
     ->  build it, then end the run after it.
+marker on an item whose observable check finds ALL of it already satisfied
+    ->  close the item and continue the run. The bound keys on this run
+        performing the work; no paths moved, so there is nothing to protect.
 ```
 
 Say plainly why the run stopped: this item must not be built alongside other
@@ -197,11 +202,15 @@ from the other side.
 **On ALL_WALKTHROUGHS** [PROMPT] — there's nothing to build, so skip Step 2's
 build scaffolding entirely and go straight to Step 3's walk-through branch.
 
-**Before handing a `[user]` item over, run the LIGHT capability check.** Name the
-tool that would do the work and confirm it is absent or unauthenticated (the
-over-tag guard, skill-nonspecific-rules.md). This is the last line of defence
+**Before handing any step of a `[user]` item over, run the LIGHT capability
+check — per step, not per item.** Name the tool that would do that step and
+confirm it is absent or unauthenticated (the over-tag guard,
+skill-nonspecific-rules.md). Perform the steps Claude can perform — where a
+step's file is outside the run's list, offer the scope addition in the same
+message — and hand over only what needs the user's eyes, decision, or hands.
+This is the last line of defence
 against a wrong tag, and it's nearly free — the run is about to act on that tag.
-If the check finds a tool that can do it, do the work as ordinary work and note
+If the check finds every step is Claude's, do the work as ordinary work and note
 the correction for the close; a wrong `[user]` item otherwise stops an unattended
 run dead for work nobody needed the user to do.
 
@@ -512,8 +521,8 @@ attach to the wrong items; the slug makes each line self-identifying, and the
 close reads it by slug rather than by position.
 
 Writing the field at the tick turns a silent omission into a visible one, which
-is the shape this method already trusts for the FAQ-sync disposition and the
-rule-gate line.
+is the required-artifact shape this method already trusts for the rule-gate
+line.
 
 ```
 python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
@@ -529,7 +538,9 @@ would leave it in neither.
 ### The `[user]` walk-through lifecycle
 
 How a `[user]` item is run and closed. (What earns the tag is the matched pair in
-skill-nonspecific-rules.md, Captures.) Without the back half, a finished `[user]`
+skill-nonspecific-rules.md, Captures; the record check before walking — read any
+LOG records under the item's slug and resume after what they show done — is that
+file's lifecycle bullet, and the view's `Records on file:` line names them.) Without the back half, a finished `[user]`
 item strands in Processed and the next /next presents it again as if unbuilt.
 
 - **/next leads with the walk-through and drives it live.** Name what's theirs to

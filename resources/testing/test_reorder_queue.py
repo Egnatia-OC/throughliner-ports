@@ -80,6 +80,64 @@ def order_of(text, section="## Processed"):
     return out
 
 
+# --- --replace-in ([pointer-drift-unfixable-at-a-build-close]) ---------------
+
+REPLACE_QUEUE = (
+    "#### First thing [first]\n"
+    "Rationale naming resources/research/old-name.md once.\n\n"
+    "#### Second thing [second]\n"
+    "Rationale also naming resources/research/old-name.md — a different entry.\n"
+)
+
+
+def test_replace_in_fires():
+    rc, err, out = run(build_queue(REPLACE_QUEUE),
+                       "--replace-in", "first",
+                       "--old", "resources/research/old-name.md",
+                       "--new", "resources/research/new-name.md")
+    check("replace-in succeeds", rc == 0, err)
+    check("target entry updated",
+          "Rationale naming resources/research/new-name.md once." in out, out)
+    check("other entry untouched",
+          "Rationale also naming resources/research/old-name.md" in out, out)
+    check("replacement reported", "replaced in [first]" in err, err)
+
+
+def test_replace_in_refuses_non_unique():
+    text = build_queue(
+        "#### First thing [first]\n"
+        "Names old-name.md twice: old-name.md again.\n"
+    )
+    rc, err, out = run(text, "--replace-in", "first",
+                       "--old", "old-name.md", "--new", "new-name.md")
+    check("non-unique refuses", rc != 0, err)
+    check("non-unique changes nothing", "old-name.md twice: old-name.md" in out)
+
+
+def test_replace_in_refuses_absent_match():
+    rc, err, out = run(build_queue(REPLACE_QUEUE),
+                       "--replace-in", "first",
+                       "--old", "not-in-the-entry.md", "--new", "x.md")
+    check("absent match refuses", rc != 0, err)
+    check("absent match changes nothing",
+          "resources/research/old-name.md once." in out)
+
+
+def test_replace_in_refuses_unknown_slug():
+    rc, err, out = run(build_queue(REPLACE_QUEUE),
+                       "--replace-in", "no-such-slug",
+                       "--old", "a", "--new", "b")
+    check("unknown slug refuses", rc != 0, err)
+
+
+def test_replace_in_reaches_unprocessed():
+    rc, err, out = run(build_queue(REPLACE_QUEUE),
+                       "--replace-in", "later",
+                       "--old", "Some rationale.", "--new", "Fresh rationale.")
+    check("unprocessed entry reachable", rc == 0, err)
+    check("unprocessed entry updated", "Fresh rationale." in out, out)
+
+
 # --- the regression case ------------------------------------------------------
 
 def test_marker_above_all_items():
@@ -462,6 +520,11 @@ def main():
         test_move_section_top_reports_above,
         test_delete_reports_inbound_citations,
         test_delete_reports_nothing_when_uncited,
+        test_replace_in_fires,
+        test_replace_in_refuses_non_unique,
+        test_replace_in_refuses_absent_match,
+        test_replace_in_refuses_unknown_slug,
+        test_replace_in_reaches_unprocessed,
     ):
         print(fn.__name__)
         fn()

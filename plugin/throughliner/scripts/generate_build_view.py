@@ -214,6 +214,38 @@ def walkthrough(entry):
     return block
 
 
+# A LOG entry filename, and the kind/legacy-numeric suffix a slug's second
+# record carries — both duplicated from queue_digest.py, which cannot be
+# imported for the standalone-cache reason above. Only these exact suffix
+# shapes are stripped; prefix-matching arbitrary suffixes would misattribute a
+# slug that extends another slug.
+LOG_ENTRY_RE = re.compile(r"^\d{4}-\d{2}-\d{2}-([a-z0-9][a-z0-9-]*)\.md$")
+RECORD_SUFFIX_RE = re.compile(r"-(?:plan|build|\d+)$")
+
+
+def records_on_file(root, slug):
+    """LOG/ filenames whose slug resolves to this item's, sorted.
+
+    A [user] item's walk-through must resume after what the record shows done,
+    and the view is what an unattended run actually reads — so the pointer to
+    the records travels in the view rather than relying on the run remembering
+    to look.
+    """
+    if not slug:
+        return []
+    folder = os.path.join(root, "LOG")
+    try:
+        names = os.listdir(folder)
+    except OSError:
+        return []
+    found = []
+    for name in names:
+        m = LOG_ENTRY_RE.match(name)
+        if m and RECORD_SUFFIX_RE.sub("", m.group(1)) == slug:
+            found.append(name)
+    return sorted(found)
+
+
 def needs_block(entry):
     """True where this cleared entry is one a run builds from a block.
 
@@ -254,7 +286,7 @@ def build_block(entry):
     return None, None
 
 
-def render(entries):
+def render(entries, root):
     out = []
     out.append("# BUILD VIEW — generated, do not edit")
     out.append("")
@@ -303,6 +335,13 @@ def render(entries):
         # A [user] item is not built from a block — it is walked through live,
         # and the steps travel into the view so the run never reads the queue.
         if e["flavor"] == "user":
+            # The record check travels with the item: a walk-through resumes
+            # after what the record shows done, and the view is what an
+            # unattended run reads.
+            records = records_on_file(root, e["slug"])
+            if records:
+                out.append("Records on file: %s" % ", ".join(records))
+                out.append("")
             steps = walkthrough(e)
             if steps is None:
                 out.append(
@@ -387,7 +426,8 @@ def main():
     if not entries:
         die("no entries found in %r — is this a QUEUE.md?" % queue_path)
 
-    body, problems = render(entries)
+    body, problems = render(entries,
+                            os.path.dirname(os.path.abspath(queue_path)))
 
     if out_path is None:
         out_path = os.path.join(os.path.dirname(os.path.abspath(queue_path)),

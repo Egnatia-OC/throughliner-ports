@@ -9,7 +9,9 @@ note: >
 
 # /rescan procedure
 
-Look back over the conversation for things decided, noticed or asked for that
+/rescan exists because a conversation ends and takes everything unwritten with
+it — filing is how a decision outlives the chat that made it. Look back over
+the conversation for things decided, noticed or asked for that
 were never written into a file, and file them.
 
 ## What it does, and the one thing it does not

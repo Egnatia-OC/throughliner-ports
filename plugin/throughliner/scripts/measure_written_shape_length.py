@@ -247,13 +247,26 @@ def legacy_entries(root):
 
 
 def index_lines(root, entries):
-    """[(date, line_words, entry_words, filename)] for LOG/index.md."""
-    path = os.path.join(root, "LOG", "index.md")
+    """[(date, line_words, entry_words, filename)] across LOG/index*.md.
+
+    The index is split by month — index.md for the current month, one
+    index-YYYY-MM.md per completed month — so the shape is measured over every
+    index file, not just the current one.
+    """
+    folder = os.path.join(root, "LOG")
+    lines = []
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            lines = f.read().splitlines()
+        names = sorted(n for n in os.listdir(folder)
+                       if n == "index.md"
+                       or re.match(r"index-\d{4}-\d{2}\.md$", n))
     except OSError:
         return []
+    for name in names:
+        try:
+            with open(os.path.join(folder, name), "r", encoding="utf-8") as f:
+                lines.extend(f.read().splitlines())
+        except OSError:
+            continue
     out = []
     for raw in lines:
         match = INDEX_LINE_RE.match(raw.strip())

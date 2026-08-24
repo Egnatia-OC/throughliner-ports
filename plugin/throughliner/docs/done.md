@@ -8,7 +8,9 @@ note: >
 
 # /done procedure
 
-Close the current session — record what happened, update docs, commit.
+/done is what lets the next session start from nothing and still know why —
+the record it writes is where this session's reasoning survives. Close the
+current session — record what happened, update docs, commit.
 
 ## Declare the close  [SILENT]
 
@@ -106,7 +108,15 @@ If so, flag it — and **split by fix path**:
 a fate decision (drop / rewrite / keep)  ->  /plan's. Defer it.
 a pure pointer drift                     ->  mechanical. Fix it HERE, report in
     (a file reference whose target             one line, riding this commit,
-     content is unchanged)                     with no approval ask.
+     content is unchanged)                     with no approval ask. At a build
+                                               close the route is the queue
+                                               tool's literal replace —
+                                               reorder_queue.py --replace-in
+                                               <slug> --old <literal> --new
+                                               <literal> — which edits one
+                                               entry, refuses a non-unique
+                                               match, and passes the
+                                               scope-lock.
 ```
 
 ## LOG entry files
@@ -268,6 +278,13 @@ Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 ```
 - [HASH] — [index entry] → [entry filename]
 ```
+
+**Month rollover, checked here because this is the step that touches the
+index:** where `LOG/index.md` holds lines from a month that has ended, move
+that month's lines into `LOG/index-YYYY-MM.md` (creating it if absent, newest
+first like the main index), leaving the current month's lines where they are.
+Retrieval searches `LOG/index*.md`, so nothing is lost to the move; the main
+index stays the short file whose newest lines a planning opening reads.
 
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
 newest-first on a name sort, each in its own file rather than a shared log:

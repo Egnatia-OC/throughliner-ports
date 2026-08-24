@@ -83,8 +83,11 @@ because hook output is capped at 10,000 characters and past that the harness
 discards the whole payload, so enough unread mail would cost the chat its project
 state and its rules directive as well as its mail. Read each named file in full,
 then run the triage — the three-way routing in the behaviour rules plus one
-outcome of the triage's own: work to do becomes a capture in Unprocessed, a
-finding goes to the LOG, evidence to re-read goes under `resources/`, **and a
+outcome of the triage's own: work to do becomes a capture in Unprocessed — and
+a message bearing on this project's own product or design routes as a capture
+even where the sender frames it as informational or as handling its own side; a
+finding goes to the LOG, which is for what calls for no change here; evidence
+to re-read goes under `resources/`, **and a
 message that asks a question is owed a reply** — note the debt at triage, and
 draft the reply once the question has an answer: at that moment in a planning
 chat, at the close for a run. A defect report is owed nothing by default. The
@@ -120,7 +123,7 @@ it, acting only on what the user themselves asks for.
 moments: **/plan's Step 1 read-state**, before the queue is skimmed and ordered,
 and **/next's pre-flight**, before the run is presented. At /plan the read has a
 question behind it: where mail is waiting, the opening ask becomes *process the
-mail first, or start most-unblocking-first?*, so the step cannot be passed over
+mail first, or shall I pick the order?*, so the step cannot be passed over
 silently. **And the close triages whatever is still waiting**, which is what
 catches mail that arrived mid-chat.
 

@@ -18,6 +18,7 @@ Contract:
   python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> --position <BEFORE|AFTER> <anchor-slug> [--marker-after ...]
   python reorder_queue.py <queue_path> --delete <slug> <Section>
   python reorder_queue.py <queue_path> --append <Section> --body <path>
+  python reorder_queue.py <queue_path> --replace-in <slug> --old <literal> --new <literal> [--section <Section>]
 
   <section>  one of: Processed | Unprocessed
   <slug...>  the FULL desired order of that section's work-item slugs, top to
@@ -56,6 +57,16 @@ Contract:
              scratchpad first), because a multi-paragraph rationale does not
              survive shell quoting. Refuses a body that is not a single
              `#### ` entry with a slug, and refuses a slug already in use.
+
+  --replace-in <slug> --old <literal> --new <literal>  replace one literal
+             string inside one entry's block, touching no other entry. Refuses
+             unless the old string occurs exactly once in that entry — make it
+             longer until it is unique. The narrow fix for pointer drift (an
+             entry naming a filename that moved), performable at a build close
+             where hand edits to the queue are refused. Judgment edits stay
+             out: the replacement is byte-literal and uniqueness-checked.
+             --section bounds the slug lookup to one section; without it both
+             are searched and a slug found twice refuses.
 
   --delete <slug> <Section>  remove one item's whole block, addressed by slug.
              The removal every /plan keep-or-delete decision and every close
@@ -637,6 +648,88 @@ def delete_item(queue_path, slug, section):
             % (len(citing), slug, ', '.join('[%s]' % c for c in citing)))
 
 
+def replace_in_item(queue_path, slug, old, new, section=None):
+    """Replace one literal string inside one entry's block, and nothing else.
+
+    Why this exists ([pointer-drift-unfixable-at-a-build-close]): the close's
+    staleness sweep may find a pure pointer drift — an entry naming a filename
+    that has since moved — and the fix is mechanical, but a build close's
+    scope-lock refuses hand edits to QUEUE.md, so the sweep's arm was
+    unperformable exactly where it fires. A literal, uniqueness-checked replace
+    through the sanctioned tool is narrow enough to run in a build: judgment
+    edits stay out, because the old string must occur exactly once in that
+    entry and the replacement is byte-literal.
+
+    Refuses rather than guesses: a slug resolving to nothing or to more than
+    one entry, an old string absent or appearing more than once in the entry,
+    or old == new, each exit non-zero and change nothing.
+    """
+    if old == new:
+        die("--replace-in: --old and --new are identical; nothing to do")
+    if not old:
+        die("--replace-in: --old must not be empty")
+
+    with open(queue_path, 'r', encoding='utf-8', newline='') as f:
+        lines = f.read().splitlines(keepends=True)
+    sections = parse(lines)
+    search_sections = [section] if section else ['Processed', 'Unprocessed']
+    found = []
+    for sec in search_sections:
+        if sec not in sections:
+            if section:
+                die("section '%s' not found in %s" % (sec, queue_path))
+            continue
+        start, end = sections[sec]
+        preamble, blocks, marker_after, had_marker = split_blocks(lines[start:end])
+        for s, blk in blocks:
+            if s == slug:
+                found.append((sec, start, end, preamble, blocks, marker_after,
+                              had_marker, blk))
+    if not found:
+        die("--replace-in slug '%s' is not an entry%s. The script refuses "
+            "rather than guessing." % (slug,
+            " in section %s" % section if section else ""))
+    if len(found) > 1:
+        die("--replace-in slug '%s' matches %d entries. Two items sharing a "
+            "slug is itself a fault; fix the duplicate first."
+            % (slug, len(found)))
+
+    sec, start, end, preamble, blocks, marker_after, had_marker, blk = found[0]
+    block_text = ''.join(blk)
+    count = block_text.count(old)
+    if count == 0:
+        die("--replace-in: the old string does not occur in entry [%s]. "
+            "Nothing was changed." % slug)
+    if count > 1:
+        die("--replace-in: the old string occurs %d times in entry [%s], and "
+            "a replace that could land on the wrong one is refused. Make the "
+            "old string longer until it is unique in the entry." % (count, slug))
+
+    new_block_text = block_text.replace(old, new)
+    new_blk = new_block_text.splitlines(keepends=True)
+    new_blocks = [(s, new_blk if s == slug else b) for s, b in blocks]
+    pref = 'TOP' if marker_after is None else marker_after
+    out = assemble_section(preamble,
+                           elements_with_marker(new_blocks, had_marker, pref))
+    new_lines = lines[:start] + out + lines[end:]
+
+    # Self-checks: every other block byte-identical, nothing outside changes.
+    out_text = ''.join(out)
+    for s, b in blocks:
+        if s != slug and ''.join(b) not in out_text:
+            die("self-check failed: block for [%s] changed content" % s)
+    if new_block_text not in out_text:
+        die("self-check failed: the edited block did not land intact")
+    if had_marker != any(MARKER_RE.match(l) for l in out):
+        die("self-check failed: marker presence changed")
+    if lines[:start] != new_lines[:start] or lines[end:] != new_lines[start + len(out):]:
+        die("self-check failed: content outside the section changed")
+
+    write_verified(queue_path, new_lines, present=[(slug, sec)])
+    sys.stderr.write("reorder_queue: replaced in [%s] (%s): %r -> %r\n"
+                     % (slug, sec, old, new))
+
+
 def move_section(queue_path, slug, sec_from, sec_to, position, anchor,
                  marker_pref=None):
     """Move one item's block byte-for-byte between sections.
@@ -836,6 +929,41 @@ def main():
             die("usage: reorder_queue.py <queue_path> --delete <slug> "
                 "<Processed|Unprocessed>")
         delete_item(rest[0], del_slug, del_section)
+        return
+
+    if '--replace-in' in args:
+        k = args.index('--replace-in')
+        try:
+            ri_slug = args[k + 1]
+        except IndexError:
+            die("--replace-in needs a slug")
+        rest = args[:k] + args[k + 2:]
+        ri_old = ri_new = None
+        for flag in ('--old', '--new'):
+            if flag not in rest:
+                die("--replace-in needs %s <literal string>" % flag)
+            j = rest.index(flag)
+            try:
+                val = rest[j + 1]
+            except IndexError:
+                die("%s needs a value" % flag)
+            if flag == '--old':
+                ri_old = val
+            else:
+                ri_new = val
+            rest = rest[:j] + rest[j + 2:]
+        ri_section = None
+        if '--section' in rest:
+            j = rest.index('--section')
+            try:
+                ri_section = rest[j + 1]
+            except IndexError:
+                die("--section needs a value: Processed or Unprocessed")
+            rest = rest[:j] + rest[j + 2:]
+        if len(rest) != 1:
+            die("usage: reorder_queue.py <queue_path> --replace-in <slug> "
+                "--old <literal> --new <literal> [--section <Section>]")
+        replace_in_item(rest[0], ri_slug, ri_old, ri_new, ri_section)
         return
 
     if '--move-section' in args:
