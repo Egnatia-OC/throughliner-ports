@@ -20,7 +20,9 @@ plugin's author — a method problem goes to the channel below instead.
 ```
 the discriminator:  which thing is misbehaving?
     my app       ->  an ordinary capture in my QUEUE
-    the method   ->  flintcraft.tech/report
+    the method   ->  a GitHub issue on the plugin's own repository where
+                     `gh` exists and the reporter consents;
+                     flintcraft.tech/report otherwise
     Claude Code  ->  a GitHub issue on anthropics/claude-code
         (the harness: the app itself, its viewer, links,
          hooks machinery, sidebar — not this plugin's rules)
@@ -32,7 +34,25 @@ user-raised     ->  always fine to draft a report
 Claude-noticed  ->  offer ONCE. Drop it if they decline.
 ```
 
-### The method report (flintcraft.tech/report)
+### The method report — issue first, form as fallback
+
+**Where `gh` is installed and authenticated, offer a GitHub issue on the
+plugin's own repository.** Same mechanics as the Claude Code route below:
+search existing issues first — a match may turn the report into a comment plus
+a smaller new issue — draft it, show the exact text, and post only on an
+explicit yes. **State plainly in the offer that an issue is public and
+permanent under the reporter's own GitHub account.** Where `gh` is absent or
+unauthenticated, or the reporter prefers not to post publicly, use the web form
+at flintcraft.tech/report — it is a fallback, not a lesser route.
+
+**Where the sender wants a reply, agree how it will be checked and file one
+dated capture at the moment of sending.** Ask at the send. For an issue, the
+check is the issue's own comments, which the planning opening's issue scan
+already reaches. For a form report there is no such channel, so where a
+suitable email connection exists and the user approves using it, that is the
+agreed method; otherwise the capture says plainly that the check is theirs to
+make. Write the agreed method into the capture and give it a `Not before:`
+date by which there is plausibly news. No reply wanted: nothing filed.
 
 - **One free-form block, not labelled fields** — the report page is a single
   text box. The block carries, as prose: what the plugin did versus what was
@@ -42,9 +62,10 @@ Claude-noticed  ->  offer ONCE. Drop it if they decline.
   report is *about* sensitive content more often than it contains some —
   describe the sensitivity ("a project name that shouldn't appear on a shared
   screen") without demonstrating it.
-- **Claude drafts, the user sends.** Show the paste-ready block; the user
-  reviews and pastes it themselves. The web form is the user's to submit, and
-  their review is the required backstop on the scrubbing.
+- **On the form route, Claude drafts and the user sends.** Show the paste-ready
+  block; the user reviews and pastes it themselves. The web form is the user's
+  to submit, and their review is the required backstop on the scrubbing. On the
+  issue route Claude posts, after the same explicit yes.
 - **Red flag territory:** a submitted report can become a public GitHub issue
   downstream, so a leak of app details or secrets into one is a privacy breach.
 
@@ -62,10 +83,10 @@ Claude-noticed  ->  offer ONCE. Drop it if they decline.
   plus a smaller new issue for the genuinely novel half.
 - Apply the same scrub-by-construction standard as the method report.
 
-**The two posting rules differ deliberately.** The method report is pasted by
-the user because the report page is a web form Claude can't submit. The Claude
-Code report is posted by Claude, after explicit approval, because `gh` can
-post it and a non-coder shouldn't be sent to a GitHub form. Both keep the same
+**The posting mechanics differ deliberately.** An issue is posted by Claude,
+after explicit approval, because `gh` can post it and a non-coder shouldn't be
+sent to a GitHub form; a form report is pasted by the user because Claude can't
+submit a web form. Both keep the same
 guarantee — nothing leaves without the user seeing the exact text and saying
 yes — and only the mechanics differ.
 

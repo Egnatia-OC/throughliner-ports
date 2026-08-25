@@ -28,7 +28,7 @@ gets built first — through discussion, not silently.
   the one test that decides which moments still show first, is in
   skill-nonspecific-rules.md's approval-time outputs.
 - **A planning session is scope-locked to a standing list, and a write outside it
-  is denied.** Writable: QUEUE.md, SPEC.md, `LOG/`, `FAQ/`,
+  is denied.** Writable: QUEUE.md, SPEC.md, CYCLES.md, `LOG/`, `FAQ/`,
   `resources/research/`, the scratchpad and the memory directory. Everything
   else is work — including a template, whose edit reaches every future
   consumer — and work is
@@ -286,8 +286,7 @@ without acting on the advisory.
 > ---
 >
 > Seventeen items ready to build and four waiting to be processed; nothing is
-> held below the line. If you're reading this away from your computer, say so and
-> I'll paste text inline rather than linking to it.
+> held below the line.
 >
 > **Anything you want to prioritise, or shall I pick the order?**
 
@@ -301,8 +300,7 @@ the problem.
 **Everything the step surfaces after the advisory folds into ONE opening
 narration** [BRIEF], beneath the rule — the digest, the recent log lines, the
 mail, the below-the-line revisit, the placement-contradiction flags, combined
-into one "here's what came up: …". The session's first opening narration also
-carries the inline-text offer as one clause.
+into one "here's what came up: …".
 
 **The opening message ends on whichever ask fires first** — beat 1's droppable set
 when it fires, beat 2's ordering question when it doesn't. Beat 1 keeps its own
@@ -335,6 +333,17 @@ opened its contents are ordinary captures and rank by the existing ladder;
 
 Any session may open mail whenever the user asks; opening and routing is filing,
 which every session may do. What /plan adds is the guarantee.
+
+**The same step also checks the issue channel, in both directions** [SILENT]
+when nothing is found or the tools are absent; [BRIEF] when a capture is filed.
+Read the outbound register's open issue lines and check each with `gh` for
+comments newer than the most recent planning session's record; and where this
+project has a repository that can receive issues, surface new incoming issues
+the same way mail is surfaced. File one capture per issue carrying something
+new, satisfied while an open capture already carries its slug. **No `gh`, or no
+repository: skip silently.** Issues stay on GitHub — nothing is copied into
+`INBOX/`, and no state file records what was last seen; the anchor is computed
+from the record.
 
 **A message arriving mid-chat waits for the next chat's opening**, because that
 is when the mailbox is scanned. Say so if it comes up rather than building a
@@ -372,6 +381,12 @@ blocker absent from the
     LOG — a wrong
     reference             ->  a fault; surface it and fix it this session
 ```
+
+**Where an item's hold names work belonging to a subproject** — a project set
+up inside this one, which `session_start` detects and reports — check it by
+reading that subproject's log index rather than this project's. That is the one
+circumscribed cross-project read; nothing else about the child is consulted, and
+nothing here ever writes to it.
 
 A deleted blocker means the held item's premise may not survive, so re-examine
 it — **which is a fate decision, and therefore the user's.** That is the one
@@ -572,10 +587,10 @@ survivors are what's left to order.
 **Start-of-processing reorder and throughput floor** [BRIEF]. Apply the order the
 user chose at beat 2 — their own priorities if they named any, otherwise the
 default, **unblock-potential**: the item whose processing would let the most other
-work move forward goes first. Then narrate the run's shape in one line, quoting
-the opening medians the digest printed — the section's line-count median and its
-first-seen median — which are the figures the ladder's membership stays fixed to
-for the whole pass.
+work move forward goes first. Then narrate the run's shape in one line, naming
+the order picked in plain words. The digest's printed medians still fix the
+ladder's membership for the whole pass — they are read there, and quoted at the
+user nowhere.
 
 **Pass over any Unprocessed entry carrying a `Not before:` date still ahead**
 [SILENT], whatever the order would otherwise do with it. On a capture the field
@@ -704,14 +719,17 @@ it. Nothing here makes the change detectable from outside.
 
 **1. Present and interview**  [DISCUSS, PROMPT]
 
-The item's verbatim text lands ahead of analysis.
+**Every item's discussion — the first and every one after — opens with a
+plain-English summary of what the item says, inline, before any analysis.** The
+summary serves the user who isn't reading the file; the pointer to the file
+stays alongside for whoever is.
 
 ```
-first item        ->  quote it at the loop's opening; analysis follows in the
+first item        ->  summary at the loop's opening; analysis follows in the
                       SAME message
-every item after  ->  it was already sent at the prior item's checkpoint, so
-                      open directly with analysis — no re-quote, no
-                      "my read to follow" pre-framing
+every item after  ->  its pointer was already sent at the prior item's
+                      checkpoint — still open with the summary, then the
+                      analysis, in the SAME message
 ```
 
 **As part of the interview, ask what would answer this item's open questions.**
@@ -741,8 +759,7 @@ closing the interview:
 lead with a one-line pointer instead of the pasted quote — `First item —
 **[work-slug]** — is in [QUEUE.md](QUEUE.md) under Unprocessed.` — then the
 analysis in that same message. The confirm re-read still runs in its pointer form
-(a resolves-check, not a text-match). If the user took the opening inline-text
-offer, keep the inline quote instead.
+(a resolves-check, not a text-match).
 
 **2. Recommend**  [PROMPT]
 
@@ -751,6 +768,13 @@ keep    the work is worth doing -> move it into Processed
 delete  remove it. If already decided (check LOG/index.md), state the prior
         decision and commit.
 ```
+
+**The recommendation states in plain words what would actually change and what
+happens to the item, and the ask requests agreement in those words — never a
+bare procedure term.** **"The ready list" is the standing plain-English name for
+the cleared region** — items there are ready to run — defined here once and used
+identically in every session's asks, so a keep's ask reads "add it to the ready
+list?" rather than naming a section or a marker.
 
 **A keep recommendation must describe what would actually get built**, in terms
 the user recognizes as the work product — which files change, what gets added,
@@ -984,10 +1008,6 @@ in the same message that proposes its disposition, they have had no turn in
 which to disagree, and agreement given there is agreement to a thing just met.
 The disposition waits for its own agree / defer / something-else turn.
 
-An unconditional extra turn on every keep was refused — it re-adds the
-over-asking removed from this step, in the ordinary case where the substance
-was already discussed across several turns.
-
 The checkpoint's "continue" answers *which item comes next*, never a disposition
 of that item.
 
@@ -996,7 +1016,9 @@ keep    ->  CAN fold. The item is written and then reported, and the user can
             reject what was written and have it reverted — so folding loses no
             decision.
 delete  ->  CANNOT fold to the action. It's terminal, with no later approval
-            step, so explicit approval is still required.
+            step, so explicit approval is still required — except where every
+            part of the item's content has already been relocated in this same
+            exchange, which is narrated rather than asked (see Delete below).
 ```
 
 **Merge a clear delete recommend into the interview-closing turn**, so the route
@@ -1136,6 +1158,10 @@ This is a different question from the capability check above:
 that one asks whether Claude could do the *work*, this asks whether the *user's
 step* yields the *evidence*. /plan is the only site where trying is free.
 
+**Report the outcome as what the user would see** — where nothing is visible,
+as what it means for their step — and never as the code or command read to
+establish it.
+
 **Keep a surfaced risk with a red-flag marker** [DISCUSS, PROMPT] — the item gets
 one extra line under its description: `Red flag · State: <cleared | uncleared>`.
 Processing the risk *means* clearing it. Set **cleared** once this run designs
@@ -1144,7 +1170,21 @@ informed consent — what they were warned about and that they chose to go ahead
 An item only moves into Processed with its flag cleared; if it can't be cleared,
 return it to the bottom of Unprocessed.
 
-**Delete** — Remove the item from Unprocessed. **Relocate before removing when the
+**Delete** — Remove the item from Unprocessed.
+
+```
+every part of the item's content has already been
+  relocated in THIS exchange     ->  narrate the removal in one line, naming
+                                     where each part went. Revertible on
+                                     objection; no ask.
+not worth doing                  ->  explicit approval, as a fate decision
+                                     the user owns
+```
+
+Judging "fully relocated" is a judgment, not a test — and naming each part's
+destination is what makes a wrong one visible.
+
+**Relocate before removing when the
 content belongs elsewhere.** Delete means "not worth doing," so routing a fold
 through a plain delete risks dropping content the user wanted kept. When the
 content belongs in another home — a SPEC sentence, a LOG entry, another item's
@@ -1178,9 +1218,8 @@ message order:
     1. the just-finished item's disposition, in one word or two —
        "Deleted." / "Kept and cleared." — so the user knows where the last
        item landed before meeting the next
-    2. a one-line pointer to the NEXT item, or its verbatim if the user took
-       the inline offer (item only, no analysis)
-       — re-read from QUEUE.md first to confirm the quote matches
+    2. a one-line pointer to the NEXT item (item only, no analysis)
+       — re-read from QUEUE.md first to confirm the pointer resolves
     3. one bold question inviting the user into THAT item ("Take this one
        next?") — never a fate question, which waits for the recommend step
        after the interview
@@ -1273,7 +1312,7 @@ a capture is the one hold that removes an item from view without anything
 resolving, so the user decides how long they are content not to see it. Waiting
 on someone's attention is not this — that is an ordinary skip.
 
-**View-in-doc applies here too** — by default lead with a one-line pointer to the
+**View-in-doc applies here too** — lead with a one-line pointer to the
 next item in place of its verbatim, off-ramps below it unchanged.
 
 ### Process-now offer after a user raises something  [PROMPT]
@@ -1350,11 +1389,22 @@ ending on one is a keystroke from being answered by accident.
 
 **Ask once per rest.** The gate fires when the queue first empties. If the user
 raises a further capture, file it and return to this same gate, but end plainly
-this time — say the queue is clear again and stop, with no second ask. It fires
-again only after further work has filled the queue and emptied it once more.
+this time — say the queue is clear again and stop, with no second ask.
+
+**Each refill-and-emptying re-arms the ask.** Further work filling the queue and
+emptying it again is a new rest, and the gate fires there as it did at the first
+one — on a second refill as on any later one.
+
+**A plain ending carries no close-leaning framing** — say the queue is clear and
+stop; nothing that reads as an invitation to leave.
+
+**Where the user declares they want the chat kept open to capture in, the
+wrap-up ask is silenced for the rest of the chat**, refills included. Held in
+the conversation; nothing is stored. It silences this gate only — /done runs
+when it is invoked, so there is nothing there to silence.
+
 The bound is held in the conversation; nothing is stored, which is all a
-per-stretch bound needs. Asked three times in one stretch, the same neutral
-question stops reading as neutral and starts reading as a prompt to leave.
+per-stretch bound needs.
 
 New items from conversation follow the same loop — check QUEUE.md for overlap
 first. If you notice a gap: "I notice [X] — want to hear a suggestion?"

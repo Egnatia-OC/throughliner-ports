@@ -128,8 +128,7 @@ run.
 ## Step 1: Pre-flight
 
 **Whatever these checks surface folds into ONE narration** [BRIEF], carried with
-the run at step 4 rather than trickling out check by check. The session's first
-opening narration also carries the inline-text offer as one clause.
+the run at step 4 rather than trickling out check by check.
 
 ### 1. Active build check
 
@@ -263,13 +262,11 @@ readiness, so a permission-to-start question asks for something already given.
 
 ```
 render(run):                        # full rule: skill-nonspecific-rules.md, view-in-doc
-    default                    ->  one-line pointer naming the items,
-                                   linking to QUEUE.md
-    user took the inline offer ->  one-line preamble, then the items verbatim
+    one-line pointer naming the items, linking to QUEUE.md
 ```
 
-The pointer is the default and the token-saving path; the inline quote is what the
-opening inline-text offer switches on. These items already exist in QUEUE.md, so
+The pointer is unconditional — the token-saving path, with no user override.
+These items already exist in QUEUE.md, so
 confirm the link resolves before sending it.
 
 **Present the whole cleared region.** The cleared-to-run line is the run bound
@@ -305,27 +302,6 @@ warning that appears whether or not it applies is one people learn to read past.
 
 **Pointing the user at /setup is safe**: /setup refuses cleanly while a build is
 in progress rather than failing file by file against the scope-lock.
-
-**If the user took the inline offer, advise on the large items here** [BRIEF].
-Inline display is settled by the session's opening offer, not by a question of
-its own — but *which items* would bury the run in text can only be judged once
-the run is known, which is now. Name the items whose edits are large enough that
-inline display would swamp everything else, recommend leaving those on line
-references, and let the user answer in the same breath as the off-ramp.
-
-```
-inline OFF (the default)  ->  say nothing about display
-inline ON                 ->  one clause naming the large items, e.g. "item 6
-                              rewrites most of a doc, so I'd keep that one on
-                              line references — inline for the rest?"
-```
-
-Judge "large" against the item's own files — the share of a file its edits
-rewrite, not a bare number of lines. This is an ordering-style
-judgment, so narrate it in one sentence like any other.
-
-The answer holds for the run. On a resumed run, carry the previous answer
-forward from the working file rather than re-asking.
 
 Close that same message with the off-ramp, e.g. **"Say go and I'll start — or say
 the word to change scope or reorder first."** The affirmative first, the exception
@@ -415,8 +391,6 @@ read from there.]
 
 Index entry candidates:
 [empty — one added as each item is ticked]
-
-Edit display: [line references (the default) | inline, except: <items>]
 
 Files:
 - [each file the run's items will change — one bare path per line, nothing else]

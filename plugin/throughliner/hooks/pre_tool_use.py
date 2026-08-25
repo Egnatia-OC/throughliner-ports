@@ -3,8 +3,8 @@
 PreToolUse hook — enforces three rules:
 
 4. With NO build running (a planning or freeform session), a write outside
-   the standing list — QUEUE.md, SPEC.md, LOG/, FAQ/, the session's own
-   notes, plus the always-editable paths — is DENIED, never asked: an ask
+   the standing list — QUEUE.md, SPEC.md, CYCLES.md, LOG/, FAQ/, the
+   session's own notes, plus the always-editable paths — is DENIED, never asked: an ask
    that gets waved through is not consent, and a planning session is where
    a change becomes queued work instead of an edit. A freeform session
    extends the standing list by declaring a scope file
@@ -686,7 +686,8 @@ def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool)
 def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     """True for the files a session with no build working file may write.
 
-    This is the planning session's STANDING list — QUEUE.md, SPEC.md, LOG/ and
+    This is the planning session's STANDING list — QUEUE.md, SPEC.md,
+    CYCLES.md, LOG/ and
     FAQ/, plus the memory directory, `resources/research/`, the scratchpad and
     any INBOX (checked by their own helpers at the call site). Everything else
     is DENIED.
@@ -742,7 +743,11 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     # preserved there.
     rel = os.path.relpath(os.path.normpath(filepath), os.path.normpath(cwd))
     rel = os.path.normcase(rel).replace("\\", "/")
-    quiet_files = ("QUEUE.md", "SPEC.md")
+    # CYCLES.md is on the list because plan.md's own cycle-authoring rule
+    # directs a planning session to write the definition doc in the session
+    # that agrees it — a cycles doc a planning session cannot write is a rule
+    # that can never run where it fires.
+    quiet_files = ("QUEUE.md", "SPEC.md", "CYCLES.md")
     if rel in tuple(os.path.normcase(name) for name in quiet_files):
         return True
     # A build working file, whichever session owns it. Matched by shape rather
@@ -1421,7 +1426,8 @@ def main() -> int:
                 "[Throughliner] BLOCKED: planning sessions can only change a "
                 "fixed set of files, and this isn't one of them.\n\n"
                 f"About to edit: {filepath}\n\n"
-                "A planning session may write QUEUE.md, SPEC.md, anything in "
+                "A planning session may write QUEUE.md, SPEC.md, CYCLES.md, "
+                "anything in "
                 "LOG/, research notes and its own scratch files. Everything "
                 "else is work, and work gets queued and built rather than done "
                 "here.\n\n"

@@ -84,7 +84,13 @@ Case A  no content            the folder is empty or nearly so. Fresh start.
 Case B  content, no SPEC.md   the user's own files exist but no method docs.
                               Either a true fresh start OR a MIGRATION.
 Case C  already set up        SPEC.md exists.
+Case D  inside another        no SPEC.md here, but walking up the folders
+        project               finds one. A POP-OUT — see below.
 ```
+
+**Case D takes precedence over B for a folder inside an adopted project**: walk
+up from this folder looking for a project marker before treating its contents as
+a migration.
 
 **On Case B, treat existing planning or spec documents as a possible migration**
 and follow the migration framing below. Recognise a migration **by what the docs
@@ -97,6 +103,39 @@ version matches current plugin   ->  fully up to date. Say so in a sentence,
                                      offer /plan instead, then STOP and wait.
 version missing or outdated      ->  Step 2C (migration scaffolding)
 ```
+
+## Case D: popping a subpart out into its own project
+
+This folder sits inside a project that is already set up, and the user is
+adopting it separately. That is a **pop-out**: a subpart that has outgrown the
+parent — one unmanageable piece of a large differentiated project — becoming a
+project of its own.
+
+**Read the parent's SPEC, infer which subpart this folder covers, and put it to
+the user in clarifier form** — inviting their answer rather than proposing one,
+exactly as Case B's peek does.
+
+**State the irreversibility in that same confirmation, plainly: there is no
+scripted way back in.** Popping out is a one-way move; folding the work back
+into the parent later is hand work nobody has written a path for.
+
+Then run the ordinary interview with that context, and write the ordinary docs.
+**The new project is an ordinary project in every respect and never reads
+outward** — it does not consult the parent's queue, spec or records while it
+runs.
+
+**Dependencies run upward only, one level deep.** Subproject work may hold
+parent work; parent work may never hold subproject work — that is what makes a
+cross-project loop structurally impossible. A child genuinely waiting on its
+parent uses the ordinary outside-the-project pattern instead: name what would
+show it done, or wait for the user to mention it.
+
+**No session ever writes another project's queue.** A dependency crossing the
+boundary travels as approval-gated mail, and the receiving project files it with
+its own hands.
+
+**At the close, draft the pop-out message to the parent's INBOX** — shown to the
+user in full, sent only on an explicit yes, like any other outbound mail.
 
 ## Case B: pre-existing content rules
 
@@ -114,6 +153,13 @@ pre-answering PROPOSES the answer for confirmation:
 
 Ask cold and you miss context the folder already gave you; pre-answer and the spec
 fills with your words instead of the user's.
+
+**1b. Where the folder already holds more than one git repository — a clone, a
+fork, or a `git init` in a subfolder — say so and ask which root this project
+adopts** [PROMPT]. Name which repository would hold the method's documents under
+each answer, and record the choice as the standing visibility line described at
+the keep-private step. Without it, a fork splits the code from the documents and
+nothing later says which repository the project is actually in.
 
 **2. Leave it untouched; name it at close.** Pre-existing content is not edited,
 moved, or reorganized during scaffolding — scaffolding only adds the method docs.
@@ -186,7 +232,8 @@ Check each, and make it so if it isn't:
 
 ```
 INBOX/ present          ->  `.gitignore` carries an `INBOX/` line
-.gitignore present      ->  it carries a `.throughliner/` line
+.gitignore present      ->  it carries a `.throughliner/` line and a
+                            `BUILD-VIEW.md` line
 no outputStyle set in the project's .claude/settings.local.json
                         ->  make the brevity-style offer from Step 2, exactly
                             as a fresh setup would — this project was set up
@@ -457,8 +504,10 @@ when a change makes older projects' documents structurally wrong. session_start
 compares the two and halts the session when the project is behind, so a project
 on an old shape finds out instead of quietly running on stale scaffolding.
 
-**.gitignore** — create it if absent, and make sure it carries an entry for
-`.throughliner/`, added only where one is missing.
+**.gitignore** — create it if absent, and make sure it carries entries for
+`.throughliner/` and `BUILD-VIEW.md`, each added only where it is missing.
+`BUILD-VIEW.md` is the generated view a run reads — regenerated from the queue
+every run and deleted at the close, so it is never repository content.
 
 That folder holds the editing-state signal: while Claude is writing a file, the
 hooks drop a small file in there saying so, so a Markdown reader or editor open
@@ -515,9 +564,22 @@ made weeks ago in a project nobody has looked at since.
 ```
 user names some or all  ->  add exactly those paths to `.gitignore`, say in one
                             line which went in and which stayed tracked
-user says none          ->  say nothing further. Not asked again at any later
-                            setup run.
+user says none          ->  state plainly what results: these documents are
+                            tracked in this folder's history and readable
+                            nowhere else until the project has an online home,
+                            which is set up whenever they ask. Not asked again
+                            at any later setup run.
 ```
+
+**Write the visibility answer as a standing line in the project's own
+CLAUDE.md**, in the slot the template carries for it, so every later session
+reads it — not only the setup session's record.
+
+**A public repository is set up only when the user asks**, never volunteered,
+and the licence question travels with that offer rather than sitting in the
+interview. **The offer may set up the repository and may never represent the
+contents as screened** — not publishing these documents is the only complete
+protection.
 
 **Change no default.** Nothing is ignored unless the user asks for it, whichever
 documents they name.
@@ -666,8 +728,8 @@ whether INBOX messages were committed — was dropped in favour of ignoring
 being asked. Discovery ends where it ends; there is no settings round after it.
 
 The editor and working-mode questions that used to sit here are **gone**,
-replaced by one default — point at the doc — plus a one-line offer in the
-session's opening narration to paste text inline instead.
+replaced by one default: point at the doc, with a plain-English summary inline
+where a discussion needs one.
 
 ## Step 4: Write the docs
 

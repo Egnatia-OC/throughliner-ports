@@ -37,8 +37,9 @@ The point, carried by every session whether or not a skill is running:
   1. The user's intent keeps running the project whatever Claude remembers.
      The reasoning travels as prose — capture, work item, record — so a
      fresh session builds what the user meant instead of guessing from code.
-  2. Reading and approving the record IS the product, not overhead. The
-     approving is what makes the record the user's, and so trustworthy.
+  2. Approving is what makes the record the user's, and so trustworthy —
+     it happens in conversation, in plain words, and the record is what
+     that conversation produces.
   3. Settled things stay settled: a rejected option carries why it lost,
      so it is not proposed again and decisions are not relitigated.
   4. Recorded intent is what makes drift visible — a contradiction can only
@@ -145,7 +146,10 @@ The work cycle. Every piece of work travels the same loop.
   messages are not paste targets (Claude runs the commit). Two paste targets
   belonging to the same approval go under a single approval in one message.
 - **Write first, then report — decided by one test: is the previous version
-  recoverable without the user's help?**
+  recoverable without the user's help?** Consent happens in conversation, in
+  plain words, before the write — the file is the record of what was agreed,
+  not where agreement happens — and showing recoverable text before writing it
+  costs a wait that buys nothing.
 
   **While a design or a disposition is still being worked out, offer to capture
   and hold the write until the user says go.** The test above is untouched; this
@@ -160,6 +164,11 @@ NO  -> show it, then wait         a commit message · anything that LEAVES THE
                                   INBOX message to another project) · a
                                   wholesale conversion of a document the user
                                   already owns, where git does not yet hold it
+EXCEPTION                         a close-time or /rescan candidate set —
+                                  several ideas landing at once at the
+                                  session's end — is shown as ONE numbered
+                                  message before anything is written; the
+                                  user contests by number
 ```
 
   **An untracked doc answers the test with a no, so its writes are show-first.**
@@ -182,15 +191,14 @@ floor:     the show-first cases above stay show-first regardless. The switch
            moves in ONE direction, toward more showing.
 ```
 
-  Held in the chat only — same shape as the inline-text offer.
+  Held in the chat only — nothing is stored.
 
   **Being driven remotely is not a separate trigger.** It is a case where the
   user asks. No detection is built to reach an outcome that asking reaches.
 
   **The report after the write is one line** naming what landed and where, and
-  pointing the user at the artifact to read. A re-paste of the text just
-  written is reserved for one case: the inline-text offer below, which the user
-  switches on and which covers this report by name. **Name the artifact
+  pointing the user at the artifact to read — never a re-paste of the text just
+  written. **Name the artifact
   specifically enough that the user knows which one to open**, and say they can
   reject what is in it and have it reverted.
 
@@ -253,35 +261,9 @@ structured explanation shown to    ->  one item per line, never aligned
                                        at the user's width
 ```
 
-**Pointing is the default, overridden only when the user asks** — see the opening
-offer below.
-
-### The inline-text offer at the chat's opening
-
-The chat's **first** opening narration carries one clause offering to paste
-text inline instead of linking to it — folded into the narration that already
-fires rather than asked as its own question. It's a standing offer, not a prompt that
-waits for an answer: the work continues immediately.
-
-```
-scope:     the chat's FIRST opening narration only
-           # not repeated per skill invocation — that rebuilds the nag
-wording:   describe the situation, don't name a feature — "reading on your
-           phone", "away from your computer", "wherever opening a file is
-           awkward". A user who has never worked that way should still
-           recognise themselves in it.
-effect:    the user says the word -> paste doc-bound text inline for this
-           chat, including the one-line report after a write — this is the one
-           re-paste case that report's rule reserves, and the only thing that
-           overrides its pointer form
-                                 -> and, in /next, show each edit's new text
-                                    inline instead of by line reference
-```
-
-**The inline switch covers /next's edit display too**, so no separate run-start
-question is asked. Default off means today's behaviour.
-
-This is a chat-scoped switch, held in the chat.
+**Pointing is unconditional — there is no user override.** The reader away from
+the file is served by the plain-English summary that opens each item's
+discussion; seeing exact wording means opening the file.
 
 **Write, then verify, then point — in that order.** A pointer to content written
 this turn goes out only after the Write returned success *and* a re-read confirms
@@ -338,6 +320,15 @@ asked, in the form that answers it.
 Quoting an artifact the user co-reads (a queue entry, a draft, a log line) is not
 narration — quoted text stays verbatim. Processed and Unprocessed are
 *user-facing* structure.
+
+## Two repositories in one project
+
+**A session that brings a second git repository inside the project — a clone, a
+fork, a fresh `git init` in a subfolder — says so at that moment, names which
+repository holds the method's documents, and puts the root choice to the user**,
+recording the answer as the standing visibility line in the project's own
+CLAUDE.md. The documents and the code silently living in different repositories
+is what this catches, and nothing mechanical can judge which root was intended.
 
 ## Operate on the folder the chat opens in
 
@@ -628,6 +619,20 @@ a QUOTE claim     "your words", "in her own words", quotation marks
   reason", "the user's call", "on their instruction" are origin claims about a
   reason, so write one where the user gave that reason and quote it only where
   you are reproducing how they put it.
+
+  **In a session holding more than one person, credit attaches to the named
+  person whose message raised the item** — an origin claim names them ("raised
+  by <name>") exactly as "captured by you" does with one person in the room,
+  which is the case the general wording contains. **The containment test runs
+  per person**: a reply wholly contained in Claude's preceding message
+  evidences no origin claim, whoever sent it, and agreement is not authorship
+  for any participant. **Identity is the authenticated identity the channel
+  supplies where the channel authenticates its members** — a role attesting a
+  real login; where it does not, a named person's word is the fallback and is
+  read as such. **A session roster carries only details a participant has
+  chosen to share**, and the scrub checklist reads it: a detail not on the
+  roster is rewritten away like any other personal detail — the published-
+  identity arm for third parties on GitHub is unchanged.
 - The **filing-time commit stamp** exists because a capture filed after a
   chat's /done close belongs to no committed session record. Plain prose, not
   a parsed field.
@@ -1142,7 +1147,11 @@ mail waiting at the chat's opening.
 ```
 the discriminator:  which thing is misbehaving?
     my app       ->  an ordinary capture in my QUEUE
-    the method   ->  flintcraft.tech/report
+    the method   ->  a GitHub issue on the plugin's own repository, where
+                     `gh` exists and the reporter consents — the offer
+                     states plainly that an issue is public under their
+                     own account; flintcraft.tech/report otherwise, and
+                     wherever they prefer privacy
     Claude Code  ->  a GitHub issue on anthropics/claude-code
     unsure       ->  ask the user which of the three it is
 ```

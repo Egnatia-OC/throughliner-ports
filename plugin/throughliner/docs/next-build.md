@@ -34,13 +34,8 @@ code
 **How the reveal renders** follows the view-in-doc rule (skill-nonspecific-rules.md). The
 text is now doc-resident, so: a plain link to the edited file with the line named
 in the prose ("around line 40" — the app ignores a link's line anchor), falling
-back to an inline excerpt if the link won't resolve. If the user took the opening
-inline-text offer, paste the new wording inline as a wrapped block instead. Either
+back to an inline excerpt if the link won't resolve. Either
 way, only after the write is confirmed.
-
-**The run's answer is in the working file's `Edit display:` line**, including any
-items the user agreed to keep on line references. Read it rather than deciding
-per edit — the judgment was made once, when the run was presented.
 
 Note what this is not: showing an edit is **visibility**, not approval. The item
 was already agreed at /plan and stop is always available, so displaying an edit
@@ -208,6 +203,10 @@ second ask, SIGNIFICANT        ->  still propose the split. A repeated request
                                    does not make a large change small, and
                                    absorbing a many-file change mid-run is what
                                    the run bound exists to prevent.
+QUEUE MOVE the user explicitly ->  perform it with the queue mover, narrate it
+  directs mid-run                  in one line, and record it at the close.
+                                   An inferred move is never made and never
+                                   offered; a delete keeps its own rules.
 ```
 
 **Coherence exception** (narrow, keyed to throughline coherence): if the item

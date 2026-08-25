@@ -294,7 +294,15 @@ Pushing often is the point: it decouples "the work is safely on the remote" from
 
 **The test is not "did we learn it" but "did Throughliner change".** A session that has just learned something useful feels like it has something to announce, and that feeling is not the criterion.
 
-**Announce only what has shipped: every claim in a post is true of the installed plugin at the moment it is posted.** Where a post describes work that is designed but not built, the post waits for the build — file it as a queue item naming what it waits on. **A planning session therefore has nothing to announce**, however much it decided; say that plainly rather than reaching for a substitute subject.
+**Announce only what has shipped: every claim in a post is true of the installed plugin at the moment it is posted.** Where a post describes work that is designed but not built, the post waits for the build — file it as a queue item naming what it waits on. **A planning session therefore has nothing to announce at the time it plans**, however much it decided — but drafting is its part, because the reasoning is richest there; say that plainly rather than reaching for a substitute subject.
+
+**The planning close sweeps for post candidates.** Present them as one numbered set for approval, and on the yes write each approved draft as a dated capture — the post itself still waits for the work to ship, which the capture names.
+
+**The posting brief.** A draft is written for a reader who does not know this project's internals: lead with what changes for them, in plain words, and leave decision history out entirely. The exemplar — benefit first, no commentary on what was weighed:
+
+> Throughliner now checks your GitHub issues when you plan. If you filed a problem report and someone answered it, that answer shows up as work in your queue instead of sitting on a page you'd have to remember to open.
+
+**Verify against the shipped plugin at post time, not at draft time.** Before the draft goes out, re-read what it claims against the installed build; where the claim has drifted, rewrite it or hold the post.
 
 The limit is **2,000 characters**, which is Discord's.
 
@@ -334,7 +342,7 @@ The why, weighed against the alternatives: reading the raw file in chunks does N
 
 Alex is a non-coder using the Claude Code desktop app. Explain things in plain English. The desktop app doesn't support `--plugin-dir` or `/plugin` CLI commands.
 
-No Editor or Working mode field. Both were retired on 2026-08-09 — the desktop app opens `.md` in its own viewer whatever editor is named, and the location field turned out to record how much text Alex wanted pasted rather than where she was sitting. Doc-resident text now renders as a pointer + link unconditionally; the session's opening narration carries the one-line offer to paste inline instead when she's away from the desktop (skill-nonspecific-rules.md, view-in-doc rendering).
+No Editor or Working mode field. Both were retired on 2026-08-09 — the desktop app opens `.md` in its own viewer whatever editor is named, and the location field turned out to record how much text Alex wanted pasted rather than where she was sitting. Doc-resident text renders as a pointer + link unconditionally, with a plain-English summary inline where a discussion needs one — the inline-paste offer is retired (skill-nonspecific-rules.md, view-in-doc rendering).
 
 ## Current state
 

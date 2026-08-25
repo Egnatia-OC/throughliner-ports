@@ -83,12 +83,18 @@ re-reading it is re-reading, not duplicate items.
 to do, or something that already happened. Both get written; they go to different
 files.
 
-**Work still to do → Unprocessed.** Show the candidate set as ONE numbered
-message before anything is written. The user contests by number or says go; the
+**Work still to do → Unprocessed** [PROMPT]. Show the candidate set as ONE
+numbered message before anything is written, and wait. The user contests by
+number or says go; the
 writes then land, and a contested item is dropped or reworked one at a time.
 
 Placement is the standing one — appended to the bottom of Unprocessed, no
 judgment, no narration of the mechanics.
+
+**Where /plan was invoked earlier in this chat, the same message also offers to
+process the surfaced items now, one at a time** — entering plan.md's ordinary
+present-and-interview loop on the user's yes. In any other chat the offer is not
+made and this skill files only.
 
 **What already happened → this chat's LOG entry, as a marked tail.** Append rather
 than rewrite, under a heading that says what it is:

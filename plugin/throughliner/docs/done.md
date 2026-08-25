@@ -301,10 +301,7 @@ that name taken too           ->  append -2, -3, …
 
 **A record about a queue item carries that item's full slug in its filename,
 never shortened or reworded.** Where the bare name is taken, the record's kind
-is what distinguishes it. The digest attributes a record to its slug by reading
-the filename, so a shortened name attributes to a slug nothing cites and the
-item reads as never written about — which is how a whole planning session's
-worth of records went unseen.
+is what distinguishes it.
 
 **Every date written at a close is the close date** — today's date, at the moment
 you are closing. That covers the filename prefix and every date written into the
@@ -378,8 +375,10 @@ closing and this costs a line. With no /rescan run, the close does the full job,
 scanning the whole chat.
 
 **Cycles due-ness check first** [SILENT] when no cycles doc exists or nothing
-is due; [BRIEF] when a capture is filed. If the project has a cycles doc
-(`CYCLES.md` at the project root), read it and compute each cycle's due-ness
+is due; [BRIEF] when a capture is filed. Open by reading the project root for
+`CYCLES.md` now, at close time — a doc created this session counts, and the
+opening's no-cycles-doc report is stale the moment anything creates one. Where
+the doc exists, read it and compute each cycle's due-ness
 from the observable its definition names — filing ONE capture in Unprocessed
 under the cycle's slug where a turn is due and no open capture with that slug
 exists, and nothing otherwise. Filing only: routing stays planning work. A
@@ -405,7 +404,8 @@ before the next planning session unless the user directs the amendment now.
 Saying so is what gives them the chance to; a capture alone leaves the item to
 be built as it stands.
 
-**Show the candidate set as ONE numbered message before anything is written.**
+**Show the candidate set as ONE numbered message before anything is written**
+[PROMPT].
 The user contests by number or says go; the writes then land, and a contested
 item is dropped or reworked one at a time.
 
@@ -476,6 +476,11 @@ from this session's discussion so they land in this same commit. File-only.
 
 **Run the session-file cleanup before staging too**, so any deletions the user
 accepts fold into this same commit.
+
+**Delete the generated build view (`BUILD-VIEW.md`) before committing**
+[SILENT] — no question, no line. It is regenerated from the queue at the start
+of every run, so nothing is lost; a stale one left in the project invites a
+later session to read it as current.
 
 **Shipped-slug cross-check (work-item closes).** When this session shipped work
 items, cross-check each shipped slug named in this session's LOG entries against
@@ -555,6 +560,12 @@ edits from step 2)
 **4. Commit without a further ask.** The commit always happens at /done and its
 message was already approved, so there's nothing new to confirm. Only the push is
 optional.
+
+**Where the session held more than one person, the commit may add a
+`Co-authored-by:` trailer for a roster participant whose recorded consent
+covers it** — using only the name and email details they chose to share, never
+details looked up on their behalf. No roster, or no consent recorded: no
+trailer.
 
 ```
 commit first (the safe, local action), THEN gate the outward push on consent:
