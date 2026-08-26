@@ -415,7 +415,11 @@ item is dropped or reworked one at a time.
 Add them to this session's LOG entry's "Routed to Captures:" line as a
 working-tree edit riding this commit.
 
-**State this sentence, as written, when the step runs:**
+**State this sentence, as written, the first time this session says it; where the
+session has already stated it, restate the operative fact in one clause instead —
+"again, only what was still in view".** The full sentence teaches the limit and
+the clause carries it; a session that repeats the whole lesson three times is
+spending the user's attention on something they were told at the first statement.
 
 > I can't tell whether any of our earlier conversation has dropped out of view,
 > so this is what I could still see rather than a guarantee I've caught

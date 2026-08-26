@@ -107,6 +107,11 @@ build establishes NEW product      ->  FILE the sentence SPEC owes as a capture
 verification you can — read the code back, run a command, inspect output, check
 file content — as part of getting the item right.
 
+**Read a check's exit status from the tool itself — a bare invocation, or the
+tool's own status captured explicitly — and trim its output separately.** A piped
+command reports the last stage's status and not the tool's, so a compiler that
+failed into a `head` that succeeded reports a pass.
+
 ```
 a check Claude CAN run   ->  just building
 a check needing the user ->  a [user] capture, which /plan would have kept as
@@ -218,17 +223,22 @@ coherence rules, not user convenience. **When uncertain, capture.**
 ### Scope grows during the build  [PROMPT]
 
 The trigger is growth against **the described work**, not the Files: list. Name
-the new work and the files it needs, then:
+the new work and the files it needs, decide which arm below applies, and ask the
+one question that arm recommends — naming the other route only as the escape,
+never as a second option of equal standing. A message offering both routes evenly
+hands the user a menu and makes them supply the recommendation, which is the
+decision this step owes them.
 
 ```
-minor        ->  ask to add it: "This needs [work], which means editing [file] —
-(1-2 files)      add it to scope?" Once approved, append any unlisted file to
+minor        ->  recommend adding it: "This needs [work], which means editing
+(1-2 files)      [file]. I'd add it to this run — or I can file it instead.
+                 Add it?" Once approved, append any unlisted file to
                  the build working file's Files: BEFORE editing it — the scope-lock denies
                  edits to unlisted files.
 
-significant  ->  propose splitting. Finish what's scoped, /done to close, then
-(many files,     /plan to queue the rest.
- design
+significant  ->  recommend splitting: finish what's scoped, /done to close, then
+(many files,     /plan to queue the rest. Carrying it in this run is the escape,
+ design          not the alternative offered.
  uncertainty)
 ```
 
@@ -275,9 +285,19 @@ already a `[user]` item:
 Leave the check to the user where it genuinely needs them, and leave this item's
 scope as it stands.
 
-**Before assuming a device or environment is absent, check.** Ask whether one is
-available rather than assuming none is; a check wrongly skipped on a guess sits
-unrun for weeks.
+**Before assuming a device or environment is absent, read `TOOLS.md` at the
+project root, then ask whether the user has a route to it** — their own terminal,
+their editor, another machine. A tool failing from Claude's shell establishes
+that Claude cannot run it and not that the environment is absent, so that failure
+triggers the ask rather than answering it: put the question before recording an
+outstanding check or asking to proceed without one. A project with no such file
+has no facts on record, which answers nothing and costs one look.
+
+**Write a newly learned environment fact into `TOOLS.md` in the moment, one line
+per fact** — a tool present and its path, or a failure mode such as "fails from
+Claude's shell, runs from the user's terminal". The file is writable whatever the
+run's scope-locked file list says, so this needs no scope addition and never
+waits for the close.
 
 **And confirm before connecting to or acting on the user's physical device or
 external hardware** — adb against a connected phone, flashing firmware, driving

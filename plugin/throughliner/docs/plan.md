@@ -238,8 +238,7 @@ against a stale snapshot. The digest is a script, so re-running is cheap.
 **Then read the `LOG/index.md` lines newer than the most recent planning
 session's record** — found by that record's body fields rather than its
 filename, the same way the dispositions window is found, since the per-entry
-split names planning records by slug. That window is the work done since the
-last time anyone stood where you are standing now. Where no planning record
+split names planning records by slug. Where no planning record
 exists, read the current month's lines.
 
 **Fold a line into the opening narration when it names a slug or a file the
@@ -248,8 +247,7 @@ an intersection between what just happened and what is about to be worked, which
 is checkable rather than a judgment about relevance.
 
 **Carry one line either way** — what was read and what it touched, or that
-nothing in the window bears on today's queue. A read that speaks only when it
-finds something is indistinguishable from a read that never ran. That line rides
+nothing in the window bears on today's queue. That line rides
 the opening narration: **produce no separate output and no summary of the log
 for its own sake.**
 
@@ -346,14 +344,19 @@ opened its contents are ordinary captures and rank by the existing ladder;
 Any session may open mail whenever the user asks; opening and routing is filing,
 which every session may do. What /plan adds is the guarantee.
 
-**The same step also checks the issue channel, in both directions** [SILENT]
-when nothing is found or the tools are absent; [BRIEF] when a capture is filed.
+**The same step also checks the issue channel, in both directions**
+[SILENT] where `gh` is absent, or where there is neither an open outbound issue
+nor a repository that can receive them; [BRIEF] where the channel exists — one
+line either way, covering both directions, whether or not anything was filed
+("filed issues quiet, nothing incoming", or what was found).
 Read the outbound register's open issue lines and check each with `gh` for
 comments newer than the most recent planning session's record; and where this
 project has a repository that can receive issues, surface new incoming issues
 the same way mail is surfaced. File one capture per issue carrying something
-new, satisfied while an open capture already carries its slug. **No `gh`, or no
-repository: skip silently.** Issues stay on GitHub — nothing is copied into
+new, satisfied while an open capture already carries its slug. **Where the
+channel exists, say what was found either way** — a check that ran and found
+nothing is otherwise indistinguishable from one that never ran, which is the
+same ground the sibling cycles check was decided on. Issues stay on GitHub — nothing is copied into
 `INBOX/`, and no state file records what was last seen; the anchor is computed
 from the record.
 
@@ -490,9 +493,7 @@ names the doc, each definition's slug and what its observable currently reads �
 so a project with cycles cannot reach this step without having been told they
 exist, and one without cycles gets no line and pays nothing. Where the line is
 there, read the doc and say in one line which cycles are due and which are not,
-whether or not anything is filed: a check that spoke only when it filed was
-indistinguishable from a check that never ran, which is what it turned out to
-be. Each definition names an artifact,
+whether or not anything is filed. Each definition names an artifact,
 the steps of one turn, a cadence, and **the observable that marks a completed
 turn** — a release's date, a sent-record line. Compute each cycle's due-ness
 from its observable: read the observable's current state, and where a full
@@ -719,7 +720,9 @@ planning-throughput target, not a context-budget count.
 
 **State the four routes here, once, in the same breath** — *"I'll work through
 these one at a time; say skip, stop, or run /done whenever."* This is the only place
-they are recited. The per-item checkpoint then presents just the next item.
+they are recited. **Close that same message checkpoint-shaped**: a pointer to the
+first item and one bold question taking the user into it. The per-item checkpoint
+then presents just the next item, in the same shape.
 
 **Re-check the rung at every pick, and narrate in one clause only when it has
 changed.** A rung can change mid-session — a red flag arrives, the item holding
@@ -747,24 +750,32 @@ summary serves the user who isn't reading the file; the pointer to the file
 stays alongside for whoever is.
 
 ```
-first item        ->  summary at the loop's opening; analysis follows in the
-                      SAME message
+first item        ->  the processing pass OPENS checkpoint-shaped: the order
+                      narration, a pointer to the first item, and "start with
+                      this one?" — then, on the yes, the summary and the
+                      analysis in the SAME message
 every item after  ->  its pointer was already sent at the prior item's
                       checkpoint — still open with the summary, then the
                       analysis, in the SAME message
 ```
+
+**First and later items therefore share one shape**, which is the point: an
+opening that delivered the pointer, the summary and the analysis together read as
+a bundle to the user, while every item after it got a turn of its own to say yes
+to.
 
 **As part of the interview, ask what would answer this item's open questions.**
 Where the answer is something outside what you can read — a current version,
 whether a feature exists, what a tool actually does — offer the search or run
 the command, here, with the user present. Where it is a choice they own, ask.
 
-**There is no separate "ready to dig into this one?" turn.** Presenting the item
-and beginning to work it is one beat. The one wait that stays is the [PROMPT] at
-the end of the interview.
+**Once the user has taken an item, presenting it and beginning to work it is one
+beat** — the summary and the analysis arrive together, and the wait that follows
+is the [PROMPT] at the end of the interview.
 
-When quoting the first item, re-read it from QUEUE.md to confirm the quote matches
-the file. For later items that re-read already happened at the checkpoint.
+Re-read the item from QUEUE.md before pointing at it, to confirm the pointer
+resolves — at the opening for the first item, and at the prior checkpoint for
+every one after.
 
 Engage with the item's substance: ask follow-ups to sharpen it or surface missing
 context, depth scaling with the item, until the picture is clear.
@@ -778,10 +789,21 @@ closing the interview:
 ```
 
 **View-in-doc.** The item already exists in QUEUE.md, so pointing is the default:
-lead with a one-line pointer instead of the pasted quote — `First item —
-**[work-slug]** — is in [QUEUE.md](QUEUE.md) under Unprocessed.` — then the
-analysis in that same message. The confirm re-read still runs in its pointer form
-(a resolves-check, not a text-match).
+lead with a one-line pointer instead of the pasted quote. The confirm re-read
+still runs in its pointer form (a resolves-check, not a text-match).
+
+**The opening specimen — the same shape the checkpoint uses:**
+
+> Ordered to process the biggest unblockers first — three items are holding
+> other work up, so I'd recommend processing at least those three before your
+> next /next. I'll work through these one at a time; say skip, stop, or run
+> /done whenever.
+>
+> First item — **[work-slug]** — is in [QUEUE.md](QUEUE.md) under Unprocessed.
+>
+> **Start with this one?**
+
+The summary and the analysis come in the next message, on the yes.
 
 **2. Recommend**  [PROMPT]
 
@@ -793,10 +815,9 @@ delete  remove it. If already decided (check LOG/index.md), state the prior
 
 **The recommendation states in plain words what would actually change and what
 happens to the item, and the ask requests agreement in those words — never a
-bare procedure term.** **"The ready list" is the standing plain-English name for
-the cleared region** — items there are ready to run — defined here once and used
-identically in every session's asks, so a keep's ask reads "add it to the ready
-list?" rather than naming a section or a marker.
+bare procedure term.** So a keep's ask reads "add it to the ready list?" rather
+than naming a section or a marker (the name is defined in
+skill-nonspecific-rules.md's Vocabulary section).
 
 **A keep recommendation must describe what would actually get built**, in terms
 the user recognizes as the work product — which files change, what gets added,
@@ -893,6 +914,7 @@ authored at the same moment the two limbs are settled, with the user present:
 ````
 --- Build block ---
 Changes: <what changes, in which files>
+Inputs: <files the work READS but does not change>   # or omit
 Acceptance: <how to tell it worked>
 Red flag: <cleared | uncleared>          # only where the item carries one
 Refused: <the option, and why it lost>   # one line per refusal, or omit
@@ -902,6 +924,10 @@ Refused: <the option, and why it lost>   # one line per refusal, or omit
 **Write it inside the item, beneath the rationale.** `generate_build_view.py`
 copies the delimited region byte-for-byte, keyed by slug, into the generated view
 the run reads. Nothing reformats it in passing.
+
+**Anything the work needs in order to start travels in the block — paths, names,
+values — and never only in the rationale.** The rationale does not reach the run,
+so a path mentioned there alone arrives nowhere.
 
 **Refusals go in the block and the rest of the history does not.** Everything else
 — why the work is worth doing, what it grew out of, which concerns were raised and
@@ -1203,9 +1229,6 @@ not worth doing                  ->  explicit approval, as a fate decision
                                      the user owns
 ```
 
-Judging "fully relocated" is a judgment, not a test — and naming each part's
-destination is what makes a wrong one visible.
-
 **Relocate before removing when the
 content belongs elsewhere.** Delete means "not worth doing," so routing a fold
 through a plain delete risks dropping content the user wanted kept. When the
@@ -1387,6 +1410,32 @@ captures off the back of Claude's own, which the always-loaded rule bars.
 fold conditions above** — and a thing raised in this message has had no earlier
 turn on its substance, so its disposition cannot fold into the same message
 that introduced it.
+
+**The timing answer is not a disposition, and the specimen is what shows it.**
+"Process it now" answers *when*, and the recommendation to keep still has to be
+put and still has to wait:
+
+```
+Claude   Want me to process that now, or carry on and file it for later?
+         I'd take it now — it's fresh. Anything else to add first?
+
+user     yes, now
+
+Claude   [interview turn: what the item is, what it would change, what is
+         still open — questions, not conclusions]
+
+user     [answers]
+
+Claude   [recommendation turn: what would be written, in plain words, and
+         where it would sit — then STOP and wait]
+
+user     [agrees, or doesn't]
+```
+
+Four turns and two separate asks. The failure this prevents is real and recorded:
+a single "yes" to the timing question was read as approval for the disposition
+too, and two items were written and cleared to run with no recommend-and-wait
+turn between them.
 
 ### After all items
 

@@ -15,8 +15,8 @@ PreToolUse hook — enforces three rules:
 1. During a build, the session's own build working file
    (_build-<session-id>.md) has a Files: section governing which files are
    editable (method docs — QUEUE.md, LOG/, that working file — plus the user's
-   memory dir, resources/research/, the session scratchpad dir, and any
-   project's INBOX/ are always editable). Tri-state:
+   memory dir, resources/research/, the session scratchpad dir, TOOLS.md, and
+   any project's INBOX/ are always editable). Tri-state:
    no Files: section = no enforcement;
    section present but empty = method docs only; entries listed = only
    those files. SPEC.md is not a method doc, so a build can edit it only
@@ -545,6 +545,24 @@ def _is_retired_terms_file(filepath: str, cwd: str) -> bool:
         os.path.join(cwd, "resources", "retired-terms.md"))
 
 
+def _is_tools_file(filepath: str, cwd: str) -> bool:
+    """True for `TOOLS.md` at the project root.
+
+    The project's record of what it has on hand — a tool installed at a known
+    path, a command that fails specifically from Claude's shell. Always
+    writable, in a planning session and mid-build alike, because the moment a
+    session learns such a fact is the moment it must be written down: a fact
+    deferred to a queue item is a fact the next session re-derives, which is
+    the cost this file exists to remove. next-build.md's environment check
+    reads it before assuming a tool is absent and writes to it on learning
+    one.
+
+    Root-level and exact, so a `TOOLS.md` a user keeps inside a subfolder of
+    their own app is not silently exempted from the scope-lock.
+    """
+    return _normalise(filepath) == _normalise(os.path.join(cwd, "TOOLS.md"))
+
+
 def _is_inbox_dir(filepath: str) -> bool:
     """Check if a path is inside any project's INBOX folder.
 
@@ -857,6 +875,11 @@ def _freeform_scope_files(cwd: str, session_id: str) -> list[str]:
 SETUP_MARKER_NAME = ".throughliner-setup-active"
 CLOSE_MARKER_NAME = ".throughliner-close-active"
 
+# The method's own skills, all of which ship with model invocation disabled.
+# Lowercased, and compared against the part of a skill name after any plugin
+# prefix. Adding a skill to the method means adding it here.
+METHOD_SKILLS = frozenset({"setup", "plan", "next", "rescan", "done"})
+
 # The files the method's own CLOSE obligations name. A close is required to write
 # these and a build is not, and the two phases share one working file — so
 # without this a required write had no permitted moment anywhere.
@@ -1072,6 +1095,38 @@ def main() -> int:
             "open-ended exploration; decline to have Claude do the work "
             "directly instead. Declining is a normal, safe choice."
         )
+
+    # --- Skill: the method's own commands are the user's to type ---
+    # These five ship with model invocation disabled, so an attempt fails and
+    # shows the user a red error at the moment they have least context for it.
+    # It has happened at a close, landing between "now closing the session" and
+    # any explanation, and the wording-only rule has now failed twice on record
+    # — which is what moves this to a hook under the gate's fourth admission
+    # question: the failure is mechanical, it recurs, and its cost lands on the
+    # user rather than on the run.
+    #
+    # The message names the likely trigger because the user reports it recurs
+    # there: a command typed before Claude Code has registered it arrives as
+    # chat text, and the natural repair looks like invoking it.
+    if tool_name == "Skill":
+        requested = tool_input.get("skill", "")
+        if isinstance(requested, str) and requested:
+            prefix, _, bare = requested.rpartition(":")
+            # The prefix arm fires anywhere, including an unadopted folder,
+            # which is where /setup's failure actually happens. The bare arm is
+            # held to adopted projects so a same-named skill from somewhere
+            # else is not caught by a name collision.
+            ours = "throughliner" in prefix.lower() or "flintcraft" in prefix.lower()
+            adopted = bool(cwd) and os.path.isfile(os.path.join(cwd, "SPEC.md"))
+            if bare.lower() in METHOD_SKILLS and (ours or (not prefix and adopted)):
+                return _deny(
+                    f"[Throughliner] The /{bare} command is yours to type — "
+                    "Claude can't run it, and trying shows you a red error "
+                    "instead of doing anything.\n\n"
+                    "If you just typed it and it landed as ordinary chat text, "
+                    "the command probably hadn't registered yet. Wait a few "
+                    f"seconds and type /{bare} again."
+                )
 
     if not cwd:
         return 0
@@ -1347,6 +1402,9 @@ def main() -> int:
         if _is_scratchpad_dir(filepath, cwd):
             return 0
 
+        if _is_tools_file(filepath, cwd):
+            return 0
+
         if _is_inbox_dir(filepath):
             return 0
 
@@ -1416,6 +1474,7 @@ def main() -> int:
             or _is_memory_dir(filepath)
             or _is_research_dir(filepath, cwd)
             or _is_scratchpad_dir(filepath, cwd)
+            or _is_tools_file(filepath, cwd)
             or _is_inbox_dir(filepath)
             or _is_build_file(
                 filepath, cwd,
@@ -1427,7 +1486,7 @@ def main() -> int:
                 "fixed set of files, and this isn't one of them.\n\n"
                 f"About to edit: {filepath}\n\n"
                 "A planning session may write QUEUE.md, SPEC.md, CYCLES.md, "
-                "anything in "
+                "TOOLS.md, anything in "
                 "LOG/, research notes and its own scratch files. Everything "
                 "else is work, and work gets queued and built rather than done "
                 "here.\n\n"

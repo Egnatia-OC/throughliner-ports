@@ -35,6 +35,16 @@ _spec.loader.exec_module(digest)
 
 MARKER = "--- Cleared to run above this line ---"
 
+# The minimum build block a cleared build or [audit] item must carry. Fixtures
+# whose case is about something else include it so the blockless-item check
+# below doesn't fire on them and change an unrelated contradiction count.
+BLOCK = (
+    "--- Build block ---\n"
+    "Changes: `docs/a.md` — reword the thing\n"
+    "Acceptance: the thing reads right\n"
+    "--- End build block ---\n"
+)
+
 _failures = []
 
 
@@ -484,6 +494,7 @@ def test_built_into_is_not_a_do_not_build_phrase():
         processed=(
             "#### Do the thing [alpha]\n"
             "Other work must not be built into this item; keep it narrow.\n"
+            + BLOCK
         ),
     )
     _, out = run(root)
@@ -497,12 +508,122 @@ def test_built_into_is_not_a_do_not_build_phrase():
 
 def test_do_not_build_still_fires():
     root = project(
-        processed="#### Do the thing [alpha]\nThis must not be built as written.\n",
+        processed=(
+            "#### Do the thing [alpha]\nThis must not be built as written.\n"
+            + BLOCK
+        ),
     )
     _, out = run(root)
     check(
         "a genuine do-not-build statement still fires",
         "must not be built as written" in out and "Placement contradictions — 1" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+# --- placement contradictions: a cleared item with no build block -------------
+#
+# Why ([unbuildable-items-persist-in-the-ready-region]): six items sat cleared to
+# run carrying no build block, and a build run was the first thing to catch them
+# — after presenting them to the user as ready work and locking scope. A run
+# reads the generated view, the view has nothing for a blockless item, and the
+# run halts on it as underspecified.
+
+def test_cleared_item_with_no_build_block_is_flagged():
+    root = project(
+        processed="#### Do the thing [alpha]\nProse, and no block.\n",
+    )
+    _, out = run(root)
+    check(
+        "a cleared build item with no build block is flagged",
+        "carries no build block" in out
+        and "## Placement contradictions — 1" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_cleared_item_with_a_build_block_is_not_flagged():
+    root = project(
+        processed="#### Do the thing [alpha]\nProse.\n" + BLOCK,
+    )
+    _, out = run(root)
+    check(
+        "a cleared item carrying a block is not flagged",
+        "## Placement contradictions — 0" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_cleared_audit_item_needs_a_block_too():
+    """An [audit] item names no files, but it still carries instructions."""
+    root = project(
+        processed="#### [audit] Review the thing [alpha]\nProse, and no block.\n",
+    )
+    _, out = run(root)
+    check(
+        "a cleared [audit] item with no block is flagged",
+        "carries no build block" in out
+        and "## Placement contradictions — 1" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_user_and_freeform_items_are_not_flagged():
+    """Neither is built from a block — one is walked live, one halts the run.
+
+    This is the guard that keeps the check off the normal state of most
+    queues: a walkthrough is not a build block and demanding one would fire on
+    correct work, which is the cry-wolf shape this project has repealed
+    measures for twice.
+    """
+    root = project(
+        processed=(
+            "#### [user] Do the manual thing [alpha]\n"
+            "**Walkthrough.** 1. Do it. 2. Confirm.\n\n"
+            "#### [freeform] Repair the mover [beta]\n"
+            "Hand work, done in a session of its own.\n"
+        ),
+    )
+    _, out = run(root)
+    check(
+        "[user] and [freeform] items are exempt from the block check",
+        "## Placement contradictions — 0" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_held_item_with_no_block_is_not_flagged():
+    """Held work is not built until it lifts, so it owes no block yet."""
+    root = project(
+        processed=(
+            "#### Ready thing [alpha]\nProse.\n" + BLOCK + "\n"
+            + MARKER + "\n\n"
+            "#### Held thing [beta]\nProse, and no block.\nBlocked by: [alpha]\n"
+        ),
+    )
+    _, out = run(root)
+    check(
+        "a held item with no block is not flagged",
+        "carries no build block" not in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_capture_with_no_block_is_not_flagged():
+    """A capture is not work at all until /plan keeps it."""
+    root = project(
+        unprocessed="#### An idea [gamma]\nSomething noticed.\n",
+    )
+    _, out = run(root)
+    check(
+        "an unprocessed capture with no block is not flagged",
+        "carries no build block" not in out,
         out,
     )
     shutil.rmtree(root, ignore_errors=True)
@@ -757,6 +878,12 @@ if __name__ == "__main__":
     test_absent_blocker_is_not_a_loop()
     test_built_into_is_not_a_do_not_build_phrase()
     test_do_not_build_still_fires()
+    test_cleared_item_with_no_build_block_is_flagged()
+    test_cleared_item_with_a_build_block_is_not_flagged()
+    test_cleared_audit_item_needs_a_block_too()
+    test_user_and_freeform_items_are_not_flagged()
+    test_held_item_with_no_block_is_not_flagged()
+    test_capture_with_no_block_is_not_flagged()
     test_no_git_degrades_quietly()
     test_age_prints_in_this_repository()
     test_runs_alone_reports_what_is_ahead_of_it()

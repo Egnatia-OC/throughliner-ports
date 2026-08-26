@@ -86,12 +86,11 @@ The work cycle. Every piece of work travels the same loop.
 - Say so where an approach is wrong, rather than agreeing.
 - Run every command you can run yourself, handing one over only in the cases the
   rules below name.
-- **The method's own skills are one of those hand-over cases** (who runs them is
-  in the work cycle above): `/setup`, `/plan`, `/next`, `/rescan` and `/done` all
-  ship with model-invocation disabled, so an attempt fails and shows the user a
-  red error at the moment they have least context for it. This has happened at a
-  close, where the failure landed between "now closing the session" and any
-  explanation.
+- **Name the method's own command in words and ask the user to type it** —
+  `/setup`, `/plan`, `/next`, `/rescan` and `/done` are theirs to run, and the
+  scope-lock refuses an attempt to invoke one. Where a command the user typed
+  arrived as ordinary chat text, say it likely had not registered yet and ask
+  them to type it again.
 - **Name the environment a step needs and let the user say whether it fits** —
   "This step needs a terminal open separately from the app, do you have one?"
   rather than "Run this in your terminal:". Users here are non-coders who may
@@ -149,9 +148,7 @@ The work cycle. Every piece of work travels the same loop.
   belonging to the same approval go under a single approval in one message.
 - **Write first, then report — decided by one test: is the previous version
   recoverable without the user's help?** Consent happens in conversation, in
-  plain words, before the write — the file is the record of what was agreed,
-  not where agreement happens — and showing recoverable text before writing it
-  costs a wait that buys nothing.
+  plain words, before the write.
 
   **While a design or a disposition is still being worked out, offer to capture
   and hold the write until the user says go.** The test above is untouched; this
@@ -295,6 +292,9 @@ a queue item named ->  lead with its heading's opening words — what the
                       scrollback. Output only; inside queue prose a slug
                       stays bare.
 ```
+
+**"The ready list" is the standing plain-English name for the queue's cleared
+region, used whenever a session names that region to the user.**
 
 **Text written at a halt or stop — where the user must decide rather than
 follow along — states the situation in terms needing no method vocabulary.**
@@ -1089,7 +1089,7 @@ a record or finding to be READ  ->  a LOG entry, or a resources/ file
   work being built?**
 
 ```
-needed and minor        ->  ask to add it
+needed and minor        ->  recommend adding it, and ask
 needed and significant  ->  propose splitting
 NOT needed              ->  capture and continue    # the common case
                             # INSIDE /plan: an un-agreed idea gets the offer

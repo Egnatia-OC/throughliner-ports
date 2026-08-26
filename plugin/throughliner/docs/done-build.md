@@ -191,6 +191,12 @@ depth line **by its slug** rather than by its position under a tick, and
 whatever the run's size — a twelve-item run can still contain the session's most
 contested decision.
 
+**Read each item's rule-gate disposition from the working file by its slug too**
+— `Rule gate: <slug> — run, …` — for the same reason and in the same pass. The
+line the close then writes into the session's LOG entry stays slugless: it
+describes the session rather than one item, which is the form
+`resources/rule_signals.py` reads.
+
 **A built slug with no depth line is read as short**, and noted at the close as
 a discipline slip rather than passing silently: the field is required, so a
 missing one means the build skipped a step, and saying so is what keeps it from

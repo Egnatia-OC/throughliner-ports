@@ -100,6 +100,21 @@ NO_FILES_PHRASES = (
 )
 FILES_LINE_RE = re.compile(r"^\**Files\b[^:]*:\**\s*(.*)$", re.IGNORECASE)
 
+# The build block's opening delimiter, lowercased to match the `prose` copy.
+# A cleared build or [audit] item without one reaches a run with no instructions
+# at all: the run reads the generated view, the view has nothing for it, and the
+# run halts on it as underspecified having already presented it as ready work.
+#
+# The queue lint carries the same check and fires after a QUEUE.md edit, which
+# is the cheapest possible moment. It is not a substitute for this one: the lint
+# only speaks when the queue is written, so an item that became blockless by any
+# other route — a plugin change to what a block must carry, an edit made outside
+# the editing tools — is never re-examined, while the digest is read at every
+# planning opening. Two sites, two different triggers, and the live failure
+# (six unbuildable items sitting cleared, first caught by a build run) got past
+# the lint-only arrangement.
+BUILD_BLOCK_OPEN = "--- build block ---"
+
 # A research file cited in a work item's prose. Research is filed because it
 # will be re-read and reused, so a research file is an upstream dependency of
 # everything scoped against it — but citation runs one way. When a finding is
@@ -551,6 +566,15 @@ def contradictions(items, root=""):
                 found.append(
                     f"[{slug}] sits in Processed but its own text says "
                     f'"{phrase}"{where}: {raw}'
+                )
+
+            if item["cleared"] and item["flavor"] in ("build", "audit") \
+                    and BUILD_BLOCK_OPEN not in item["prose"]:
+                found.append(
+                    f"[{slug}] is cleared to run but carries no build block — "
+                    "a run reads the generated view, which would have no "
+                    "instructions for it, and would halt on it as "
+                    "underspecified"
                 )
 
             files_line = item["files_line"]

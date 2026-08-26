@@ -789,12 +789,21 @@ def lint(content: str) -> list[str]:
 
 
 def _item_word_counts(content: str) -> dict:
-    """{slug: word count} for every work item in a queue's text."""
+    """{slug: word count} for every work item in a queue's text.
+
+    The readiness marker is excluded from every item's span. It is not part of
+    any item — it sits between them — but it falls inside the span of whichever
+    item it happens to follow, so moving the line alone changed that item's
+    count and the report named an item the edit never touched. Six words
+    attributed to the wrong work is worse than no report: the reader goes and
+    reads an item that did not change.
+    """
     counts = {}
     for b in _workline_blocks(_annotate(content)):
         m = SLUG_AT_END.search(b["heading"])
         if m:
-            counts[m.group(1)] = len("\n".join(b["lines"]).split())
+            body = [ln for ln in b["lines"] if ln.strip() != CLEARED_MARKER]
+            counts[m.group(1)] = len("\n".join(body).split())
     return counts
 
 

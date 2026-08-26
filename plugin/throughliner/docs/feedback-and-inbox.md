@@ -213,6 +213,11 @@ to another project — anything that leaves this machine.
 nothing later reconstructs it.** No second copy of the content: the line points at
 the text, exactly as `LOG/index.md` points at entries.
 
+**Read the claim off the approved text as it stands on screen, never from what
+the session settled.** What was decided in conversation and what the message
+actually says come apart, and the line is what a later repeal is checked against
+— so a claim composed from the decision describes a message that was never sent.
+
 **The intent field is what lets a send close work.** Handing an item to another
 project **for completion** can clear that item; handing it over **for
 continuation** leaves it in the queue for a later capture to wake.

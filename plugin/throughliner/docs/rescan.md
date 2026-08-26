@@ -115,7 +115,11 @@ reporting, so the user is not left thinking the record is saved.
 do — write both, each carrying its own half: the tail records what happened, the
 capture records what is left.
 
-**State this sentence, as written:**
+**State this sentence, as written, the first time this session says it; where the
+session has already stated it, restate the operative fact in one clause instead —
+"again, only what was still in view".** The full sentence teaches the limit and
+the clause carries it; a session that repeats the whole lesson three times is
+spending the user's attention on something they were told at the first statement.
 
 > I can't tell whether any of our earlier conversation has dropped out of view,
 > so this is what I could still see rather than a guarantee I've caught

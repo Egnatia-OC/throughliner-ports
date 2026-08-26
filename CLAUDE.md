@@ -55,15 +55,17 @@ Host and target are the same plugin at different stages. Ambiguous references to
 - `QUEUE.md` — two sections (Processed / Unprocessed), each holding work lines as `#### ` headings with rationale beneath. A work line that carries a security or privacy risk gets a red-flag marker (a `Red flag · State:` tag) — the flag rides the work, not the other way around.
 - `LOG/` — per-session records. `LOG/index.md` for summaries (newest first), one file per session entry. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`.
 
-**4 skills:**
+**5 skills:**
 - `/setup` — scaffold docs + ask 5 questions to populate SPEC.md.
 - `/plan` — all thinking work: queue management, read-back, ideas, questions, drift detection.
 - `/next` — pick the top ready work, execute it (build or audit), walk the user through `[user]` lines. Works the cleared region top-down, so one invocation can build several cleared lines back-to-back — the unattended-in-practice runner, closed by /done.
+- `/rescan` — look back over the conversation for anything decided, noticed or asked for that was never written into a file, and file it. Routed by the standard triage: work still to do goes to the queue, work that already happened is appended to this session's record as a marked tail. Commits nothing, and can be run repeatedly — it scans back only as far as the last /rescan.
 - `/done` — record what happened, clean up, commit.
 
-**3 hooks** — two enforcing, one advisory:
+**4 hooks** — three enforcing, one advisory:
 - `session_start` (enforcing) — detect project state (unadopted / adopted / active build), load behaviour rules, check plugin version against .throughliner-version.
 - `pre_tool_use` (enforcing) — scope-lock to the active run's file list (which governs SPEC.md like any other file — SPEC is editable only by a run whose work items list it), git safety.
+- `stop` (enforcing) — check Claude's finished response for a report naming a capture as filed, and confirm that entry is actually in the queue, or already on record as built work. Where it isn't, the turn is fed back so the write can be made before the user acts on a report of work that doesn't exist. Blocks once per claim, then stops blocking.
 - `post_tool_use` (advisory) — QUEUE.md structure lint; flags format drift after a QUEUE.md edit, never blocks.
 
 ## Where things live
@@ -77,8 +79,8 @@ No code method/
     zip-archive/         — previous releases' zips, pruned to three
     throughliner/        — target source
       .claude-plugin/    — plugin manifest
-      hooks/             — session_start, pre_tool_use, post_tool_use
-      skills/            — setup, plan, next, done
+      hooks/             — session_start, pre_tool_use, stop, post_tool_use
+      skills/            — setup, plan, next, rescan, done
       templates/         — CLAUDE-TEMPLATE.md
       docs/            — procedure docs loaded by skills (the one docset)
   SPEC.md                — this project's spec (once /setup has run)
@@ -308,7 +310,7 @@ The limit is **2,000 characters**, which is Discord's.
 
 Claude drafts and Alex posts, because Claude has no route to Discord. The draft is shown before it goes and needs an explicit yes: that is the existing rule on anything leaving the machine, and nothing here changes it.
 
-**A posted draft gets its line in `INBOX/sent.md` like any other outbound artifact** — date, destination, whether it was handed over for completion or continuation, what it claimed in one clause, and a pointer to the text. Written in the same turn as the approval, because the wording exists then and nothing later reconstructs it. The reason this matters here specifically: a post makes a claim about how Throughliner behaves, and a later change can falsify it with nobody noticing. The record is what a repeal can be checked against. Full mechanics in `docs/feedback-and-inbox.md`.
+**A posted draft gets its line in `INBOX/sent.md` like any other outbound artifact** — date, destination, whether it was handed over for completion or continuation, what it claimed in one clause, and a pointer to the text. Written in the same turn as the approval, because the wording exists then and nothing later reconstructs it. **Read the claim off the approved text as it stands on screen, never from what the session settled** — what was decided and what the post says come apart, and a claim composed from the decision describes a post that was never made. The reason this matters here specifically: a post makes a claim about how Throughliner behaves, and a later change can falsify it with nobody noticing. The record is what a repeal can be checked against. Full mechanics in `docs/feedback-and-inbox.md`.
 
 **Where a repeal falsifies something already announced, file a correction post as its own `[user]` line.** The check runs at /plan's keep-step, on the repeal limb's existing grep, extended to `INBOX/sent.md` — so the trigger is the grep already being run and needs no separate detection. The line names what was announced and what is no longer true; the user posts it, as they post everything here. **This is the whole reason `INBOX/sent.md` records what a post claimed** rather than merely that one happened: a claim nobody wrote down cannot be checked against a repeal, so earlier cases are unfindable and this reaches only posts made from now on. Say that rather than describing the record as covering the channel's history.
 

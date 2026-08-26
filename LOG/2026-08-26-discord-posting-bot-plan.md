@@ -1,4 +1,4 @@
-# [HASH] — Discord bot designed as two items: your setup line cleared, the posting script held behind it; token risk cleared as informed consent
+# 0d02b6a — Discord bot designed as two items: your setup line cleared, the posting script held behind it; token risk cleared as informed consent
 
 Kept on Claude's recommendation and your agreement — your words at the disposition: "ok I'm willing to try it." It designs out smaller than "bot": no hosted service, a bot account plus a script making one API call per send or edit, standard library, exact text passed from a file, every send behind the existing exact-text-yes rule with its register line. Split: [discord-bot-server-setup] is the `[user]` line (create the bot, invite it, hand the token), cleared with a full walkthrough; [discord-posting-bot] is the build, held behind it, whose CLAUDE.md half amends the "Claude has no route to Discord" sentences.
 

@@ -473,10 +473,24 @@ touched, one line each — then remove that one item from QUEUE.md with the
 mechanical mover, addressed by its slug.
 
 **Where the project's own instructions require a rule-gate disposition and the
-item carries one, copy it across unchanged.** Where
+item carries one, copy it across unchanged, keyed by slug like the depth field
+beside it:**
+
+```
+Rule gate: <slug> — run, <what it decided>
+Rule gate: <slug> — not needed, <why>
+```
+
+Where
 the item is about to author or amend a standing rule and carries no disposition,
 halt and say so: the gate's site is planning, and a disposition written now could
 only describe what is already built.
+
+**The slug binds this line to its item too**, for the reason the depth field
+gives below: a bare positional line attaches to whichever tick it happens to sit
+under, and a later tick written above it silently takes it. The LOG-entry
+`Rule gate:` format is unchanged and stays slugless — that line describes the
+session, not one item, and `resources/rule_signals.py` reads it as it is.
 
 **The tick is the accumulation point.** `Progress:`, `Index entry candidates:`
 and `Changes:` all grow one item at a time, at the tick and never later, so the

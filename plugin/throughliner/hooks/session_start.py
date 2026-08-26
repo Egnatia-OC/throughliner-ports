@@ -250,6 +250,48 @@ def backfill_log_hashes(cwd):
     )
 
 
+# The day the plugin was rebuilt from scratch. Nothing installed can predate
+# it, which makes it the floor for a readable install date. Derived from the
+# project's own history rather than chosen.
+PLUGIN_EPOCH = datetime.date(2026, 6, 1)
+
+
+def install_date(root):
+    """The date the installed snapshot was written, as `YYYY-MM-DD`, or "".
+
+    The CLI copies the plugin into `~/.claude/plugins/cache/<owner>/<plugin>/
+    <version>/` at install time and does not touch it again, so that
+    directory's own mtime is when this build arrived. A readable fact, reported
+    bare: how long a build has been in place is something a session weighs, and
+    without it the weighing is a guess.
+
+    It is NOT a verdict on how tested the build is — a build installed a week
+    ago may have been run once. Report the date and stop there; anything
+    further is the reader's judgment to make.
+
+    Degrades to "" rather than guessing: a missing root, an unreadable
+    timestamp, or a date that cannot be true all produce no age claim at all.
+    A wrong date here would be read as evidence, so silence is the only safe
+    failure.
+
+    The floor is derived, not invented: the plugin was rebuilt from scratch on
+    2026-06-01 and nothing installed can predate its existence. It earns its
+    place because the failure is not hypothetical — Windows clamps an
+    out-of-range mtime to zero instead of raising, so a lost timestamp arrives
+    as a perfectly well-formed 1970-01-01 that no exception handler can catch.
+    A date below the floor means the timestamp was lost, whatever it says.
+    """
+    if not root or not os.path.isdir(root):
+        return ""
+    try:
+        when = datetime.date.fromtimestamp(os.path.getmtime(root))
+    except Exception:
+        return ""
+    if when < PLUGIN_EPOCH:
+        return ""
+    return when.isoformat()
+
+
 def content_stamp(root):
     """Short content stamp over a plugin directory's own files.
 
@@ -1388,10 +1430,17 @@ def main() -> int:
     # of interrogating the user. Version only — the host-vs-target comparison is
     # Claude's reasoning (a consumer project has no target to compare against).
     if plugin_version:
+        # The install date rides this line rather than getting one of its own:
+        # it qualifies the version it sits beside, and a separate line would
+        # read as a second fact to weigh. Absent when unreadable — see
+        # install_date, which degrades to no claim rather than a guess.
+        installed_on = install_date(plugin_root)
+        age_clause = f", installed since {installed_on}" if installed_on else ""
         context_parts.append(
-            f"  Installed plugin (host) version: {plugin_version} — the version "
-            "running this session. Use it to judge whether a host-side deferred "
-            "test has gone live, instead of asking the user what's installed."
+            f"  Installed plugin (host) version: {plugin_version}{age_clause} — "
+            "the version running this session. Use it to judge whether a "
+            "host-side deferred test has gone live, instead of asking the user "
+            "what's installed."
         )
         # Content stamp of the installed host's own files. The version number
         # alone can't tell whether host-side changes are live — a build batch
