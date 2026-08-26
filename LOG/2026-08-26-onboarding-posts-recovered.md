@@ -1,4 +1,4 @@
-# [HASH] — The six onboarding forum posts, recovered verbatim into the record
+# aa78310 — The six onboarding forum posts, recovered verbatim into the record
 
 These six Discord how-to forum posts were written and published from a browser chat on 2026-08-25, outside this project's own drafting route — so no outbound-register line and no FAQ entry was written for any of them at the time. See [onboarding-posts-outside-the-record].
 

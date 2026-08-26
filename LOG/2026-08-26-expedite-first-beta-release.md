@@ -1,4 +1,4 @@
-# [HASH] — Beta day settled: release today from the current build, beside an untouched beta chain, with the `#beta` install pin advanced
+# aa78310 — Beta day settled: release today from the current build, beside an untouched beta chain, with the `#beta` install pin advanced
 
 The anchor record for the beta-day decisions; the sibling entries for [install-route-latest-release-check], [onboarding-post-claims-unreleased-popout] and [beta-branch-install-pin] cite it.
 
@@ -7,6 +7,8 @@ Alex's decision, her framing "fake it until we make it": the first beta releases
 The beta chain stays exactly as wired — the release proceeds beside it, not through it. Her correction mid-processing reframed the channel model: main is the dev channel, the release is an event and artifact, and no installer through the marketplace route ever touches the release zip — which surfaced that the published install route serves main, not "the beta". That produced [beta-branch-install-pin] on her instinct ("or else people will just always end up with the most recent one on main"): only a git ref marks a commit, so the `beta` branch is created at today's release commit and the install docs move to `#beta`, with the smoke test and post edit as her [user] line. The nerds test-rezip channel now exists on the server, locked to the "nerd" role.
 
 Still open, deliberately: the Wednesday stable-label selector and the nerds-list packaging shape, written on the item for the release-cycle and beta-pathway keeps.
+
+**Post-close tail, same day.** Alex corrected the release sequence while the build run was under way: releasing at the end of that run would ship a literally untested build ("running myself all week" was also wrong — she had run the prior rezip since it landed late the night before). Revised on her direction, amended on the queue item: build closes → rezip → one more /plan on that rezip (the live test) → one more build to patch what it surfaces → rezip and reinstall → the release, still the day's last act. Her side-observation — Claude never knows how long an installed build has been running — was filed as [session-start-reports-install-age].
 
 **Queue changes:** [expedite-first-beta-release] rewritten to the settled state and skipped in place; [beta-branch-install-pin] and [beta-install-smoke-and-post-edit] filed and cleared; cross-reference written on [beta-tester-pathway].
 **Work processed:** partially — decisions recorded, remainder waits on the held keeps.

@@ -242,14 +242,17 @@ Nothing in the scope-lock blocks this: `pre_tool_use` treats any project's
 `INBOX/` as always editable, so reading and archiving mail during a locked run
 cannot be denied.
 
-### 3b. Cycles due-ness check  [SILENT] when no cycles doc exists or nothing is due; [BRIEF] when a capture is filed
+### 3b. Cycles due-ness check  [SILENT] when no cycles doc exists; [BRIEF] whenever one does
 
-If the project has a cycles doc (`CYCLES.md` at the project root), read it and
-compute each cycle's due-ness from the observable its definition names — filing
-ONE capture in Unprocessed under the cycle's slug where a turn is due and no
-open capture with that slug exists, and nothing otherwise. Filing only: what to
-do with the capture stays planning work. A project with no cycles doc pays
-nothing here.
+**The trigger is the session opening's cycles line**, which names the doc, each
+definition's slug and what its observable currently reads. Where that line is
+present, read `CYCLES.md` and compute each cycle's due-ness from the observable
+its definition names — filing ONE capture in Unprocessed under the cycle's slug
+where a turn is due and no open capture with that slug exists, and nothing
+otherwise — then name each cycle as due or not in one line, whether or not
+anything was filed. It folds into the pre-flight's single narration like every
+other check here. Filing only: what to do with the capture stays planning work.
+A project with no cycles doc gets no line and pays nothing here.
 
 ### 4. Present the run and offer the off-ramp  [BRIEF, PROMPT]
 

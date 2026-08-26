@@ -10,11 +10,21 @@ What that buys you: settled things stop being re-decided, because a rejected opt
 
 ## Install
 
-**Already have Claude Code?** Open a chat in Claude Code and ask it to install Throughliner — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintcraftTech/throughliner` and install the `throughliner@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintcraftTech/throughliner` and `claude plugin install throughliner@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update throughliner@flintcraft`, then restart again.
+### New to Claude Code? Start here
 
-**Coming from Sovereign Implementer?** That was this plugin's old name. Claude Code follows the old name to the new one automatically and rewrites its own settings, but it still needs fetching under the new name — so install `throughliner@flintcraft` once and fully restart. Everything in your projects stays where it is. (The automatic follow-along needs Claude Code 2.1.193 or newer.)
+Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintcraftTech/throughliner/raw/main/INSTALL.md` — and ask Claude to **read the guide and walk you through it step by step**. Asking Claude to read it is the part that matters: the guide is written to be followed exactly, and a Claude that improvises from the link alone will skip steps it cannot see.
 
-**New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintcraftTech/throughliner/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience — Claude runs any commands for you.
+The guide covers installing Claude Code, setting up a paid plan, and installing the plugin. It assumes no terminal experience, and Claude runs any commands for you.
+
+### Already have Claude Code?
+
+Open a chat in Claude Code and ask it to install Throughliner — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintcraftTech/throughliner#beta` and install the `throughliner@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintcraftTech/throughliner#beta` and `claude plugin install throughliner@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update throughliner@flintcraft`, then restart again — you'll pick up the newest beta each time.
+
+**Why `#beta`?** That's the tested weekly pick — the version we're happy for people to run. The plugin's main line carries day-to-day development and can change under you mid-week, so `#beta` is the one to install unless you specifically want the newest unfinished work.
+
+### Coming from Sovereign Implementer?
+
+That was this plugin's old name. Claude Code follows the old name to the new one automatically and rewrites its own settings, but it still needs fetching under the new name — so install `throughliner@flintcraft` once and fully restart. Everything in your projects stays where it is. (The automatic follow-along needs Claude Code 2.1.193 or newer.)
 
 ## Get notified of new versions
 
@@ -61,7 +71,7 @@ Where your app gives each conversation its own copy of the project, they also po
 
 And they check Claude's own reports. Claude writes to your queue first and tells you after, which keeps the write safe — but it means a reply could report filing something the write never actually made, and you'd have no way to tell. So when a reply says a named piece of work was filed, a hook checks your queue for it, and if it isn't there Claude is made to fix it and tell you plainly before you act on it.
 
-When something goes wrong, Claude works out which of three things it was and sends it to the right place: your **app** stays as work in your own queue; a problem with **the method** goes to the plugin's author at flintcraft.tech/report; a problem with **Claude Code itself** goes to a GitHub issue on `anthropics/claude-code`. Both outward reports are scrubbed of your project's details, and nothing is ever sent without you seeing the exact text first.
+When something goes wrong, Claude works out which of three things it was and sends it to the right place: your **app** stays as work in your own queue; a problem with **the method** goes to the plugin's author at flintcraft.tech/report — or, if you happen to have the plugin's own project on your machine and have told Throughliner about it, straight into that project's mailbox instead, which keeps it off the public web; a problem with **Claude Code itself** goes to a GitHub issue on `anthropics/claude-code`. Both outward reports are scrubbed of your project's details, and nothing is ever sent without you seeing the exact text first.
 
 If you run more than one project on the method, they can **message each other** — durable, offline, approval-gated mail, where Claude Code's own session messaging reaches only sessions open right now. Each project gets an `INBOX/` folder, and anything waiting in yours is mentioned at the start of a session — no carrying notes between chats by hand. Mail is opened at the start of a planning session and at the start of a build run, so a message that affects something about to be built can still change what runs. A message going out to another project is always shown to you for approval first, because it carries this project's content somewhere else. Sending places the message in the other project's mailbox and nothing confirms it was read — that limit is stated rather than glossed over, and Claude checks the other project has a mailbox at all before writing. The first folder path you give for a project is remembered, inside the `INBOX/` folder that git ignores, so continuing a conversation doesn't mean digging the path out again.
 

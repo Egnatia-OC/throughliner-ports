@@ -187,10 +187,19 @@ def runs_alone(entry):
     return any(RUNS_ALONE_RE.match(line) for line in entry["body"])
 
 
-# The label leading a [user] item's walk-through steps, bold or plain, with a
-# `.` or `:` after the word. Tolerating the bold form for the same reason the
-# other labels here do.
-WALKTHROUGH_RE = re.compile(r"^\s*\*{0,2}Walkthrough[.:]\*{0,2}", re.IGNORECASE)
+# The label leading a [user] item's walk-through steps, bold or plain. Either
+# the bare word with a `.` after it, or the word followed by an optional
+# qualifier and then its colon — `Walkthrough — part one:` labels a block as
+# surely as `Walkthrough:` does. Tolerating the bold form for the same reason
+# the other labels here do. The qualifier arm requires the colon: widening the
+# `.` arm the same way would swallow an ordinary sentence opening with the word.
+WALKTHROUGH_RE = re.compile(
+    r"^\s*\*{0,2}Walkthrough\b(?:[^:.\n]*:|\.)", re.IGNORECASE
+)
+
+# Any line opening with the word, matched or not — what tells a missing block
+# apart from a label the pattern above did not accept.
+WALKTHROUGH_WORD_RE = re.compile(r"^\s*\*{0,2}Walkthrough\b", re.IGNORECASE)
 
 
 def walkthrough(entry):
@@ -344,11 +353,22 @@ def render(entries, root):
                 out.append("")
             steps = walkthrough(e)
             if steps is None:
-                out.append(
-                    "**No walkthrough travelled.** This item carries no "
-                    "Walkthrough block, so the view has no steps to drive it "
-                    "with and the run halts on it."
+                mislabelled = any(
+                    WALKTHROUGH_WORD_RE.match(line) for line in e["body"]
                 )
+                if mislabelled:
+                    out.append(
+                        "**No walkthrough travelled.** This item has a line "
+                        "opening with the word Walkthrough, but the label did "
+                        "not match — a label ends in a colon, with any "
+                        "qualifier before it. The run halts on it."
+                    )
+                else:
+                    out.append(
+                        "**No walkthrough travelled.** This item carries no "
+                        "Walkthrough block, so the view has no steps to drive "
+                        "it with and the run halts on it."
+                    )
             else:
                 out.extend(steps)
             out.append("")

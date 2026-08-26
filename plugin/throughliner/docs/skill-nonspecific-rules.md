@@ -109,6 +109,8 @@ The work cycle. Every piece of work travels the same loop.
     skills and out, with no exemption for items that seem short;
   - folding what several checks turn up into one narration, with anything the
     user must act on leaving the bundle and going on its own;
+  - speaking between tool calls for the first call, a load-bearing finding, or
+    a change of direction, and closing with the outcome first;
   - saying what the user needs in order to act, in full sentences, and
     stopping there — except that where being readable and being short pull
     apart, readable wins.
@@ -1135,7 +1137,7 @@ premise is broken       ->  halt and course-correct
   unmerged commits. Offer the merge and let the user take it; on a conflict leave the
   branch alone and say the work is safe on it.
 
-## Consumer feedback channel and cross-project INBOX
+## Method problem reports and cross-project INBOX
 
 A problem with the *method itself* or with *Claude Code itself* is not work on
 the user's app; route it by the discriminator, then **read
@@ -1147,11 +1149,15 @@ mail waiting at the chat's opening.
 ```
 the discriminator:  which thing is misbehaving?
     my app       ->  an ordinary capture in my QUEUE
-    the method   ->  a GitHub issue on the plugin's own repository, where
-                     `gh` exists and the reporter consents — the offer
-                     states plainly that an issue is public under their
-                     own account; flintcraft.tech/report otherwise, and
-                     wherever they prefer privacy
+    the method   ->  mail to the plugin's own project where this project's
+                     address book records it as a correspondent — same
+                     machine, nothing published, and it lands in the queue
+                     that would fix it; otherwise a GitHub issue on the
+                     plugin's own repository, where `gh` exists and the
+                     reporter consents — the offer states plainly that an
+                     issue is public under their own account;
+                     flintcraft.tech/report otherwise, and wherever they
+                     prefer privacy
     Claude Code  ->  a GitHub issue on anthropics/claude-code
     unsure       ->  ask the user which of the three it is
 ```

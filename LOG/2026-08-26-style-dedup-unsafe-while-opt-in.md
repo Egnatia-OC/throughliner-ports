@@ -1,4 +1,4 @@
-# [HASH] — The style-dedup policy repealed in-session: the docs stay canonical, the style deliberately restates them, and a rule living only in the style is a defect
+# aa78310 — The style-dedup policy repealed in-session: the docs stay canonical, the style deliberately restates them, and a rule living only in the style is a defect
 
 The anchor record for the style trio; the entries for [narration-cadence-promotion-candidate] and [style-negatives-to-rewrite-positive] cite it.
 

@@ -374,14 +374,16 @@ close picks up whatever came after the last one. Invoke it shortly before
 closing and this costs a line. With no /rescan run, the close does the full job,
 scanning the whole chat.
 
-**Cycles due-ness check first** [SILENT] when no cycles doc exists or nothing
-is due; [BRIEF] when a capture is filed. Open by reading the project root for
-`CYCLES.md` now, at close time — a doc created this session counts, and the
-opening's no-cycles-doc report is stale the moment anything creates one. Where
-the doc exists, read it and compute each cycle's due-ness
+**Cycles due-ness check first** [SILENT] when no cycles doc exists; [BRIEF]
+whenever one does. The session opening emits a cycles line naming each
+definition and what its observable reads, and that line is the trigger — but
+**read the project root for `CYCLES.md` here as well**, because a doc created
+this session carries no opening line and would otherwise be invisible to its
+own close. Where the doc exists, read it and compute each cycle's due-ness
 from the observable its definition names — filing ONE capture in Unprocessed
 under the cycle's slug where a turn is due and no open capture with that slug
-exists, and nothing otherwise. Filing only: routing stays planning work. A
+exists, and nothing otherwise — then say in one line which cycles are due and
+which are not, filed or not. Filing only: routing stays planning work. A
 project with no cycles doc pays nothing here.
 
 Before committing, re-read that stretch of the chat and surface candidate

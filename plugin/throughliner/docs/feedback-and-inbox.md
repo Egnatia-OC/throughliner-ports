@@ -3,13 +3,13 @@ name: feedback-and-inbox
 docset: current
 note: >
   Fetched on demand from skill-nonspecific-rules.md's pointers. Full procedures for
-  the consumer feedback channel and the cross-project INBOX. The always-loaded
+  method problem reports and the cross-project INBOX. The always-loaded
   rules keep only the discriminator and the never-send-unseen guarantee.
 ---
 
 # Feedback channel and cross-project INBOX — full procedures
 
-## Consumer feedback channel
+## Method problem reports
 
 A problem with the *method itself* (a skill misbehaving, a hook misfiring, a
 rule producing a bad outcome) or with **Claude Code itself** is not work on the
@@ -20,9 +20,14 @@ plugin's author — a method problem goes to the channel below instead.
 ```
 the discriminator:  which thing is misbehaving?
     my app       ->  an ordinary capture in my QUEUE
-    the method   ->  a GitHub issue on the plugin's own repository where
-                     `gh` exists and the reporter consents;
-                     flintcraft.tech/report otherwise
+    the method   ->  mail to the plugin's own project where this project's
+                     address book records it as a correspondent — same
+                     machine, no public post, and it lands in the queue
+                     that would fix it;
+                     otherwise a GitHub issue on the plugin's own repository
+                     where `gh` exists and the reporter consents;
+                     flintcraft.tech/report otherwise, and as the fallback
+                     wherever mail cannot be delivered
     Claude Code  ->  a GitHub issue on anthropics/claude-code
         (the harness: the app itself, its viewer, links,
          hooks machinery, sidebar — not this plugin's rules)
@@ -34,7 +39,16 @@ user-raised     ->  always fine to draft a report
 Claude-noticed  ->  offer ONCE. Drop it if they decline.
 ```
 
-### The method report — issue first, form as fallback
+### The method report — mail where the project is on this machine, then issue, then form
+
+**Where the address book inside this project's `INBOX/` records the plugin's own
+development project as a correspondent, offer mail first.** The report reaches
+the queue that would fix it, on the same machine, with nothing published under
+anyone's name. It goes out as an ordinary outbound message: the user sees the
+exact wording and gives an explicit yes, and the send writes its line in
+`INBOX/sent.md` like any other. Where the mailbox cannot be written — no
+correspondent recorded, the folder missing, the send declined — fall through to
+the public routes below, which stay exactly as they are for everyone else.
 
 **Where `gh` is installed and authenticated, offer a GitHub issue on the
 plugin's own repository.** Same mechanics as the Claude Code route below:

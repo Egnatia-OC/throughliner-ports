@@ -235,13 +235,25 @@ dependency facts fire once and describe the queue as it stood *before* the sessi
 touched it, so a /plan that has processed a dozen items is otherwise reasoning
 against a stale snapshot. The digest is a script, so re-running is cheap.
 
-**Then read the five most recent lines of `LOG/index.md`** — the top five, newest
-first. This is orientation: it sets the session's upcoming work against what just
-happened, so a fresh session does not open blind to its own recent history. Fold
-anything relevant into the opening narration; **produce no separate output and no
-summary of the log for its own sake.**
+**Then read the `LOG/index.md` lines newer than the most recent planning
+session's record** — found by that record's body fields rather than its
+filename, the same way the dispositions window is found, since the per-entry
+split names planning records by slug. That window is the work done since the
+last time anyone stood where you are standing now. Where no planning record
+exists, read the current month's lines.
 
-Five lines, not the entries beneath them. This is the orientation read, never a
+**Fold a line into the opening narration when it names a slug or a file the
+current queue also names, and leave it out otherwise.** That is the whole test:
+an intersection between what just happened and what is about to be worked, which
+is checkable rather than a judgment about relevance.
+
+**Carry one line either way** — what was read and what it touched, or that
+nothing in the window bears on today's queue. A read that speaks only when it
+finds something is indistinguishable from a read that never ran. That line rides
+the opening narration: **produce no separate output and no summary of the log
+for its own sake.**
+
+Index lines, not the entries beneath them. This is the orientation read, never a
 replacement for opening the entry that matters.
 
 **Read the forward-recommendation advisory, and surface it as the FIRST LINE of
@@ -472,9 +484,15 @@ captures, then report what was seeded.
 
 This step belongs to /plan alone; /setup stays scaffolding and interview.
 
-**Cycles due-ness check** [SILENT] when the project has no cycles doc or nothing
-is due; [BRIEF] when a capture is filed. If the project has a cycles doc
-(`CYCLES.md` at the project root), read it. Each definition names an artifact,
+**Cycles due-ness check** [SILENT] when the project has no cycles doc; [BRIEF]
+whenever it has one. **The trigger is the session opening's cycles line**, which
+names the doc, each definition's slug and what its observable currently reads —
+so a project with cycles cannot reach this step without having been told they
+exist, and one without cycles gets no line and pays nothing. Where the line is
+there, read the doc and say in one line which cycles are due and which are not,
+whether or not anything is filed: a check that spoke only when it filed was
+indistinguishable from a check that never ran, which is what it turned out to
+be. Each definition names an artifact,
 the steps of one turn, a cadence, and **the observable that marks a completed
 turn** — a release's date, a sent-record line. Compute each cycle's due-ness
 from its observable: read the observable's current state, and where a full
@@ -485,10 +503,14 @@ cycle due, no open capture with its slug  ->  file ONE capture in Unprocessed
                                               under the cycle's slug, naming
                                               the due step
 cycle due, open capture already exists    ->  satisfied; file nothing
-cycle not due                             ->  nothing, silently
+cycle not due                             ->  file nothing
 no cycles doc                             ->  nothing, silently — a project
                                               with no cycles pays nothing
 ```
+
+The one line covers every cycle either way — "weekly release: due, filed;
+posting rhythm: not due, last turn 2026-08-22" — so the user can see the check
+ran and disagree with what it read.
 
 Position is never stored: due-ness is recomputed from the observable every
 time, so a forgotten check costs nothing and a state file cannot lie. The

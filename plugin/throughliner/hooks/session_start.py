@@ -350,24 +350,86 @@ def _plugin_json_without_version(raw):
     return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
-def _dirty_tree_count(cwd):
-    """Count files with uncommitted changes via `git status --porcelain`.
+_HASH_FILLED = re.compile(
+    r"^(?P<prefix>#{1,6}\s+|-\s+)(?P<hash>[0-9a-f]{7,40})(?P<sep>\s+[—–-]\s+)"
+)
 
-    Returns the count, or 0 on any error or a clean tree.
-    """
+
+def _dirty_paths(cwd):
+    """Paths with uncommitted changes, or None where git could not be read."""
     try:
         result = subprocess.run(
             ["git", "status", "--porcelain"],
             cwd=cwd,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=15,
         )
     except (OSError, subprocess.SubprocessError):
-        return 0
+        return None
     if result.returncode != 0:
-        return 0
-    return len([line for line in result.stdout.splitlines() if line.strip()])
+        return None
+    paths = []
+    for line in result.stdout.splitlines():
+        if not line.strip():
+            continue
+        # Porcelain v1: two status characters, a space, then the path.
+        path = line[3:].strip().strip('"')
+        if " -> " in path:            # a rename reports old -> new
+            path = path.split(" -> ", 1)[1]
+        paths.append(path)
+    return paths
+
+
+def _is_hash_backfill_diff(cwd, relpath):
+    """True where this file's whole diff is placeholders becoming real hashes.
+
+    The backfill runs by itself at every session start, so its changes are the
+    most common thing in a dirty tree and the least interesting. Reporting them
+    inside a bare file count made a session opening state a fact it could not
+    interpret, and the user went to another session to find out what it meant.
+
+    Read strictly: every removed line must carry a placeholder in hash position
+    and every added line the same shape with a hash, one for one. Anything else
+    in the file — a word changed, a line added — fails the whole file back to
+    the plain count, which is the safe direction.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "diff", "-U0", "--", relpath],
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    if result.returncode != 0:
+        return False
+    removed, added = [], []
+    for line in result.stdout.splitlines():
+        if line.startswith("+++") or line.startswith("---"):
+            continue
+        if line.startswith("-"):
+            removed.append(line[1:])
+        elif line.startswith("+"):
+            added.append(line[1:])
+    if not removed or len(removed) != len(added):
+        return False
+    for old, new in zip(removed, added):
+        was = _HASH_POSITION.match(old)
+        now = _HASH_FILLED.match(new)
+        if not was or not now:
+            return False
+        if was.group("prefix") != now.group("prefix"):
+            return False
+        if old[was.end():] != new[now.end():]:
+            return False
+    return True
 
 
 def _isolation_model(cwd):
@@ -730,6 +792,69 @@ def _queue_dependency_facts(queue_path):
     dead = [(h, b) for h, b in held_pairs if b not in known]
     return (cleared, held, blockers_in_unprocessed, waiting, dead,
             date_held, date_passed)
+
+
+CYCLES_DOC = "CYCLES.md"
+CYCLE_HEADING_RE = re.compile(r"^#{2,4}\s+(.*?)\s*\[([a-z0-9][a-z0-9-]*)\]\s*$")
+CYCLE_OBSERVABLE_RE = re.compile(r"^\s*\*{0,2}Observable\s*:\*{0,2}\s*(.+?)\s*$",
+                                 re.IGNORECASE)
+CYCLE_CADENCE_RE = re.compile(r"^\s*\*{0,2}Cadence\s*:\*{0,2}\s*(.+?)\s*$",
+                              re.IGNORECASE)
+ISO_DATE_IN_TEXT_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def cycles_facts(cwd):
+    """Each cycle definition's slug, cadence and observable, as written.
+
+    Facts and never verdicts, the same register as the queue dependency facts:
+    the hook reports what the doc says and what the observable currently reads,
+    and the skills decide due-ness from it. Due-ness is deliberately NOT
+    computed here — a cycle's observable can be a release date, a line in a
+    sent register or a file's presence, and a hook that guessed at all of those
+    would report a verdict it cannot stand behind.
+
+    Returns None where the project has no cycles doc, so a project with no
+    cycles pays nothing. Otherwise a list of (slug, description, cadence,
+    observable, last_date) tuples, any of which may be None where the
+    definition does not carry that line.
+    """
+    path = os.path.join(cwd, CYCLES_DOC)
+    if not os.path.isfile(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            lines = handle.read().splitlines()
+    except OSError:
+        return None
+
+    cycles = []
+    current = None
+    for line in lines:
+        heading = CYCLE_HEADING_RE.match(line)
+        if heading:
+            current = {"slug": heading.group(2),
+                       "description": heading.group(1).strip(),
+                       "cadence": None,
+                       "observable": None}
+            cycles.append(current)
+            continue
+        if current is None:
+            continue
+        observable = CYCLE_OBSERVABLE_RE.match(line)
+        if observable and current["observable"] is None:
+            current["observable"] = observable.group(1)
+            continue
+        cadence = CYCLE_CADENCE_RE.match(line)
+        if cadence and current["cadence"] is None:
+            current["cadence"] = cadence.group(1)
+
+    out = []
+    for cycle in cycles:
+        observable = cycle["observable"]
+        dates = ISO_DATE_IN_TEXT_RE.findall(observable or "")
+        out.append((cycle["slug"], cycle["description"], cycle["cadence"],
+                    observable, max(dates) if dates else None))
+    return out
 
 
 WORKING_FILE_RE = re.compile(r"^_(build|plan)-(.+)\.md$")
@@ -1360,6 +1485,42 @@ def main() -> int:
             )
         context_parts.append(facts)
 
+    # The cycles doc's definitions, in one line — the artifact that gives the
+    # due-ness check something to key on. Without it the check had no trigger
+    # at any of its three sites and fired nowhere, silently, for its whole life.
+    # Facts only, in the same register as the dependency facts above: what each
+    # definition says, and what its observable currently reads.
+    cycles = cycles_facts(cwd)
+    if cycles is not None:
+        if not cycles:
+            context_parts.append(
+                "[Throughliner] Cycles: CYCLES.md is present but no definition "
+                "matched the expected shape (a heading ending in [slug]). "
+                "Nothing is being computed from it — read it directly."
+            )
+        else:
+            described = []
+            for slug, description, cadence, observable, last_date in cycles:
+                part = f"[{slug}]"
+                if description:
+                    part += f" {description}"
+                part += f" — cadence: {cadence or 'not stated'}"
+                if last_date:
+                    part += (f"; observable reads {observable} "
+                             f"(last turn {last_date})")
+                elif observable:
+                    part += f"; observable: {observable}"
+                else:
+                    part += "; no observable line"
+                described.append(part)
+            context_parts.append(
+                "[Throughliner] Cycles on file (%d): %s. Facts, not verdicts — "
+                "the hook reports what each definition says and what its "
+                "observable reads; /plan, /next and /done compute due-ness from "
+                "the observable and file one capture per due step."
+                % (len(cycles), "; ".join(described))
+            )
+
     # Which isolation model is actually in force, measured rather than assumed.
     #
     # Each message says what this session's isolation means for ITS OWN WORK
@@ -1631,11 +1792,29 @@ def main() -> int:
     # session. The message says /done will pick the changes up, which is true
     # either way, so the false fire is harmless.
     if not has_active_build:
-        dirty_count = _dirty_tree_count(cwd)
-        if dirty_count:
+        dirty_paths = _dirty_paths(cwd)
+        if dirty_paths is None:
+            dirty_paths = []
+        # Changes the hash backfill made are separated out and named as what
+        # they are. A count that lumps them in states a fact the reader cannot
+        # interpret: "nine log entries have uncommitted changes" is alarming,
+        # is routine, and nothing in the line says which.
+        backfilled = [p for p in dirty_paths
+                      if p.startswith("LOG/") and _is_hash_backfill_diff(cwd, p)]
+        remaining = [p for p in dirty_paths if p not in backfilled]
+        if backfilled:
             context_parts.append("")
             context_parts.append(
-                f"[Throughliner] {dirty_count} file(s) have uncommitted "
+                f"[Throughliner] {len(backfilled)} LOG file(s) changed because "
+                "this project's commit hashes were filled in automatically — "
+                "placeholders replaced with the real hash, nothing else. That "
+                "runs by itself at every session start and is normal; /done "
+                "commits it along with everything else."
+            )
+        if remaining:
+            context_parts.append("")
+            context_parts.append(
+                f"[Throughliner] {len(remaining)} file(s) have uncommitted "
                 "changes from a previous session — /done will pick them up."
             )
 
