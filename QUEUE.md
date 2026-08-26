@@ -6,6 +6,356 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
+#### [audit] Audit two frustrating sessions for ordering rigidity: where enforcement should have been a warning [ordering-rigidity-transcript-pair-audit]
+Raised by you 2026-08-26 at this planning opening, processed now on your direction. Your report: the two sessions were a very frustrating experience, and your framing is the audit's lens — there is no point enforcing order inside the same session; the user needs to be warned, but they shouldn't have to swear at Claude to be able to get things done. Filed with just the transcripts and your framing, your choice at the interview — no pre-named moments.
+
+The audit reads both transcripts (preprocessing them per CLAUDE.md's transcript-reading procedure: a short Python pass writing slim conversation-only files to the scratchpad, then reading those), identifies every moment where ordering enforcement created friction — the user warned, blocked, deferred, or made to insist — and tests each against the lens: would a warning have sufficed instead of enforcement? Findings are filed as captures for the next /plan, per the audit flavor's standing rule; this item edits nothing. The redesign of any ordering rule follows from those findings at a later planning session, not here.
+
+**Widened 2026-08-26, on your direction, with the release failure.** The plan recorded on [expedite-first-beta-release] — you pick the release build at the end of a build run, test20 as candidate, test19 as fallback — was not honoured: the repo instead shows a rezip and a bump to v1.21.0 ("Bump to v1.21.0 and repackage", commit 2a96ce4), pushing an untested build to users as the release, after two planning sessions that morning had settled the pick with Fable. Your question, carried as the audit's second lens: why, after all that explaining and re-explaining, did the sessions still do this — where in the transcripts did the recorded decision get lost, reinterpreted, or overridden, and what did the sessions read (or fail to read) at the moment they acted?
+
+--- Build block ---
+Changes: no files change — an audit. Inputs to read: `C:\Users\Alex 2\.claude\projects\C--Users-Alex-2-My-Drive-Desktop-Prioritity-projects-Taskflow-Planning-No-code-method\d3f8b9c7-62e2-40ea-9fb2-5f4559f03d61.jsonl` and `C:\Users\Alex 2\.claude\projects\C--Users-Alex-2-My-Drive-Desktop-Prioritity-projects-Taskflow-Planning-No-code-method\04ea9e77-fd46-4bed-83a8-60e936b66273.jsonl`, preprocessed to slim files in the scratchpad first. Two lenses. (1) For each ordering-friction moment found: which rule or step enforced the order, what the user said, what it cost, and whether a warning would have sufficed (the user's framing: warn, don't enforce, within a session). (2) The release failure: trace how the pick recorded on [expedite-first-beta-release] (test20 or test19, the user's choice at a build run's end) became a rezip and an untested v1.21.0 release (commit 2a96ce4) — what each session read or failed to read at the moment it acted, and where the recorded decision was lost or overridden. File one capture per finding in Unprocessed; a clean pass on a transcript is recorded in the LOG entry, not the queue.
+Acceptance: both transcripts read end to end; every friction moment either filed as a capture or recorded as examined; the LOG entry names the count of findings and clean passes.
+--- End build block ---
+
+#### Run assumed a build environment was absent instead of asking, and the user quoted the method back [environment-check-skipped-user-had-to-cite-it]
+From the Taskflowapp transcript pair, build session `8731b6b2` (1.20.0-test18). Checked against the current build before filing: live — the rule is unchanged.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The diagnosis settled at processing: the rule exists and was read; the miss is that a tool failing from Claude's shell reads as the availability question already answered, when all it established was "can't run it *from my shell*". The fix is wording with a sharper trigger, not a new rule. Grep run at the keep: the rule's distinctive words live in `next-build.md` alone (the QUEUE.md match is this item); no hook enforces it, no template or FAQ entry names it.
+
+Rule gate: run — amendment to next-build.md's before-assuming-an-environment-is-absent rule; the sharper trigger is written into the existing rule's own sentence, no new freestanding rule and nothing evicted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/next-build.md` — reword the "Before assuming a device or environment is absent, check" rule so a tool failing from Claude's shell triggers the ask instead of counting as its answer: what a shell-side failure establishes is that Claude cannot run the tool, not that the environment is absent, so before recording an outstanding check or asking to proceed without one, the run asks whether the user has a route to run it (their IDE, their own terminal).
+Acceptance: the reworded rule reads complete under the delete-and-read test (no rationale clause left inside it); the shell-failure case is unmistakably inside the rule's trigger; the adjacent device-consent rule is untouched.
+--- End build block ---
+
+Gradle failed from the run's own shell. The run concluded it could not compile, recorded an outstanding check, and asked whether to carry on with the Kotlin work uncompiled or retreat to the four document items. It never asked whether the user could build.
+
+The user's reply, in their own words: *"you're supposed to ask me if I have android studio then add it to a list of tools the project has on hand, as I understand Throughliner method"*. They were right about the first half — `next-build.md` says before assuming a device or environment is absent, check, and ask whether one is available rather than assuming none is, on the recorded ground that a check wrongly skipped sits unrun for weeks.
+
+Claude's own correction names the defect exactly: what it had established was "can't compile *from my shell*", not "can't compile". That distinction is the whole rule, and the rule as written does not make it — it says to check whether an environment is *available*, which a session that just watched a tool fail will read as already answered. Whether the fix is wording, or a narrower trigger keyed on a tool failing rather than on an environment being absent, is the question for processing.
+
+The cost here was the whole run: the session ended with the build question open and twenty items part-built.
+
+#### Tools a project has on hand have no home, so each session re-derives them or assumes wrong [no-home-for-a-projects-tool-facts]
+From the Taskflowapp transcript pair, build session `8731b6b2` (1.20.0-test18). Raised by the user in that session; checked against the current build before filing: live.
+
+Asked to record what the project has available, Claude answered correctly that Throughliner has no tools-inventory document and that per-project working facts belong in the project's own CLAUDE.md. That answer is right about today and does not settle whether it should be.
+
+What that session established and then had nowhere durable to put: Android Studio is installed, its bundled JDK 21 runs fine at a known path, the Android SDK is at a known path, and Gradle's client-to-daemon connection fails from Claude's shell specifically while a plain loopback test succeeds. Every one of those is a fact a later session needs and cannot cheaply re-derive — the last one especially, since rediscovering it costs a run its first act, which is what happened.
+
+The user expected a list. The method's nearest existing answer is the project's own CLAUDE.md, which is method-adjacent rather than method-owned, so nothing prompts a session to write there and nothing tells a later session to read it for this. Related to [environment-check-skipped-user-had-to-cite-it]: the check that rule requires is much cheaper when the answer from last time is written down, and a recorded "Gradle fails from Claude's shell here" turns an assumption into a known.
+
+For processing: whether this is a scaffolded section in the project's CLAUDE.md that the build doc points at, or something smaller — a convention that a build recording an outstanding environment check writes what it learned beside it.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The CLAUDE.md home was refused on this project's own machinery: the scope-lock denies CLAUDE.md to planning sessions and to builds whose items don't list it, so recording one path would cost a capture→plan→build chain nobody would run. The design mirrors the cycles doc: a `TOOLS.md` at the project root, created on first use, always-writable under the scope-lock like the scratchpad, written the moment a fact is learned and read by the environment check before any absent-assumption. Pairs with [environment-check-skipped-user-had-to-cite-it]: that item makes the run ask; this one makes last time's answer readable. SPEC's sentence was written at this keep.
+
+Rule gate: run — amendments to the environment-check rule (the read half) and the scope-lock's quiet list (the write half); no freestanding rule added. The CLAUDE.md-section alternative refused: unreachable under the lock without a heavier carve-out.
+
+--- Build block ---
+Changes: `plugin/throughliner/hooks/pre_tool_use.py` — add `TOOLS.md` (project root) to the always-writable set alongside the scratchpad, for planning and build sessions alike; suite case under `resources/testing/` driving the hook directly. `plugin/throughliner/docs/next-build.md` — the environment check gains both halves: read `TOOLS.md` before assuming a tool or environment is absent, and write a newly learned environment fact there in the moment (tool present and its path, or a failure mode such as "fails from Claude's shell"), one line per fact.
+Acceptance: hook suite passes (TOOLS.md write permitted in a planning-scoped session and mid-build; unrelated files still refused); the doc's check names both halves as actions; hook-touching close runs the full suites.
+Refused: a scaffolded CLAUDE.md section — the scope-lock denies it to both session types; a /setup scaffold step — the file is created on first use, so a project with no tool facts pays nothing.
+--- End build block ---
+
+#### Write-first rule gained a rationale clause that fails the delete-and-read test [write-first-rule-carries-its-why-inline]
+From the compliance audit of the rule changes since 3ed3db1, lens 4.
+
+`skill-nonspecific-rules.md` around line 150 now reads: "Write first, then report — decided by one test: is the previous version recoverable without the user's help? Consent happens in conversation, in plain words, before the write — the file is the record of what was agreed, not where agreement happens — and showing recoverable text before writing it costs a wait that buys nothing."
+
+Delete the second sentence and what remains is a complete instruction with its test intact, so by the lens's own detector the deleted sentence is rationale rather than operative text. It fires in every skill and in plain conversation, since this is the always-loaded file, so the weight is paid at every session start.
+
+Where it should go: the LOG entry that decided the write-first inversion, which is where an authoring decision belongs. Worth checking first whether any part of it is doing work the bare rule cannot — the "consent happens in conversation" half may be operative for a session that would otherwise read write-first as consent-free.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The caveat settled the split: "Consent happens in conversation, in plain words, before the write" states an action and stays as operative text; "the file is the record of what was agreed, not where agreement happens" and "showing recoverable text before writing it costs a wait that buys nothing" are rationale and are evicted. The why is already on record — the wording was authored deliberately in `2026-08-26-audit-write-first-contradiction.md`, which the build cites rather than re-writing the history anywhere.
+
+Rule gate: run — amendment to the always-loaded write-first rule: consent clause reclassified as operative, two rationale clauses evicted to the existing record, nothing new admitted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — in the "Write first, then report" rule, keep the one-test sentence and "Consent happens in conversation, in plain words, before the write" as the operative text; delete "the file is the record of what was agreed, not where agreement happens" and "showing recoverable text before writing it costs a wait that buys nothing". The LOG entry for this build names `2026-08-26-audit-write-first-contradiction.md` as where the evicted why lives.
+Acceptance: the rule reads complete under the delete-and-read test with no rationale clause left inside it; the consent clause survives; the typed YES/NO block and the rest of the section are untouched.
+--- End build block ---
+
+#### Mid-build scope question landed as a flat menu, and the user had to ask for the recommendation [build-scope-ask-lands-as-a-menu]
+From the AFK-cats transcript pair, build session `028fb28e` (1.20.0-test18). Checked against the current build before filing: live.
+
+The run's test suite found a real daylight-saving bug in a file already in scope. The build stopped and asked: "Shall I add that fix to this item's scope, or leave the bug and file it as its own queue item?" — two outcomes, no recommendation, though the message right before it had already established the fix was small, in one file, and in scope. The user answered "as you recommend", which is them spending a turn asking for the recommendation the question owed them.
+
+`next-build.md`'s scope-growth branch models the minor arm as one recommended ask — "This needs [work], which means editing [file] — add it to scope?" — so the specimen is right and the branch around it is what let a two-option menu through: it presents minor and significant as a pair of routes, and a run that has just decided which one applies can still write both out. The always-loaded narration rule (dependency ownership: lead with the recommendation, alternatives as fallback) is the rule being missed.
+
+Worth checking the same shape at the run's other blocking asks — the discovery rule's needed-and-minor arm has the same two-outcome structure. The same session shows the contrast working: the planning run recommended explicitly five times ("I'd take the first", "I'd do it now") and the user's "as you recommend" there was agreement rather than a request.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The grep at the keep widened the Files line from the one file recommended in discussion to two: the scope-growth ask lives in `next-build.md` (the "add it to scope?" specimen), and the discovery rule's needed-and-minor arm ("ask to add it") lives in the always-loaded `skill-nonspecific-rules.md`, not in the build doc. `ANNOUNCEMENT-IDEAS.md`'s description of the ask stays true under the rewording (Claude still stops and asks) and is deliberately not touched.
+
+Rule gate: run — amendment to the scope-growth branch's wording and to the discovery table's needed-and-minor arm; both reworded to lead with the recommended route, nothing new admitted, nothing evicted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/next-build.md` — reword the scope-growth branch so the run first decides which arm applies and asks one recommended question for that arm, the other route named only as the escape ("or I can file it instead"), never as an equal menu entry. `plugin/throughliner/docs/skill-nonspecific-rules.md` — the discovery table's "needed and minor" arm reworded from "ask to add it" to recommend adding it and ask, keeping the typed block's terse register.
+Acceptance: neither site can be read as a flat two-option menu — each blocking ask leads with one recommended route; the significant arm's propose-splitting behaviour is unchanged; the typed block still parses as a block.
+--- End build block ---
+
+#### Claude invoked /plan itself and handed the user a red error, against the rule naming that exact failure [claude-invoked-plan-against-the-rule]
+From the AFK-cats transcript pair, planning session `da1599f2` (1.20.0-test18). Checked against the current build before filing: live, since nothing about the rule has changed.
+
+The session's first exchange: Claude said "Rules loaded (`docset: current`). Starting the planning run", attempted to run the skill, and the attempt failed. Its next message told the user the skill "can't be started from my side" and asked them to type it again. So the user's first experience of the session was an error, followed by being asked to repeat what they had already done.
+
+The always-loaded rules name this precisely — the method's own skills ship with model-invocation disabled, an attempt fails and shows a red error, and the rule exists because it had already happened once at a close. The rule was loaded (the session says so in the same breath) and not followed.
+
+What to work out at processing: this is a rule that is stated, read and still missed, which is the shape the gate's admission questions are for. Candidates are wording (it sits inside a bullet about running commands generally, so the prohibition reads as an aside to a rule about doing more yourself) and placement (nothing fires at the moment of temptation — the opening, where a session has just been handed a skill's instructions and reads them as something to start). Whether a hook could refuse the call is worth asking, since the failure has a mechanical signature.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement — reframed by your account of the real trigger.** The transcript was re-read at processing and confirms the incident (you typed /plan, Claude tried to start it, error, you retyped). Your report, in Claude's paraphrase: the desktop app takes around fifteen seconds before /plan is runnable at a session's start — typed quickly it isn't corrected to the prefixed Throughliner form and lands in chat as plain text (possibly colliding with Claude Code's native plan mode) — and you usually can't resist typing it early, so the situation recurs. So the upstream cause is Claude Code's, routed out as a GitHub issue in the same session; this item is the method's half: however the bare text arrives, Claude's response must be a calm hand-back, never a self-invocation ending in a red error.
+
+Rule gate: run — escalation to a hook under the gate's fourth admission question (the failure is mechanical, recurs, and its cost lands on the user's first moments); the hand-over prohibition amended into its own rule statement rather than a new rule added.
+
+--- Build block ---
+Changes: `plugin/throughliner/hooks/pre_tool_use.py` — refuse a Skill-tool invocation of the method's own skills (setup, plan, next, rescan, done) with a plain message: the command is the user's to type; if it landed as chat text, the command likely hasn't registered yet — wait a few seconds and type it again. Add a suite case under `resources/testing/` driving the hook directly. `plugin/throughliner/docs/skill-nonspecific-rules.md` — hoist the skills-are-hand-over-only prohibition out of its aside inside the run-commands bullet into its own rule statement, stating the action: name the command and ask the user to type it.
+Acceptance: the new suite case passes (invocation refused with the guidance message, other Skill calls untouched); the hook suites all pass at the close (hook-touching commit); the hoisted rule reads complete and bare; verification drives the hook code directly, never a live skill invocation.
+Refused: leaving it wording-only — twice on record, and the user reports the early-typing trigger will recur.
+--- End build block ---
+
+#### Context-coverage caveat was written three times across one pair of sessions [coverage-caveat-repeats-within-a-session]
+From the AFK-cats transcript pair (1.20.0-test18). Checked against the current build before filing: live.
+
+The line "I can't tell whether any of our earlier conversation has dropped out of view, so this is what I could still see rather than a guarantee I've caught everything" appears at the build session's close, at `/rescan` in the planning session, and again at the planning close. Twice of those three are inside a single session, minutes apart.
+
+Each instance is honest and none is wrong — the rule requiring it is doing its job, and the fix is not to say it less truthfully. What is worth deciding is whether a session that has already given the caveat needs to give it again in full at the next scan, or whether a shorter back-reference carries the same information. The reader is a non-coder meeting an unfamiliar limitation; the first statement teaches it, the third reads as boilerplate, and boilerplate is what people learn to skip past — which is how a genuinely important caveat stops being read at all.
+
+Small, and filed because the cry-wolf failure it edges toward is one this project has repealed measures for twice.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** Settled: the teaching moment is the first statement per session; repetition within a session is what decays it into boilerplate. The amendment: first statement in a session stays in full, any later one in the same session may be a one-clause back-reference ("same limit as before: this reaches only what I could still see"). Held in conversation, no stored state — the once-per-rest ask's pattern. Grep run at the keep: the caveat specimen lives in `done.md` (around line 420) and `rescan.md` (around line 120); `done-build.md`'s no-gauge sentence and the fresh-chat-offer rule in `skill-nonspecific-rules.md` are different rules and untouched.
+
+Rule gate: run — amendment to the caveat requirement at its two specimen sites; nothing new admitted, nothing evicted, the full form stays canonical for the session's first statement.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/done.md` and `plugin/throughliner/docs/rescan.md` — beside each caveat specimen, amend the requirement: the full caveat is given the first time it is stated in a session; a later statement in the same session may be the one-clause back-reference restating the operative fact (reaches only what was still visible), without the full lesson.
+Acceptance: both sites carry the same two-tier wording; the full specimen text is unchanged; the back-reference clause states the limit, not merely points at it.
+--- End build block ---
+
+#### Build view drops file paths an item's work depends on, because they live in rationale prose [build-view-drops-paths-in-rationale]
+Noticed by Claude while running the two transcript audits in this session's build run.
+
+Both transcript-analysis items name the exact `.jsonl` paths to read. Those paths sit in the item's rationale prose, not in its `Changes:` line — so the generated build view, which carries the build block and no decision history, showed the instruction "preprocess both transcripts" with nothing saying which two. The run had to open QUEUE.md to find them, against the standing rule that a build leaves the queue closed.
+
+This is the view's stated cost landing on a case it did not anticipate. The view drops history deliberately and that design is not in question; what this shows is that a path can be *instruction* while sitting in a sentence that reads like *context*, and nothing at the keep-step catches it. An item whose work is "read these two files" has its file list in the wrong place, and the item still passed the two-limb buildability test because its `Changes:` line does say what happens.
+
+Two directions for processing, and the first looks cheaper. Either the keep-step's build block gains a place for inputs an item reads (distinct from files it changes), so a path an audit needs travels in the block; or the buildability test gains a limb asking whether everything the work needs to start is inside the block rather than around it. Worth checking how many existing items would fail whichever is chosen before committing to it.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The first direction won: the block template gains an optional `Inputs:` line (files the work reads but does not change), and the block-authoring rule gains one sentence — anything the work needs to start goes in the block, never only in rationale. The second direction (a new buildability-test limb) is refused as duplicating that sentence at a cost paid on every keep. Checked at the keep: today's audit item already carries its paths in its block, and the two held build items name their files in theirs, so no existing item fails the new rule. The view copies the delimited block byte-for-byte, so no script change is expected — the build confirms this against `generate_build_view.py` rather than assuming it.
+
+Rule gate: run — amendment to the build-block authoring rule (template line plus one sentence); the extra test limb refused as a duplicate.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/plan.md` — add an optional `Inputs: <files the work reads but does not change>` line to the build-block template, and one sentence at the block-authoring rule: anything the work needs to start — paths, names, values — travels in the block, never only in rationale.
+Acceptance: the template shows the `Inputs:` line as optional; `generate_build_view.py` confirmed to carry it unchanged (byte-for-byte block copy, checked not assumed); the queue lint confirmed indifferent to block contents.
+--- End build block ---
+
+#### Six unbuildable items sat cleared to run, and a build run was the first thing to catch them [unbuildable-items-persist-in-the-ready-region]
+From the Taskflowapp transcript pair, build session `8731b6b2` and the planning session `536b761a` that preceded it by hours (1.20.0-test18). Checked against the current build before filing: live.
+
+The build stopped before locking scope and named six items it could not scope — a tier model naming no billing library, cloud sync whose backend was never chosen, an MCP setup screen pointing at a server with no host, that server itself, a reconciliation item depending on it, and a content item waiting on words that sit unwritten in Unprocessed. It checked their archived specs too and found "[To be filled in during the next planning session.]" where the goal should be.
+
+All six were already in the ready region from earlier sessions. The planning run that day worked the fourteen unprocessed captures and reported "24 items cleared to build", with nothing flagged. The digest is supposed to report an item whose file list names nothing to change — that is one of its placement contradictions — so either it did not reach these items or it reported and nothing surfaced them. This was not verified by running the digest against that queue, so the cause needs establishing before anything is designed.
+
+The shape of the gap is the part worth keeping either way: the buildability test runs at the keep-step, once, and an item that passes it (or was cleared before the test existed) is never asked again. Everything downstream trusts the ready region, so six items rotted there in plain sight and the first mechanism to notice was a run refusing to start. Twenty items built after they were dropped, so the run recovered — but the recovery cost the user a turn and the diagnosis cost the run its first act.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement — cause established at processing rather than assumed.** The digest was run read-only against Taskflowapp's live queue: zero placement contradictions reported while 26 items sit cleared, and the file holds 40 items against 24 build blocks. So the rot was cleared items with no build block at all, and the only detections of that state — the advisory lint (fires on a queue edit) and the view generator's halt (fires when a run starts) — never fire at a planning opening. The fix puts the same mechanical check where planning looks. SPEC's sentence naming the new contradiction class was written at this keep.
+
+Rule gate: not needed — a mechanical check added to a shipped script; no method rule authored or amended.
+
+--- Build block ---
+Changes: `plugin/throughliner/scripts/queue_digest.py` — placement contradictions gain a class: a cleared build or `[audit]` item whose block delimiter (`--- Build block ---`) is absent, printed one line per item. Add a suite case under `resources/testing/` with a fixture queue carrying a blockless cleared item.
+Inputs: the Taskflowapp digest run recorded in this item's prose is the reference failure case.
+Acceptance: the new suite case passes; the digest against a fixture with a blockless cleared item prints the contradiction; against this project's own QUEUE.md it prints none for items carrying blocks; `[user]` items (walkthroughs, no blocks by design) are not flagged.
+--- End build block ---
+
+#### Compile check reported a pass that came from the pipeline's last command, not the compiler [piped-check-reports-the-wrong-exit-code]
+From the Taskflowapp transcript pair, build session `8731b6b2` (1.20.0-test18). Checked against the current build before filing: live.
+
+The run put a Gradle build through a pipe ending in `tail`, read the exit status, and reported the compile as succeeding. Gradle had already failed; the status belonged to `tail`. Claude caught it later and said so plainly — "my first compile check reported success, but that exit code came from the `tail` at the end of the pipe, not from Gradle".
+
+`next-build.md` tells a run to verify whatever it can and treats a check Claude can run as part of building. Nothing anywhere says a piped command reports only its last stage, so a run that trims noisy output — which is the natural thing to do with a build log — can turn a failure into a pass without noticing. The tick that follows then reads "done, confirmed", which is the one tick form that asserts something ran and passed.
+
+A false pass is worse than no check at all: an unconfirmed tick names what still needs running, and this one names nothing. Worth writing into the build doc's verification guidance rather than left as something each session rediscovers — and worth checking whether the same shape can reach the hook suites, which this project runs as plain scripts and reads the same way.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The fix stated as the action: read a check's exit status from the tool itself, never from a pipeline around it — run the command bare, or capture its own status explicitly, and trim output separately. The hook suites are invoked as plain `py` scripts by standing rule, so the direct route is safe; the build checks how the release ritual and the close step word their suite invocations and adds the same line wherever one could plausibly grow a pipe.
+
+Rule gate: run — amendment to next-build.md's verification guidance; nothing new admitted, nothing evicted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/next-build.md` — add to the verification guidance, as one action-stating sentence: a piped command reports only its last stage, so a check's exit status is read from the tool itself (bare invocation, or its own status captured explicitly), with output trimmed separately. Check `resources/release-ritual.md` and `done-build.md`'s suite step for invocations that could grow a pipe, adding the same sentence only where one genuinely could.
+Acceptance: the guidance names the piped-exit-code hazard as an action, not a warning; suite invocations confirmed pipe-free or annotated; no other verification wording changed.
+--- End build block ---
+
+#### Sent-register line claimed answers the message it points at never contained [sent-line-written-from-decisions-not-from-the-message]
+From the Taskflowapp transcript pair, planning session `536b761a` (1.20.0-test18). Checked against the current build before filing: live.
+
+Mid-session Claude recorded three settled answers as having been sent to another project, then caught it: *"I wrote that into the sent record, but the reply I actually sent didn't contain these answers. Removing that line."* A second message carrying the answers was drafted and sent later, so the record ended correct — but only because the same session noticed within the hour.
+
+The register exists so that a later repeal can be checked against what was actually claimed. A line written from what the session decided, rather than from the text of the message that went out, records the session's intent and not the correspondence — which is precisely the thing the register was built to stop, one layer up. The rule requires the line in the same turn as the approval and says it carries what the message claimed; nothing says to write it *from the approved text*, and the two come apart exactly when a session settles more than it sends.
+
+The fix is likely one clause on the existing rule rather than new machinery — the approved wording is on screen at the moment the line is written, so reading the claim off it costs nothing. Worth checking the existing lines in this project's own `INBOX/sent.md` for the same shape while the fix is being scoped, since nothing has ever checked them.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The clause: the line's claim is read off the approved text on screen at that moment, never from what the session decided. Grep run at the keep — the register-line rule is stated in `feedback-and-inbox.md`, in this project's `CLAUDE.md` (the Discord-posts section), and mirrored in SPEC's INBOX paragraph; the SPEC sentence already says the line is written "because the exact wording exists at that moment", which survives unchanged. The build also runs the back-check over this project's own register, since nothing ever has.
+
+Rule gate: run — amendment to the register-line rule at its stated sites; nothing new admitted. CLAUDE.md is host-side text and inside this build's Files line, which is what the scope-lock requires.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/feedback-and-inbox.md` and `CLAUDE.md` (Discord posts section) — add the clause to the register-line rule: the claim is read off the approved text as it stands on screen, never composed from what the session settled. `INBOX/sent.md` — one-pass back-check: for each line whose pointed text exists on this machine, compare the claim against the text and correct any line claiming what its message does not contain.
+Inputs: `INBOX/sent.md` and the LOG/INBOX files its lines point at.
+Acceptance: the clause present at both rule sites; the back-check's outcome reported either way (lines checked, mismatches found and corrected, lines whose pointed text is off-machine named as unchecked).
+--- End build block ---
+
+#### Rule-gate lines in a build working file attach by position, so a later tick can land between an item's own lines [gate-line-in-working-file-is-positional]
+Noticed by Claude at the close of the 2026-08-26 build run, and filed on Alex's direction.
+
+Each ticked item writes up to three lines into the working file's Progress block: the tick itself, a `Depth: <slug> — …` line, and, where the item carries one, a transcribed `Rule gate:` line. The depth line is slug-bound, and next.md says plainly why — a bare positional line attaches to whichever tick it happens to sit under, so two written together silently attach to the wrong items. The gate line carries no slug and has exactly that problem.
+
+It happened three times in one run. Each new tick was written by matching on the previous item's last line, and where that item's last line was its depth line rather than its gate line, the new tick landed between the two — leaving a gate disposition sitting under the wrong item's tick. All three were caught and repaired in the same session, by a run that happened to be watching for it. Nothing would have caught them otherwise: the close reads depth by slug, so it never has to notice the gate line's position, and the working file is deleted at the close.
+
+**The consequence if one survives is small but exactly the kind this project cares about.** The close transcribes each item's gate disposition into that item's LOG entry, and the board's checks read those entries. A disposition attributed to the wrong slug is a wrong record of which rule was gated, in the one artifact the gate produces as evidence.
+
+Two candidate fixes, and the first mirrors a decision already made here: give the gate line a slug, as the depth line has, so it is self-identifying and the close reads it by slug rather than by what sits above it. Or state the per-item write order in next.md's completion step so the three lines are written as one block — cheaper, but it depends on care rather than removing the need for it, which is the argument the depth line's slug already won.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The slug-bound fix won on the depth line's own recorded ground: the write-order alternative depends on care rather than removing the need for it. The working-file gate line becomes `Rule gate: <slug> — run/not needed — …`, self-identifying wherever a later tick lands, and the close reads it by slug as it already reads depth. Grep run at the keep: the write site is next.md's Progress-block spec (beside the `Depth: <slug>` lines, around line 491), the read site is done-build.md's transcription step (around line 189), and CLAUDE.md's transcription description is checked for format wording in the same pass. The LOG-entry form of the line is untouched — `rule_signals.py` parses that, not the working file.
+
+Rule gate: run — amendment mirroring the depth line's slug-binding onto its sibling gate line; the write-order alternative refused on the recorded ground.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/next.md` — the working file's gate line format gains the slug (`Rule gate: <slug> — …`) in the Progress-block spec and wherever the completion step names it. `plugin/throughliner/docs/done-build.md` — the close's gate transcription reads the line by slug, as the depth read does. `CLAUDE.md` — the transcription description updated only if it states the slugless format.
+Acceptance: the working-file format and the close's read are both slug-keyed; the LOG-entry `Rule gate:` format is unchanged and `resources/rule_signals.py` needs nothing; no positional match remains at either site.
+--- End build block ---
+
+#### CLAUDE.md's Architecture section undercounts the skills and hooks that actually ship [claude-md-architecture-undercounts]
+Found by the v1.21.0 release sweep's CLAUDE.md pass. The Architecture section says "**4 skills:**" and lists four, omitting `/rescan`; and "**3 hooks** — two enforcing, one advisory", omitting `stop.py`. The plugin ships five skills (`plugin/throughliner/skills/` holds setup, plan, next, rescan, done) and four hooks (`plugin/throughliner/hooks/` holds session_start, pre_tool_use, stop, post_tool_use). `plugin.json`'s own description already names five skills, and SPEC.md already describes both `/rescan` and the `stop` hook correctly — so this file is the one that fell behind.
+
+Why it matters beyond tidiness: this is the always-loaded project file every session here reads to orient itself. A session reading it learns the method has no `/rescan` and no `stop` hook, which is the same class of failure the migration's retired-term detection exists to catch in consumer projects.
+
+The fix is a straight correction of both counts plus one bullet each, worded from SPEC's existing descriptions. The edit was attempted during the release sweep and refused by the scope-lock, which was right: the build working file had already been deleted at the close, so the session was on the standing planning list and CLAUDE.md is not on it.
+
+Rule gate: not needed — a stale description corrected to match what ships; no rule authored or amended.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The capture already carried the whole fix; nothing was redesigned at the keep.
+
+--- Build block ---
+Changes: `CLAUDE.md` — Architecture section: "4 skills" becomes five with a `/rescan` bullet, "3 hooks — two enforcing, one advisory" becomes four with a `stop` bullet; both new bullets worded from SPEC's existing descriptions of /rescan and the stop hook.
+Acceptance: the counts match `plugin/throughliner/skills/` and `plugin/throughliner/hooks/` on disk; no other CLAUDE.md text changed.
+--- End build block ---
+
+#### Process-now "yes" was spent as disposition approval: two items written and cleared with no recommend-and-wait turn [process-now-yes-spent-as-disposition]
+Raised by you 2026-08-26, in a live /plan on this project: after the process-now offer for the beta install pin, your "yes, process it now" — an answer to *when* — was treated as approval of a design first shown in the offer message, and two items were written and cleared with no recommendation turn. Your words: "you skipped processing and landed stuff straight to queue like was always happening with 'keep' in the last version." Repaired in-session: you reviewed and kept both items as written.
+
+The rule already forbids this — plan.md's fold conditions say a design first shown in the offer message cannot fold, and the process-now section says either branch is subject to them — so this is an instance of a shipped rule not being followed, not a missing rule. Evidence for the keep-step: the one site where bundling was actually fixed was the checkpoint, fixed by a specimen message rather than a rule statement ([style-negatives-to-rewrite-positive] carries the citation) — so the candidate fix is a specimen at the process-now section showing the offer turn and the separate recommend turn, weighed against accepting it as a slip. Runs on the version installed today, so check the current text before scoping.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The specimen won on the capture's own citation: rule statements at this site were read and missed, and the one bundling site actually cured was cured by a specimen. The same session processing this keep is the control case — it ran the flow correctly (timing "yes", then interview, then a recommend turn of its own), so the specimen records the working shape rather than inventing one. The accept-as-a-slip alternative refused on that evidence.
+
+Rule gate: run — a specimen added to plan.md's existing process-now section, mirroring the checkpoint's specimen precedent; no rule statement changed.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/plan.md` — add a specimen exchange to the process-now section, checked against the installed text before editing: the offer turn (process now vs carry on), the user's timing "yes", the interview turn, and the recommendation standing as its own waiting turn — showing that the timing answer never doubles as disposition approval.
+Acceptance: the specimen shows two distinct asks answered separately; the section's rule text is otherwise unchanged; the fold conditions it defers to are untouched.
+--- End build block ---
+
+#### First item of a processing pass gets no take-this-one ask, and it read as bundling [first-item-presentation-reads-as-bundling]
+Raised by you 2026-08-26, mid-/plan, in the session whose subject was ordering rigidity: when the first capture opened with summary, analysis and recommendation in one message, you stopped it — "you're supposed to ask if I want to process it, then I say yes or no, then you make a recommendation." The procedure deliberately gives the first item no checkpoint ask (the separate dig-in turn was removed as over-asking), so the behaviour followed the rules — and still read as the old bundling failure to the person it serves. Every later item gets "take this one next?"; only the first does not, so the session's very first processing move is the one that breaks the expectation the rest of the session builds.
+
+**Kept 2026-08-26 in the same session, on Claude's recommendation and your agreement.** Consistency won: the first item takes the same checkpoint shape as every other — the message narrating the chosen order ends with the first item's pointer and "start with this one?", the summary and analysis following on the yes. One extra turn per session, once; the old over-asking reasoning is outweighed rather than called wrong, because the turn is no longer empty — it carries the order narration and the pointer. The no-separate-dig-in-turn exception is evicted in the same edit.
+
+Rule gate: run — amendment superseding the first-item exception, on this session's recorded instance; the exception's text evicted in the same move, nothing else admitted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/plan.md` — the per-item loop's first-item arm: the processing pass opens checkpoint-shaped (order narration, first item's pointer, "start with this one?"), with summary and analysis on the yes; the "There is no separate 'ready to dig into this one?' turn" sentence and the first-item arm of the summary block reworded to match; both specimens updated.
+Acceptance: first and later items share one checkpoint shape; a grep finds no remaining statement of the first-item exception; the fold conditions and recommend step unchanged.
+--- End build block ---
+
+#### Session openings could report how long the installed build has been running [session-start-reports-install-age]
+Raised by you 2026-08-26, in the post-close tail, from a live instance: an announcement draft claimed you had been "running this build all week" when you had been running it since late the night before — Claude has no way to know how long an installed build has been tested, and this misjudgment recurs. The opening already reports the installed version and content stamp; the candidate is reporting the installed snapshot's age alongside them (the plugin cache directory's install time is a readable fact), so a session weighing "how tested is this build" reads a date instead of guessing. A derived fact in the session_start payload, same register as the stamp. For the keep-step: whether the age alone is enough, or whether what is really wanted is time-under-use rather than time-since-install.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** Install age won: it is a readable fact needing no maintenance, and it covers the actual failure ("installed 11 hours ago" kills an "all week" claim on sight). Time-under-use refused — it needs a state file recording sessions per build, and state files are refused here on the standing ground that the first session that forgets to update one makes it lie. The line reports the fact bare, never a verdict on how tested the build is. SPEC's clause was written at this keep.
+
+Rule gate: not needed — a reported fact added to a hook's payload; no method rule authored or amended.
+
+--- Build block ---
+Changes: `plugin/throughliner/hooks/session_start.py` — the installed-plugin line gains the snapshot's install date (read from the plugin cache directory's timestamp), worded as "installed since <date>", beside the version and content stamp. Suite case under `resources/testing/` against a fixture cache directory.
+Acceptance: the opening line carries the date; a missing or unreadable timestamp degrades to no age claim rather than a guess; hook suites pass at the close.
+--- End build block ---
+
+#### Queue lint's word-growth report attributed a change to an item the edit never touched [lint-word-growth-misattribution]
+Noticed by Claude 2026-08-26, filed at /rescan on your go. After the below-line lift of [discord-post-session-start-strength] (a mover call plus one Edit to that item's own block), the advisory word-growth report claimed [beta-install-smoke-and-post-edit] lost 8 words — an item no edit in this session touched. The likely cause is the diff attributing moved block boundaries to the wrong slug after a reorder, but this is a claim to test, not a fact: verify against `git diff HEAD -- QUEUE.md` and the lint's counting logic in `post_tool_use.py` before designing anything. If per-item deltas can land on the wrong item, the report's facts are less trustworthy than they read — the lint is advisory, so the cost is misleading facts, not blocked work.
+
+**Kept 2026-08-26 in the same session, on Claude's recommendation and your agreement — cause established by checking, not assumed.** The item's text between HEAD and the working tree is byte-identical; the delta is the readiness marker. The lint's per-item counter runs each span to the next heading, so the `--- Cleared to run above this line ---` line's 8 words counted as the adjacent item's, and moving the marker at the lift made the item appear to shrink. Any item adjacent to the marker gains or loses phantom words whenever it moves.
+
+Rule gate: not needed — a counting fix in a hook script; no rule authored or amended.
+
+--- Build block ---
+Changes: `plugin/throughliner/hooks/post_tool_use.py` — the word-growth counter excludes the readiness-marker line from every item's span. Suite case under `resources/testing/`: an item directly above the marker, the marker moved between snapshots, reported delta zero.
+Acceptance: the suite case passes; a marker move alone produces no per-item delta; hook suites all pass at the close.
+--- End build block ---
+
+#### "Ready list" naming rule is defined in plan.md but binds every skill's asks [ready-list-name-defined-where-only-plan-reads-it]
+From the compliance audit of the rule changes since 3ed3db1, lens 1 (distribution).
+
+`plan.md` around line 796 declares "the ready list" the standing plain-English name for the cleared region, and says it is "used identically in every session's asks". It fires wherever a session names that region to the user: at /plan's recommend step, at /next's off-ramp where the run is presented, and at /done where the close reports what is ready. Only the first of those reads `plan.md` — the other two load their own docs and the always-loaded rules, neither of which carries the name. A grep of the shipped docs finds "ready list" in `plan.md` alone.
+
+So the rule as written cannot do what it claims: two of its three sites can never read it. The fix is distribution — the name belongs in `skill-nonspecific-rules.md`, where every skill and every no-skill conversation reads it, with `plan.md` keeping only the recommend-step wording that uses it.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** The move passes the always-loaded file's own admission test: the name fires at /plan's recommend step, /next's run presentation, /done's what's-ready report, and in plain conversation. Declaration moves up; usage stays; the declaring sentence in plan.md is evicted in the same edit so nothing is doubled.
+
+Rule gate: run — a distribution move: one rule relocated into the always-loaded file with its old statement evicted in the same move; nothing new admitted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — add the one-sentence naming rule: "the ready list" is the standing plain-English name for the queue's cleared region, used whenever a session names that region to the user. `plugin/throughliner/docs/plan.md` — the recommend step's declaring sentence trimmed to usage of the name, the declaration removed.
+Acceptance: a grep for "ready list" finds the declaration in skill-nonspecific-rules.md and only usages elsewhere; plan.md's recommend step still reads complete.
+--- End build block ---
+
+#### Issue-channel check stays silent unless it files, while its sibling cycles check no longer may [issue-check-silent-while-cycles-check-speaks]
+From the compliance audit of the rule changes since 3ed3db1, lens 1 (consistency).
+
+Both checks sit in `plan.md`'s opening and fire at the same moment — the read-state step, before the queue is ranked. The issue-channel check (around line 349) is tagged `[SILENT]` when nothing is found or the tools are absent, `[BRIEF]` only when a capture is filed. The cycles check (around line 490) was rewritten this session to speak whenever the project has a cycles doc, on the stated ground that a check which speaks only when it files cannot be told from a check that never ran — which is what the cycles check turned out to be for its whole life.
+
+The reasoning that moved one applies unchanged to the other: an issue scan that ran and found nothing produces the same silence as an issue scan that never ran, and nobody would know to ask. Either the issue check gains a one-line either-way report, or the cycles change needs an argument for why the two differ. Worth settling as one decision rather than drifting further apart.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** Consistency won, with the cycles check's cost bound carried over: the check speaks only where the channel exists at all — `gh` present, and either open outbound issues on the register or a repository that can receive them — and there it speaks one line either way. A project without the channel stays silent and pays nothing, as a project without a cycles doc does. SPEC's correspondence-scan sentence was checked at this keep and survives unchanged.
+
+Rule gate: run — amendment aligning the issue check's response-shape tags with its sibling cycles check's decided shape; nothing new admitted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/plan.md` — the issue-channel check's tags become: [SILENT] where `gh` is absent or there is neither an open outbound issue nor a repository; [BRIEF] one line either way where the channel exists, covering both directions ("filed issues quiet, nothing incoming" or what was found).
+Acceptance: the tag arms carry conditions outside the brackets per the tag-authoring rule; the check cannot run silently where the channel exists; the no-channel case still says nothing.
+--- End build block ---
+
+#### Case D pop-out section carries no response-shape tags, and two of its steps wait on the user [setup-case-d-untagged]
+From the compliance audit of the rule changes since 3ed3db1, lens 2 (tag placement).
+
+`setup.md`'s Case D section (around lines 107 to 140) was added since the last audit and carries no tag on any step. Two of them stop for the user: reading the parent's SPEC and putting the inferred subpart to them in clarifier form, which fires at the very start of adopting a subfolder and cannot proceed without their answer; and drafting the pop-out message to the parent's INBOX, which fires at the close and is shown in full before an explicit yes. Both are `[PROMPT]` moments by the definition in the always-loaded rules.
+
+Case B's peek — the sibling this section says it copies — is tagged. Untagged, the output behaviour of a step that must wait is left to chance, which is the missing-tag failure the lens names.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** A compliance correction, nothing designed: the two waiting steps get [PROMPT] (the send step keeping its show-first shape), the rest tagged to match Case B's register.
+
+Rule gate: run — no rule authored; existing steps corrected to comply with the response-shape tag rules already in force.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/setup.md` — Case D (around lines 107–140): [PROMPT] on the confirm-the-subpart clarifier and on the pop-out INBOX message step; the section's remaining steps tagged to match Case B's register, any conditional arm written with the condition outside the brackets.
+Acceptance: no Case D step that waits is untagged; tag syntax matches the always-loaded tag rules; no step's substance changed.
+--- End build block ---
+
+#### Log-index read carries two rationale sentences inside its operative text [plan-log-index-read-carries-rationale]
+From the compliance audit of the rule changes since 3ed3db1, lens 4. Both sentences were written by the build run that filed this finding, so it is flagged against this session's own work.
+
+`plan.md`'s orientation read, around line 238, carries "That window is the work done since the last time anyone stood where you are standing now" and "A read that speaks only when it finds something is indistinguishable from a read that never ran." Delete either and the surrounding instruction — read the window, fold in a line when it names a slug or file the queue also names, carry one line either way — is complete.
+
+The step fires once, at every /plan opening, so this is weight paid by every planning session. Its home is the LOG entry for [plan-log-index-read-underdesigned], which already records why the window replaced a bare five.
+
+**Kept 2026-08-26 at the next planning session as the host of all three lens-4 evictions, on Claude's recommendation and your agreement.** The sibling captures [plan-cycles-step-carries-dated-history] and [plan-delete-branch-commentary] are folded in and deleted; their facts, carried whole: the cycles due-ness check (plan.md around line 490) ends on dated history — "a check that spoke only when it filed was indistinguishable from a check that never ran, which is what it turned out to be" — the session's own diagnosis in rule syntax, with shorter copies of the same wording carried into `next.md` and `done.md` that must move together so the copies do not disagree (its home: the LOG entry for [cycles-check-fires-nowhere]); and the delete branch (plan.md around line 1252) follows its decision block with "Judging 'fully relocated' is a judgment, not a test — and naming each part's destination is what makes a wrong one visible", commentary plus a restatement of the block's own narrate arm, deleted outright. Every evicted why already has a named home, so nothing is relocated anywhere new.
+
+Rule gate: run — an eviction pass over three sites; nothing added, three rationale clauses removed, each why already held by its named LOG entry.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/plan.md` — delete the two rationale sentences at the orientation read (around line 238: the "work done since anyone last stood here" sentence and the "indistinguishable from a read that never ran" sentence); delete the cycles step's trailing dated-history clause (around line 490, from "a check that spoke only when it filed…" to "…turned out to be"); delete the delete-branch commentary line (around line 1252). `plugin/throughliner/docs/next.md` and `plugin/throughliner/docs/done.md` — remove the shorter copies of the cycles clause so the three docs agree.
+Acceptance: each touched instruction reads complete under the delete-and-read test after the cut; a grep for "indistinguishable from a" across the three docs finds no cycles/orientation rationale copy left; no operative wording changed.
+--- End build block ---
+
 #### [user] Verify the cycles due-ness check live: one capture filed when due, no duplicate on the next opening [cycles-due-check-verification]
 Filed 2026-08-22 at the keep-step, on Claude's recommendation and your agreement. The cycles build ("Cycles shipped", record `2026-08-22-cycles-definitions-and-due-checks-build.md`) ticked done with one behaviour UNCONFIRMED: only the no-doc silent path was exercised, because this project has no cycles doc. Confirming it needs a live session in a project whose `CYCLES.md` carries a past-due observable — user work, since it happens in another project's session during your testing days. The release-cycle definition item ("Define this project's weekly release cycle") is held on this verification and lifts when it closes — timed so the definition can build before Wednesday 10am.
 **Walkthrough.**
@@ -98,6 +448,31 @@ Filed 2026-08-26 with [beta-branch-install-pin]. Two sequential user steps: the 
 4. On success, edit the "How to install" forum post so its install ask names `FlintcraftTech/throughliner#beta`. Look for: no live claim pointing new users at the unpinned route.
 5. Tell this project; the register line for the install post is updated with the corrected claim and this line closes.
 
+#### [user] Discord post: how much stronger a session is from its start once /plan opens by reading recent LOG index lines [discord-post-session-start-strength]
+Captured by you 2026-08-11. Your point, rendered in Claude's words rather than quoted: before, it felt shaky for the first few items; starting with log-awareness plus some maybe-relevant context massively boosts the start of sessions. The angle is yours; the correction below is Claude's.
+**It cannot be written yet, which is why this is a queue item rather than a draft.** You asked believing the feature was live. It wasn't: `plan.md`'s Step 1 reads QUEUE.md and SPEC.md only, and its three `LOG/index.md` mentions are targeted lookups — has this been decided — not an orientation read. The feature is [plan-reads-recent-log-index], held below the line behind [index-line-length-proportional-cap].
+**Your experience was real; the mechanism you credited was wrong.** What steadied that session was the below-line revisit reading LOG to check two blockers, plus the previous session's forward advisory naming where to start. Both live; neither is the five-recent-lines read. Worth carrying into the post — "the thing that helped wasn't the thing I thought" is the better story.
+**The post's content, to draft when it ships.** The shaky-first-items problem and its cause; what the orientation read changes; and the honest scope — it doesn't carry all necessary context, it sets upcoming work against past work. Include the cost bound, since it's why the feature waited: five index lines is an unbounded read until index lines are capped, which [index-line-length-proportional-cap] fixes.
+**Constraints:** 2000 characters, the Discord limit. Not posted until *everything* the post describes has shipped — standing rule in `CLAUDE.md`, adopted 2026-08-11.
+**Walkthrough.** 1. Feature ships. 2. Claude drafts inside the limit. 3. You say what to change. 4. You post — Claude has no route to Discord. 5. You confirm, and the line closes.
+**Unblocked 2026-08-13.** [plan-reads-recent-log-index] shipped — `LOG/2026-08-12-plan-reads-recent-log-index.md`; /plan's read-state step now opens with the five newest index lines. Ordinary ready work. Fourth item found sitting behind a shipped blocker; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries].
+
+**Paced 2026-08-14 on the user's decision: third in a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Pacing alone holds it.
+**Blocker repointed 2026-08-21.** [discord-post-cycle-awareness] was posted and closed on 2026-08-21 (`INBOX/sent.md`), so the old blocker had resolved and this item read as liftable while the pacing chain still held it. Repointed at [discord-post-context-adjacency], the post now ahead of it in the chain — it lifts by itself when that one goes out and closes. Same repair, same reasoning, as the repointing recorded on that item.
+**Lifted 2026-08-24.** [discord-post-context-adjacency] was posted and confirmed on 2026-08-23 (`LOG/2026-08-23-discord-post-context-adjacency.md`), so the chain ahead of this post is clear. The one-a-day pacing still applies at posting time: it goes out on a day no other Throughliner post does.
+**Held again 2026-08-26.** The feature the post announces was found underdesigned ([plan-log-index-read-underdesigned], now cleared as its redesign: a derived window, a checkable relevance test, a required report line) — announcing the current version would describe behaviour about to change. Lifts by itself when the redesign ships.
+**Lifted 2026-08-26 at the next planning opening.** The redesign was built in the beta-eve run (`2026-08-26-plan-log-index-read-underdesigned-build.md`), the host has since been reinstalled at 1.21.0, and this very opening exercised the derived-window read live — built, live, and observed working. One-a-day pacing still applies at posting time.
+
+#### [user] Create the Throughliner Discord bot and hand its token to the project [discord-bot-server-setup]
+Split 2026-08-26 at the keep of [discord-posting-bot] — the Discord-side setup only you can do. The bot account is what gives the posting script a route; the script build is held behind this line.
+Red flag · State: cleared — the bot token is a credential on your disk: anyone or any session that reads it can post as the bot in your server. Designed out as far as it goes: stored inside `INBOX/` (gitignored on every path, so it can never be published) and never quoted into any document or chat, the address-book rule. It stays readable on this machine, and you were told so plainly and chose to proceed ("ok I'm willing to try it"), recorded 2026-08-26.
+**Walkthrough.**
+1. Open discord.com/developers/applications in your browser, sign in, and click "New Application". Name it (e.g. "Throughliner"). Look for: the application's settings page opening.
+2. In the left menu click "Bot", then "Reset Token", and copy the token it shows. Look for: a long string you can copy — it is shown only once.
+3. Paste the token into a new file `INBOX/discord-bot-token.txt` in this project (ask Claude in this chat to create the file and confirm the gitignore covers it before you paste — the file must never be committed).
+4. Back in the left menu click "OAuth2" → "URL Generator": tick the `bot` scope, then the permissions "Send Messages", "Manage Messages" and "Read Message History". Open the generated URL and invite the bot to the Throughliner server. Look for: the bot appearing in the server's member list.
+5. Tell this project which channels the bot may post in (main channel, test-rezips). This line closes when the token file exists and the bot is in the server; the script build lifts.
+
 --- Cleared to run above this line ---
 
 #### [user] Write the article comparing Throughliner to memory-system approaches, finishing with what shipped [competition-comparison-article]
@@ -177,21 +552,6 @@ Not before: 2026-09-21
 
 **Files:** none in this project except the research file step 2 creates under `resources/research/`. The artifact is an article for flintcraft.tech. Relates to [competition-comparison-article] — a separate piece, no dependency either way.
 
-#### [user] Discord post: how much stronger a session is from its start once /plan opens by reading recent LOG index lines [discord-post-session-start-strength]
-Captured by you 2026-08-11. Your point, rendered in Claude's words rather than quoted: before, it felt shaky for the first few items; starting with log-awareness plus some maybe-relevant context massively boosts the start of sessions. The angle is yours; the correction below is Claude's.
-**It cannot be written yet, which is why this is a queue item rather than a draft.** You asked believing the feature was live. It wasn't: `plan.md`'s Step 1 reads QUEUE.md and SPEC.md only, and its three `LOG/index.md` mentions are targeted lookups — has this been decided — not an orientation read. The feature is [plan-reads-recent-log-index], held below the line behind [index-line-length-proportional-cap].
-**Your experience was real; the mechanism you credited was wrong.** What steadied that session was the below-line revisit reading LOG to check two blockers, plus the previous session's forward advisory naming where to start. Both live; neither is the five-recent-lines read. Worth carrying into the post — "the thing that helped wasn't the thing I thought" is the better story.
-**The post's content, to draft when it ships.** The shaky-first-items problem and its cause; what the orientation read changes; and the honest scope — it doesn't carry all necessary context, it sets upcoming work against past work. Include the cost bound, since it's why the feature waited: five index lines is an unbounded read until index lines are capped, which [index-line-length-proportional-cap] fixes.
-**Constraints:** 2000 characters, the Discord limit. Not posted until *everything* the post describes has shipped — standing rule in `CLAUDE.md`, adopted 2026-08-11.
-**Walkthrough.** 1. Feature ships. 2. Claude drafts inside the limit. 3. You say what to change. 4. You post — Claude has no route to Discord. 5. You confirm, and the line closes.
-**Unblocked 2026-08-13.** [plan-reads-recent-log-index] shipped — `LOG/2026-08-12-plan-reads-recent-log-index.md`; /plan's read-state step now opens with the five newest index lines. Ordinary ready work. Fourth item found sitting behind a shipped blocker; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries].
-
-**Paced 2026-08-14 on the user's decision: third in a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Pacing alone holds it.
-**Blocker repointed 2026-08-21.** [discord-post-cycle-awareness] was posted and closed on 2026-08-21 (`INBOX/sent.md`), so the old blocker had resolved and this item read as liftable while the pacing chain still held it. Repointed at [discord-post-context-adjacency], the post now ahead of it in the chain — it lifts by itself when that one goes out and closes. Same repair, same reasoning, as the repointing recorded on that item.
-**Lifted 2026-08-24.** [discord-post-context-adjacency] was posted and confirmed on 2026-08-23 (`LOG/2026-08-23-discord-post-context-adjacency.md`), so the chain ahead of this post is clear. The one-a-day pacing still applies at posting time: it goes out on a day no other Throughliner post does.
-**Held again 2026-08-26.** The feature the post announces was found underdesigned ([plan-log-index-read-underdesigned], now cleared as its redesign: a derived window, a checkable relevance test, a required report line) — announcing the current version would describe behaviour about to change. Lifts by itself when the redesign ships.
-Blocked by: [plan-log-index-read-underdesigned]
-
 #### [user] Correct and post the announcement about rationale moving out of operative rules — the draft tells readers the why lives in session logs they can't reach [announcement-rationale-split-correction]
 Captured by you 2026-08-09 — split out of [rationale-relocation-invisible-to-consumers] when that capture was deleted as otherwise satisfied. The 2026-08-09 Discord draft says the reasoning "lives in the session logs where you can go and read it." False for every reader not developing the method: the plugin package ships neither `LOG/` nor `resources/`. Posting it as written points users at something they cannot access.
 **Why this is the user's line:** Claude can draft the correction; only the user can post. Under the capability test, drafting is Claude-work and posting is not.
@@ -266,7 +626,25 @@ That draft is superseded. The 2026-08-23 rewrite names a specific project rather
 **Kept 2026-08-24, held below the line on Claude's recommendation and your agreement.** As a capture this carried its ordering in prose because captures have no `Blocked by:`; as a held work item it carries the field, so it lifts by itself when the article item closes instead of being re-offered every session while the external review is out. The same ordering sentence is written on the article item per the known-ordering rule.
 Blocked by: [competition-comparison-article]
 
+#### Discord posting bot: an all-rounder so posts and rezip-list updates can be made straight from a session [discord-posting-bot]
+Raised by you 2026-08-26, in the post-close tail, as a side-thought filed for a later /plan. The want: the test-rezips channel's posts and their updates — adding notes to previous entries when issues are reported, changing an entry's stable status — done by a bot rather than by hand, and more generally an all-rounder bot this project can post through directly during /plan or a build. That would be the first route Claude has to Discord, so the never-send-unseen guarantee has to be designed in from the start: nothing posts without you seeing the exact text and saying yes, and an automated update is still a send. Bears on the nerds-list mechanics left open on [expedite-first-beta-release] and on the eventual [weekly-release-cycle] turn.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement — "ok I'm willing to try it."** It designs out smaller than "bot" sounds: no hosted service — a bot account (the Discord-side setup split out as the `[user]` line [discord-bot-server-setup], which holds this build) plus a script making one API call per send or edit. The token risk and its informed consent are recorded on that item's red flag. Every send stays behind the exact-text-yes rule; a register line is still written per post; the route is all that changes, which falsifies CLAUDE.md's "Claude has no route to Discord" sentences — amended in this build, with the never-send-unseen rule restated where they stood.
+
+Rule gate: run — amendment to CLAUDE.md's Discord section (the no-route sentences replaced by the route-plus-approval statement); no new freestanding rule, the send-approval rule unchanged and cited.
+
+--- Build block ---
+Changes: `resources/discord_post.py` — standard library only, UTF-8 reconfigure per the scripting constraints: send a message to a named channel, edit a previous message by id, token read from `INBOX/discord-bot-token.txt`, exact text passed in from a file; verified against Discord's current API docs before writing. `CLAUDE.md` — Discord posts section: the "Claude has no route to Discord" sentences amended to name the bot route, with the exact-text-yes approval and the sent-register line restated as unchanged; walkthrough steps in queue items keep "you post" wording only where a post genuinely stays manual.
+Inputs: `INBOX/discord-bot-token.txt` (created by [discord-bot-server-setup]), the channel ids the user names there.
+Acceptance: a test post to the test-rezips channel, its exact text approved by you first, appears in the channel and is then edited by the script; the token is never printed, quoted or committed; CLAUDE.md nowhere still claims Claude has no route to Discord.
+Refused: a hosted always-on bot — nothing here needs to listen, only to send; per-post manual copying stays available whenever you prefer it.
+--- End build block ---
+Blocked by: [discord-bot-server-setup]
+
 ## Unprocessed
+
+#### Last session advises processing ordering-rigidity-transcript-pair-audit next [forward-advisory]
+Filed 2026-08-26 at the late planning close. The audit sits first on the ready list and a /next run opens with it: it reads the two frustrating-session transcripts under your warn-don't-enforce lens and traces how the settled release pick became an untested v1.21.0 push — the findings are what the ordering redesign and any release correction will be scoped from, so they are worth having before further release work. Nothing unprocessed overlaps the top ready item: Unprocessed holds only dated captures and one skipped item.
 
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
@@ -371,181 +749,7 @@ Not before: 2026-08-31
 >
 > **Housekeeping goes quiet.** The temporary file a build run reads from is cleaned up silently at the close and kept out of your repository — no more being asked about a file you never created.
 
-#### Process-now "yes" was spent as disposition approval: two items written and cleared with no recommend-and-wait turn [process-now-yes-spent-as-disposition]
-Raised by you 2026-08-26, in a live /plan on this project: after the process-now offer for the beta install pin, your "yes, process it now" — an answer to *when* — was treated as approval of a design first shown in the offer message, and two items were written and cleared with no recommendation turn. Your words: "you skipped processing and landed stuff straight to queue like was always happening with 'keep' in the last version." Repaired in-session: you reviewed and kept both items as written.
-
-The rule already forbids this — plan.md's fold conditions say a design first shown in the offer message cannot fold, and the process-now section says either branch is subject to them — so this is an instance of a shipped rule not being followed, not a missing rule. Evidence for the keep-step: the one site where bundling was actually fixed was the checkpoint, fixed by a specimen message rather than a rule statement ([style-negatives-to-rewrite-positive] carries the citation) — so the candidate fix is a specimen at the process-now section showing the offer turn and the separate recommend turn, weighed against accepting it as a slip. Runs on the version installed today, so check the current text before scoping.
-
 #### Should cycles get mermaid diagrams? [cycles-mermaid-diagrams]
 Captured by you, 2026-08-24, mid-planning — your framing: seems reasonable. Filed at your direction without discussion, so the idea is unshaped: what a diagram would show (a cycle's steps? the turn's two events? due-ness over time?), where it would live (in CYCLES.md beside the definition, or generated), and who reads it are all open for the keep-step. Context worth having there: the desktop app renders mermaid in its markdown viewer, and the cycles doc is user-facing by design.
 Skipped 2026-08-26 on Claude's recommendation and your agreement: what settles it is a build that must ship first — [weekly-release-cycle] creating this project's first real cycles doc, with the due-ness check working ([cycles-check-fires-nowhere]'s fix). A diagram designed before any real cycles doc exists would be guessing at a document nobody has seen; take it up once there is one to draw.
-
-#### Session openings could report how long the installed build has been running [session-start-reports-install-age]
-Raised by you 2026-08-26, in the post-close tail, from a live instance: an announcement draft claimed you had been "running this build all week" when you had been running it since late the night before — Claude has no way to know how long an installed build has been tested, and this misjudgment recurs. The opening already reports the installed version and content stamp; the candidate is reporting the installed snapshot's age alongside them (the plugin cache directory's install time is a readable fact), so a session weighing "how tested is this build" reads a date instead of guessing. A derived fact in the session_start payload, same register as the stamp. For the keep-step: whether the age alone is enough, or whether what is really wanted is time-under-use rather than time-since-install.
-
-#### Discord posting bot: an all-rounder so posts and rezip-list updates can be made straight from a session [discord-posting-bot]
-Raised by you 2026-08-26, in the post-close tail, as a side-thought filed for a later /plan. The want: the test-rezips channel's posts and their updates — adding notes to previous entries when issues are reported, changing an entry's stable status — done by a bot rather than by hand, and more generally an all-rounder bot this project can post through directly during /plan or a build. That would be the first route Claude has to Discord, so the never-send-unseen guarantee has to be designed in from the start: nothing posts without you seeing the exact text and saying yes, and an automated update is still a send. Bears on the nerds-list mechanics left open on [expedite-first-beta-release] and on the eventual [weekly-release-cycle] turn; unshaped beyond that — platform, hosting, and what "all-rounder" covers are all for the keep-step.
-
-#### "Ready list" naming rule is defined in plan.md but binds every skill's asks [ready-list-name-defined-where-only-plan-reads-it]
-From the compliance audit of the rule changes since 3ed3db1, lens 1 (distribution).
-
-`plan.md` around line 796 declares "the ready list" the standing plain-English name for the cleared region, and says it is "used identically in every session's asks". It fires wherever a session names that region to the user: at /plan's recommend step, at /next's off-ramp where the run is presented, and at /done where the close reports what is ready. Only the first of those reads `plan.md` — the other two load their own docs and the always-loaded rules, neither of which carries the name. A grep of the shipped docs finds "ready list" in `plan.md` alone.
-
-So the rule as written cannot do what it claims: two of its three sites can never read it. The fix is distribution — the name belongs in `skill-nonspecific-rules.md`, where every skill and every no-skill conversation reads it, with `plan.md` keeping only the recommend-step wording that uses it.
-
-#### Issue-channel check stays silent unless it files, while its sibling cycles check no longer may [issue-check-silent-while-cycles-check-speaks]
-From the compliance audit of the rule changes since 3ed3db1, lens 1 (consistency).
-
-Both checks sit in `plan.md`'s opening and fire at the same moment — the read-state step, before the queue is ranked. The issue-channel check (around line 349) is tagged `[SILENT]` when nothing is found or the tools are absent, `[BRIEF]` only when a capture is filed. The cycles check (around line 490) was rewritten this session to speak whenever the project has a cycles doc, on the stated ground that a check which speaks only when it files cannot be told from a check that never ran — which is what the cycles check turned out to be for its whole life.
-
-The reasoning that moved one applies unchanged to the other: an issue scan that ran and found nothing produces the same silence as an issue scan that never ran, and nobody would know to ask. Either the issue check gains a one-line either-way report, or the cycles change needs an argument for why the two differ. Worth settling as one decision rather than drifting further apart.
-
-#### Case D pop-out section carries no response-shape tags, and two of its steps wait on the user [setup-case-d-untagged]
-From the compliance audit of the rule changes since 3ed3db1, lens 2 (tag placement).
-
-`setup.md`'s Case D section (around lines 107 to 140) was added since the last audit and carries no tag on any step. Two of them stop for the user: reading the parent's SPEC and putting the inferred subpart to them in clarifier form, which fires at the very start of adopting a subfolder and cannot proceed without their answer; and drafting the pop-out message to the parent's INBOX, which fires at the close and is shown in full before an explicit yes. Both are `[PROMPT]` moments by the definition in the always-loaded rules.
-
-Case B's peek — the sibling this section says it copies — is tagged. Untagged, the output behaviour of a step that must wait is left to chance, which is the missing-tag failure the lens names.
-
-#### Write-first rule gained a rationale clause that fails the delete-and-read test [write-first-rule-carries-its-why-inline]
-From the compliance audit of the rule changes since 3ed3db1, lens 4.
-
-`skill-nonspecific-rules.md` around line 150 now reads: "Write first, then report — decided by one test: is the previous version recoverable without the user's help? Consent happens in conversation, in plain words, before the write — the file is the record of what was agreed, not where agreement happens — and showing recoverable text before writing it costs a wait that buys nothing."
-
-Delete the second sentence and what remains is a complete instruction with its test intact, so by the lens's own detector the deleted sentence is rationale rather than operative text. It fires in every skill and in plain conversation, since this is the always-loaded file, so the weight is paid at every session start.
-
-Where it should go: the LOG entry that decided the write-first inversion, which is where an authoring decision belongs. Worth checking first whether any part of it is doing work the bare rule cannot — the "consent happens in conversation" half may be operative for a session that would otherwise read write-first as consent-free.
-
-#### Log-index read carries two rationale sentences inside its operative text [plan-log-index-read-carries-rationale]
-From the compliance audit of the rule changes since 3ed3db1, lens 4. Both sentences were written by the build run that filed this finding, so it is flagged against this session's own work.
-
-`plan.md`'s orientation read, around line 238, carries "That window is the work done since the last time anyone stood where you are standing now" and "A read that speaks only when it finds something is indistinguishable from a read that never ran." Delete either and the surrounding instruction — read the window, fold in a line when it names a slug or file the queue also names, carry one line either way — is complete.
-
-The step fires once, at every /plan opening, so this is weight paid by every planning session. Its home is the LOG entry for [plan-log-index-read-underdesigned], which already records why the window replaced a bare five.
-
-#### Cycles step narrates this session's own diagnosis inside the rule [plan-cycles-step-carries-dated-history]
-From the compliance audit of the rule changes since 3ed3db1, lens 4. Written by the build run that filed this finding, so it is flagged against this session's own work.
-
-`plan.md`'s cycles due-ness check, around line 490, ends its opening paragraph with: "a check that spoke only when it filed was indistinguishable from a check that never ran, which is what it turned out to be." The final clause is dated history — the failure this session diagnosed — written in rule syntax with no "because" to mark it, which is the disguised-rationale shape the lens exists to catch. Delete the whole clause and the instruction to speak whenever a cycles doc exists still reads complete.
-
-The same wording was carried into `next.md` and `done.md` in shorter form; check all three when this is fixed, so the copies do not disagree. Its home is the LOG entry for [cycles-check-fires-nowhere].
-
-#### Delete branch's "judgment, not a test" line is commentary plus a restatement [plan-delete-branch-commentary]
-From the compliance audit of the rule changes since 3ed3db1, lens 4. Minor.
-
-`plan.md`'s delete branch, around line 1252, follows its decision block with "Judging 'fully relocated' is a judgment, not a test — and naming each part's destination is what makes a wrong one visible." The first half is commentary on the block above; the second half restates a requirement the block already carries, since its narrate arm says to name where each part went.
-
-The step fires at the delete disposition, once per deleted item. Small on its own, filed because the eviction pass that handles findings 4 to 6 will already have this file open.
-
-#### Doubled-rules table claimed the method carried narration cadence when it did not [audit-checklist-table-overclaimed-cadence]
-From the compliance audit of the rule changes since 3ed3db1. Outside the audited delta — `resources/method-compliance-audit-checklist.md` has not changed since the last audit — but found while reading the checklist to run this one, and filed rather than dropped.
-
-The table at line 128 lists "How often to speak while working (narration cadence)" as carried by M, the method's own always-loaded file, and not by G. That row is what tells a reader this project's cadence behaviour tests something the method ships. It was not true: until the build filed as [narration-cadence-promotion-candidate] ran this session, the cadence rule lived only in the brevity output style, so a project declining the style got none — which is why that item was filed in the first place. The row appears to have been written when the deleted output style's rules were counted as migrated into M, and one of them was not.
-
-Two things to do, and the second is the reason this is worth more than a one-word edit. The row is now true, so it needs no change for today. What needs checking is the rest of that migration: the same paragraph claims three style-only rules moved into M, and at least one demonstrably did not, so the other two should be verified against the shipped file before the table is trusted again. A table that reports coverage the corpus lacks is the over-claiming this project guards hardest against, and this one sits inside the checklist that audits for exactly that.
-
-#### Mid-build scope question landed as a flat menu, and the user had to ask for the recommendation [build-scope-ask-lands-as-a-menu]
-From the AFK-cats transcript pair, build session `028fb28e` (1.20.0-test18). Checked against the current build before filing: live.
-
-The run's test suite found a real daylight-saving bug in a file already in scope. The build stopped and asked: "Shall I add that fix to this item's scope, or leave the bug and file it as its own queue item?" — two outcomes, no recommendation, though the message right before it had already established the fix was small, in one file, and in scope. The user answered "as you recommend", which is them spending a turn asking for the recommendation the question owed them.
-
-`next-build.md`'s scope-growth branch models the minor arm as one recommended ask — "This needs [work], which means editing [file] — add it to scope?" — so the specimen is right and the branch around it is what let a two-option menu through: it presents minor and significant as a pair of routes, and a run that has just decided which one applies can still write both out. The always-loaded narration rule (dependency ownership: lead with the recommendation, alternatives as fallback) is the rule being missed.
-
-Worth checking the same shape at the run's other blocking asks — the discovery rule's needed-and-minor arm has the same two-outcome structure. The same session shows the contrast working: the planning run recommended explicitly five times ("I'd take the first", "I'd do it now") and the user's "as you recommend" there was agreement rather than a request.
-
-#### Claude invoked /plan itself and handed the user a red error, against the rule naming that exact failure [claude-invoked-plan-against-the-rule]
-From the AFK-cats transcript pair, planning session `da1599f2` (1.20.0-test18). Checked against the current build before filing: live, since nothing about the rule has changed.
-
-The session's first exchange: Claude said "Rules loaded (`docset: current`). Starting the planning run", attempted to run the skill, and the attempt failed. Its next message told the user the skill "can't be started from my side" and asked them to type it again. So the user's first experience of the session was an error, followed by being asked to repeat what they had already done.
-
-The always-loaded rules name this precisely — the method's own skills ship with model-invocation disabled, an attempt fails and shows a red error, and the rule exists because it had already happened once at a close. The rule was loaded (the session says so in the same breath) and not followed.
-
-What to work out at processing: this is a rule that is stated, read and still missed, which is the shape the gate's admission questions are for. Candidates are wording (it sits inside a bullet about running commands generally, so the prohibition reads as an aside to a rule about doing more yourself) and placement (nothing fires at the moment of temptation — the opening, where a session has just been handed a skill's instructions and reads them as something to start). Whether a hook could refuse the call is worth asking, since the failure has a mechanical signature.
-
-#### Context-coverage caveat was written three times across one pair of sessions [coverage-caveat-repeats-within-a-session]
-From the AFK-cats transcript pair (1.20.0-test18). Checked against the current build before filing: live.
-
-The line "I can't tell whether any of our earlier conversation has dropped out of view, so this is what I could still see rather than a guarantee I've caught everything" appears at the build session's close, at `/rescan` in the planning session, and again at the planning close. Twice of those three are inside a single session, minutes apart.
-
-Each instance is honest and none is wrong — the rule requiring it is doing its job, and the fix is not to say it less truthfully. What is worth deciding is whether a session that has already given the caveat needs to give it again in full at the next scan, or whether a shorter back-reference carries the same information. The reader is a non-coder meeting an unfamiliar limitation; the first statement teaches it, the third reads as boilerplate, and boilerplate is what people learn to skip past — which is how a genuinely important caveat stops being read at all.
-
-Small, and filed because the cry-wolf failure it edges toward is one this project has repealed measures for twice.
-
-#### Build view drops file paths an item's work depends on, because they live in rationale prose [build-view-drops-paths-in-rationale]
-Noticed by Claude while running the two transcript audits in this session's build run.
-
-Both transcript-analysis items name the exact `.jsonl` paths to read. Those paths sit in the item's rationale prose, not in its `Changes:` line — so the generated build view, which carries the build block and no decision history, showed the instruction "preprocess both transcripts" with nothing saying which two. The run had to open QUEUE.md to find them, against the standing rule that a build leaves the queue closed.
-
-This is the view's stated cost landing on a case it did not anticipate. The view drops history deliberately and that design is not in question; what this shows is that a path can be *instruction* while sitting in a sentence that reads like *context*, and nothing at the keep-step catches it. An item whose work is "read these two files" has its file list in the wrong place, and the item still passed the two-limb buildability test because its `Changes:` line does say what happens.
-
-Two directions for processing, and the first looks cheaper. Either the keep-step's build block gains a place for inputs an item reads (distinct from files it changes), so a path an audit needs travels in the block; or the buildability test gains a limb asking whether everything the work needs to start is inside the block rather than around it. Worth checking how many existing items would fail whichever is chosen before committing to it.
-
-#### Six unbuildable items sat cleared to run, and a build run was the first thing to catch them [unbuildable-items-persist-in-the-ready-region]
-From the Taskflowapp transcript pair, build session `8731b6b2` and the planning session `536b761a` that preceded it by hours (1.20.0-test18). Checked against the current build before filing: live.
-
-The build stopped before locking scope and named six items it could not scope — a tier model naming no billing library, cloud sync whose backend was never chosen, an MCP setup screen pointing at a server with no host, that server itself, a reconciliation item depending on it, and a content item waiting on words that sit unwritten in Unprocessed. It checked their archived specs too and found "[To be filled in during the next planning session.]" where the goal should be.
-
-All six were already in the ready region from earlier sessions. The planning run that day worked the fourteen unprocessed captures and reported "24 items cleared to build", with nothing flagged. The digest is supposed to report an item whose file list names nothing to change — that is one of its placement contradictions — so either it did not reach these items or it reported and nothing surfaced them. This was not verified by running the digest against that queue, so the cause needs establishing before anything is designed.
-
-The shape of the gap is the part worth keeping either way: the buildability test runs at the keep-step, once, and an item that passes it (or was cleared before the test existed) is never asked again. Everything downstream trusts the ready region, so six items rotted there in plain sight and the first mechanism to notice was a run refusing to start. Twenty items built after they were dropped, so the run recovered — but the recovery cost the user a turn and the diagnosis cost the run its first act.
-
-#### Compile check reported a pass that came from the pipeline's last command, not the compiler [piped-check-reports-the-wrong-exit-code]
-From the Taskflowapp transcript pair, build session `8731b6b2` (1.20.0-test18). Checked against the current build before filing: live.
-
-The run put a Gradle build through a pipe ending in `tail`, read the exit status, and reported the compile as succeeding. Gradle had already failed; the status belonged to `tail`. Claude caught it later and said so plainly — "my first compile check reported success, but that exit code came from the `tail` at the end of the pipe, not from Gradle".
-
-`next-build.md` tells a run to verify whatever it can and treats a check Claude can run as part of building. Nothing anywhere says a piped command reports only its last stage, so a run that trims noisy output — which is the natural thing to do with a build log — can turn a failure into a pass without noticing. The tick that follows then reads "done, confirmed", which is the one tick form that asserts something ran and passed.
-
-A false pass is worse than no check at all: an unconfirmed tick names what still needs running, and this one names nothing. Worth writing into the build doc's verification guidance rather than left as something each session rediscovers — and worth checking whether the same shape can reach the hook suites, which this project runs as plain scripts and reads the same way.
-
-#### Run assumed a build environment was absent instead of asking, and the user quoted the method back [environment-check-skipped-user-had-to-cite-it]
-From the Taskflowapp transcript pair, build session `8731b6b2` (1.20.0-test18). Checked against the current build before filing: live — the rule is unchanged.
-
-Gradle failed from the run's own shell. The run concluded it could not compile, recorded an outstanding check, and asked whether to carry on with the Kotlin work uncompiled or retreat to the four document items. It never asked whether the user could build.
-
-The user's reply, in their own words: *"you're supposed to ask me if I have android studio then add it to a list of tools the project has on hand, as I understand Throughliner method"*. They were right about the first half — `next-build.md` says before assuming a device or environment is absent, check, and ask whether one is available rather than assuming none is, on the recorded ground that a check wrongly skipped sits unrun for weeks.
-
-Claude's own correction names the defect exactly: what it had established was "can't compile *from my shell*", not "can't compile". That distinction is the whole rule, and the rule as written does not make it — it says to check whether an environment is *available*, which a session that just watched a tool fail will read as already answered. Whether the fix is wording, or a narrower trigger keyed on a tool failing rather than on an environment being absent, is the question for processing.
-
-The cost here was the whole run: the session ended with the build question open and twenty items part-built.
-
-#### Tools a project has on hand have no home, so each session re-derives them or assumes wrong [no-home-for-a-projects-tool-facts]
-From the Taskflowapp transcript pair, build session `8731b6b2` (1.20.0-test18). Raised by the user in that session; checked against the current build before filing: live.
-
-Asked to record what the project has available, Claude answered correctly that Throughliner has no tools-inventory document and that per-project working facts belong in the project's own CLAUDE.md. That answer is right about today and does not settle whether it should be.
-
-What that session established and then had nowhere durable to put: Android Studio is installed, its bundled JDK 21 runs fine at a known path, the Android SDK is at a known path, and Gradle's client-to-daemon connection fails from Claude's shell specifically while a plain loopback test succeeds. Every one of those is a fact a later session needs and cannot cheaply re-derive — the last one especially, since rediscovering it costs a run its first act, which is what happened.
-
-The user expected a list. The method's nearest existing answer is the project's own CLAUDE.md, which is method-adjacent rather than method-owned, so nothing prompts a session to write there and nothing tells a later session to read it for this. Related to [environment-check-skipped-user-had-to-cite-it]: the check that rule requires is much cheaper when the answer from last time is written down, and a recorded "Gradle fails from Claude's shell here" turns an assumption into a known.
-
-For processing: whether this is a scaffolded section in the project's CLAUDE.md that the build doc points at, or something smaller — a convention that a build recording an outstanding environment check writes what it learned beside it.
-
-#### Sent-register line claimed answers the message it points at never contained [sent-line-written-from-decisions-not-from-the-message]
-From the Taskflowapp transcript pair, planning session `536b761a` (1.20.0-test18). Checked against the current build before filing: live.
-
-Mid-session Claude recorded three settled answers as having been sent to another project, then caught it: *"I wrote that into the sent record, but the reply I actually sent didn't contain these answers. Removing that line."* A second message carrying the answers was drafted and sent later, so the record ended correct — but only because the same session noticed within the hour.
-
-The register exists so that a later repeal can be checked against what was actually claimed. A line written from what the session decided, rather than from the text of the message that went out, records the session's intent and not the correspondence — which is precisely the thing the register was built to stop, one layer up. The rule requires the line in the same turn as the approval and says it carries what the message claimed; nothing says to write it *from the approved text*, and the two come apart exactly when a session settles more than it sends.
-
-The fix is likely one clause on the existing rule rather than new machinery — the approved wording is on screen at the moment the line is written, so reading the claim off it costs nothing. Worth checking the existing lines in this project's own `INBOX/sent.md` for the same shape while the fix is being scoped, since nothing has ever checked them.
-
-#### Rule-gate lines in a build working file attach by position, so a later tick can land between an item's own lines [gate-line-in-working-file-is-positional]
-Noticed by Claude at the close of the 2026-08-26 build run, and filed on Alex's direction.
-
-Each ticked item writes up to three lines into the working file's Progress block: the tick itself, a `Depth: <slug> — …` line, and, where the item carries one, a transcribed `Rule gate:` line. The depth line is slug-bound, and next.md says plainly why — a bare positional line attaches to whichever tick it happens to sit under, so two written together silently attach to the wrong items. The gate line carries no slug and has exactly that problem.
-
-It happened three times in one run. Each new tick was written by matching on the previous item's last line, and where that item's last line was its depth line rather than its gate line, the new tick landed between the two — leaving a gate disposition sitting under the wrong item's tick. All three were caught and repaired in the same session, by a run that happened to be watching for it. Nothing would have caught them otherwise: the close reads depth by slug, so it never has to notice the gate line's position, and the working file is deleted at the close.
-
-**The consequence if one survives is small but exactly the kind this project cares about.** The close transcribes each item's gate disposition into that item's LOG entry, and the board's checks read those entries. A disposition attributed to the wrong slug is a wrong record of which rule was gated, in the one artifact the gate produces as evidence.
-
-Two candidate fixes, and the first mirrors a decision already made here: give the gate line a slug, as the depth line has, so it is self-identifying and the close reads it by slug rather than by what sits above it. Or state the per-item write order in next.md's completion step so the three lines are written as one block — cheaper, but it depends on care rather than removing the need for it, which is the argument the depth line's slug already won.
-
-#### CLAUDE.md's Architecture section undercounts the skills and hooks that actually ship [claude-md-architecture-undercounts]
-Found by the v1.21.0 release sweep's CLAUDE.md pass. The Architecture section says "**4 skills:**" and lists four, omitting `/rescan`; and "**3 hooks** — two enforcing, one advisory", omitting `stop.py`. The plugin ships five skills (`plugin/throughliner/skills/` holds setup, plan, next, rescan, done) and four hooks (`plugin/throughliner/hooks/` holds session_start, pre_tool_use, stop, post_tool_use). `plugin.json`'s own description already names five skills, and SPEC.md already describes both `/rescan` and the `stop` hook correctly — so this file is the one that fell behind.
-
-Why it matters beyond tidiness: this is the always-loaded project file every session here reads to orient itself. A session reading it learns the method has no `/rescan` and no `stop` hook, which is the same class of failure the migration's retired-term detection exists to catch in consumer projects.
-
-The fix is a straight correction of both counts plus one bullet each, worded from SPEC's existing descriptions. The edit was attempted during the release sweep and refused by the scope-lock, which was right: the build working file had already been deleted at the close, so the session was on the standing planning list and CLAUDE.md is not on it.
-
-Rule gate: not needed — a stale description corrected to match what ships; no rule authored or amended.
 

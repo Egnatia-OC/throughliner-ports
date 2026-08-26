@@ -2,6 +2,31 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — chat-level record for the 2026-08-26 late planning session: 22 items processed around the new ordering-rigidity audit, the release failure routed into it as a lens, ready list rebuilt to 29, Claude Code issue #89739 posted → 2026-08-26-chat-plan-3.md
+- [HASH] — plan — ordering-rigidity audit filed and cleared first: two transcripts, warn-don't-enforce lens, the untested-v1.21.0 release traced as second lens → 2026-08-26-ordering-rigidity-transcript-pair-audit.md
+- [HASH] — plan — environment check amended: a tool failing from Claude's shell triggers the ask instead of answering it (next-build.md) → 2026-08-26-environment-check-skipped-user-had-to-cite-it.md
+- [HASH] — plan — TOOLS.md designed: always-writable home for environment facts, read before absent-assumptions; SPEC paragraph written → 2026-08-26-no-home-for-a-projects-tool-facts.md
+- [HASH] — plan — write-first rule: consent clause reclassified operative, two rationale clauses evicted to the 08-26 audit entry → 2026-08-26-write-first-rule-carries-its-why-inline-plan.md
+- [HASH] — plan — blocking asks lead with the recommended route; grep widened scope to next-build.md AND skill-nonspecific-rules.md → 2026-08-26-build-scope-ask-lands-as-a-menu-plan.md
+- [HASH] — plan — skill self-invocation gets a pre_tool_use guard + hoisted rule; slow-/plan trigger posted as anthropics/claude-code#89739 → 2026-08-26-claude-invoked-plan-against-the-rule-plan.md
+- [HASH] — plan — coverage caveat goes two-tier: full once per session, one-clause back-reference after (done.md, rescan.md) → 2026-08-26-coverage-caveat-repeats-within-a-session-plan.md
+- [HASH] — plan — build block gains optional Inputs: line; work-starting paths must live in the block (plan.md) → 2026-08-26-build-view-drops-paths-in-rationale-plan.md
+- [HASH] — plan — cause established on Taskflowapp's live queue: cleared blockless items invisible at planning; digest gains the contradiction class, SPEC sentence written → 2026-08-26-unbuildable-items-persist-in-the-ready-region-plan.md
+- [HASH] — plan — piped-exit-code rule into next-build.md's verification guidance: read status from the tool, trim separately → 2026-08-26-piped-check-reports-the-wrong-exit-code-plan.md
+- [HASH] — plan — register line read off the approved text, never from decisions; first back-check of this project's own sent register queued → 2026-08-26-sent-line-written-from-decisions-not-from-the-message-plan.md
+- [HASH] — plan — working-file gate line becomes slug-bound, mirroring the depth line (next.md, done-build.md) → 2026-08-26-gate-line-in-working-file-is-positional-plan.md
+- [HASH] — plan — CLAUDE.md architecture correction kept: five skills, four hooks, worded from SPEC → 2026-08-26-claude-md-architecture-undercounts-plan.md
+- [HASH] — plan — process-now section gets a two-turn specimen: timing "yes" never doubles as disposition approval → 2026-08-26-process-now-yes-spent-as-disposition-plan.md
+- [HASH] — plan — session opening gains the installed snapshot's install date; time-under-use refused as a state file; SPEC clause written → 2026-08-26-session-start-reports-install-age-plan.md
+- [HASH] — plan — Discord bot kept as two items: [user] setup cleared (token red flag cleared as informed consent), posting script held behind it; CLAUDE.md no-route sentences to be amended → 2026-08-26-discord-posting-bot-plan.md
+- [HASH] — plan — "the ready list" declaration moves to skill-nonspecific-rules.md; plan.md keeps usage only → 2026-08-26-ready-list-name-defined-where-only-plan-reads-it-plan.md
+- [HASH] — plan — issue check aligned with cycles check: one line either way where the channel exists → 2026-08-26-issue-check-silent-while-cycles-check-speaks-plan.md
+- [HASH] — plan — setup.md Case D tagged: [PROMPT] on both waiting steps, rest matched to Case B → 2026-08-26-setup-case-d-untagged-plan.md
+- [HASH] — plan — three lens-4 evictions folded into one pass (orientation read, cycles clause + copies, delete-branch commentary); two sibling captures deleted → 2026-08-26-plan-log-index-read-carries-rationale-plan.md
+- [HASH] — plan — checklist migration claims verified against the shipped file, all three hold; capture deleted satisfied → 2026-08-26-audit-checklist-table-overclaimed-cadence-plan.md
+- [HASH] — plan — first item becomes checkpoint-shaped like every other; the no-separate-dig-in-turn exception evicted (plan.md) → 2026-08-26-first-item-presentation-reads-as-bundling-plan.md
+- [HASH] — plan — lint's phantom deltas explained: readiness marker counted as its neighbour's words; counter to exclude it (post_tool_use.py) → 2026-08-26-lint-word-growth-misattribution-plan.md
+
 - 01ba244 — chat-level record for the 2026-08-26 late build run: two doc fixes shipped clean on test20, all six [user] steps deferred in place, the release pick moved to session end on Alex's correction, and the day-one drafts withheld twice by Claude before being handed over → 2026-08-26-chat-build-3.md
 - 01ba244 — build — log-index read window reworded from "the handful of newest lines" to the derived window (lines newer than the most recent planning session's record) in skill-nonspecific-rules.md, done.md's month-rollover step and ANNOUNCEMENT-IDEAS.md; SPEC already correct, dated history untouched → 2026-08-26-log-index-window-ripple-unfixed-build.md
 - 01ba244 — build — CLAUDE.md's fresh-sessions rule: stale "4.8 stays the model the plugin is tuned for" clause repealed from the closing parenthetical; the "post-Fable development model" framing kept as non-contradicting → 2026-08-26-fresh-sessions-rule-names-retired-model-build.md
