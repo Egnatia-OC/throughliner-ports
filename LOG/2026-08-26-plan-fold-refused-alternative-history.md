@@ -1,4 +1,4 @@
-# [HASH] — Three history sentences deleted from plan.md and done.md, leaving the rules complete
+# 3b094b5 — Three history sentences deleted from plan.md and done.md, leaving the rules complete
 
 A merge of three compliance-audit findings of the same shape: a sentence whose deletion leaves a complete instruction is history or rationale riding an operative rule, and belongs in the record rather than in the doc.
 

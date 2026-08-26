@@ -1,4 +1,4 @@
-# [HASH] — Deleting an item whose content has already been relocated is narrated, not asked
+# 3b094b5 — Deleting an item whose content has already been relocated is narrated, not asked
 
 Reported from a live consumer session: after a design item had produced six new items and had nothing left in it, the session still asked whether to delete it. The user's observation is the finding — these delete notices always surprise, and narrating the delete probably makes more sense.
 

@@ -1,4 +1,4 @@
-# [HASH] — Provenance generalises from "you" to the named person, with channel identity, a consented roster, and co-author trailers
+# 3b094b5 — Provenance generalises from "you" to the named person, with channel identity, a consented roster, and co-author trailers
 
 Multi-user Throughliner had never been developed: the provenance conventions hard-coded a single addressee, so a session with three people had no way to say which of them raised a capture, argued a decision, or supplied a rationale that another corrected. A consumer project running exactly that shape reported it, and named the hard half honestly — recording a name is easy, deciding whose idea something was mid-session without interrogating people is not.
 

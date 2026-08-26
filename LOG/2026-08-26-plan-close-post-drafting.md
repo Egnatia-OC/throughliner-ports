@@ -1,4 +1,4 @@
-# [HASH] — Discord drafts are written at the planning close, with a posting brief and a verify-before-posting step
+# 3b094b5 — Discord drafts are written at the planning close, with a posting brief and a verify-before-posting step
 
 The user's idea and her reasoning: the point where reasoning on new items is richest is just after a full planning session, so that is when drafts should be written — richer drafts, with fuller context, than anything composed later from a queue line.
 

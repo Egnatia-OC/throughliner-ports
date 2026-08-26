@@ -1,4 +1,4 @@
-# [HASH] — Method problem reports go issue-first, with the web form as the fallback and a reply-check scheduled at send
+# 3b094b5 — Method problem reports go issue-first, with the web form as the fallback and a reply-check scheduled at send
 
 The user's proposal, designed with her the same session. A method report is now offered as a GitHub issue on the plugin's own repository where the `gh` CLI exists — draft shown, explicit yes, and the offer states plainly that an issue is public under the reporter's own account. The web form stays for where the CLI is absent or the reporter prefers privacy, demoted to a fallback rather than evicted.
 

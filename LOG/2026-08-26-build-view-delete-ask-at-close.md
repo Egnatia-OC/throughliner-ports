@@ -1,4 +1,4 @@
-# [HASH] — The generated build view gets the lifecycle it never had: deleted silently at the close, ignored by the scaffold
+# 3b094b5 — The generated build view gets the lifecycle it never had: deleted silently at the close, ignored by the scaffold
 
 Reported from a demo build session's close, which ended on "Shall I delete BUILD-VIEW.md?" — machinery leaking into the close's narration, and exactly the over-asking this method removes.
 

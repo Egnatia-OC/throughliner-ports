@@ -1,4 +1,4 @@
-# [HASH] — Both candidate-set steps gain [PROMPT], moving the wait out of prose and into the tag
+# 3b094b5 — Both candidate-set steps gain [PROMPT], moving the wait out of prose and into the tag
 
 A compliance-audit finding: done.md's wind-down candidate-set step and rescan.md's work-still-to-do step both wait for the user — "the user contests by number or says go; the writes then land" — while carrying no `[PROMPT]` tag. The wait lived in prose, which is what the response-shape tags exist to replace.
 

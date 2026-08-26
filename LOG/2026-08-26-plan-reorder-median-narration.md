@@ -1,4 +1,4 @@
-# [HASH] — The reorder narration stops quoting two internal medians at the user
+# 3b094b5 — The reorder narration stops quoting two internal medians at the user
 
 A compliance-audit finding on narration drift: plan.md's start-of-processing reorder directed the one-line narration to quote the section's line-count median and its first-seen median — two internal statistics with no user action attached, in text a non-coder reads at the start of every planning run.
 

@@ -1,4 +1,4 @@
-# [HASH] — CYCLES.md joins the scope-lock's standing planning list, so the cycle-authoring rule can run where it fires
+# 3b094b5 — CYCLES.md joins the scope-lock's standing planning list, so the cycle-authoring rule can run where it fires
 
 plan.md's keep-step tells a planning session to write a cycle definition into `CYCLES.md` with the user present, and `pre_tool_use.py`'s standing planning surface did not include that file — so the write was refused and the session correctly filed the definition as work instead. Two documents disagreeing, one of which had to move.
 

@@ -1,4 +1,4 @@
-# [HASH] — Style audit: three findings captured, and both research levers turn out to be already applied
+# 3b094b5 — Style audit: three findings captured, and both research levers turn out to be already applied
 
 An audit of the shipped brevity output style against the rule corpus, in both directions — rules duplicating the style flagged for eviction, pure tone-steering rules flagged as promotion candidates — plus a disposition on the two research levers the item recorded as never applied anywhere.
 

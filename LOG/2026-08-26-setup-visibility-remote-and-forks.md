@@ -1,4 +1,4 @@
-# [HASH] — Visibility: the keep-private decline speaks, the answer lands where sessions read it, and a second repository is called out
+# 3b094b5 — Visibility: the keep-private decline speaks, the answer lands where sessions read it, and a second repository is called out
 
 From a consumer project's defect report, re-read in full before scoping as the item required. Three defects in one incident, and one fix each.
 

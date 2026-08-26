@@ -1,4 +1,4 @@
-# [HASH] — Write-first's justification is rebuilt on cost and in-chat consent, and the candidate-set exception is admitted
+# 3b094b5 — Write-first's justification is rebuilt on cost and in-chat consent, and the candidate-set exception is admitted
 
 A compliance-audit finding: done.md's wind-down and rescan.md both said to show a candidate set as one numbered message before writing, while their parent — the always-loaded write-first test — listed captures as write-then-report with no carve-out. A close reads both and got opposite instructions.
 

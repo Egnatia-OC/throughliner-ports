@@ -1,4 +1,4 @@
-# [HASH] — A queue move the user explicitly directs mid-run is now performed, not refused
+# 3b094b5 — A queue move the user explicitly directs mid-run is now performed, not refused
 
 From a live consumer session. A run halted correctly on a walkthrough-less `[user]` item; the user then explicitly directed it to skip the item and move it back into the unprocessed section. The session held the filing-versus-processing boundary correctly and noted nothing else was cleared — then closed by asking whether she would rather it move the item and she "take the consequences of the build session doing it".
 

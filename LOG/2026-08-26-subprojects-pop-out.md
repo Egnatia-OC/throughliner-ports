@@ -1,4 +1,4 @@
-# [HASH] — Subprojects: /setup gains a pop-out case, and upward-only holds are checked by reading the child's log
+# 3b094b5 — Subprojects: /setup gains a pop-out case, and upward-only holds are checked by reading the child's log
 
 The user's design, for coaching clients with massive differentiated projects — business plan, software, timeline, contracts, client management in one project — where one subpart has become unmanageable and deserves its own queue.
 

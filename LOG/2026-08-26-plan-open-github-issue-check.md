@@ -1,4 +1,4 @@
-# [HASH] — The planning opening's mail step now covers the issue channel too, in both directions
+# 3b094b5 — The planning opening's mail step now covers the issue channel too, in both directions
 
 Captured from a live instance: an upstream issue this project had filed got a substantive answer that went against our design, and it was found only because the user happened to ask. The mailbox covers project-to-project mail and nothing covers GitHub, which is the one correspondence channel with a return path already in use.
 

@@ -1,4 +1,4 @@
-# [HASH] — The end-of-queue gate states its refill reset, keeps a plain ending plain, and honours a declared intent to stay open
+# 3b094b5 — The end-of-queue gate states its refill reset, keeps a plain ending plain, and honours a declared intent to stay open
 
 Two halves, both raised by the user from a session that got them wrong.
 

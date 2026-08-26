@@ -1,4 +1,4 @@
-# [HASH] — The close's cycles check now reads the disk at close time instead of trusting the opening's belief
+# 3b094b5 — The close's cycles check now reads the disk at close time instead of trusting the opening's belief
 
 Diagnosed from the demo chat's transcript before this build: the check was skipped rather than run-and-found-clean. That chat's /next pre-flight correctly reported no cycles doc, the build then created `CYCLES.md` mid-run, and from /done's start to the commit the close never read the file from disk — it carried the opening's "no cycles doc" belief across a session that had itself created the doc. Session memory covered for a file read, which is the exact failure the design-for-fresh-sessions rule names.
 

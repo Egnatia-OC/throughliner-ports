@@ -1,4 +1,4 @@
-# [HASH] — The inline-paste offer is retired: pointing is now unconditional, with summaries serving the remote reader
+# 3b094b5 — The inline-paste offer is retired: pointing is now unconditional, with summaries serving the remote reader
 
 Her decision, made in the session that designed summary-first consent. With every item's discussion now opening on an inline plain-English summary, the person reading on a phone is already served — so the chat-opening offer to paste doc-bound text inline, and the chat-held switch it turned on, no longer earned their place.
 

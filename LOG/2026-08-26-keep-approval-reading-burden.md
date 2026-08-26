@@ -1,4 +1,4 @@
-# [HASH] — Every planning item now opens with a plain-English summary, and asks agreement in plain words
+# 3b094b5 — Every planning item now opens with a plain-English summary, and asks agreement in plain words
 
 Write-first's contract was that the user reads the written item in QUEUE.md after the one-line report and rejects what is wrong. The user reports she generally does not open the file, so the approval the design assumed rested on a reading that was not happening — and the fold rule compounded it by removing the one turn where an item's substance would otherwise be restated. Her words for what that produced: the consent process had been "totally wiped out".
 

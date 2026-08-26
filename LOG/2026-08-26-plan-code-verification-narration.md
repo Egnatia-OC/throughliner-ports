@@ -1,4 +1,4 @@
-# [HASH] — Walkthrough confirmation now reports what the user would see, never the code read to establish it
+# 3b094b5 — Walkthrough confirmation now reports what the user would see, never the code read to establish it
 
 Reported from a live planning session in another project: while working a `[user]` item's walkthrough, the session read the page's source against the walkthrough and reported its findings in code-level terms — what the checkbox label really is, how the saving code is wrapped so a browser refusing storage fails quietly. A non-coder read that.
 

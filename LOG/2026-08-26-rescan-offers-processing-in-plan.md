@@ -1,4 +1,4 @@
-# [HASH] — /rescan in a planning chat now offers to process what it surfaced, one item at a time
+# 3b094b5 — /rescan in a planning chat now offers to process what it surfaced, one item at a time
 
 Captured while watching /rescan surface candidates in a live consumer session. When the chat is already a planning one and the user is present, filing the candidates and stopping there wastes the moment — the standing process-now posture says a capture answered "process it now" should be written once, as a work item, rather than filed and immediately rewritten.
 

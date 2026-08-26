@@ -1,5 +1,7 @@
 # Output styles: plugin shipping and force-for-plugin (verified 2026-08-22)
 
+**Superseded by: the 2026-08-26 repeal of the style-dedup policy (SPEC's output-style paragraph)** — only the "Informs" line's parent-axis-deduplication reasoning falls: it holds for a layer that always applies and fails for a consent-gated style, where evicting a rule from the docs ungoverns every project that declined the style. The factual findings above all still stand.
+
 Source: https://code.claude.com/docs/en/output-styles (official Claude Code docs, fetched 2026-08-22). Verifies the claims in the 2026-08-21 INBOX message from another of the user's projects; all held.
 
 - Plugins can ship output styles in an `output-styles/` directory.
