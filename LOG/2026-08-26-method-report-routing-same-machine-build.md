@@ -1,4 +1,4 @@
-# [HASH] — Method-problem reports gain a same-machine mail arm ahead of the public routes, and "consumer" leaves both headings
+# 46fde79 — Method-problem reports gain a same-machine mail arm ahead of the public routes, and "consumer" leaves both headings
 
 The shipped discriminator sent every method problem to the public form or a GitHub issue, with no arm for the plugin's own development project sitting on the same machine — so sessions in Alex's own projects drafted for the public form and converted to mail only when she redirected them, which she had done repeatedly. Her words: "we don't report when we're on the same machine as Throughliner, we inbox that project."
 

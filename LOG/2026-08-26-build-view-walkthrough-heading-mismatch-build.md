@@ -1,4 +1,4 @@
-# [HASH] — Walkthrough label match widened to accept a qualifier, and a mislabelled block now says so rather than claiming none exists
+# 46fde79 — Walkthrough label match widened to accept a qualifier, and a mislabelled block now says so rather than claiming none exists
 
 The generator required punctuation immediately after the word `Walkthrough`, so a two-part label — `Walkthrough — part one:` — matched nothing and the view told the run no walkthrough travelled. The fix sits at the mechanism rather than as an authoring rule in plan.md, which is the disposition the item carried: code that accepts the shape leaves such a rule policing nothing.
 

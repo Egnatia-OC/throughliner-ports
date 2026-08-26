@@ -6,6 +6,115 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
+#### Log-index window changed in plan.md while SPEC and two shipped docs still describe the old rule [log-index-window-ripple-unfixed]
+Filed at the close of the build run that shipped [plan-log-index-read-underdesigned], on Alex's direction when the disagreement was surfaced.
+
+That item replaced the orientation read's bare five with a derived window — the index lines newer than the most recent planning session's record. `plan.md` now says so. Three other places still describe the repealed rule:
+
+- `SPEC.md` line 49 — "the handful of newest lines are still read unprompted at a planning session's opening". Product truth, so it is planning's to write in any case; a build never writes it.
+- `plugin/throughliner/docs/skill-nonspecific-rules.md` line 1018 — the same phrase, in the always-loaded rules, which every session reads.
+- `plugin/throughliner/docs/done.md` line 287 — "the main index stays the short file whose newest lines a planning opening reads", in the month-rollover step.
+
+The two shipped docs are the live half: they and `plan.md` now give a session different accounts of the same step, and they ship with today's release.
+
+**How this got through, which is the part worth keeping.** The method's repeal-trace rule says an item repealing a specific sentence or value greps its distinctive words across the project before its Files line is written. That grep was not run when this item was kept, so the file list named `plan.md` alone and the build stayed inside it — correctly, since widening scope mid-run is what the rule exists to prevent. The miss is at the keep-step, not in the build. It is a second recorded instance of the rule not firing, which is the kind of evidence its own admission test asks for.
+
+The fix is mechanical once scoped: reword the two shipped docs to the derived window, and write SPEC's sentence to match. Worth grepping again at that point rather than trusting this list — it was assembled from one search for "newest lines" and "handful of", and a fourth site phrased differently would not have appeared.
+
+**Kept 2026-08-26 at the next planning opening, on Claude's recommendation and the user's "as you recommend".** The re-grep was run with widened terms and found one further site: `ANNOUNCEMENT-IDEAS.md` line 26 carries the same repealed claim, and as post source material it could carry the wrong description into a public post. SPEC's sentence was written in the same planning session (planning's own edit); what remains is the two shipped docs and the ideas file. This is also the second recorded instance of the repeal-trace rule not firing at a keep-step — evidence for that rule's own record, noted here rather than acted on.
+
+Rule gate: run — no new rule; the build transcribes the wording already decided and gate-run at [plan-log-index-read-underdesigned], into the two docs that missed it.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` (around line 1018) — reword the index-read sentence to the derived window: a planning opening reads the index lines newer than the most recent planning session's record. `plugin/throughliner/docs/done.md` (around line 287, month-rollover step) — reword "the short file whose newest lines a planning opening reads" to the same derived-window description. `ANNOUNCEMENT-IDEAS.md` (line 26) — correct the same claim in the post source material.
+Acceptance: grep for "newest lines" and "handful of" across shipped docs and ANNOUNCEMENT-IDEAS.md returns no live rule text describing the repealed read; dated history (LOG, queue records) untouched.
+Refused: touching LOG entries or dated queue notes that quote the old rule — they record what was true when written.
+--- End build block ---
+
+#### Fresh-sessions rule still names 4.8 as the model the plugin is tuned for [fresh-sessions-rule-names-retired-model]
+Noticed while building [planning-fable-building-opus-note], which added the Fable-plans / Opus-builds split to that same bullet in this project's CLAUDE.md. The bullet's closing parenthetical says the rule "does not change the Model target above — 4.8 stays the model the plugin is tuned for." That has not been true since docset A was retired on 2026-08-09: the Model target section above it says the one docset serves the 5-series, and 4.8 is named there as no longer a supported target. So the same bullet now states the split and, one clause later, names a model the project has stopped targeting.
+
+Left alone rather than fixed in the build, because repealing a sentence is a keep-step decision and the build item named only the amendment. What the fix would be: reword the parenthetical to say the rule is about session-memory loss and does not change the Model target, dropping the clause that names a model. Check the same grep across the file before writing — the parenthetical may not be the only place 4.8 is still named as current.
+
+**Kept 2026-08-26 at the next planning opening, as part of the small build set testing the current rezip.** The grep was run at the keep: the file's other 4.8 mentions are in the Model target section describing the retired docset's history, which is correct — line 368's parenthetical is the only place 4.8 is stated as current.
+
+Rule gate: run — amendment rewording one clause of the fresh-sessions rule to match the Model target section; repeals the stale "4.8 stays the model the plugin is tuned for" clause, nothing added.
+
+--- Build block ---
+Changes: `CLAUDE.md` — in the fresh-sessions rule's closing parenthetical, reword so it says the rule is about robustness to session-memory loss and does not change the Model target above, dropping the clause naming 4.8 as the tuned-for model. Also drop the sentence's "post-Fable development model (from ~2026-06-20)" framing only if it contradicts the Model target — otherwise leave it; the item's scope is the 4.8 clause.
+Acceptance: grep `4.8` in CLAUDE.md finds it only in the Model target section's history; the parenthetical still states the rule's session-memory-loss subject.
+Refused: touching the Model target section's own 4.8 mentions — they are dated history, correctly kept.
+--- End build block ---
+
+#### [user] Verify the cycles due-ness check live: one capture filed when due, no duplicate on the next opening [cycles-due-check-verification]
+Filed 2026-08-22 at the keep-step, on Claude's recommendation and your agreement. The cycles build ("Cycles shipped", record `2026-08-22-cycles-definitions-and-due-checks-build.md`) ticked done with one behaviour UNCONFIRMED: only the no-doc silent path was exercised, because this project has no cycles doc. Confirming it needs a live session in a project whose `CYCLES.md` carries a past-due observable — user work, since it happens in another project's session during your testing days. The release-cycle definition item ("Define this project's weekly release cycle") is held on this verification and lifts when it closes — timed so the definition can build before Wednesday 10am.
+**Walkthrough.**
+1. In any project you're testing the rezip in (not Taskflowapp's product files — its INBOX is the only sanctioned write there, so pick another test project), ask Claude to create a test `CYCLES.md` at the project root with one definition whose observable is already past due — say a weekly cycle whose last completed turn reads as two weeks ago.
+2. Run /plan (or /next) there. Look for: one capture appearing in that project's queue under the cycle's slug, naming the due step.
+3. Run another opening in that project without touching the capture. Look for: no second capture — the check is satisfied while one is open.
+4. Ask Claude there to delete the test `CYCLES.md` and the test capture.
+5. Tell this project what you saw; this line closes and the definition item lifts.
+**Held 2026-08-26 at the planning close.** The feature this verifies is confirmed not to fire on the installed build ([cycles-check-fires-nowhere], whose fix is cleared to run) — walking this before that fix ships and a rezip lands can only reproduce the known failure. The dependency is host-side: it lifts once the fix is built and the host reinstalled.
+**Lifted 2026-08-26 at the next planning opening.** The fix was built in the 2026-08-26 build run (`2026-08-26-cycles-check-fires-nowhere-build.md`) and the host has since been reinstalled at 1.20.0-test20, so both halves of the lift condition are met.
+
+#### [user] Pick the release build at the end of the next build run, then say the word and the release runs [expedite-first-beta-release]
+**The remaining job of the release-day item, rewritten 2026-08-26 at this planning opening; kept as `[user]` on your direction — the pick happens at the end of the next build run, in that same session, not in a run of its own.** Your decision stands: the first beta releases today, from main, marked pre-release, on your word — nothing about the release rules changes. The morning announcement's text and claims are in `LOG/2026-08-26-beta-announcement-recovered.md` with its register line in `INBOX/sent.md`. Releasing the current build resolves [onboarding-post-claims-unreleased-popout] down its nothing-to-change branch. Today is beta-only — no prior beta exists to promote to stable.
+
+**The pick, your decision:** test20 is the hoped-for candidate, judged only after this /plan and the next /next have run on it; **the previously installed rezip (test19) is the named stable fallback** — it held up in use, so if test20 shows problems the release goes from it rather than waiting. Checked at this opening: no release has run yet — the newest GitHub release is v1.20.0 from 2026-08-09.
+
+**What was settled at this opening and relocated:** the Wednesday stable-label selector and its argument are on [weekly-release-cycle]; the no-collision note is on [beta-tester-pathway]; the nerds-list packaging question closed as no-packaging-for-now (entries carry label, version and date — no downloads until a nerd asks for one); the chain question closed by lifting [cycles-due-check-verification]. Fuller history is in `LOG/2026-08-26-expedite-first-beta-release.md`.
+
+**Walkthrough.**
+1. At the end of the next build run, Claude reports how the run went on test20 — anything that failed, anything patched. You'll see that before deciding.
+2. You pick: release from test20 (patched and re-zipped if the run found problems worth fixing), or fall back to test19. Look for: your own judgment of whether this session and that run went well — that's the whole test.
+3. Say the word; Claude runs the release ritual from main (`resources/release-ritual.md`), marked pre-release.
+4. Look for: the new release visible on the GitHub releases page. This line closes when you confirm it's up.
+
+#### [user] Post the live-dangerously beta announcement and pin the nerds-channel first message [beta-day-one-posts]
+Drafted 2026-08-26 in the post-close tail, both approved by you in conversation; your theme, in your words: "live dangerously" — honest about faking it, because there's never a good time, you don't believe in perfection, and ready-for-testers is good enough. Your decisions carried in the drafts: every server member (14 on the day) gets the **nerd** role as a day-one prize; the rezips' dangers stated straight up in both texts; the install link points at the how-to forum post as the most reliable route; "will be the safest pick" tense on your correction, since the real beta cycle is not running yet. **Post only after today's release is published**, and verify both texts against the shipped build first — the announcement claims the release exists and describes today's timeline. One-a-day pacing applies to the announcement; the channel pin is channel furniture, not a feed post. Both go in `INBOX/sent.md` with their claims when posted, and FAQ potential is weighed at posting per the announcement-time rule.
+**Walkthrough.**
+1. After the release is up, Claude re-verifies both drafts against the shipped build and shows any needed corrections.
+2. You post the announcement in the main channel, grant the nerd role to all members, and pin the channel message in the test-rezips channel — Claude has no route to Discord.
+3. You confirm; both register lines are written and this line closes.
+**Announcement draft (under 2,000 characters):**
+> **The first beta is out — and we're living dangerously. 🎲**
+>
+> I'll be honest about how this is happening: I'm shipping before it's perfect, because there's never a good time and I don't believe in perfection. The tool is ready for testers, and that's good enough. Today's release is brand new — today's build, patched and re-run this afternoon on top of the version I've been living in since it landed late last night. Very fresh, but not untested.
+>
+> **Install it the reliable way:** follow the pinned "How to install" post in the how-to forum — that's the tested route, and Claude walks you through it in plain English.
+>
+> **Day-one prize: everyone here gets to be a nerd. 🏅** All 14 of you are getting the **nerd** role, which opens the test-rezips channel — a running list of my raw development builds, posted as I make them, each labelled honestly: stable (with caveats), not stable (with the problems named), or under testing — use at your own risk.
+>
+> **What's dangerous about them, straight up:** test rezips are snapshots of work in progress. They haven't soaked, some have known failures written right on the label, and a bad one can misbehave in your project's files. The beta release will be the safest pick; the rezips are for people who enjoy the bleeding edge and will tell me what broke. Either way — keep your projects in git (Throughliner sets this up by default), and report anything odd in the support channel.
+>
+> Thanks for being here on day one. This is exactly the group I wanted to break things with. 💖
+**Channel first-message draft (to pin):**
+> **Welcome, nerds. 🤓 Read this before installing anything from here.**
+>
+> This channel is a running list of my raw development builds ("test rezips"), posted as I make them. Each entry carries one of three labels:
+>
+> **stable - [caveats]** — I've run it and it held up, with any caveats named.
+> **not stable - [problems]** — it has known failures, listed on the entry. For the curious only.
+> **under testing - use at your own risk** — too new for me to vouch for either way.
+>
+> **What's dangerous, straight up:** these are snapshots of work in progress. They haven't soaked, a label describes only what I'd seen when I posted it, and a bad build can misbehave inside your project's files — writing where it shouldn't, or mangling the documents Throughliner manages. Keep your projects in git (Throughliner sets this up by default), so anything a bad build does can be rolled back.
+>
+> **The safe route is the beta release** — pinned in the how-to forum. Use this channel only if you enjoy the bleeding edge and will tell me what broke.
+>
+> **When something breaks:** tell Claude about it right there in your Claude Code chat. It knows the reporting route — it'll draft a GitHub issue on the Throughliner repository and post it with your yes (or, without the GitHub CLI, draft a report for the form for you to paste). Mention the build label you were on. Every report makes the next beta better.
+>
+> The list keeps the newest builds; I prune old entries by hand. When the proper beta cycle starts, this channel stays for the brave.
+
+#### [user] Post the first test-rezips channel entry: the build today's release ships [nerds-list-first-entry]
+Raised by you 2026-08-26 at the next planning opening, processed now on your direction. The first entry in the locked test-rezips channel, posted by hand. Its subject is the rezip today's release is cut from — the rezip and the release are the same code that day, so the entry describes the released build, whichever of the two candidates you pick (test20, or the test19 fallback recorded on [expedite-first-beta-release]). The label is yours to write at posting, in your own three-label wording; this first entry can honestly carry "stable" since the build you pick is the one that just survived a planning session and a build run. Entries carry label, version and date only — no downloads, per the no-packaging-for-now decision on [weekly-release-cycle]'s record.
+**Walkthrough.**
+1. After the release is published, Claude updates the draft below to name the released version and the build it was cut from, and shows it to you.
+2. You post it in the test-rezips channel, with your label and any caveats in your own words — Claude has no route to Discord.
+3. You confirm; a register line goes in `INBOX/sent.md` with what the entry claimed, and this line closes.
+**Draft (to update at step 1):**
+> **[released version] — cut from [rezip name], released [date]**
+> Label: stable - [your caveats]. This exact build is today's beta release: it ran a full planning session and a build run before shipping, and it's the same code beta testers get from the install route.
+
 #### [user] Onboarding post describes pop-out as working, and it has never been released [onboarding-post-claims-unreleased-popout]
 Found 2026-08-26 while recovering the onboarding posts into the record. The "Running your first session" post, published 2026-08-25, tells readers that running `/setup` in a subfolder of an existing project detects the parent, reads its spec, asks which part the subfolder covers, and pops it out into its own project.
 
@@ -30,17 +139,6 @@ Filed 2026-08-26 with [beta-branch-install-pin]. Two sequential user steps: the 
 5. Tell this project; the register line for the install post is updated with the corrected claim and this line closes.
 
 --- Cleared to run above this line ---
-
-#### [user] Verify the cycles due-ness check live: one capture filed when due, no duplicate on the next opening [cycles-due-check-verification]
-Filed 2026-08-22 at the keep-step, on Claude's recommendation and your agreement. The cycles build ("Cycles shipped", record `2026-08-22-cycles-definitions-and-due-checks-build.md`) ticked done with one behaviour UNCONFIRMED: only the no-doc silent path was exercised, because this project has no cycles doc. Confirming it needs a live session in a project whose `CYCLES.md` carries a past-due observable — user work, since it happens in another project's session during your testing days. The release-cycle definition item ("Define this project's weekly release cycle") is held on this verification and lifts when it closes — timed so the definition can build before Wednesday 10am.
-**Walkthrough.**
-1. In any project you're testing the rezip in (not Taskflowapp's product files — its INBOX is the only sanctioned write there, so pick another test project), ask Claude to create a test `CYCLES.md` at the project root with one definition whose observable is already past due — say a weekly cycle whose last completed turn reads as two weeks ago.
-2. Run /plan (or /next) there. Look for: one capture appearing in that project's queue under the cycle's slug, naming the due step.
-3. Run another opening in that project without touching the capture. Look for: no second capture — the check is satisfied while one is open.
-4. Ask Claude there to delete the test `CYCLES.md` and the test capture.
-5. Tell this project what you saw; this line closes and the definition item lifts.
-**Held 2026-08-26 at the planning close.** The feature this verifies is confirmed not to fire on the installed build ([cycles-check-fires-nowhere], whose fix is cleared to run) — walking this before that fix ships and a rezip lands can only reproduce the known failure. The dependency is host-side: it lifts once the fix is built and the host reinstalled.
-Blocked by: [cycles-check-fires-nowhere]
 
 #### [user] Write the article comparing Throughliner to memory-system approaches, finishing with what shipped [competition-comparison-article]
 **Captured by you 2026-08-15**, from a discussion prompted by Discord talk about "Obsidian memory systems" and "dreaming". **Your framing and your decision: the analysis reads as an article starter for the Throughliner site, and rather than sending it now it should be captured and finished with our shipped solutions, with the announcement doubling as a Discord post.**
@@ -162,6 +260,7 @@ Refused: choosing among candidate rezips each Wednesday — newest week-old wins
 --- End build block ---
 **Blocker repointed 2026-08-22:** the cycles machinery is built (`2026-08-22-cycles-definitions-and-due-checks-build.md`) with one behaviour unconfirmed, so the fact holding this item is the verification, not the build — the field now names the `[user]` verification line, and this lifts by itself when that closes.
 **Read [expedite-first-beta-release] before building this, 2026-08-26.** Alex proposed a published list of labelled test rezips and then that each Wednesday's pick be the most recent one labelled stable. That is a different selector from this item's newest-rezip-at-least-a-week-old, and it meets this item's recorded refusal of choosing among candidates — the argument for and against is written out there. It may also bear on this item's blocker, since a hand-driven Wednesday turn would not depend on the cycles due-ness check that [cycles-check-fires-nowhere] has stalled.
+**Selector settled 2026-08-26, your decision at the next planning opening — a supersession of this item's pick rule.** The Wednesday **beta** pick is the most recent rezip labelled stable on the nerds list; the **stable release** is last week's beta promoted after its seven-day soak. The newest-rezip-at-least-a-week-old selector is superseded: its week-old property now lives in the promotion step, not the pick. Why the old reasoning loses without reopening the readiness question: the label is applied when the rezip is posted, describing a build that already exists, so the Wednesday turn still reads a recorded state rather than asking "is this good enough?" — the prospective readiness question stays banned. The refusal of choosing among candidates stands: the selector is still mechanical (most recent stable label wins, no judgment on the day). The build block's pick wording is updated to match at build time.
 Blocked by: [cycles-due-check-verification]
 **Files:** `CLAUDE.md`, the new cycles doc. The dependency is host-side: the checks that read the definition must ship first.
 
@@ -178,6 +277,7 @@ Refused: a separate beta cycle with its own cadence — one cycle, beta as a ste
 --- End build block ---
 **Understudy ordering, your decision 2026-08-22: the beta launch does not wait for it** — Understudy debuts as the standard companion app with the YouTube videos, after this channel and the listing; until then the beta materials carry the one-line caution against editing project docs while a run writes. Written on both this item and the marketplace item per the known-ordering rule.
 **Read [expedite-first-beta-release] before building this, 2026-08-26.** Alex's labelled test-rezip list would give the Wednesday pick a defined candidate set, which this item never had. It does not collide with the ref-pinned install decided here — the list is zips for people who want raw dev builds, testers still install from the `beta` branch — but it changes what the pick selects from, so the two are designed together or not at all.
+**Selector settled 2026-08-26, your decision, recorded in full on [weekly-release-cycle]:** the Wednesday beta pick is the most recent stable-labelled rezip from the nerds list; the stable release is last week's beta promoted after its soak. This item's two-event turn is unchanged in shape — only what the pick selects from changed.
 **Install half advanced 2026-08-26:** [beta-branch-install-pin] creates the `beta` branch at today's expedited release and points README/INSTALL at `#beta`, with the second-machine smoke test as [beta-install-smoke-and-post-edit]. What remains here is the cycle wiring — the two-event Wednesday turn — and the announcement draft; this item's build reconciles its block against what those two already shipped.
 Blocked by: [weekly-release-cycle]
 **Files:** the cycles doc, `README.md`, QUEUE.md (the announcement item's walkthrough). The dependency is real, not just conceptual: the definition this amends is created by [weekly-release-cycle]'s build.
@@ -207,15 +307,6 @@ That draft is superseded. The 2026-08-23 rewrite names a specific project rather
 Blocked by: [competition-comparison-article]
 
 ## Unprocessed
-
-#### Last session advises processing log-index-window-ripple-unfixed next [forward-advisory]
-Advice from the 2026-08-26 build run, not a command.
-
-Three shipped documents now disagree with each other about the same step. `plan.md` describes the log-index read as a derived window; `skill-nonspecific-rules.md` and `done.md` still describe the repealed "handful of newest lines", and so does SPEC. All three ship with the release being cut today, and the always-loaded one is read by every session.
-
-It is cheap to settle — the wording is decided, and what it needs is a keep-step that runs the repeal-trace grep the original item skipped, so the file list is complete before anything is written. Doing it first also puts a second recorded instance of that rule not firing in front of whoever processes it, which is the evidence its own admission test asks for.
-
-Eighteen captures were filed this run, most of them audit findings; this one is named because it is the only one whose subject is already live in a release.
 
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
@@ -320,35 +411,6 @@ Not before: 2026-08-31
 >
 > **Housekeeping goes quiet.** The temporary file a build run reads from is cleaned up silently at the close and kept out of your repository — no more being asked about a file you never created.
 
-#### First beta ships today from the current build; still open: the Wednesday stable-label selector and the nerds-list mechanics [expedite-first-beta-release]
-Your decision, settled 2026-08-26 in this planning session and revised the same day in the post-close tail: the first beta releases **today**, Wednesday 2026-08-26 — your words: fake it until we make it — but never literally untested. Your revised sequence: today's build run closes; rezip; one more /plan on that rezip (the plan run is itself the live test); one more build to patch what it surfaces; rezip and reinstall; then the release. So the released build is a patch on a version you have genuinely run — you had been running the prior rezip since it landed late the night before, and the release is still the day's last act. The announcement went out on Discord this morning; its verbatim text and claims are recorded in `LOG/2026-08-26-beta-announcement-recovered.md` with its register line in `INBOX/sent.md`. The reach-back question is closed: no older version. Cleared work runs before the release — [build-view-walkthrough-heading-mismatch] (the patch for the issue a consumer project mailed today) and [planning-fable-building-opus-note]. The install-route check ([install-route-latest-release-check]) was run at processing and deleted as satisfied: the marketplace route serves whatever main holds, never the release artifact, so no doc sentence needed correcting — the consequences accepted on your yes are that today's release runs as the day's last act (so main equals the beta at that moment) and that installers drift onto dev state between releases until [beta-tester-pathway]'s `beta` branch ships. Today is beta-only: a hand-driven Wednesday turn with no prior beta to promote to stable. The transcript hard-rescan ([transcripts-two-failed-builds-analysis]) is deliberately deferred until you supply the files. Releasing from the current build also resolves [onboarding-post-claims-unreleased-popout] down its nothing-to-change branch — pop-out ships with today's release; its walkthrough's read-through step remains.
-
-**The beta chain stays exactly as wired — your decision today.** [beta-tester-pathway] blocked by [weekly-release-cycle], blocked by [cycles-due-check-verification], with [beta-launch-announcement] behind the pathway: today's release proceeds beside that chain, not through it. This morning's announcement lands ahead of [beta-launch-announcement], so that item's premise needs re-reading at its keep rather than assuming it still describes what to post.
-
-**What is not in question:** every release is marked pre-release and runs only from main, and a release happens when you ask for one. Nothing here changes that.
-
-**The nerds list, raised 2026-08-26 and now partly real.** A running record of test rezips in a Discord channel, each entry carrying one of three labels in your own wording — "stable - [caveats]", "not stable - [problems]", or "under testing - use at your own risk" — with a download link and instructions link, inside the 2,000-character limit; you post each entry and prune by hand past fifteen. **You created the channel today: a locked test-rezip channel readable only by the "nerd" role, given to people present today or yesterday or who ask.**
-
-**One check on it before it is designed. Downloadable zips do exist** — `plugin/zip-archive/` is committed and browsable on GitHub, and you can link straight to a file in it. Claude's first account of this said there was nothing to download, which was wrong and you corrected it.
-
-**What is missing is narrower: none of them is a rezip.** The folder holds `si-plugin-v1.14.0.zip`, `si-plugin-v1.15.0.zip` and `si-plugin-v1.16.0-reverted.zip`, with `plugin/throughliner.zip` one level up — verified against `origin/main`, not just the working copy. Every one was produced by a **release**, which runs `Compress-Archive`, archives the previous zip and prunes the folder to three. A rezip runs none of that: the local marketplace sources the folder and the CLI snapshots it directly, so today's rezip adds nothing to that folder and the newest archived zip is four minor versions behind the installed build. So "keep fifteen rather than three" describes the release archive, and a link labelled as this week's test rezip has no file to point at yet.
-
-That leaves two shapes, and they cost very differently. Either the rezip ritual gains a packaging-and-upload step so a test rezip becomes downloadable — new work in a ritual deliberately kept cheap — or the thing being listed is simply a more frequent pre-release, which is what a release already is, since every one is marked pre-release. The second shape needs almost no machinery and mostly needs the labels and the posting rhythm; whether it still feels like less stress is yours to judge.
-
-Two consequences to carry into whichever is chosen: fifteen zips kept in the repository is real weight, worth deciding deliberately rather than by raising a number; and the posting-and-pruning is recurring work you do by hand, which is the shape a cycle exists for — an offer for planning to make, not a decision here.
-
-**Your synthesis, 2026-08-26: the nerds list feeds the beta cycle — each Wednesday's pick is the most recent zip labelled stable.** That supplies something the beta chain never had, a defined candidate set with a readable state on each candidate, and it is why this stops being an alternative to the beta and becomes an input to it.
-
-**It does touch a decision those items made deliberately, and planning should meet that head-on rather than discover it mid-build.** [weekly-release-cycle] fixes the Wednesday pick as *the newest rezip at least a week old* and explicitly refuses choosing among candidates each Wednesday, because the release model's recorded failure was the prospective readiness question — "is this good enough to publish?" — which stopped releases happening at all. Picking the most recent *stable-labelled* zip is a different selector, and it reads as reintroducing judgment.
-
-**The argument that it does not, stated so it can be attacked rather than assumed:** the label is applied when the rezip is posted, describing a build that already exists, so the Wednesday pick reads a state rather than forming an opinion. The property that made the cycle safe was that nothing at release time asks whether the work is ready; a label written days earlier preserves that. What changes is that a build nobody could vouch for is skipped instead of shipped on age alone — which is what the seven-day soak was standing in for.
-
-**The two do not collide on the tester side.** [beta-tester-pathway] refuses zip downloads for testers in favour of a ref-pinned marketplace add on a `beta` branch. The nerds list is zips for people who want raw dev builds; beta testers still install from the branch. Both can be true at once, and the list is the shop window that makes a Wednesday pick meaningful.
-
-**One consequence worth checking at planning, because it may cut the chain that is currently stuck.** Both held items are blocked behind [cycles-due-check-verification], which cannot close while [cycles-check-fires-nowhere] stands. If the Wednesday turn is something you do by hand — post the entry, pick the stable one, fast-forward the branch — then the cycles due-ness check is a convenience on top rather than the thing the pathway depends on, and the blocker may be repointable or droppable. That is a real question rather than a recommendation: the cycle definition is what carries the two-event turn, and whether it can wait needs reading rather than asserting.
-
-Still for processing, at the release-cycle and beta-pathway keep-steps: whether the Wednesday pick becomes the most recent zip labelled stable (the selector question above, argued both ways), whether the chain's far-end blocker can be repointed off the broken cycles check, and the nerds-list packaging shape (labelled pre-releases versus new rezip machinery). Today's release is settled above and is not among them.
-
 #### Process-now "yes" was spent as disposition approval: two items written and cleared with no recommend-and-wait turn [process-now-yes-spent-as-disposition]
 Raised by you 2026-08-26, in a live /plan on this project: after the process-now offer for the beta install pin, your "yes, process it now" — an answer to *when* — was treated as approval of a design first shown in the offer message, and two items were written and cleared with no recommendation turn. Your words: "you skipped processing and landed stuff straight to queue like was always happening with 'keep' in the last version." Repaired in-session: you reviewed and kept both items as written.
 
@@ -358,55 +420,8 @@ The rule already forbids this — plan.md's fold conditions say a design first s
 Captured by you, 2026-08-24, mid-planning — your framing: seems reasonable. Filed at your direction without discussion, so the idea is unshaped: what a diagram would show (a cycle's steps? the turn's two events? due-ness over time?), where it would live (in CYCLES.md beside the definition, or generated), and who reads it are all open for the keep-step. Context worth having there: the desktop app renders mermaid in its markdown viewer, and the cycles doc is user-facing by design.
 Skipped 2026-08-26 on Claude's recommendation and your agreement: what settles it is a build that must ship first — [weekly-release-cycle] creating this project's first real cycles doc, with the due-ness check working ([cycles-check-fires-nowhere]'s fix). A diagram designed before any real cycles doc exists would be guessing at a document nobody has seen; take it up once there is one to draw.
 
-#### Fresh-sessions rule still names 4.8 as the model the plugin is tuned for [fresh-sessions-rule-names-retired-model]
-Noticed while building [planning-fable-building-opus-note], which added the Fable-plans / Opus-builds split to that same bullet in this project's CLAUDE.md. The bullet's closing parenthetical says the rule "does not change the Model target above — 4.8 stays the model the plugin is tuned for." That has not been true since docset A was retired on 2026-08-09: the Model target section above it says the one docset serves the 5-series, and 4.8 is named there as no longer a supported target. So the same bullet now states the split and, one clause later, names a model the project has stopped targeting.
-
-Left alone rather than fixed in the build, because repealing a sentence is a keep-step decision and the build item named only the amendment. What the fix would be: reword the parenthetical to say the rule is about session-memory loss and does not change the Model target, dropping the clause that names a model. Check the same grep across the file before writing — the parenthetical may not be the only place 4.8 is still named as current.
-
-#### SPEC owes a sentence: session openings now report the project's cycle definitions [spec-sentence-cycles-opening-line]
-Filed from the build of [cycles-check-fires-nowhere], which gave the due-ness check the trigger it never had. SPEC's cycles paragraph says the openings and closes read the definitions and compute due-ness; SPEC's `session_start` bullet does not mention cycles at all, because until this build the hook said nothing about them.
-
-The sentence SPEC owes, for the `session_start` bullet: where the project has a cycles doc, the opening names each definition, its cadence and what its observable currently reads — facts, never a verdict on whether a turn is due, which the skills compute. And in the cycles paragraph, that the check now speaks whenever a doc exists rather than only when it files, so a check that ran and found nothing due is distinguishable from one that never ran.
-
-A build never writes product truth, so this is filed rather than written; SPEC lags these two sentences until the next planning run.
-
 #### Session openings could report how long the installed build has been running [session-start-reports-install-age]
 Raised by you 2026-08-26, in the post-close tail, from a live instance: an announcement draft claimed you had been "running this build all week" when you had been running it since late the night before — Claude has no way to know how long an installed build has been tested, and this misjudgment recurs. The opening already reports the installed version and content stamp; the candidate is reporting the installed snapshot's age alongside them (the plugin cache directory's install time is a readable fact), so a session weighing "how tested is this build" reads a date instead of guessing. A derived fact in the session_start payload, same register as the stamp. For the keep-step: whether the age alone is enough, or whether what is really wanted is time-under-use rather than time-since-install.
-
-#### [user] Post the live-dangerously beta announcement and pin the nerds-channel first message [beta-day-one-posts]
-Drafted 2026-08-26 in the post-close tail, both approved by you in conversation; your theme, in your words: "live dangerously" — honest about faking it, because there's never a good time, you don't believe in perfection, and ready-for-testers is good enough. Your decisions carried in the drafts: every server member (14 on the day) gets the **nerd** role as a day-one prize; the rezips' dangers stated straight up in both texts; the install link points at the how-to forum post as the most reliable route; "will be the safest pick" tense on your correction, since the real beta cycle is not running yet. **Post only after today's release is published**, and verify both texts against the shipped build first — the announcement claims the release exists and describes today's timeline. One-a-day pacing applies to the announcement; the channel pin is channel furniture, not a feed post. Both go in `INBOX/sent.md` with their claims when posted, and FAQ potential is weighed at posting per the announcement-time rule.
-**Walkthrough.**
-1. After the release is up, Claude re-verifies both drafts against the shipped build and shows any needed corrections.
-2. You post the announcement in the main channel, grant the nerd role to all members, and pin the channel message in the test-rezips channel — Claude has no route to Discord.
-3. You confirm; both register lines are written and this line closes.
-**Announcement draft (under 2,000 characters):**
-> **The first beta is out — and we're living dangerously. 🎲**
->
-> I'll be honest about how this is happening: I'm shipping before it's perfect, because there's never a good time and I don't believe in perfection. The tool is ready for testers, and that's good enough. Today's release is brand new — today's build, patched and re-run this afternoon on top of the version I've been living in since it landed late last night. Very fresh, but not untested.
->
-> **Install it the reliable way:** follow the pinned "How to install" post in the how-to forum — that's the tested route, and Claude walks you through it in plain English.
->
-> **Day-one prize: everyone here gets to be a nerd. 🏅** All 14 of you are getting the **nerd** role, which opens the test-rezips channel — a running list of my raw development builds, posted as I make them, each labelled honestly: stable (with caveats), not stable (with the problems named), or under testing — use at your own risk.
->
-> **What's dangerous about them, straight up:** test rezips are snapshots of work in progress. They haven't soaked, some have known failures written right on the label, and a bad one can misbehave in your project's files. The beta release will be the safest pick; the rezips are for people who enjoy the bleeding edge and will tell me what broke. Either way — keep your projects in git (Throughliner sets this up by default), and report anything odd in the support channel.
->
-> Thanks for being here on day one. This is exactly the group I wanted to break things with. 💖
-**Channel first-message draft (to pin):**
-> **Welcome, nerds. 🤓 Read this before installing anything from here.**
->
-> This channel is a running list of my raw development builds ("test rezips"), posted as I make them. Each entry carries one of three labels:
->
-> **stable - [caveats]** — I've run it and it held up, with any caveats named.
-> **not stable - [problems]** — it has known failures, listed on the entry. For the curious only.
-> **under testing - use at your own risk** — too new for me to vouch for either way.
->
-> **What's dangerous, straight up:** these are snapshots of work in progress. They haven't soaked, a label describes only what I'd seen when I posted it, and a bad build can misbehave inside your project's files — writing where it shouldn't, or mangling the documents Throughliner manages. Keep your projects in git (Throughliner sets this up by default), so anything a bad build does can be rolled back.
->
-> **The safe route is the beta release** — pinned in the how-to forum. Use this channel only if you enjoy the bleeding edge and will tell me what broke.
->
-> **When something breaks:** tell Claude about it right there in your Claude Code chat. It knows the reporting route — it'll draft a GitHub issue on the Throughliner repository and post it with your yes (or, without the GitHub CLI, draft a report for the form for you to paste). Mention the build label you were on. Every report makes the next beta better.
->
-> The list keeps the newest builds; I prune old entries by hand. When the proper beta cycle starts, this channel stays for the brave.
 
 #### Discord posting bot: an all-rounder so posts and rezip-list updates can be made straight from a session [discord-posting-bot]
 Raised by you 2026-08-26, in the post-close tail, as a side-thought filed for a later /plan. The want: the test-rezips channel's posts and their updates — adding notes to previous entries when issues are reported, changing an entry's stable status — done by a bot rather than by hand, and more generally an all-rounder bot this project can post through directly during /plan or a build. That would be the first route Claude has to Discord, so the never-send-unseen guarantee has to be designed in from the start: nothing posts without you seeing the exact text and saying yes, and an automated update is still a send. Bears on the nerds-list mechanics left open on [expedite-first-beta-release] and on the eventual [weekly-release-cycle] turn; unshaped beyond that — platform, hosting, and what "all-rounder" covers are all for the keep-step.
@@ -553,21 +568,6 @@ Mid-session Claude recorded three settled answers as having been sent to another
 The register exists so that a later repeal can be checked against what was actually claimed. A line written from what the session decided, rather than from the text of the message that went out, records the session's intent and not the correspondence — which is precisely the thing the register was built to stop, one layer up. The rule requires the line in the same turn as the approval and says it carries what the message claimed; nothing says to write it *from the approved text*, and the two come apart exactly when a session settles more than it sends.
 
 The fix is likely one clause on the existing rule rather than new machinery — the approved wording is on screen at the moment the line is written, so reading the claim off it costs nothing. Worth checking the existing lines in this project's own `INBOX/sent.md` for the same shape while the fix is being scoped, since nothing has ever checked them.
-
-#### Log-index window changed in plan.md while SPEC and two shipped docs still describe the old rule [log-index-window-ripple-unfixed]
-Filed at the close of the build run that shipped [plan-log-index-read-underdesigned], on Alex's direction when the disagreement was surfaced.
-
-That item replaced the orientation read's bare five with a derived window — the index lines newer than the most recent planning session's record. `plan.md` now says so. Three other places still describe the repealed rule:
-
-- `SPEC.md` line 49 — "the handful of newest lines are still read unprompted at a planning session's opening". Product truth, so it is planning's to write in any case; a build never writes it.
-- `plugin/throughliner/docs/skill-nonspecific-rules.md` line 1018 — the same phrase, in the always-loaded rules, which every session reads.
-- `plugin/throughliner/docs/done.md` line 287 — "the main index stays the short file whose newest lines a planning opening reads", in the month-rollover step.
-
-The two shipped docs are the live half: they and `plan.md` now give a session different accounts of the same step, and they ship with today's release.
-
-**How this got through, which is the part worth keeping.** The method's repeal-trace rule says an item repealing a specific sentence or value greps its distinctive words across the project before its Files line is written. That grep was not run when this item was kept, so the file list named `plan.md` alone and the build stayed inside it — correctly, since widening scope mid-run is what the rule exists to prevent. The miss is at the keep-step, not in the build. It is a second recorded instance of the rule not firing, which is the kind of evidence its own admission test asks for.
-
-The fix is mechanical once scoped: reword the two shipped docs to the derived window, and write SPEC's sentence to match. Worth grepping again at that point rather than trusting this list — it was assembled from one search for "newest lines" and "handful of", and a fourth site phrased differently would not have appeared.
 
 #### Rule-gate lines in a build working file attach by position, so a later tick can land between an item's own lines [gate-line-in-working-file-is-positional]
 Noticed by Claude at the close of the 2026-08-26 build run, and filed on Alex's direction.

@@ -1,4 +1,4 @@
-# [HASH] — AFK-cats pair read together: 4 findings, and the heading-mismatch defect confirmed live from both sides
+# 46fde79 — AFK-cats pair read together: 4 findings, and the heading-mismatch defect confirmed live from both sides
 
 Both transcripts were preprocessed to conversation text alone — tool calls, results, thinking and metadata dropped — as slim files in the session scratchpad, 19 turns kept from the build session and 51 from the planning session, then read end to end in the order the item required: planning first.
 

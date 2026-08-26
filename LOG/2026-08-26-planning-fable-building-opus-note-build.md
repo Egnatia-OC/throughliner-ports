@@ -1,4 +1,4 @@
-# [HASH] — Fable-plans / Opus-builds split written into the fresh-sessions rule as two subordinate action clauses
+# 46fde79 — Fable-plans / Opus-builds split written into the fresh-sessions rule as two subordinate action clauses
 
 Alex's reasoning, given when she raised this: the note is needed so a planning session knows anything the build model would otherwise have to infer must be written into every build block, and so it knows it is the one in charge of every decision — a capture filed during a build is weighed knowing that session had less full-project oversight than the planning session reading it.
 

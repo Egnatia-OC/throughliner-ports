@@ -1,4 +1,4 @@
-# [HASH] — Session openings now name the hash backfill as what it is, instead of reporting a count nobody could interpret
+# 46fde79 — Session openings now name the hash backfill as what it is, instead of reporting a count nobody could interpret
 
 The instance behind this: an opening said nine LOG entries carried uncommitted changes from a previous session. It read as alarming, nothing in the message explained it, and Alex went back to another session to find out — where it was correctly identified as the automatic hash backfill. `done.md`'s staging step has carried recognition for that exact signature all along; the openings had no equivalent, so the same facts arrived as a bare number with no reading attached.
 

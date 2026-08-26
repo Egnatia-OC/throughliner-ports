@@ -1,4 +1,4 @@
-# [HASH] — Delta compliance audit of nine rule-bearing docs: 8 findings, four of them against this run's own rule text
+# 46fde79 — Delta compliance audit of nine rule-bearing docs: 8 findings, four of them against this run's own rule text
 
 Scope recomputed at run time from the record rather than taken from the filing, which is what the item required — this run's own rule commits had to be inside it. The boundary is the most recent compliance-audit record, `2026-08-24-compliance-audit-lag-build.md` at `3ed3db1`. The delta came to nine files: `CLAUDE.md`, and `done.md`, `feedback-and-inbox.md`, `next-build.md`, `next.md`, `plan.md`, `rescan.md`, `setup.md` and `skill-nonspecific-rules.md` under `docs/`, plus this run's uncommitted edits to six of them.
 

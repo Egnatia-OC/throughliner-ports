@@ -1,4 +1,4 @@
-# [HASH] — Taskflowapp pair read together: 5 findings from a run that stalled twice, for two unrelated reasons
+# 46fde79 — Taskflowapp pair read together: 5 findings from a run that stalled twice, for two unrelated reasons
 
 Both transcripts slimmed to conversation text the same way as the sibling pair — 87 turns kept from the planning session, 14 from the build — and read planning first. Unlike the sibling, this build genuinely stalled, and it stalled twice.
 

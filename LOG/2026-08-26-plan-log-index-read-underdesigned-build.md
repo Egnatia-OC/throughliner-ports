@@ -1,4 +1,4 @@
-# [HASH] — Orientation read given a derived window, a checkable relevance test, and a line it must carry either way
+# 46fde79 — Orientation read given a derived window, a checkable relevance test, and a line it must carry either way
 
 Three gaps, each closed with the treatment the method already uses elsewhere rather than with a new mechanism.
 

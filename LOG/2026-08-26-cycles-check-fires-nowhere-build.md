@@ -1,4 +1,4 @@
-# [HASH] — Cycles due-ness check given the trigger it never had: a hook facts line, and three doc steps that speak whether or not they file
+# 46fde79 — Cycles due-ness check given the trigger it never had: a hook facts line, and three doc steps that speak whether or not they file
 
 The check existed at three sites and fired at none of them. Two live failures on the same installed plugin had already been recorded, and the diagnosis settled at processing was structural rather than a wrong computation: `session_start.py` never mentioned `CYCLES.md`, so a fresh opening's payload said nothing about the file, and each doc step was silent when nothing was due — which made a step that ran and a step that never ran produce identical output.
 

@@ -1,4 +1,4 @@
-# [HASH] — Narration cadence promoted out of the consent-gated style into the always-loaded rules, as one subordinate bullet
+# 46fde79 — Narration cadence promoted out of the consent-gated style into the always-loaded rules, as one subordinate bullet
 
 The style's cadence bullet had no counterpart anywhere in the always-loaded rules, so a project that declined the brevity style got no steering at all on how often Claude speaks while working. That is the shape the dedup repeal's SPEC sentence names as a defect: a rule living only in the consent-gated layer, where promotion is the fix.
 

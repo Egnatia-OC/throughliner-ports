@@ -1,4 +1,4 @@
-# [HASH] — New-user install route promoted to a first-class section, and INSTALL.md given a phrase that proves the guide was read
+# 46fde79 — New-user install route promoted to a first-class section, and INSTALL.md given a phrase that proves the guide was read
 
 Three fixes, kept together at processing because the second and third are two halves of one thing: a new user cannot otherwise tell whether the assistant in front of them is working from the guide or improvising from the link's title.
 

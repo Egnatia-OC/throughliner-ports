@@ -1,4 +1,4 @@
-# [HASH] — Brevity style's four prohibition bullets rewritten as the actions they were guarding, at unchanged length
+# 46fde79 — Brevity style's four prohibition bullets rewritten as the actions they were guarding, at unchanged length
 
 Four of nine bullets told Claude what not to do, against two standards at once: the research naming negative instructions among the confirmed dead ends and telling Claude what to do instead as one of the few documented levers, and the method's own wording rule, which treats a prohibition as a signal that the rule of what TO do was never adequately described.
 

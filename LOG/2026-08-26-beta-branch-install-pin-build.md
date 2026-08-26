@@ -1,4 +1,4 @@
-# [HASH] — Install docs pinned to `#beta`; the branch itself could not be cut, because today's release has not run
+# 46fde79 — Install docs pinned to `#beta`; the branch itself could not be cut, because today's release has not run
 
 The docs half is done. Every marketplace-add string in `README.md` and `INSTALL.md` now reads `FlintcraftTech/throughliner#beta` — the paste prompt, both reference commands, and the guide's own command block — each with a plain-English line saying beta is the tested weekly pick while main carries day-to-day development, and both update instructions saying an update brings the newest beta. The FAQ's install entry, authored earlier in this same run, was carried across too rather than being left contradicting the docs it was written beside.
 

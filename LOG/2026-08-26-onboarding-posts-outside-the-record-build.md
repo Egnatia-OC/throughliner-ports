@@ -1,4 +1,4 @@
-# [HASH] — Six FAQ entries authored from the recovered onboarding posts, into the shipped templates and the project's own copies
+# 46fde79 — Six FAQ entries authored from the recovered onboarding posts, into the shipped templates and the project's own copies
 
 The FAQ half of the outbound-record gap, and the half that needed a build: an entry is authored into `plugin/throughliner/templates/`, which a planning session's scope-lock deliberately excludes because editing a template reaches every future consumer. The register half was already closed when Alex supplied all six posts verbatim earlier the same day.
 
