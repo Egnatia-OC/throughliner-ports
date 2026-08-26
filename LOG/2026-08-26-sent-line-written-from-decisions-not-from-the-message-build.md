@@ -1,4 +1,4 @@
-# [HASH] — Register lines must be read off the approved text; the back-check found one line claiming what its post never said
+# 2c76e53 — Register lines must be read off the approved text; the back-check found one line claiming what its post never said
 
 A planning session recorded three settled answers as having been sent to another
 project, then caught itself: the reply it actually sent didn't contain them. The

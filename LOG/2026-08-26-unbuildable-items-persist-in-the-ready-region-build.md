@@ -1,4 +1,4 @@
-# [HASH] — Queue digest now flags a cleared item carrying no build block, where planning actually looks
+# 2c76e53 — Queue digest now flags a cleared item carrying no build block, where planning actually looks
 
 Six items sat cleared to run in Taskflowapp and a build run was the first thing to
 catch them — it stopped before locking scope and named all six as unscopeable. The

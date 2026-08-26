@@ -1,4 +1,4 @@
-# [HASH] — Three rationale evictions from plan.md: the orientation read, the cycles step, and the delete branch
+# 2c76e53 — Three rationale evictions from plan.md: the orientation read, the cycles step, and the delete branch
 
 From the compliance audit's fourth lens, the delete-and-read test. This item hosted
 all three of that lens's evictions in `plan.md`; the sibling captures

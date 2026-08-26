@@ -1,4 +1,4 @@
-# [HASH] — Ordering-rigidity audit of two frustrating sessions: ten findings, no clean pass on either transcript
+# 2c76e53 — Ordering-rigidity audit of two frustrating sessions: ten findings, no clean pass on either transcript
 
 The audit you asked for after a pair of sessions you described as a very
 frustrating experience. Your framing was the lens, and it is worth restating as

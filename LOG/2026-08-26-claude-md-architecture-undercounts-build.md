@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md's Architecture section corrected to the five skills and four hooks that ship
+# 2c76e53 — CLAUDE.md's Architecture section corrected to the five skills and four hooks that ship
 
 Found by the v1.21.0 release sweep. The Architecture section said "4 skills",
 omitting `/rescan`, and "3 hooks — two enforcing, one advisory", omitting `stop.py`.

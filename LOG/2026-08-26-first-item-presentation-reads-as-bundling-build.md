@@ -1,4 +1,4 @@
-# [HASH] — The processing pass now opens checkpoint-shaped, so the first item gets its own take-this-one ask
+# 2c76e53 — The processing pass now opens checkpoint-shaped, so the first item gets its own take-this-one ask
 
 You stopped a planning session mid-flow when the first capture arrived with
 summary, analysis and recommendation in one message: "you're supposed to ask if I

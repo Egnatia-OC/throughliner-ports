@@ -1,4 +1,4 @@
-# [HASH] — Self-invocation of the method's own skills now refused by the hook, with the early-typing trigger named
+# 2c76e53 — Self-invocation of the method's own skills now refused by the hook, with the early-typing trigger named
 
 A planning session in the AFK-cats project opened by saying "Rules loaded. Starting
 the planning run", tried to run the skill itself, and failed. Its next message told

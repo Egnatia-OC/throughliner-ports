@@ -2,35 +2,62 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — chat-level record for the 2026-08-26 late build run: 19 built, 1 audit, [setup-case-d-untagged] halted on setup.md's tag-free declaration, 4 user items closed and 3 deferred, 6 captures filed including two walk-through failures the user hit live → 2026-08-26-chat-build-4.md
-- [HASH] — audit — two transcripts read end to end, 10 findings filed, no clean pass; release trace pins the lost soak step to one sentence dissolving rezip-and-reinstall into the release ritual → 2026-08-26-ordering-rigidity-transcript-pair-audit-build.md
-- [HASH] — build — next-build.md's environment check reworded: a shell-side tool failure now triggers the ask, and its trailing rationale clause evicted → 2026-08-26-environment-check-skipped-user-had-to-cite-it-build.md
-- [HASH] — build — TOOLS.md shipped: pre_tool_use permits it root-level in both scope-lock branches, next-build.md's check gains read and write halves, 14-case suite → 2026-08-26-no-home-for-a-projects-tool-facts-build.md
-- [HASH] — build — skill-nonspecific-rules.md's write-first rule cut 5 lines to 2: consent clause kept operative, two rationale clauses evicted → 2026-08-26-write-first-rule-carries-its-why-inline-build.md
-- [HASH] — build — next-build.md's scope-growth branch and the always-loaded discovery table both reworded to recommend one route with the other as escape → 2026-08-26-build-scope-ask-lands-as-a-menu-build.md
-- [HASH] — build — pre_tool_use now denies Skill invocation of the method's five commands with early-typing guidance; prohibition hoisted to its own rule; 19-case suite → 2026-08-26-claude-invoked-plan-against-the-rule-build.md
-- [HASH] — build — coverage caveat made two-tier at both specimen sites in done.md and rescan.md → 2026-08-26-coverage-caveat-repeats-within-a-session-build.md
-- [HASH] — build — plan.md's build-block template gains optional Inputs:, plus the rule that anything the work needs to start travels in the block; view generator confirmed byte-for-byte → 2026-08-26-build-view-drops-paths-in-rationale-build.md
-- [HASH] — build — queue_digest.py flags a cleared build/audit item with no build block, with the lint-duplication reasoning recorded in code; 6 suite cases → 2026-08-26-unbuildable-items-persist-in-the-ready-region-build.md
-- [HASH] — build — next-build.md's verification guidance: read a check's exit status from the tool, not the pipeline; release-ritual staleness captured separately → 2026-08-26-piped-check-reports-the-wrong-exit-code-build.md
-- [HASH] — build — register-line rule gains read-it-off-the-approved-text at both sites; back-check over 11 on-machine lines found and corrected the beta-announcement line → 2026-08-26-sent-line-written-from-decisions-not-from-the-message-build.md
-- [HASH] — build — working-file Rule gate: lines now slug-keyed in next.md and read by slug in done-build.md; LOG-entry format deliberately unchanged → 2026-08-26-gate-line-in-working-file-is-positional-build.md
-- [HASH] — build — CLAUDE.md Architecture corrected to 5 skills and 4 hooks with /rescan and stop described; folder tree corrected too on the user's approval → 2026-08-26-claude-md-architecture-undercounts-build.md
-- [HASH] — build — plan.md's process-now section gains a four-turn specimen separating the timing answer from the disposition approval → 2026-08-26-process-now-yes-spent-as-disposition-build.md
-- [HASH] — build — plan.md's processing pass opens checkpoint-shaped; the first-item exception evicted, all specimens updated → 2026-08-26-first-item-presentation-reads-as-bundling-build.md
-- [HASH] — build — session_start reports "installed since <date>"; a 1970 mtime clamp forced a derived PLUGIN_EPOCH floor; 8-case suite → 2026-08-26-session-start-reports-install-age-build.md
-- [HASH] — build — post_tool_use's word-growth counter excludes the readiness marker from item spans, so a marker move invents no delta; 6-case suite → 2026-08-26-lint-word-growth-misattribution-build.md
-- [HASH] — build — "the ready list" declaration relocated to skill-nonspecific-rules.md's Vocabulary, plan.md keeping only the usage → 2026-08-26-ready-list-name-defined-where-only-plan-reads-it-build.md
-- [HASH] — build — plan.md's issue-channel check retagged to speak one line either way wherever the channel exists, matching its sibling cycles check → 2026-08-26-issue-check-silent-while-cycles-check-speaks-build.md
-- [HASH] — build — three rationale clauses evicted from plan.md (orientation read, cycles step, delete branch); a wrongly-cut adjacent line restored at the close → 2026-08-26-plan-log-index-read-carries-rationale-build.md
-- [HASH] — user — release pick closed on its observable: v1.21.0 published pre-release, beta branch resolving; records that the released build was NOT the one named → 2026-08-26-expedite-first-beta-release-closed.md
-- [HASH] — user — onboarding post's pop-out claim now true of the shipped build; sent-register line corrected without handing the user a step → 2026-08-26-onboarding-post-claims-unreleased-popout-closed.md
-- [HASH] — user — beta day-one posts closed on the user's report; drafts had been re-verified and were re-presented in error, cause filed → 2026-08-26-beta-day-one-posts-2.md
-- [HASH] — user — first test-rezips entry closed from a screenshot; register line read off the posted text, label placeholder left unfilled and flagged → 2026-08-26-nerds-list-first-entry-closed.md
-- [HASH] — user — cycles verification: steps 2 and 3 confirmed passed from the world; cleanup in another project outstanding, and the hand-over itself filed as a defect → 2026-08-26-cycles-due-check-verification-2.md
-- [HASH] — user — #beta install smoke test deferred at step 1; branch confirmed resolving, install unverifiable from this machine → 2026-08-26-beta-install-smoke-and-post-edit.md
-- [HASH] — user — session-start strength post drafted and verified against the released commit; held for a day carrying no other Throughliner post → 2026-08-26-discord-post-session-start-strength.md
-- [HASH] — user — Discord bot setup deferred at step 1; gitignore coverage of the token path confirmed first, with its limit stated → 2026-08-26-discord-bot-server-setup.md
+- [HASH] — chat-level record for the 2026-08-27 planning session: every capture processed, 21 kept with per-item records, ready region rebuilt to 29, rezip to 1.21.0-test1 mid-session, port prompt handed over, the date error caught live → 2026-08-27-chat-plan.md
+- [HASH] — plan — droppable-set ask gains an explicit recommendation and a singular specimen (plan.md) → 2026-08-27-droppable-set-ask-lacks-recommendation-singular.md
+- [HASH] — plan — done-plan's "false SPEC" paragraph repealed for the SPEC-leads model; gate keeps its was-the-sentence-written check → 2026-08-27-spec-sync-gate-aligned-to-spec-leads.md
+- [HASH] — plan — README to mark LOG/ and resources/ as historical records, from the Gemini/BACKLOG.md confusion → 2026-08-27-readme-marks-history-folders.md
+- [HASH] — plan — [user] item: test-rezips pin promises a commit line, every entry carries one; format note on the bot item → 2026-08-27-test-rezips-entries-name-obtain-route.md
+- [HASH] — plan — developer/testing jargon joins the translate-away list ("fixture" the specimen); hand-over steps read back for it (skill-nonspecific-rules.md, next.md) → 2026-08-27-general-jargon-translate-and-walkthrough-readback.md
+- [HASH] — plan — completion-ask carve-out keyed on recorded post-close hand-over plus unreachable observable; SPEC sentence written; general bar unsoftened → 2026-08-27-completion-ask-carveout-post-close-handover.md
+- [HASH] — plan — walkthroughs end at the item's observable; another-project steps filed, never driven (skill-nonspecific-rules.md, next.md) → 2026-08-27-user-item-ends-at-observable-cleanup-separate.md
+- [HASH] — plan — resources/testing gains a discover-and-run-all runner; both ritual suite steps point at it with py → 2026-08-27-testing-suite-runner-discovers-all.md
+- [HASH] — plan — audit findings file straight to Unprocessed marked not-yet-reviewed; the write-time approval and the inversion's audit example repealed → 2026-08-27-audit-findings-file-unapproved.md
+- [HASH] — plan — the checkpoint carries the remaining-to-process count; the no-count clause narrowed (plan.md) → 2026-08-27-checkpoint-carries-remaining-count.md
+- [HASH] — plan — walkthroughs name where each stored text lives; verification steps enumerate their claims (skill-nonspecific-rules.md) → 2026-08-27-walkthrough-artifacts-named-and-verify-enumerated.md
+- [HASH] — plan — mover runs confirmed from the tool's report; usage read before any second attempt (plan.md) → 2026-08-27-mover-report-confirmed-before-continuing.md
+- [HASH] — plan — rare execution markers assigned only against their re-read definition; [freeform] vs Runs alone contrast sharpened (plan.md) → 2026-08-27-uncommon-flavor-definition-check.md
+- [HASH] — plan — plan-phrases resolve by reading the record (Prior decisions); the ritual compares stamps before packaging, carrying the user's tested-rezip invariant → 2026-08-27-as-planned-reads-the-record-and-stamps.md
+- [HASH] — plan — the release ritual opens the queue item that scheduled it and writes its record at the end (release-ritual.md) → 2026-08-27-release-ritual-opens-its-record.md
+- [HASH] — plan — walk-through outcomes get done / deferred / not reached, "deferred" only from the user's word (next.md, done.md) → 2026-08-27-walkthrough-outcome-not-reached.md
+- [HASH] — plan — every [user] item reached is presented; preconditions surface inside the drive, never as an outside filter (next.md) → 2026-08-27-walkthrough-no-batch-precondition-skip.md
+- [HASH] — plan — warn-don't-enforce: a do-it-now request gets one standalone warning turn with an alternative, then the work, logged (skill-nonspecific-rules.md) → 2026-08-27-warn-dont-enforce-immediate-requests.md
+- [HASH] — plan — "keep" retired as the disposition term: an entry is processed, with the outcome named in artifact words; internal step to get a plain name → 2026-08-27-keep-term-retired-for-processed.md
+- [HASH] — plan — "line" retired as the name for a [user] work item across six files → 2026-08-27-user-line-terminology-retired.md
+- [HASH] — plan — builds return to reading the queue whole: the generated view and build blocks retired, purpose instruction and boundary rule in their place, SPEC rewritten at the keep → 2026-08-27-builds-read-the-queue-again.md
+- [HASH] — plan — shared vocabulary replaces standing plain-English names; "the ready list" retired, the consent post draft held behind the build → 2026-08-27-shared-vocabulary-not-standing-names.md
+- [HASH] — plan — captures may carry Blocked by, meaning don't offer while the blocker is open; lint, digest and docs to follow → 2026-08-27-capture-blocked-by.md
+- [HASH] — plan — session_start to emit today's date; date decisions read computed fields, never assumption (from the live mis-dated capture) → 2026-08-27-session-date-anchor.md
+- [HASH] — plan — setup.md's tag-free declaration to be repealed and the whole doc tagged; the halted top-of-queue item buildable again → 2026-08-27-setup-case-d-untagged.md
+
+- 2c76e53 — chat-level record for the 2026-08-26 late build run: 19 built, 1 audit, [setup-case-d-untagged] halted on setup.md's tag-free declaration, 4 user items closed and 3 deferred, 6 captures filed including two walk-through failures the user hit live → 2026-08-26-chat-build-4.md
+- 2c76e53 — audit — two transcripts read end to end, 10 findings filed, no clean pass; release trace pins the lost soak step to one sentence dissolving rezip-and-reinstall into the release ritual → 2026-08-26-ordering-rigidity-transcript-pair-audit-build.md
+- 2c76e53 — build — next-build.md's environment check reworded: a shell-side tool failure now triggers the ask, and its trailing rationale clause evicted → 2026-08-26-environment-check-skipped-user-had-to-cite-it-build.md
+- 2c76e53 — build — TOOLS.md shipped: pre_tool_use permits it root-level in both scope-lock branches, next-build.md's check gains read and write halves, 14-case suite → 2026-08-26-no-home-for-a-projects-tool-facts-build.md
+- 2c76e53 — build — skill-nonspecific-rules.md's write-first rule cut 5 lines to 2: consent clause kept operative, two rationale clauses evicted → 2026-08-26-write-first-rule-carries-its-why-inline-build.md
+- 2c76e53 — build — next-build.md's scope-growth branch and the always-loaded discovery table both reworded to recommend one route with the other as escape → 2026-08-26-build-scope-ask-lands-as-a-menu-build.md
+- 2c76e53 — build — pre_tool_use now denies Skill invocation of the method's five commands with early-typing guidance; prohibition hoisted to its own rule; 19-case suite → 2026-08-26-claude-invoked-plan-against-the-rule-build.md
+- 2c76e53 — build — coverage caveat made two-tier at both specimen sites in done.md and rescan.md → 2026-08-26-coverage-caveat-repeats-within-a-session-build.md
+- 2c76e53 — build — plan.md's build-block template gains optional Inputs:, plus the rule that anything the work needs to start travels in the block; view generator confirmed byte-for-byte → 2026-08-26-build-view-drops-paths-in-rationale-build.md
+- 2c76e53 — build — queue_digest.py flags a cleared build/audit item with no build block, with the lint-duplication reasoning recorded in code; 6 suite cases → 2026-08-26-unbuildable-items-persist-in-the-ready-region-build.md
+- 2c76e53 — build — next-build.md's verification guidance: read a check's exit status from the tool, not the pipeline; release-ritual staleness captured separately → 2026-08-26-piped-check-reports-the-wrong-exit-code-build.md
+- 2c76e53 — build — register-line rule gains read-it-off-the-approved-text at both sites; back-check over 11 on-machine lines found and corrected the beta-announcement line → 2026-08-26-sent-line-written-from-decisions-not-from-the-message-build.md
+- 2c76e53 — build — working-file Rule gate: lines now slug-keyed in next.md and read by slug in done-build.md; LOG-entry format deliberately unchanged → 2026-08-26-gate-line-in-working-file-is-positional-build.md
+- 2c76e53 — build — CLAUDE.md Architecture corrected to 5 skills and 4 hooks with /rescan and stop described; folder tree corrected too on the user's approval → 2026-08-26-claude-md-architecture-undercounts-build.md
+- 2c76e53 — build — plan.md's process-now section gains a four-turn specimen separating the timing answer from the disposition approval → 2026-08-26-process-now-yes-spent-as-disposition-build.md
+- 2c76e53 — build — plan.md's processing pass opens checkpoint-shaped; the first-item exception evicted, all specimens updated → 2026-08-26-first-item-presentation-reads-as-bundling-build.md
+- 2c76e53 — build — session_start reports "installed since <date>"; a 1970 mtime clamp forced a derived PLUGIN_EPOCH floor; 8-case suite → 2026-08-26-session-start-reports-install-age-build.md
+- 2c76e53 — build — post_tool_use's word-growth counter excludes the readiness marker from item spans, so a marker move invents no delta; 6-case suite → 2026-08-26-lint-word-growth-misattribution-build.md
+- 2c76e53 — build — "the ready list" declaration relocated to skill-nonspecific-rules.md's Vocabulary, plan.md keeping only the usage → 2026-08-26-ready-list-name-defined-where-only-plan-reads-it-build.md
+- 2c76e53 — build — plan.md's issue-channel check retagged to speak one line either way wherever the channel exists, matching its sibling cycles check → 2026-08-26-issue-check-silent-while-cycles-check-speaks-build.md
+- 2c76e53 — build — three rationale clauses evicted from plan.md (orientation read, cycles step, delete branch); a wrongly-cut adjacent line restored at the close → 2026-08-26-plan-log-index-read-carries-rationale-build.md
+- 2c76e53 — user — release pick closed on its observable: v1.21.0 published pre-release, beta branch resolving; records that the released build was NOT the one named → 2026-08-26-expedite-first-beta-release-closed.md
+- 2c76e53 — user — onboarding post's pop-out claim now true of the shipped build; sent-register line corrected without handing the user a step → 2026-08-26-onboarding-post-claims-unreleased-popout-closed.md
+- 2c76e53 — user — beta day-one posts closed on the user's report; drafts had been re-verified and were re-presented in error, cause filed → 2026-08-26-beta-day-one-posts-2.md
+- 2c76e53 — user — first test-rezips entry closed from a screenshot; register line read off the posted text, label placeholder left unfilled and flagged → 2026-08-26-nerds-list-first-entry-closed.md
+- 2c76e53 — user — cycles verification: steps 2 and 3 confirmed passed from the world; cleanup in another project outstanding, and the hand-over itself filed as a defect → 2026-08-26-cycles-due-check-verification-2.md
+- 2c76e53 — user — #beta install smoke test deferred at step 1; branch confirmed resolving, install unverifiable from this machine → 2026-08-26-beta-install-smoke-and-post-edit.md
+- 2c76e53 — user — session-start strength post drafted and verified against the released commit; held for a day carrying no other Throughliner post → 2026-08-26-discord-post-session-start-strength.md
+- 2c76e53 — user — Discord bot setup deferred at step 1; gitignore coverage of the token path confirmed first, with its limit stated → 2026-08-26-discord-bot-server-setup.md
 - 0d02b6a — chat-level record for the 2026-08-26 late planning session: 22 items processed around the new ordering-rigidity audit, the release failure routed into it as a lens, ready list rebuilt to 29, Claude Code issue #89739 posted → 2026-08-26-chat-plan-3.md
 - 0d02b6a — plan — ordering-rigidity audit filed and cleared first: two transcripts, warn-don't-enforce lens, the untested-v1.21.0 release traced as second lens → 2026-08-26-ordering-rigidity-transcript-pair-audit.md
 - 0d02b6a — plan — environment check amended: a tool failing from Claude's shell triggers the ask instead of answering it (next-build.md) → 2026-08-26-environment-check-skipped-user-had-to-cite-it.md

@@ -1,4 +1,4 @@
-# [HASH] — TOOLS.md: a home for what a project has on hand, writable under the scope-lock in every session type
+# 2c76e53 — TOOLS.md: a home for what a project has on hand, writable under the scope-lock in every session type
 
 A build session in Taskflowapp established four facts worth keeping — Android
 Studio installed, its bundled JDK at a known path, the SDK at another, and

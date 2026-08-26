@@ -1,4 +1,4 @@
-# [HASH] — Session openings now report when the installed build arrived, and refuse to guess when they can't tell
+# 2c76e53 — Session openings now report when the installed build arrived, and refuse to guess when they can't tell
 
 You raised this from a live instance: an announcement draft claimed you had been
 running a build "all week" when you had been running it since late the night

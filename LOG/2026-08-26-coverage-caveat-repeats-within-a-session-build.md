@@ -1,4 +1,4 @@
-# [HASH] — Coverage caveat: full sentence once per session, a one-clause back-reference after
+# 2c76e53 — Coverage caveat: full sentence once per session, a one-clause back-reference after
 
 The line about not being able to tell whether earlier conversation has dropped out
 of view appeared three times across one pair of sessions — twice inside a single

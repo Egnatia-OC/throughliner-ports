@@ -1,4 +1,4 @@
-# [HASH] — Build blocks gain an optional Inputs: line, and a rule that anything the work needs to start travels in the block
+# 2c76e53 — Build blocks gain an optional Inputs: line, and a rule that anything the work needs to start travels in the block
 
 Noticed while running this session's own transcript audit. The audit item named the
 exact `.jsonl` paths to read, but those paths sat in its rationale prose rather

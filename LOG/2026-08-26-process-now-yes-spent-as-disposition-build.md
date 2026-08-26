@@ -1,4 +1,4 @@
-# [HASH] — A specimen at the process-now offer, showing the timing answer and the disposition as two separate asks
+# 2c76e53 — A specimen at the process-now offer, showing the timing answer and the disposition as two separate asks
 
 You raised this live: after the process-now offer for the beta install pin, your
 "yes, process it now" — an answer to *when* — was treated as approval of a design

@@ -1,4 +1,4 @@
-# [HASH] — Working-file rule-gate lines now carry their slug, so a later tick can't steal them
+# 2c76e53 — Working-file rule-gate lines now carry their slug, so a later tick can't steal them
 
 Each ticked item writes up to three lines into a build working file: the tick, a
 slug-bound `Depth:` line, and where the item carries one, a transcribed

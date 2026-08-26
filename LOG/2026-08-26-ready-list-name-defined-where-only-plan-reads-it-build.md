@@ -1,4 +1,4 @@
-# [HASH] — "The ready list" moved into the always-loaded rules, where its three sites can actually read it
+# 2c76e53 — "The ready list" moved into the always-loaded rules, where its three sites can actually read it
 
 From the compliance audit's distribution lens. `plan.md` declared "the ready list"
 the standing plain-English name for the cleared region and said it is "used

@@ -1,4 +1,4 @@
-# [HASH] — Environment check reworded so a tool failing from Claude's shell triggers the ask instead of answering it
+# 2c76e53 — Environment check reworded so a tool failing from Claude's shell triggers the ask instead of answering it
 
 A run in Taskflowapp watched Gradle fail from its own shell, concluded it could
 not compile, recorded an outstanding check and asked whether to carry on

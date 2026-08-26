@@ -1,4 +1,4 @@
-# [HASH] — Write-first rule: two rationale clauses evicted, the consent clause reclassified as operative
+# 2c76e53 — Write-first rule: two rationale clauses evicted, the consent clause reclassified as operative
 
 Found by the compliance audit's fourth lens, the delete-and-read test. The
 always-loaded write-first rule had grown two clauses that read as explanation

@@ -1,4 +1,4 @@
-# [HASH] — Issue-channel check now speaks one line either way wherever the channel exists
+# 2c76e53 — Issue-channel check now speaks one line either way wherever the channel exists
 
 From the compliance audit's consistency lens. Two sibling checks sit in `plan.md`'s
 opening and fire at the same moment. The cycles check had just been rewritten to

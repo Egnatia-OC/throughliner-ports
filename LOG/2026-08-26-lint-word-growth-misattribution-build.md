@@ -1,4 +1,4 @@
-# [HASH] — Word-growth counter excludes the readiness marker, so moving the line stops inventing deltas
+# 2c76e53 — Word-growth counter excludes the readiness marker, so moving the line stops inventing deltas
 
 After a below-line lift — a mover call plus one edit to that item's own block — the
 advisory word-growth report claimed a different item had lost 8 words, an item no

@@ -1,4 +1,4 @@
-# [HASH] — Mid-build scope asks now lead with a recommendation instead of offering a flat menu
+# 2c76e53 — Mid-build scope asks now lead with a recommendation instead of offering a flat menu
 
 A build in the AFK-cats project found a real daylight-saving bug in a file already
 in scope, stopped, and asked whether to add the fix or file it as its own item —

@@ -1,4 +1,4 @@
-# [HASH] — Verification guidance now says to read a check's exit status from the tool, not from a pipeline around it
+# 2c76e53 — Verification guidance now says to read a check's exit status from the tool, not from a pipeline around it
 
 A run put a Gradle build through a pipe ending in `tail`, read the exit status, and
 reported the compile as succeeding. Gradle had already failed; the status belonged
