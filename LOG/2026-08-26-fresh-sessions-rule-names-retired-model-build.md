@@ -1,4 +1,4 @@
-# [HASH] — Fresh-sessions rule no longer names 4.8 as the model the plugin is tuned for
+# 01ba244 — Fresh-sessions rule no longer names 4.8 as the model the plugin is tuned for
 
 The fresh-sessions bullet in this project's CLAUDE.md closed with a parenthetical asserting that the rule "does not change the Model target above — 4.8 stays the model the plugin is tuned for." That stopped being true on 2026-08-09, when docset A was retired and the Model target section began saying the one docset serves the 5-series with 4.8 explicitly no longer a supported target. The same bullet therefore stated the Fable-plans / Opus-builds split and, one clause later, named a model the project had stopped targeting.
 

@@ -540,3 +540,12 @@ It happened three times in one run. Each new tick was written by matching on the
 
 Two candidate fixes, and the first mirrors a decision already made here: give the gate line a slug, as the depth line has, so it is self-identifying and the close reads it by slug rather than by what sits above it. Or state the per-item write order in next.md's completion step so the three lines are written as one block — cheaper, but it depends on care rather than removing the need for it, which is the argument the depth line's slug already won.
 
+#### CLAUDE.md's Architecture section undercounts the skills and hooks that actually ship [claude-md-architecture-undercounts]
+Found by the v1.21.0 release sweep's CLAUDE.md pass. The Architecture section says "**4 skills:**" and lists four, omitting `/rescan`; and "**3 hooks** — two enforcing, one advisory", omitting `stop.py`. The plugin ships five skills (`plugin/throughliner/skills/` holds setup, plan, next, rescan, done) and four hooks (`plugin/throughliner/hooks/` holds session_start, pre_tool_use, stop, post_tool_use). `plugin.json`'s own description already names five skills, and SPEC.md already describes both `/rescan` and the `stop` hook correctly — so this file is the one that fell behind.
+
+Why it matters beyond tidiness: this is the always-loaded project file every session here reads to orient itself. A session reading it learns the method has no `/rescan` and no `stop` hook, which is the same class of failure the migration's retired-term detection exists to catch in consumer projects.
+
+The fix is a straight correction of both counts plus one bullet each, worded from SPEC's existing descriptions. The edit was attempted during the release sweep and refused by the scope-lock, which was right: the build working file had already been deleted at the close, so the session was on the standing planning list and CLAUDE.md is not on it.
+
+Rule gate: not needed — a stale description corrected to match what ships; no rule authored or amended.
+

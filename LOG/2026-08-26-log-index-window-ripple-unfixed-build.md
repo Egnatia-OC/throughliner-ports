@@ -1,4 +1,4 @@
-# [HASH] — Log-index read window corrected in the two shipped docs and the post source material
+# 01ba244 — Log-index read window corrected in the two shipped docs and the post source material
 
 The orientation read's window was changed at [plan-log-index-read-underdesigned] from a bare five lines to a derived one — the index lines newer than the most recent planning session's record — and `plan.md` was updated then. Three other places still described the repealed rule, and two of them ship: the always-loaded rules every session reads, and `done.md`'s month-rollover step. Until this build they gave a session two different accounts of the same step, and they were about to ship with today's release. The third, `ANNOUNCEMENT-IDEAS.md`, is post source material, so the wrong description could have travelled into a public post.
 
