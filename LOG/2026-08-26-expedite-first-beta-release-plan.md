@@ -1,4 +1,4 @@
-# [HASH] — plan — release day settled into a run order: selector decided, fallback named, packaging closed, item rewritten as the release-pick [user] line
+# 47d8625 — plan — release day settled into a run order: selector decided, fallback named, packaging closed, item rewritten as the release-pick [user] line
 
 Processed at the 2026-08-26 evening planning opening, the /plan that is itself the live test of the test20 rezip. Three open questions on the item were settled with the user, and the item was rewritten down to its remaining job.
 

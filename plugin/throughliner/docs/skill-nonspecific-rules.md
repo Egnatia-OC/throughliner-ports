@@ -1015,8 +1015,8 @@ searches the index files rather than reading them whole**, so the archive can
 grow without any single read growing with it. The limit is stated rather than
 hidden: a search reaches lines that carry the words searched for, and an entry
 indexed under phrasing the search never tries is missed — which whole-reading
-did not risk. The handful of newest lines in `LOG/index.md` are still read
-unprompted at a planning session's opening.
+did not risk. A planning session's opening still reads, unprompted, the
+`LOG/index.md` lines newer than the most recent planning session's record.
 
 **Subject to the Authoring standard's length provision above, the bound here is
 the content requirement itself:** an index line carries enough to support the

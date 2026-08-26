@@ -284,7 +284,8 @@ index:** where `LOG/index.md` holds lines from a month that has ended, move
 that month's lines into `LOG/index-YYYY-MM.md` (creating it if absent, newest
 first like the main index), leaving the current month's lines where they are.
 Retrieval searches `LOG/index*.md`, so nothing is lost to the move; the main
-index stays the short file whose newest lines a planning opening reads.
+index stays the short file a planning opening reads from, back as far as the
+most recent planning session's record.
 
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
 newest-first on a name sort, each in its own file rather than a shared log:

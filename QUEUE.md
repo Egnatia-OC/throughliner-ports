@@ -6,46 +6,6 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### Log-index window changed in plan.md while SPEC and two shipped docs still describe the old rule [log-index-window-ripple-unfixed]
-Filed at the close of the build run that shipped [plan-log-index-read-underdesigned], on Alex's direction when the disagreement was surfaced.
-
-That item replaced the orientation read's bare five with a derived window — the index lines newer than the most recent planning session's record. `plan.md` now says so. Three other places still describe the repealed rule:
-
-- `SPEC.md` line 49 — "the handful of newest lines are still read unprompted at a planning session's opening". Product truth, so it is planning's to write in any case; a build never writes it.
-- `plugin/throughliner/docs/skill-nonspecific-rules.md` line 1018 — the same phrase, in the always-loaded rules, which every session reads.
-- `plugin/throughliner/docs/done.md` line 287 — "the main index stays the short file whose newest lines a planning opening reads", in the month-rollover step.
-
-The two shipped docs are the live half: they and `plan.md` now give a session different accounts of the same step, and they ship with today's release.
-
-**How this got through, which is the part worth keeping.** The method's repeal-trace rule says an item repealing a specific sentence or value greps its distinctive words across the project before its Files line is written. That grep was not run when this item was kept, so the file list named `plan.md` alone and the build stayed inside it — correctly, since widening scope mid-run is what the rule exists to prevent. The miss is at the keep-step, not in the build. It is a second recorded instance of the rule not firing, which is the kind of evidence its own admission test asks for.
-
-The fix is mechanical once scoped: reword the two shipped docs to the derived window, and write SPEC's sentence to match. Worth grepping again at that point rather than trusting this list — it was assembled from one search for "newest lines" and "handful of", and a fourth site phrased differently would not have appeared.
-
-**Kept 2026-08-26 at the next planning opening, on Claude's recommendation and the user's "as you recommend".** The re-grep was run with widened terms and found one further site: `ANNOUNCEMENT-IDEAS.md` line 26 carries the same repealed claim, and as post source material it could carry the wrong description into a public post. SPEC's sentence was written in the same planning session (planning's own edit); what remains is the two shipped docs and the ideas file. This is also the second recorded instance of the repeal-trace rule not firing at a keep-step — evidence for that rule's own record, noted here rather than acted on.
-
-Rule gate: run — no new rule; the build transcribes the wording already decided and gate-run at [plan-log-index-read-underdesigned], into the two docs that missed it.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` (around line 1018) — reword the index-read sentence to the derived window: a planning opening reads the index lines newer than the most recent planning session's record. `plugin/throughliner/docs/done.md` (around line 287, month-rollover step) — reword "the short file whose newest lines a planning opening reads" to the same derived-window description. `ANNOUNCEMENT-IDEAS.md` (line 26) — correct the same claim in the post source material.
-Acceptance: grep for "newest lines" and "handful of" across shipped docs and ANNOUNCEMENT-IDEAS.md returns no live rule text describing the repealed read; dated history (LOG, queue records) untouched.
-Refused: touching LOG entries or dated queue notes that quote the old rule — they record what was true when written.
---- End build block ---
-
-#### Fresh-sessions rule still names 4.8 as the model the plugin is tuned for [fresh-sessions-rule-names-retired-model]
-Noticed while building [planning-fable-building-opus-note], which added the Fable-plans / Opus-builds split to that same bullet in this project's CLAUDE.md. The bullet's closing parenthetical says the rule "does not change the Model target above — 4.8 stays the model the plugin is tuned for." That has not been true since docset A was retired on 2026-08-09: the Model target section above it says the one docset serves the 5-series, and 4.8 is named there as no longer a supported target. So the same bullet now states the split and, one clause later, names a model the project has stopped targeting.
-
-Left alone rather than fixed in the build, because repealing a sentence is a keep-step decision and the build item named only the amendment. What the fix would be: reword the parenthetical to say the rule is about session-memory loss and does not change the Model target, dropping the clause that names a model. Check the same grep across the file before writing — the parenthetical may not be the only place 4.8 is still named as current.
-
-**Kept 2026-08-26 at the next planning opening, as part of the small build set testing the current rezip.** The grep was run at the keep: the file's other 4.8 mentions are in the Model target section describing the retired docset's history, which is correct — line 368's parenthetical is the only place 4.8 is stated as current.
-
-Rule gate: run — amendment rewording one clause of the fresh-sessions rule to match the Model target section; repeals the stale "4.8 stays the model the plugin is tuned for" clause, nothing added.
-
---- Build block ---
-Changes: `CLAUDE.md` — in the fresh-sessions rule's closing parenthetical, reword so it says the rule is about robustness to session-memory loss and does not change the Model target above, dropping the clause naming 4.8 as the tuned-for model. Also drop the sentence's "post-Fable development model (from ~2026-06-20)" framing only if it contradicts the Model target — otherwise leave it; the item's scope is the 4.8 clause.
-Acceptance: grep `4.8` in CLAUDE.md finds it only in the Model target section's history; the parenthetical still states the rule's session-memory-loss subject.
-Refused: touching the Model target section's own 4.8 mentions — they are dated history, correctly kept.
---- End build block ---
-
 #### [user] Verify the cycles due-ness check live: one capture filed when due, no duplicate on the next opening [cycles-due-check-verification]
 Filed 2026-08-22 at the keep-step, on Claude's recommendation and your agreement. The cycles build ("Cycles shipped", record `2026-08-22-cycles-definitions-and-due-checks-build.md`) ticked done with one behaviour UNCONFIRMED: only the no-doc silent path was exercised, because this project has no cycles doc. Confirming it needs a live session in a project whose `CYCLES.md` carries a past-due observable — user work, since it happens in another project's session during your testing days. The release-cycle definition item ("Define this project's weekly release cycle") is held on this verification and lifts when it closes — timed so the definition can build before Wednesday 10am.
 **Walkthrough.**

@@ -23,7 +23,8 @@ for the subject's words rather than reading them whole, so the archive can grow
 without any single read growing with it. The trade is stated: a search finds
 lines carrying the words tried, so an entry indexed under different phrasing
 can be missed where reading everything could not miss it — which is why the
-newest lines are still read unprompted at each planning opening.
+lines newer than the last planning session's own record are still read
+unprompted at each planning opening.
 
 ## What do /plan, /next, and /done each do?
 
