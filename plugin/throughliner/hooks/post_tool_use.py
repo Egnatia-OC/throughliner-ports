@@ -362,12 +362,19 @@ def _check_blocked_by(annotated, blocks, warnings):
     is checked only where it means something: within Processed, where position
     is build order. A blocker in Unprocessed is fine by construction.
 
-    One part of this check spans BOTH sections: the malformed-date warning.
-    `Not before:` is available on a capture too, where it means "do not offer
-    this again before this date" rather than "do not build this yet" — so an
-    unparseable date holds an Unprocessed entry out of view forever, with nothing
-    else here that would ever look at it. The above/below warnings stay scoped to
-    Processed, because position relative to the marker means nothing outside it.
+    Two parts of this check span BOTH sections, because both fields are
+    available in both. `Not before:` on a capture means "do not offer this again
+    before this date" rather than "do not build this yet", so an unparseable date
+    holds an Unprocessed entry out of view forever. `Blocked by:` on a capture
+    means "do not offer this again while the named entry is open", so a slug
+    resolving to nothing is a hold nothing can lift — and on a capture there is
+    no marker position to give the mistake away: the entry simply stops being
+    offered, silently, for good. So the malformed-date warning, the slug
+    resolution and the names-itself case all run in both sections.
+
+    The above/below warnings stay scoped to Processed, because position relative
+    to the marker means nothing outside it — and so does the blocker-sits-below
+    ordering warning, which reads build order.
     """
     marker_idx = next(
         (i for i, line, _h2, _ih in annotated if line == CLEARED_MARKER), None
@@ -413,6 +420,36 @@ def _check_blocked_by(annotated, blocks, warnings):
                 "can ever tell that it has passed."
             )
 
+        # Slug resolution runs in BOTH sections, for the same reason the
+        # malformed-date check does: `Blocked by:` is available in both. On a
+        # work item it means do not build this until the named entries resolve;
+        # on a capture it means do not offer this again while one is still open.
+        # A slug that resolves to nothing is a hold nothing can ever lift, and on
+        # a capture there is no marker position to give the mistake away — the
+        # entry simply stops being offered, silently, forever.
+        for slug in refs:
+            target = known.get(slug)
+            if target is None:
+                warnings.append(
+                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} is blocked by "
+                    f"[{slug}], which is not in the queue right now. That has "
+                    "four causes: the blocker has "
+                    "already shipped and been removed, it is in flight (a run "
+                    "has taken it into its build working file), it was "
+                    "DELETED as not worth doing, or the reference is wrong. "
+                    "Only the last is a fault in the reference — but deletion "
+                    "is not benign either: the held entry was written assuming "
+                    "its blocker would happen, so its premise may not survive "
+                    "and it needs re-examining rather than lifting. "
+                    "Check LOG before changing anything — a correct reference "
+                    "reads exactly like a broken one here."
+                )
+            elif target["idx"] == b["idx"]:
+                warnings.append(
+                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} names itself "
+                    "as its own blocker."
+                )
+
         # Everything below is about position relative to the cleared-to-run
         # marker, which only means something inside Processed.
         if b["section"] != "Processed":
@@ -452,29 +489,14 @@ def _check_blocked_by(annotated, blocks, warnings):
             # no blocker item, because it resolves without anyone confirming it.
             continue
 
+        # Resolution and the self-blocker case are already reported above, for
+        # both sections. What is left here is the one check that reads position:
+        # within Processed, order is build order, so a blocker must come first.
         for slug in refs:
             target = known.get(slug)
-            if target is None:
-                warnings.append(
-                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} is blocked by "
-                    f"[{slug}], which is not in the queue right now. That has "
-                    "four causes: the blocker has "
-                    "already shipped and been removed, it is in flight (a run "
-                    "has taken it into its build working file), it was "
-                    "DELETED as not worth doing, or the reference is wrong. "
-                    "Only the last is a fault in the reference — but deletion "
-                    "is not benign either: the held item was designed assuming "
-                    "its blocker would happen, so its premise may not survive "
-                    "and it needs re-examining rather than lifting. "
-                    "Check LOG before changing anything — a correct reference "
-                    "reads exactly like a broken one here."
-                )
-            elif target["idx"] == b["idx"]:
-                warnings.append(
-                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} names itself "
-                    "as its own blocker."
-                )
-            elif target["section"] == "Processed" and target["idx"] > b["idx"]:
+            if target is None or target["idx"] == b["idx"]:
+                continue
+            if target["section"] == "Processed" and target["idx"] > b["idx"]:
                 warnings.append(
                     f"line {b['idx'] + 1}: {b['heading'][:60]!r} is blocked by "
                     f"[{slug}], which sits BELOW it in Processed. Within "
@@ -712,61 +734,19 @@ def _check_cleared_names_queue(annotated, blocks, warnings):
         )
 
 
-BUILD_BLOCK_OPEN = "--- Build block ---"
-BUILD_BLOCK_CLOSE = "--- End build block ---"
-
-
-def _check_build_blocks(annotated, blocks, warnings):
-    """Check 8: a cleared item carries the instructions a run builds from.
-
-    A run reads the generated view, not this file, and the view is built from
-    each cleared item's build block. An item without one reaches the run with no
-    instructions at all — the run halts on it as underspecified, having already
-    presented it as ready work.
-
-    Flagged here rather than left to the run, because the gap is created at the
-    keep-step and the keep-step is where it is cheap to fix. A run meeting it has
-    already locked scope.
-
-    Scoped to CLEARED items only. Held work is not built until it lifts, and a
-    capture is not work at all — demanding a block from either would fire on the
-    normal state of most of the queue, which is the cry-wolf shape this project
-    has repealed measures for twice.
-
-    `[user]` and `[freeform]` items are exempt: neither is built from a block.
-    One is walked through live and the other halts the run by design.
-    """
-    marker_idx = next(
-        (i for i, line, _h2, _ih in annotated if line == CLEARED_MARKER), None
-    )
-    if marker_idx is None:
-        return
-
-    for b in blocks:
-        if b["section"] != "Processed" or b["idx"] > marker_idx:
-            continue
-        heading = b["heading"]
-        if "[user]" in heading or "[freeform]" in heading:
-            continue
-        body = "\n".join(b["lines"][1:])
-        has_open = BUILD_BLOCK_OPEN in body
-        has_close = BUILD_BLOCK_CLOSE in body
-        if has_open and has_close:
-            continue
-        if has_open or has_close:
-            warnings.append(
-                f"line {b['idx'] + 1}: {heading[:60]!r} has half a build block — "
-                f"one of {BUILD_BLOCK_OPEN!r} / {BUILD_BLOCK_CLOSE!r} is missing. "
-                "The generator copies the delimited region byte-for-byte, so an "
-                "unterminated one is reported and never repaired."
-            )
-            continue
-        warnings.append(
-            f"line {b['idx'] + 1}: {heading[:60]!r} is cleared to run but carries "
-            "no build block, so the generated view has no instructions for it and "
-            "a run would halt on it as underspecified. Add one at the keep-step: "
-            f"{BUILD_BLOCK_OPEN} / Changes / Acceptance / {BUILD_BLOCK_CLOSE}."
-        )
+# Check 8, the cleared-item-must-carry-a-build-block check, is RETIRED
+# (2026-08-27, [builds-read-the-queue-again]).
+#
+# It existed because a run read a generated view assembled from those delimited
+# blocks: an item without one reached the run with no instructions at all. A run
+# now reads each item whole from this file, so there is no block that can be
+# missing. What replaces it is not another check — an item that fails to say
+# what changes inside the files it names is underspecified, and that is judgment
+# the decision step makes and no delimiter can test.
+#
+# The delimiters themselves are left alone wherever they still sit in existing
+# items: they read as ordinary text now, and rewriting them would be editing
+# records to match a vocabulary they predate.
 
 
 def lint(content: str) -> list[str]:
@@ -781,7 +761,6 @@ def lint(content: str) -> list[str]:
     _check_blocked_by(annotated, blocks, warnings)
     _check_orphaned_prose(annotated, warnings)
     _check_quote_claim_without_quote(blocks, warnings)
-    _check_build_blocks(annotated, blocks, warnings)
     _check_duplicate_gate_lines(blocks, warnings)
     _check_cleared_gate_disposition(annotated, blocks, warnings)
     _check_cleared_names_queue(annotated, blocks, warnings)

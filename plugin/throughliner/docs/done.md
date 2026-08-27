@@ -70,6 +70,25 @@ Detect a completed `[user]` item from what the session can already see. The
 detection rules and the close itself are in done-plan.md, which handles a
 completed item and a planning session together, since the two can coincide.
 
+**Record each `[user]` item the session touched under one of three outcomes —
+done, deferred, or not reached — and read the outcome off the session's own
+trail, never off what the item's presence in the queue suggests.**
+
+```
+done         walked to its end, or the user said they did it, or its
+             walkthrough named an observable check and that check passed
+deferred     the USER said to leave it — their word, never inferred
+not reached  never presented, or presented with no answer given
+```
+
+**Write `deferred` only where the user's own word is on the trail.** An item the
+session never put in front of them was not deferred by anyone, and a record
+saying it was tells the next session a decision was made when none was.
+
+**`not reached` tells the next session to present the item fresh**, with no
+deferral to honour and nothing to resume from — which is the whole reason it is
+a separate value rather than folded into either of the others.
+
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit
 core below, then return to the sub-doc for the recommendation.
 
@@ -223,7 +242,7 @@ never:      it sits ninth, with eight items ahead of it
 
 **The advisory is a transient orientation handoff, not work.** It is read and
 cleared at the next /plan's opening (plan.md), so the only one this close clears
-is one it is replacing. It stays outside keep/delete and outside Processed,
+is one it is replacing. It is never processed and never reaches Processed,
 living in QUEUE.md rather than in a file of its own.
 
 **One more section, on every flavor: what the chat did outside its work items.**
@@ -484,11 +503,6 @@ from this session's discussion so they land in this same commit. File-only.
 **Run the session-file cleanup before staging too**, so any deletions the user
 accepts fold into this same commit.
 
-**Delete the generated build view (`BUILD-VIEW.md`) before committing**
-[SILENT] — no question, no line. It is regenerated from the queue at the start
-of every run, so nothing is lost; a stale one left in the project invites a
-later session to read it as current.
-
 **Shipped-slug cross-check (work-item closes).** When this session shipped work
 items, cross-check each shipped slug named in this session's LOG entries against
 Processed and confirm it's been removed. A work item is normally removed when
@@ -697,8 +711,8 @@ bottom of Unprocessed, or a backfilled hash, and give anything else the full
 treatment** — which is what keeps the close's staging check its teeth.
 
 **In a tail, route an urge to run or drive testing or verification into a skill
-rather than doing it here** — a quick /plan to structure the lines, or /next to
-hand over a `[user]` line that already exists. This fires hardest where the
+rather than doing it here** — a quick /plan to structure the work, or /next to
+hand over a `[user]` item that already exists. This fires hardest where the
 verification is *already* a `[user]` item, because then the work has a home and
 the tail is bypassing it.
 

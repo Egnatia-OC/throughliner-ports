@@ -145,9 +145,9 @@ Routed to Captures  items added, or "none"
 ```
 
 **Read each built item's reasoning back, one entry at a time** [SILENT]. The run
-built from the view, which carries instructions and no decision history, so the
-*why* has not been in front of anyone since planning. This is where it reaches the
-record.
+read it to aim the work, but it is the record that has to carry it forward — a
+LOG entry written from the working file's Changes alone records what happened
+with the *why* stripped out, which is the failure the throughline exists against.
 
 **Read it from the queue as it stood before the run**, because the run has already
 removed each item as it ticked:
@@ -159,8 +159,7 @@ git show HEAD:QUEUE.md
 The run has not committed yet — the close is what commits — so every item this run
 built is still in the last commit's copy, whole. **Take the item's whole block —
 from its `#### ` heading to the next heading, or the section's end** — and
-nothing else; a read of the whole file is what the view exists to avoid, and it
-is not needed to answer one slug. A hand-sized grep or line window is not used:
+nothing else; a read of the whole file is not needed to answer one slug. A hand-sized grep or line window is not used:
 a window shorter than the item once truncated the read twice in one close, and
 both outputs reasoned from the cut-off text, one reaching the user.
 
@@ -170,7 +169,7 @@ an ask that deliberately re-opens one names the recorded decision it re-opens.
 
 **Where QUEUE.md is untracked, git holds no copy and this route is closed.** Say
 so plainly in the entry rather than implying the reasoning was carried: write the
-entry from the working file's Changes and the item's own build block, and record
+entry from the working file's Changes alone, and record
 that the decision history could not be recovered. That is one of the consequences
 of an untracked queue, and it is stated rather than discovered.
 
@@ -216,6 +215,12 @@ entry that omits it silently weakens a safety rule one document away.
 **If a `[user]` item's entry was already started**, the walk-through opened it live
 and appended as it went (next.md). Continue that file rather than writing a fresh
 one — the existing entry is the record, not a duplicate.
+
+**Close each `[user]` item on one of the three outcomes — done, deferred, or not
+reached — read off the run's own trail** (done.md's outcome block, and next.md's
+walk-through branch, carry the definitions). **`deferred` requires the user's own
+word**; an item the run never presented is `not reached`, and the next session
+presents it fresh.
 
 If a built item carried a red flag, note in this entry that it carried one and
 that it was cleared — the carry-through, since the substantive clearing record was

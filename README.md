@@ -49,6 +49,8 @@ graph TD
     P -.->|installed alongside| T["Throughliner — five commands,<br/>plus hooks that run in the background"]
 ```
 
+`LOG/` and `resources/` are historical records — they keep the vocabulary and the state of the day each entry was written, so an old one may describe things that have since changed. SPEC.md and this README describe the present.
+
 ## What it does
 
 The plugin splits your project into a build queue and walks you through it. Five slash commands drive the workflow:

@@ -95,13 +95,14 @@ loading procedure docs from a docset that had already been retired. Bumping to
    (No zip is built here — the local marketplace sources the plugin from the
    `plugin/throughliner` folder, and the CLI snapshots that folder directly. The zip
    only changes at Release.)
-3. **Run the three hook test suites and stop if any fails.** They exist, they pass,
+3. **Run the test suites and stop if any fails.** They exist, they pass,
    and for a period nothing ran them — which is how a `session_start.py` emitting a
    rejected payload shape stayed dead and invisible, sessions compensating by
-   reading CLAUDE.md and the queue directly. Run all three:
+   reading CLAUDE.md and the queue directly. The runner discovers every suite in
+   the folder, so nothing here names one:
 
    ```bash
-   python resources/testing/hook_schema_check.py && python resources/testing/test_reorder_queue.py && python resources/testing/test_pre_tool_use_shell_writes.py
+   py resources/testing/run_all.py
    ```
 
    **The honest limit, which travels with them and must never be dropped: the
@@ -217,14 +218,28 @@ until fetched, and this repo carries ~135 unrelated local tags (`v95`, `v103`, �
 from an older history, none of them ancestors of HEAD, so `git describe` fails
 outright here.
 
-1. Backfill any unfilled commit-hash placeholders anywhere in `LOG/` before
+1. **Open the queue item that scheduled or constrains this release, and run
+   against what it says.** Search QUEUE.md for an entry about this release — a
+   release cycle, a version this one has to carry, a post that waits on it — and
+   where one exists, read it in full before touching anything else. A release
+   that ignores the item scheduling it is a release nobody can check afterwards,
+   and the item is where the constraints were written down.
+
+   ```
+   a scheduling item exists   ->  read it whole; its constraints govern the
+                                  steps below, and its slug names the record
+                                  written at the end
+   no scheduling item         ->  proceed; the record at the end is written as
+                                  a plain release entry under its own slug
+   ```
+2. Backfill any unfilled commit-hash placeholders anywhere in `LOG/` before
    proceeding. The session-start hook only fires at session start, so a /done that
    ran earlier in this same session leaves its placeholder unfilled at push time —
    this step catches it. Same rules as the hook: replace the token only in hash
    position (an entry heading line or the start of an index line), never in body
    prose, which may mention the token literally; resolve each to the **oldest**
    `git log -S "<entry title>"` match, never the newest commit touching the file.
-2. Bump version in `plugin/throughliner/.claude-plugin/plugin.json` to a clean
+3. Bump version in `plugin/throughliner/.claude-plugin/plugin.json` to a clean
    patch/minor — patch for fixes/incremental, minor for new capabilities (`1.20.0` →
    `1.20.1` or `1.21.0`). **Strip any `-testN` suffix as part of this bump —
    expect one to be present rather than treating it as a sign something was
@@ -235,7 +250,7 @@ outright here.
    only ever touches the `-testN` test suffix, never the release line, because
    bumping the release version on every private test build would make Alex's own
    projects nag "version changed, re-run /setup" each time she tests.
-3. Pre-release consistency sweep — two passes, run in order:
+4. Pre-release consistency sweep — two passes, run in order:
 
    **Pass A — Gather the feed:** List the commits since the last release, using the
    tag lookup described above (fetch tags first; read the tag from
@@ -251,7 +266,7 @@ outright here.
    range meant "unpushed," which under routine pushing is usually empty, so the
    sweep would silently read nothing and pass. The release span is what this sweep
    is about, and Pass A's output is also the feed the release notes are written from
-   in step 10.
+   in the GitHub Release step.
 
    **Pass B — Check for staleness against those changes:**
    - **Target internal consistency:** Do templates match the procedure docs they
@@ -271,24 +286,58 @@ outright here.
      brand-new user who by definition can't diagnose it. Every other doc gets read
      by someone eventually. This one doesn't, so the release sweep is where it gets
      read.
-4. Archive current zip:
+5. Archive current zip:
    `mv plugin/throughliner.zip plugin/zip-archive/throughliner-v<OLD_VERSION>.zip`
-5. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
-6. Delete all `__pycache__` folders under `plugin/throughliner/` so compiled Python
+6. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
+7. Delete all `__pycache__` folders under `plugin/throughliner/` so compiled Python
    bytecode never ships in the zip (disposable — Python regenerates them as needed):
    `Get-ChildItem "plugin\throughliner" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
-7. Repackage:
+8. **Run the test suites and stop if any fails**, the same runner the rezip uses:
+
+   ```bash
+   py resources/testing/run_all.py
+   ```
+
+   The rezip already ran them, but a release can be asked for days later with
+   commits landed since — and this is the last moment before something is
+   published under a version number.
+9. **Compare the content stamps before packaging, and stop if they differ.** Run
+   `content_stamp()` (from `plugin/throughliner/hooks/session_start.py`) over
+   `plugin/throughliner/`, and compare it against the installed host's stamp
+   reported at this session's opening.
+
+   ```
+   stamps match     ->  the working tree is the build that was rezipped and
+                        tested. Carry on.
+   stamps differ    ->  ONE standalone turn: say plainly that the release would
+                        ship code nobody has run, name that the working tree has
+                        moved since the tested rezip, and stop there. Proceed
+                        only on Alex's next word.
+   ```
+
+   **A release releases a tested rezip.** That is the invariant this step
+   guards, and it is what makes a release safe to publish without re-testing
+   everything.
+
+   **The packaging reads the working tree exactly as it stands**, with no
+   reference to what was last installed — so an edit landed since the tested
+   rezip goes out silently unless something compares. It belongs to a current or
+   future rezip, never to this release by accident.
+
+   The warning stops nothing on its own: warn-don't-enforce governs, and Alex may
+   knowingly release the working tree.
+10. Repackage:
    `Compress-Archive -Path "plugin\throughliner" -DestinationPath "plugin\throughliner.zip"`
    (zip the folder, not its contents — internal paths must start with `throughliner/`).
    Verify: list the zip's entries and confirm none contain `__pycache__` — if any do,
    stop and fix before pushing.
-8. Stage every dirty path in `plugin/throughliner/` (run
+11. Stage every dirty path in `plugin/throughliner/` (run
    `git status --porcelain plugin/throughliner/` and stage each listed path — catches
-   any sweep edits from step 3), plus the zip in `plugin/`, archive changes in
-   `plugin/zip-archive/`, plugin.json, and the LOG/ changes (including step 1's
-   backfill edits). Commit: "Bump to v<VERSION> and repackage".
-9. `git push`.
-10. Publish a GitHub Release for the new version, so users who subscribed via Watch
+   any sweep edits from the consistency sweep), plus the zip in `plugin/`, archive changes in
+   `plugin/zip-archive/`, plugin.json, and the LOG/ changes (including the
+   hash-backfill edits). Commit: "Bump to v<VERSION> and repackage".
+12. `git push`.
+13. Publish a GitHub Release for the new version, so users who subscribed via Watch
     → Releases get notified — a plain `git push` does not fire that notification;
     only a published Release does. Use `gh`:
     - Tag and title = the new version (e.g. `v1.13.0`).
@@ -298,7 +347,7 @@ outright here.
       testing, which is a deliberate decision, not a judgment made inside this
       ritual.
     - **Notes summarise everything since the previous release, and must never be the
-      commit message.** Write them from step 3's Pass A feed — the LOG entries
+      commit message.** Write them from the consistency sweep's Pass A feed — the LOG entries
       across the whole release span, which will usually cover several sessions. The
       commit message describes one commit; the notes describe a release. So a note
       that restates the commit message is wrong **even when the span holds a single
@@ -315,7 +364,7 @@ outright here.
       the tag `v<VERSION>`, set the same title, paste the summary as the notes,
       attach `plugin/throughliner.zip`, and **Publish release**. The step never silently
       does nothing.
-11. Update the installed host via the `claude` CLI, then tell Alex to fully restart
+14. Update the installed host via the `claude` CLI, then tell Alex to fully restart
     the app. Same mechanism as the Rezip reload step — the host reads a frozen cache
     snapshot, so without a CLI update + full restart it keeps running the old build.
     The marketplace is already registered from earlier testing, so this is just:
@@ -325,10 +374,28 @@ outright here.
     not a hand-off to Alex.** Then tell Alex: "Released and pushed. I've updated the
     host via the CLI so it's running the released version — fully quit and relaunch
     the app to load it."
+15. **Write the release's own session record, and settle the item that scheduled
+    it.** A release usually runs after the close, so nothing else will record it
+    — and a release nobody recorded is the one piece of work that leaves the
+    project with no trail at all.
+
+    ```
+    a scheduling item exists   ->  write the LOG entry under that item's slug,
+                                   add its index line, then close the item
+                                   (remove it) or update it with what this
+                                   release did and what it still waits on
+    no scheduling item         ->  write a plain release entry under its own
+                                   slug, with its index line, naming the
+                                   version and what went out
+    ```
+
+    The entry says what was released, what the release notes claimed, and
+    anything that had to be decided along the way. It rides the next session's
+    commit like any other post-close work.
 
 **Archive accuracy.** Only the Release ritual ever builds the zip — neither Rezip
 nor Push touches it — so the zip sitting in the working tree is always the last
-released one, and the copy archived into `plugin/zip-archive/` at step 4 of the next
+released one, and the copy archived into `plugin/zip-archive/` at the archive step of the next
 release faithfully reflects the prior release. Git history remains the authoritative
 record either way, since each release commits `throughliner.zip`.
 

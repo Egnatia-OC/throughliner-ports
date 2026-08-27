@@ -6,330 +6,6 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### Case D pop-out section carries no response-shape tags, and two of its steps wait on the user [setup-case-d-untagged]
-From the compliance audit of the rule changes since 3ed3db1, lens 2 (tag placement).
-
-`setup.md`'s Case D section (around lines 107 to 140) was added since the last audit and carries no tag on any step. Two of them stop for the user: reading the parent's SPEC and putting the inferred subpart to them in clarifier form, which fires at the very start of adopting a subfolder and cannot proceed without their answer; and drafting the pop-out message to the parent's INBOX, which fires at the close and is shown in full before an explicit yes. Both are `[PROMPT]` moments by the definition in the always-loaded rules.
-
-Case B's peek — the sibling this section says it copies — is tagged. Untagged, the output behaviour of a step that must wait is left to chance, which is the missing-tag failure the lens names.
-
-**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement.** A compliance correction, nothing designed: the two waiting steps get [PROMPT] (the send step keeping its show-first shape), the rest tagged to match Case B's register.
-
-**Widened 2026-08-27, your decision, resolving the collision the 2026-08-26 build halted on:** setup.md's opening declares the doc tag-free while five steps carry tags — it says one thing and does another. Your call between the two coherent fixes: repeal the declaration and tag the whole doc properly. The declaration's reason is weaker than it looks — on a fresh-adoption run, where the tag definitions are not loaded, a tag is inert rather than wrong — and the tags keep creeping in because editors follow the method-wide habit, so the declaration fights the grain of every future edit. Half-tagged is the worst of the three states. This absorbs the capture the halt filed, deleted with this rewrite.
-
-Rule gate: run — repeal of setup.md's tag-free declaration (evicted in this build) plus compliance tagging; no new rule authored.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/setup.md` — the tag-free declaration in the opening (around line 20) comes out; Case D (around lines 107–140): [PROMPT] on the confirm-the-subpart clarifier and on the pop-out INBOX message step, the section's remaining steps tagged to match Case B's register; the rest of the doc's steps reviewed and tagged consistently under the always-loaded tag rules, any conditional arm written with the condition outside the brackets; the five existing tags kept where correct.
-Acceptance: no declaration of tag-freeness remains; no step that waits for the user is untagged; tag syntax matches the always-loaded tag rules; no step's substance changed.
-Refused: honouring the declaration and stripping the five existing tags — labels are harmless where unread, and the declaration loses to the editing habit that keeps violating it.
---- End build block ---
-
-#### Sessions derive "today" by assumption — anchor the date at session start and bar own date arithmetic [session-date-anchor]
-Raised by you 2026-08-26, on catching a live instance: after an app restart mid-chat, Claude assumed a new day, dated a fresh capture 2026-08-27, and read a post item's `Not before: 2026-08-27` as arrived — nearly walking a post a day early against the one-a-day pacing. Your framing: this comes up constantly, mostly in little ways but sometimes in big ways. The digest had already computed that date as a day ahead; the session did its own arithmetic on an assumed "today" instead of reading the computed field.
-
-**Kept 2026-08-26, on Claude's recommendation and your agreement.** Two halves plus the SPEC clause (written at this keep): a mechanical anchor every session opens with, and an always-loaded rule that date decisions read computed fields rather than deriving today. The rule goes through the rule gate at the build; its admission case is recorded here — it fires in every skill and in plain conversation (the miswritten capture date sat in no date field), which is the skill-nonspecific admission test.
-
-Rule gate: run at this keep for the SPEC clause and the design — the always-loaded rule itself is authored at the build from this disposition; it amends the session-opening facts' read-as-inputs framing rather than standing free, and the build names what it displaces or that nothing is evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/hooks/session_start.py` — emit one fact line with today's date read from the system clock, worded as the date at session start (a long chat can cross midnight). `resources/testing/` — a suite case asserting the line appears and carries a real date. `plugin/throughliner/docs/skill-nonspecific-rules.md` — one rule: where a decision turns on a date, read a computed field (the digest's passed/ahead, the session opening's date line); where none exists, read the clock; never derive "today" by assumption. Written as an amendment where a parent rule fits, freestanding only if none does.
-Acceptance: the hook's payload carries the date line and the suite passes; the rule reads in one of the three admissible shapes; SPEC's session_start sentence (already edited at this keep) matches the shipped behaviour.
-Refused: fixing only the instance (correcting the two wrong dates) — the user reports the failure recurs across sessions, so the fix belongs at hook-plus-rule level, not at the instance.
---- End build block ---
-
-#### Captures may name an open queue item that stops them being offered [capture-blocked-by]
-Raised by you 2026-08-26, from the live instance minutes earlier: [cycles-mermaid-diagrams] waits on [weekly-release-cycle]'s build and has no way to bow out, so it returns every session and is skipped again — your framing: the problem is the noise of not-ready items coming up. A new ladder rung was considered and refused: the ladder orders, it cannot hide. The `Not before:` date cannot reach this case either — its outside-the-project restriction exists because an in-queue wait has a checkable fact a date only approximates.
-
-**Kept 2026-08-26, on Claude's recommendation and your agreement.** On a capture, `Blocked by: [slug]` means don't offer this while any named blocker is open — the planning pass skips it silently, as it already does a future-dated capture, and when every blocker resolves the capture re-enters the ordinary order with no note (your choice, recorded). This mirrors `Not before:`, which already means a different thing per section. The ripple was traced by grep, naming the enforcing hook: `post_tool_use.py`'s lint ties the field to the held region; `session_start.py`, `queue_digest.py` and four docs also read or describe it. `done-plan.md` and `setup.md` mention the field but describe held-region behaviour that stays true — excluded from the change. First candidate once shipped: [cycles-mermaid-diagrams] gains `Blocked by: [weekly-release-cycle]`.
-
-Rule gate: run — supersession of the field-belongs-to-the-held-region-alone clause, for this one added meaning; the old rule loses because it left in-queue waits with no bow-out, which the refused skip-marker design never addressed. Amendment to the existing Blocked-by rules, nothing freestanding.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — the capture line-format's `Blocked by:` comment gains the capture meaning (don't offer while a named blocker is open), written as the per-section split `Not before:` already uses. `plugin/throughliner/docs/plan.md` — the ranking pass-over extends to captures whose named blocker is still open, silent like the date pass-over. `plugin/throughliner/hooks/post_tool_use.py` — the lint accepts the field on a capture and validates its slugs resolve, instead of reading it as misplacement; suite cases added under `resources/testing/`. `plugin/throughliner/scripts/queue_digest.py` — capture lines print the named blocker's resolved state, so the skip is checkable.
-Inputs: `plugin/throughliner/hooks/session_start.py` — confirm its blockers-still-in-Unprocessed count is not distorted by a capture carrying the field; edit only if it is.
-Acceptance: lint suite passes with a blocked capture accepted and a bad slug flagged; the digest prints the blocker state on such a capture; the docs read per-section, matching the `Not before:` shape.
-Refused: a new ladder rung — rungs order, they cannot hide. A `Not before:` date for in-queue waits — a date guesses what the queue can check. A surfaced-with-note return — the user chose silent re-entry.
---- End build block ---
-
-#### Warn, don't enforce: a direct do-it-now request gets one warning turn, then the work [warn-dont-enforce-immediate-requests]
-Raised by you, filed 2026-08-27 from the audit finding [walkthrough-answers-request-with-sequencing], which this keep closes: you asked four times for two approved Discord drafts and the first two answers enforced the posting brief's sequencing at you instead of handing them over — and you were not even out of order: `[user]` items surface during a build run, you were collecting the drafts to post after the release, and the release can only run after the close since a session's one commit is the close's. Your principle, extended by you at processing: this covers any do-it-now request — unplanned work, out-of-order work, anything — the warning fires and then the work commences.
-
-**Kept 2026-08-27, on your direction; the turn shape is yours too.** The rule: when the user asks for anything to be done immediately, the session answers with one warning turn — what standing rule or ordering the request crosses and what that risks, plus a briefly-worded alternative to doing it now — and stops there; on the user's next word the work runs; the work and the warning both land in the session's record, so a later reader can see the rule fired and was overridden. The warning never substitutes for the work, and the warning turn is standalone — never bundled with the work, so the user can withdraw. Carve-outs stated so the rule cannot widen into them: anything leaving the machine keeps the exact-text yes, and unrecoverable destruction keeps its ask. Skill-nonspecific by your direction, and it passes the admission test on its face: a do-it-now request can arrive in any skill or in plain conversation.
-
-Rule gate: run — authored freestanding after a parent was looked for and not found (the repeated-request rule in the run's procedure covers scope growth, not compliance-vs-enforcement); the recorded failure earning the slot is the four-ask instance in the 2026-08-26 build transcript; the build names what it displaces or that nothing is evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — the rule above added in an admissible shape (bold-led paragraph), stating: one standalone warning turn naming what the request crosses, the risk, and a briefly-worded alternative to doing it now; work commences on the user's next word; work and warning logged in the session's record; carve-outs for off-machine sends (exact-text yes stands) and unrecoverable destruction, written as subject-to cross-references, not restatements.
-Acceptance: the rule reads in one of the three admissible shapes; the warning turn and the log requirement are both operative text; the carve-outs cross-reference the existing rules rather than restating them.
-Refused: warn-and-comply in the same turn — the user's decision: the warning is standalone so the request can be withdrawn. Enforcement of any non-carve-out rule against a direct request — the failure this rule exists to end.
---- End build block ---
-
-#### Walk-through presents every [user] item it reaches — no outside precondition filter [walkthrough-no-batch-precondition-skip]
-Filed from the ordering-rigidity audit of the 2026-08-26 build session: the run's walk-through pass reached six `[user]` items, drove two, and dropped four without presenting any — its own words: "every one of them opens on a step conditioned on the release being published." No rule licenses that filter. This is the mechanism under the withheld-drafts finding, and it fired before the user had complained about anything — the earlier and more general defect of the two. The record-keeping sibling — what got written afterwards — is [walkthrough-outcome-not-reached], processed 2026-08-27 from the capture this sentence used to name.
-
-**Kept 2026-08-27, on Claude's recommendation and your agreement.** The rule composes with [warn-dont-enforce-immediate-requests] rather than duplicating it: that one governs answering the user's direct requests; this one governs the run's own conduct unasked.
-
-Rule gate: run — amendment to next.md's walk-through branch, parent named; no freestanding rule and nothing evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/next.md` — walk-through branch: every `[user]` item the pass reaches is presented, one at a time; a precondition is tested inside the item's own drive, never applied as an outside filter that batches items away; where a drive's first step cannot proceed, that fact is shown to the user on that item's turn and their word settles it.
-Acceptance: the branch's text carries the present-every-item rule and the inside-the-drive precondition rule; no step's existing substance changed.
-Refused: a precondition field on items the run could evaluate mechanically — it recreates the outside filter with a schema, and the decision belongs in front of the user.
---- End build block ---
-
-#### Walk-through outcomes get three values — done, deferred, not reached — and "deferred" only from the user's word [walkthrough-outcome-not-reached]
-Filed from the ordering-rigidity audit of the 2026-08-26 build session: records wrote "all six user steps deferred in place" when the user deferred two and the other four were never presented. "Deferred" is an origin claim crediting the user with a decision they were never asked to make — the provenance rules' problem appearing in session records — and it bit the same day: a later walk-through believed a wrong "deferred" line and re-presented finished work — that failure's resolution is [completion-ask-carveout-post-close-handover], processed 2026-08-27.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** The outcome vocabulary: driven to its end (done); deferred (only where the user said so); not reached (the run ended before presenting it — a fact about the run, not the user). "Not reached" is what a later session needs: present the item fresh rather than resume a decision nobody made. Composes with [walkthrough-no-batch-precondition-skip]: with both shipped, not-reached only ever means the run genuinely ended first.
-
-Rule gate: run — amendment to the walk-through branch's outcome recording and the close's record writing; parents named; nothing evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/next.md` — the walk-through branch's outcome recording carries the three outcomes, with "deferred" written only from the user's own word. `plugin/throughliner/docs/done.md` (and its build-close doc where records are written) — the close's record writing carries the same three values, so a record cannot say deferred of an item the run's trail shows was never presented.
-Acceptance: both docs name the three outcomes; "deferred" is tied to the user's word at both sites; the not-reached value tells a later session to present the item fresh.
-Refused: a completion ask to disambiguate — the no-completion-asks bar stands; the vocabulary removes the need to ask.
---- End build block ---
-
-#### Release ritual opens the queue item that scheduled it and writes its record at the end [release-ritual-opens-its-record]
-Filed from the release-failure trace over the 2026-08-26 sessions: the v1.21.0 ritual ran after /done had committed, [expedite-first-beta-release] was never opened at the moment it mattered, and its final steps executed with no record under its slug. The general shape: work running outside a skill reads no queue item, so the queue's record of what was decided has no reader.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** The capture's alternative — barring a release after the close — loses on structure: post-close is effectively the only slot a release has, since the ritual makes its own commit and a session's one commit is the close's. So the ritual gains its own record discipline instead. Host-only: consumers have no release ritual.
-
-Rule gate: run — amendment to the release ritual's steps in a host-only fetched doc; no method rule authored, nothing shipped.
-
---- Build block ---
-Changes: `resources/release-ritual.md` — Release section gains an opening step: search the queue for an item that scheduled or constrains this release; where one exists, read it in full and run against what it says. And a closing step: write the session record under that item's slug — LOG entry plus index line — and close or update the item, so post-close release work leaves the same trail as any walked item.
-Acceptance: the Release section's first numbered step is the queue read and its last is the record write; both say what happens when no scheduling item exists (proceed, and record under a plain release entry).
-Refused: barring a release after the close — post-close is structurally the only slot. A hook to detect an unrecorded release — the ritual is fetched-on-demand host tooling; a hook cannot see "a release is happening".
---- End build block ---
-
-#### "As planned" phrases resolve by reading the record, and a release compares stamps before packaging [as-planned-reads-the-record-and-stamps]
-Filed from the release-failure trace over the 2026-08-26 sessions: the instruction was to release "this currently installed version… as planned" — installed was 1.20.0-test20 — and what shipped as v1.21.0 was the working tree, test20 plus two doc fixes never packaged or run anywhere. Two failures met: a phrase pointing at a recorded plan was accepted without the plan being opened, and the release was cut from the working tree rather than the artifact named.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** **Your invariant, stated in this item because you had to correct the session twice to land it (2026-08-27, absorbing the deleted capture on the dissolved soak step):** a release releases a tested rezip — never an untested build — and rezips do not imply releases: a release runs only on your ask. The ritual as written packages the working tree as it stands, which is the mechanical reason the invariant could break silently (v1.21.0 shipped test20 plus two unrun fixes); edits landing after the tested rezip belong to a current or future rezip, not to the release. The stamp step below is what turns your invariant from an assumption into an enforced fact, and the ritual's text must state plainly that it packages the tree and that this step is the invariant's guard. Two fixes of different kinds. Mechanical: the ritual compares the content stamp of what is about to be released against the installed host's stamp before packaging; where they differ, one standalone warning turn says the release would ship code nobody has run, and it proceeds on the user's word — the warn-don't-enforce shape applied at the point it was missed. Reading: the Prior decisions retrieve gains one clause — an instruction referencing a recorded plan by phrase ("as planned", "as agreed", "like we discussed") is resolved by reading the record before acting, never from memory of it. Composes with [release-ritual-opens-its-record], which makes the release case's record findable at the ritual's top.
-
-Rule gate: run — the reading clause is an amendment to the always-loaded Prior decisions rule, parent named, admission earned by this recorded failure; the stamp step is host-only ritual text, no method rule.
-
---- Build block ---
-Changes: `resources/release-ritual.md` — Release section, before the repackage step: compare content_stamp() over `plugin/throughliner` against the installed host's stamp; where they differ, one standalone warning turn stating the release would ship code nobody has run, proceeding only on the user's word. The section also gains two plain sentences: a release releases a tested rezip, and the packaging reads the working tree as it stands — so the stamp step is the invariant's guard, and edits landed since the tested rezip belong to a current or future rezip, never silently to the release. `plugin/throughliner/docs/skill-nonspecific-rules.md` — Prior decisions: one clause added — a user instruction that references a recorded plan by phrase is resolved by reading the record before acting.
-Acceptance: the ritual carries the stamp comparison ahead of packaging with the standalone warning turn; the Prior decisions rule carries the clause in an admissible shape; no other rule text changes.
-Refused: blocking a mismatched release outright — warn-don't-enforce governs; the user may knowingly release the working tree. Detecting "as planned" mechanically — it is a reading discipline; no hook can parse intent.
---- End build block ---
-
-#### Uncommon execution markers are assigned only against their re-read definition [uncommon-flavor-definition-check]
-Filed from the ordering-rigidity audit of the 2026-08-26 planning session: Claude recommended tagging the release pick `[freeform]` and placing it last in the cleared region, and the user corrected it twice — "freeform implies seperate run. I want to just be able to pick at the end of the next build", "freeform always runs alone" — both statements being what the docs already say. The definitions were loaded, so this was a slip, but of a repeatable kind: `[freeform]` and `Runs alone` are rare, similar-sounding, and the pair that got confused — a rarely-used tag is the one a session misremembers confidently. A flavor is settled at the disposition step and decides where work can run, so a wrong flavor is an ordering mistake at the one moment ordering is settled.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** Your sharpening of the distinction, rendered here, travels into the clause: `[freeform]` runs alone in the sense of running *without the method* — a skilless work item done by hand, for whatever unforeseen reason, outside any /next run; `Runs alone` is method-governed work /next builds in an isolated run of its own. The check: before assigning either marker, re-read its definition in that turn and name in the recommendation why the work matches it — a sentence that is unwritable for a marker being misapplied.
-
-Rule gate: run — amendment to plan.md's disposition step, parent named; admission earned by the recorded double correction; nothing evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/plan.md` — the disposition step: one clause requiring that an uncommon execution marker (`[freeform]`, `Runs alone`) is assigned only after its definition is re-read in that turn, with the recommendation naming why the work matches it; the `[freeform]`/`Runs alone` contrast sentence updated to carry the without-the-method vs isolated-method-run distinction.
-Acceptance: the disposition step carries the clause; the contrast sentence states the distinction in the sharpened form; no marker's meaning changes.
-Refused: dropping it as a recorded slip with no build — the clause is one line and the failure cost the user two corrections at the ordering-settling moment.
---- End build block ---
-
-#### Queue mover runs are confirmed from the tool's report before continuing — no blind retries [mover-report-confirmed-before-continuing]
-Filed from the ordering-rigidity audit of the 2026-08-26 planning session: the mover was run three times to place the readiness marker, with the usage read only after two wrong placements. The verify-before-handing-over rule deliberately excludes commands Claude runs itself — a wrong flag costs one turn and self-corrects — and that reasoning holds for read-only commands but is weaker for a tool that rewrites the queue in place, where a wrong placement is a silent edit to the file the whole method reads.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** The actual failure was retrying blind: the mover announces what it did ("marker now sits after X"), and both wrong placements were announced and unread. The clause targets that rather than taxing every routine move: after every mover run, read its report and confirm the marker's stated position matches the intent before continuing; where it does not, open the tool's usage before any second attempt — never trial-and-error against the live queue. The general verify rule's hand-over scope is untouched, as the capture itself wanted.
-
-Rule gate: run — amendment to plan.md's mover guidance, parent named; the general verify rule unchanged; nothing evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/plan.md` — the mover guidance (where its forms and the marker hazards are documented): one clause — read the mover's report after every run and confirm the marker's stated position matches the intent before continuing; on a mismatch, read the tool's usage before any second attempt.
-Acceptance: the clause sits with the existing mover guidance; the verify-before-handing-over rule's text is untouched.
-Refused: read-the-usage-first on every mover run — taxes routine moves the report already confirms. Widening the general verify rule — the capture's own boundary.
---- End build block ---
-
-#### Walkthroughs name where each stored text lives, and a verification step lists the claims it checks [walkthrough-artifacts-named-and-verify-enumerated]
-Filed from the ordering-rigidity audit of the 2026-08-26 build session: asked for the first test-rezips channel entry, the session showed the pinned welcome text instead — caught by the user — and the actual queued draft claimed the entry was "cut from [rezip name]", which would have read as the release being test20 when it was test20 plus two later fixes. The item's re-verification step had run, but only over timing claims, so neither error was reached.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** Both lessons extend the existing walkthrough-authoring requirement (each step names the thing to do and the thing to look for): where a walkthrough involves more than one stored text, each is named where it lives — which file, which item — so a request for one resolves to an identified artifact; and a verification step enumerates the claims it checks — the claims list is that step's thing-to-look-for, and a step without one silently checks whatever lens gets picked.
-
-Rule gate: run — two clauses amending the walkthrough requirement in skill-nonspecific-rules.md, parent named; nothing evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — the walkthrough-carrying requirement gains two clauses: a walkthrough involving more than one stored text names where each lives; a verification step lists the claims it checks.
-Acceptance: both clauses read as subordinate units of the existing requirement; plan.md needs no change (it applies the requirement by reference).
-Refused: a separate verification-step rule — it is the existing thing-to-look-for requirement applied, so it amends rather than stands free.
---- End build block ---
-
-#### Checkpoint carries the remaining-to-process count [checkpoint-carries-remaining-count]
-Raised by you 2026-08-27, mid-session, with the wording that settled the shape: the disposition line "might more usefully have read 'Processed and cleared as [slug] — 20 ready. X yet to be processed.'" The shipped checkpoint bans a count outright ("no menu of routes, no count, no tally"), a de-cluttering decision aimed at the four-route recital; the count it also swept out is the one number the user paces the session with, and you had to ask for it.
-
-**Processed 2026-08-27, cleared to run, on your direction.** The checkpoint's message shape gains one element: the remaining-to-process count, stated as plain arithmetic ("5 yet to be processed"), with dated and skipped entries excluded since they are not offered. The no-count clause is narrowed to what it was aimed at — no tally of dispositions so far, no menu — and the build names that supersession.
-
-Rule gate: run — amendment to plan.md's checkpoint shape; the no-count clause narrowed and the narrowing recorded as a supersession with this instance as its ground.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/plan.md` — the checkpoint's message-order block gains the remaining-to-process count as its own element (dated and skipped entries excluded); the "no count, no tally" line narrowed to bar the disposition tally and route menu only; the checkpoint specimen updated to show the count.
-Acceptance: the specimen ends with the count; the narrowed clause still bars tally and menu; no other checkpoint element changes.
-Refused: a full progress tally (done/deleted/skipped so far) — the clutter the original ban was for.
---- End build block ---
-
-#### Audit findings file straight to Unprocessed, marked not yet reviewed — the write-time approval is repealed [audit-findings-file-unapproved]
-Captured by you during the 2026-08-26 ordering-rigidity audit, on seeing the same findings put to you twice: the audit shows every finding as one numbered set and waits for approval before filing, and /plan then evaluates each again at processing — the identical material assessed twice, once with no queue context and once with it. Your direction: findings are written straight to Unprocessed marked as not yet reviewed, the run carries on without waiting, and the single evaluation happens at /plan, where Claude gives a heads-up that the capture came from an audit. Consistent with write-first: a finding is doc-resident and recoverable, so the recoverability test answers yes.
-
-**Processed 2026-08-27, cleared to run, on your direction.**
-
-Rule gate: run — repeal of next-audit.md's present-and-wait step and contested-findings pass, with the bulk-approval inversion's audit example evicted in the same move; the mark is a prose convention the disposition step reads, not a new parsed field.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/next-audit.md` — the present-and-wait step and the contested-findings pass are repealed; findings file directly to Unprocessed, each capture carrying a prose provenance line ("from the <name> audit, not yet reviewed"). `plugin/throughliner/docs/skill-nonspecific-rules.md` — the bulk-approval inversion's example list drops "an audit's findings", since the set no longer waits for approval. `plugin/throughliner/docs/plan.md` — the disposition step: a capture carrying the audit mark is introduced as unreviewed audit output, so the user's single evaluation happens knowingly.
-Acceptance: next-audit.md contains no approval wait; the inversion example is gone; plan.md carries the heads-up clause; a grep for the repealed step's distinctive words returns nothing shipped.
-Refused: keeping a light confirm before filing — it recreates the double assessment the user pointed at. A parsed not-reviewed field — a prose line the disposition step reads suffices, and a new field needs machinery nothing else wants.
---- End build block ---
-
-#### Suite runner discovers and runs every test, and the ritual's stale three-suite step points at it [testing-suite-runner-discovers-all]
-Noticed while checking `resources/release-ritual.md` during the piped-exit-code build: its suite step invokes `python` — which this machine resolves to Inkscape's bundled interpreter, the exact trap the scripting constraints name (`py` is the rule) — and it enumerates three suites when `resources/testing/` holds about twenty, so the release's stop-on-failure gate covers a shrinking fraction and reports a pass over suites it never ran.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** Discovery replaces enumeration: a standard-library runner finds every test script in the folder and runs each as a plain script, exiting non-zero on failure, so new suites are picked up automatically and the instruction can never go stale. CLAUDE.md's hook-touching close rule already says "the suites under resources/testing/" without naming them — excluded, no edit. Host-only: consumers have no test suites.
-
-Rule gate: run — the enumerated list in the ritual is superseded by the runner call; no method rule authored; host-only ritual text.
-
---- Build block ---
-Changes: `resources/testing/run_all.py` — new, standard library only with the UTF-8 reconfigure block, discovers every test script in `resources/testing/` (the .py suites, not transcripts or fixtures), runs each as a plain script via `py`, prints per-suite results, exits non-zero on the first failure. `resources/release-ritual.md` — the rezip's suite step and the release's suite step both changed to `py resources/testing/run_all.py`, replacing the three named suites and the `python` invocation.
-Acceptance: the runner run by hand reports every suite in the folder and passes; both ritual steps invoke it with `py`; no ritual step names an individual suite.
-Refused: keeping an enumerated list — it goes stale every time a suite is added, which is the recorded failure. pytest — barred by the scripting constraints (Inkscape's python has no pytest and the error misleads).
---- End build block ---
-
-#### Walkthroughs end at the item's observable, and a step in another project is filed, never driven [user-item-ends-at-observable-cleanup-separate]
-Captured by you in the moment — your word for it: infuriating — during the 2026-08-26 build run's walk-through of the cycles verification. Steps 2 and 3, the whole verification, had passed, confirmed from the world; step 4 was fixture cleanup in a different project, and the run handed it over as the next step — leave the build, open a chat elsewhere, do housekeeping, come back — for work the build neither needed nor waited on. Two further exchanges went on what "the fixture" meant (that half was processed as [general-jargon-translate-and-walkthrough-readback]). Your framing: this must not happen to consumers — a non-coder walked out of their build into a second project to delete a test artifact has been handed the method's internals as a chore.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** Two rules, one per defect. Authoring: a `[user]` item ends at its observable — once the thing it names has been seen, the item's purpose is served; tidy-up after the test is separate work, filed as its own item and ordered like anything else. Run-time: a step requiring action in another project is never driven inside a run — it stalls the run by construction, since no session touches another project's files — the run files it and moves on.
-
-Rule gate: run — two amendments: the walkthrough-authoring requirement in skill-nonspecific-rules.md (ends-at-observable, cleanup separate) and next.md's walk-through branch (another-project steps file rather than drive); parents named; nothing evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — the walkthrough-carrying requirement gains: a `[user]` item's walkthrough ends at the item's observable, and cleanup after the test is filed as its own item rather than written as trailing steps. `plugin/throughliner/docs/next.md` — the walk-through branch gains: a step requiring action in another project is not driven; the run files it as a capture and continues.
-Acceptance: both clauses sit with their parents in admissible shapes; the run's branch names filing as the route for another-project steps; no existing step's substance changes.
-Refused: keeping cleanup steps but driving them last — the stall is the leaving-the-project, not the ordering. A cross-project write to do the cleanup for the user — no session writes another project's files, standing rule.
---- End build block ---
-
-#### Completion-ask carve-out for work handed over at a close with no reachable observable [completion-ask-carveout-post-close-handover]
-Resolves two audit captures processed together 2026-08-27, their facts carried here. A run re-presented two Discord drafts the user had already posted — "they've already been posted why are you presenting them to me?" — because the item's only record said "deferred", written before the posting, and nothing running afterwards could correct it. The walk-through behaved correctly and the record lied to it. Minutes later the same run, against the no-completion-asks bar, asked whether the next post item was done — and that produced the day's best outcome: a screenshot, the register written from the posted text, the item closed. So the corpus held a rule barring the cheap fix, a recorded disaster from obeying it, and a recorded success from breaking it. Of the three routes weighed, the records fix is shipped ([walkthrough-outcome-not-reached]) but cannot help lines already wrong or work done after a close; /rescan works only if the user runs it, and the failing case is a chat already closed. The general bar stays — "have you done this one? and this one?" down the queue is worse than either recorded failure — and the deleted captures' warning against softening it generally is honoured by the keying.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** The carve-out keys on two recorded facts together: the item's own record shows it was handed to the user for completion after the close, AND it names no observable the method can reach. Only then, at the moment the item would otherwise be re-driven, one ask — "the record says this was handed to you to do after the close; where did it land?" — instead of re-presenting the work. An item without a recorded hand-over never qualifies, which is what stops the carve-out widening into a sweep. SPEC's no-completion-asks paragraph gained the sentence at this processing.
-
-Rule gate: run — an exception to the no-completion-asks rule, taken through the restatement test: the bare rule cannot be restated to cover this case because all three inference routes (walked to the end, user volunteers, observable check) are shut by construction; the admitting instances are the re-presentation failure and the successful barred ask, both in the 2026-08-26 build transcript.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — the `[user]` walk-through lifecycle: the carve-out added beside the completion-inference routes, keyed on the two recorded facts, with the one-ask wording. `plugin/throughliner/docs/next.md` — the walk-through branch's open-the-record step: where the record shows a post-close hand-over and no reachable observable, the drive is replaced by the one ask.
-Acceptance: both sites carry the carve-out with its two-fact key; the general bar's text otherwise unchanged; SPEC's sentence (already written) matches.
-Refused: softening the bar generally — worse than either recorded failure. Relying on /rescan — the failing case is a closed chat. A notification or watcher — mail is fire-and-forget, standing refusal.
---- End build block ---
-
-#### Developer and testing vocabulary joins the translate-away list, and walk-through steps are read back for it [general-jargon-translate-and-walkthrough-readback]
-Noticed at the close of the 2026-08-26 build run, on the user's asking: walking the cycles verification, the run wrote "the fixture has done its job" and "if you'd rather have the fixture gone" into a step being handed over, and the user had to ask — "what is 'the fixture'?" — costing two exchanges mid-step, the worst place for a vocabulary lesson by the rule's own halt-and-stop clause. A gap rather than a slip, on the capture's two grounds: the rule's offender list is method vocabulary, and "fixture" is ordinary testing vocabulary a session may not recognise as jargon; and the walk-through branch is where the reader is most reliably a non-coder performing an unfamiliar action.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** Sits beside [shared-vocabulary-not-standing-names] without tension: method terms are the shared language, but "fixture" is not a method term and names nothing in the user's files, so it stays on the translate side.
-
-Rule gate: run — two amendments to named parents: the vocabulary rule's in-passing list gains the general developer-and-testing class, and the walk-through branch gains the read-back clause the halt-text clause already models; nothing evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — the vocabulary rule's translate-in-passing list gains general developer and testing vocabulary — terms naming nothing in the user's own files — with "fixture" as the recorded specimen. `plugin/throughliner/docs/next.md` — the walk-through branch: a step being handed over is read back for such terms before it goes out, the halt-text check extended to hand-over steps.
-Acceptance: the list carries the class and specimen; the branch carries the read-back clause; the explained-once arm and the shared-vocabulary rule are untouched.
-Refused: enumerating banned words — the class is open-ended; the test is whether the term names anything in the user's files.
---- End build block ---
-
-#### README marks LOG/ and resources/ as historical records [readme-marks-history-folders]
-Surfaced by /rescan 2026-08-27, from your report that Gemini, asked to make presentation items from the repo, keeps describing BACKLOG.md as though it still exists — it was reading old records and archives as current truth. The one live mention aside (the ADHD-article seed, which already flags it as a defect to fix), "BACKLOG.md" survives only in history: LOG entries, research files, and the frozen archive folder next door. Any whole-repo reader, human or AI, hits the same trap.
-
-**Processed 2026-08-27, cleared to run, on your decision.** One sentence in README.md: `LOG/` and `resources/` are historical records — they describe the project as it was when each entry was written; what the project is now is SPEC.md and this README. True and harmless for consumers reading their own projects' repos too.
-
-Rule gate: not needed — a README sentence, no method rule touched.
-
---- Build block ---
-Changes: `README.md` — one sentence, placed where the repo's contents are described, stating that `LOG/` and `resources/` are historical records and that SPEC.md and the README describe the present.
-Acceptance: the sentence is present and reads for an outside reader; nothing else in README changes.
-Refused: sweeping old records for retired names — records keep the vocabulary of their time, standing rule.
---- End build block ---
-
-#### Spec-sync gate aligned to the SPEC-leads model — the false-SPEC paragraph is repealed [spec-sync-gate-aligned-to-spec-leads]
-Surfaced at the 2026-08-27 planning close's look-back and processed in the same session on your call — "too important to skip". Two shipped texts answer the same question opposite ways: plan.md (and SPEC itself) say product truth is written at planning time, ahead of the build — SPEC leads, because /next reads SPEC at run start and builds against it — while done-plan.md's spec-sync gate still says editing SPEC for a decided-but-unbuilt change makes "a false SPEC, not a synced one", SPEC moving only when the behaviour does. The second is the older answer that lost when the lead model was decided, never repealed. This session complied with the lead rule three times, so SPEC now describes decided-but-unbuilt behaviour by design.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** The residual cost stays stated, not solved: a reader of SPEC alone, between plan and build, sees behaviour not yet installed — bounded by the cleared item that will build it.
-
-Rule gate: run — repeal inside done-plan.md's spec-sync gate, superseded by the lead model already operative in plan.md and SPEC; the gate's purpose survives (catching a decision whose sentence was never written); nothing else evicted.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/done-plan.md` — the spec-sync gate's paragraph beginning "A decision made this session but not yet built satisfies the gate…" and containing "a false SPEC, not a synced one" is repealed; in its place: the gate checks that every decision's SPEC sentence was written at the processing step, and a sentence describing decided-but-unbuilt behaviour is the designed lead, not drift, bounded by the cleared item that builds it. Grep the repealed paragraph's distinctive words across the project before editing; anything else carrying them is reworded in the same build.
-Acceptance: the gate carries the lead-model statement; "a false SPEC, not a synced one" appears nowhere shipped; the gate still stops a close where a decision's sentence was never written.
-Refused: reverting to SPEC-moves-with-behaviour — it contradicts SPEC being read at build time, the architecture already shipped and relied on.
---- End build block ---
-
-#### Droppable-set ask carries no recommendation at a batch of one [droppable-set-ask-lacks-recommendation-singular]
-Raised by you 2026-08-26: a planning opening presented a single droppable capture ending on a flat "Drop it, or keep it?" with no recommendation, and you had to ask where it was. Partly an instance of the bundling defect already fixed in [first-item-presentation-reads-as-bundling-build] (built but not installed at the time), but one narrow piece survives that fix: plan.md's droppable-set specimen ("Drop both, or name any to keep?") leans toward dropping only by plural grammar, and at a batch of one that degrades to a bare either/or. The one-at-a-time delete branch already requires a recommendation explicitly ("my recommendation is to drop this"). **Kept 2026-08-26, on Claude's recommendation and your agreement.** An amendment to an existing step's wording, no new rule slot; SPEC describes the triage without specifying the ask's grammar, so no SPEC sentence changes. The live plan.md was read before designing.
-
-Rule gate: run — amendment to the droppable-set step in plan.md, parent named; no freestanding rule, nothing evicted beyond the specimen wording it rewords.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/plan.md` — the droppable-set step at the session opening: one sentence added stating the ask recommends the drop explicitly and offers exceptions, at any batch size; a singular specimen added alongside the existing plural one (e.g. "One looks droppable — **[old-slug]**: its premise is gone. My recommendation is to drop it — keep it instead?"). The plural specimen stays; the step's mechanics are unchanged.
-Acceptance: the step's text requires an explicit recommendation whatever the batch size, and both specimens show it; no other part of the step changed.
-Refused: widening the one-at-a-time delete branch's rule to cover this — the fix belongs at the step whose specimen breaks, not at a second site.
---- End build block ---
-
-#### Shared vocabulary replaces standing plain-English names — the method's own terms are spoken with the user [shared-vocabulary-not-standing-names]
-Raised by you 2026-08-27: the standing-names idea is recursively feeding the method — every planning session mints new plain-English terms that get fed back in, and things inherit new names all the time. Your decision, in your words rendered here: drop the standing-names idea, not the plain-language effort; give it a specific rule allowing Throughliner jargon — your users and you will use the same vocabulary, even if it's hard for them at first, so that you can actually help them.
-
-**Kept 2026-08-27, on your direction and Claude's design.** The sharpening Claude added, agreed: "the ready list" is itself a minted alias for a thing whose artifact shows different words — the marker reads "Cleared to run above this line" — so shared vocabulary means using the words the user's own files show. The repeal grep found every site: the declaration (skill-nonspecific-rules.md, Vocabulary), the keep-ask usage (plan.md), three FAQ mentions across faq-template.md and faq-index-template.md plus their FAQ/ copies, and the queued post draft [discord-post-plain-english-consent], now held behind this item. Nothing in INBOX/sent.md claims the name publicly, so no correction post is owed. The post draft's reword and its Blocked-by drop are planning work, done at the below-line revisit when this ships — deliberately outside the build block, which a run cannot point at the queue. The translate-away half of the vocabulary rule is untouched: internal mechanics naming nothing the user can see (step numbers, rungs, passes, doc filenames) still never reach output.
-
-Rule gate: run — supersession of the ready-list standing-name declaration (evicted in the same move) and amendment of the Vocabulary rule's explained arm into the shared-vocabulary rule; the standing-names idea loses because each admitted name is a second name for a thing the method already names, and the corpus was growing names faster than sessions could translate them.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — Vocabulary section: the ready-list declaration comes out; in its place the shared-vocabulary rule: the method's own terms — the words its artifacts and commands actually show (capture, work item, Processed / Unprocessed, cleared to run, red flag, `[user]` item, walkthrough) — are the vocabulary spoken with the user, each explained once on first need; no plain-English alias is minted for a thing the method already names; the translate-away arm for internal mechanics is unchanged. `plugin/throughliner/docs/plan.md` — the keep-ask specimen reworded to method words ("move it into Processed, cleared to run?"). `plugin/throughliner/templates/faq-template.md` and `faq-index-template.md` — the three "ready list" mentions reworded to "cleared to run" / the cleared region; `FAQ/faq.md` and `FAQ/index.md` re-copied from the templates. Acceptance: no shipped doc, template or FAQ copy contains "ready list"; the Vocabulary section carries the shared-vocabulary rule in an admissible shape; the translate-away arm's text is unchanged.
-Refused: dropping the plain-language effort whole — the user kept it explicitly, and the jargon failures it exists for are real, one processed 2026-08-27 as [general-jargon-translate-and-walkthrough-readback]. Keeping "the ready list" as grandfathered — it is the live instance of the recursion being dropped.
---- End build block ---
-
-#### Builds return to reading the queue whole — the generated view and build blocks are retired [builds-read-the-queue-again]
-Your decision, 2026-08-27, at the end of a long design exchange — a supersession of the build-view architecture. Your reasons, rendered here: build blocks duplicate each item's rationale into a second in-file artifact and are bloating the queue; a build stripped of the why infers one and infers wrong — the live specimen being the "fresh short sessions" framing, which missed the true reason (compensating for a build model with less capability and less cross-project knowledge than the planner); and Throughliner must not be designed FOR authoring Throughliner — it is project-agnostic, and the view was a fix for this project's own transcription failure generalised into everyone's architecture. The debloat is worth the trade, accepted with the counter-argument heard: the purpose-instruction is an untested replacement for a structural guard, on the less capable model — your words rendered: we go into this smarter than last time.
-
-What replaces the structural guard, designed in the same exchange:
-- **The purpose instruction, in the run's own procedure:** an item's reasoning is read to aim the work — it explains why the thing should be built and is not itself part of what is built.
-- **The boundary rule, stating what unwarranted inclusion looks like:** reasoning lands in a file the build writes only where that file is the record of the decision — the LOG entry — or where the item specifically instructs it; in every other file (a doc, a rule, code, a template) the build writes the action the reasoning justifies, and not the reasoning.
-- **The block-authoring rule's survivor, promoted in capability-gap wording:** a kept item's instructions are written for a reader with less context and possibly less capability than the session writing them. Acceptance softens to the observation that shows the change landed — never invented verification work. Refusals stay carried, one bare line each. (This merges and closes [build-blocks-must-not-require-inference], whose content is fully carried here; her three refinements from that discussion — the capability-gap why, the softened acceptance, the refusal bound — are the promoted form. The per-step executable-or-checkable constraint was considered and left out: the keep-step's files-plus-what-changes check already tests executability at the site that can refuse, and blocks legitimately carry non-step content.)
-
-What the record held against this, carried forward as the throughline requires: the view was adopted on a measured failure — reasoning reaching shipped docs near-verbatim when builds read it — and on cost, a run once reading ~56,000 tokens of queue to build a handful of items. The structural guard loses because both its wins came bundled with the duplication bloat and the wrong-why inference, and because the failure it fixed was this project's own self-hosting pathology, not a consumer's. The cost of the whole-queue read returns, accepted knowingly.
-
-Rule gate: run — supersession of the build-view architecture and of plan.md's build-block authoring rules; the purpose instruction and boundary rule are authored as amendments to next-build.md's existing run discipline; eviction is the block machinery itself. Retired artifacts named in the block per the retiring-a-step rule.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/next.md` and its build branch — the run reads SPEC and then the queue's cleared region whole (each item's full text, rationale included; the queue file itself is not edited by this build), carrying the purpose instruction and the boundary rule (with the unless-specifically-instructed carve-out); the halt-on-blockless-item rule retires. `plugin/throughliner/docs/plan.md` — the build-block authoring rules come out of the keep-step; in their place the promoted instruction-authoring rule in capability-gap wording, with acceptance-as-observation and one-line refusals written into the item's prose; the two-limb check is untouched. `plugin/throughliner/docs/done.md` — close reads items directly (already does); view-cleanup steps retire. `plugin/throughliner/scripts/generate_build_view.py` — deleted (retired artifact of the retired step, with any generated view files). `plugin/throughliner/hooks/pre_tool_use.py` — view-file references in the scope-lock retire; suites updated. `plugin/throughliner/hooks/post_tool_use.py` and `plugin/throughliner/scripts/queue_digest.py` — the cleared-item-with-no-block checks retire; suites updated. `plugin/throughliner/templates/faq-template.md` and `faq-index-template.md` — the two view mentions rewritten to the new model, `FAQ/` re-copied. `CLAUDE.md` — the two-models rule shrinks to naming which model runs which session here plus a pointer to the shipped rule; the QUEUE.md description and any view references updated.
-Inputs: the existing build blocks on cleared items — left in place in the queue; the run under the new model simply reads them as part of each item's text until a planning session folds them into prose.
-Acceptance: no shipped doc, hook, script or template references the generated view or requires a build block; the run's procedure carries the purpose instruction and boundary rule; all suites pass.
-Red flag: none.
-Refused: keeping the view but carrying rationale alongside the block (the middle shape) — the duplication bloat survives it. Instructing the build while still withholding the queue — the wrong-why inference survives it. A per-step executable-or-checkable constraint — duplicates the keep-step's existing check and constrains block content that is legitimately not a step.
---- End build block ---
-
-#### Retire "line" as the name for a [user] work item across the shipped docs [user-line-terminology-retired]
-Raised by you 2026-08-27: `[user]` work items were being called "lines" again in yesterday's sessions — old terminology from when work was a single line, long untrue of the format (an item is a `#### ` heading with prose beneath). Sits under [shared-vocabulary-not-standing-names]: one thing, one name, the name the artifact shows.
-
-**Kept 2026-08-27, on Claude's recommendation and your agreement.** The repeal grep found six files carrying "`[user]` line/lines": `skill-nonspecific-rules.md` (heaviest, ~7 mentions), `plan.md`, `next-build.md`, `done.md`, `SPEC.md`, `CLAUDE.md`. FAQ templates and README are clean. The reword is judgment-applied, not blind substitution — a sentence leaning on line-ness ("file it as a line") is rephrased around the item.
-
-Rule gate: run — no rule authored; existing text corrected to one term. The build's LOG entry carries the Retired: line ("line" as the name for a `[user]` work item), appending to resources/retired-terms.md so the standing checks can catch it returning.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md`, `plugin/throughliner/docs/plan.md`, `plugin/throughliner/docs/next-build.md`, `plugin/throughliner/docs/done.md`, `SPEC.md`, `CLAUDE.md` — every "`[user]` line / lines" reworded to "`[user]` item / items", with sentences that lean on line-ness rephrased around the item; no meaning changes.
-Acceptance: a grep for the variants ("[user] line", "[user]` line", plural forms) returns nothing in shipped docs, SPEC or CLAUDE.md; the retired-terms record gains the entry via the close's Retired: line.
-Refused: sweeping LOG/ and old queue prose — records keep the vocabulary of their time.
---- End build block ---
-
-#### Retire "keep" as the disposition term — an entry is processed, with the outcome named [keep-term-retired-for-processed]
-Raised by you 2026-08-27: "keep" as the universal word for processing a capture into a work item makes no sense — captures don't necessarily describe work, and the operation is a transformation, not retention. Your decision after discussion: the operation is *processing*, and the ask names the outcome in the words the artifacts already show — moved into Processed cleared to run, moved into Processed held below the line, or deleted. Sits under [shared-vocabulary-not-standing-names]: no second name for a thing the artifacts already name.
-
-**Processed 2026-08-27, cleared to run, on your decision.** The disposition ask becomes "process it in — cleared to run?"; stamps written into items from now on read "Processed <date>" with the outcome; existing "Kept" stamps stay — records keep the vocabulary of their time. Internal mechanics rename in the same sweep ("the keep-step" → the disposition step, procedure-facing only). The grep found term-of-art uses concentrated in plan.md (the keep/delete step, its asks and specimens), skill-nonspecific-rules.md, next.md and done.md families, SPEC.md and CLAUDE.md, amid much ordinary-English "keep" the sweep must not touch — a judgment reword, not substitution.
-
-Rule gate: run — terminology correction under the shared-vocabulary supersession already gated on [shared-vocabulary-not-standing-names]; no new rule. The build's LOG entry carries Retired: "keep" (the disposition term for processing a capture into a work item), appended to resources/retired-terms.md.
-
---- Build block ---
-Changes: `plugin/throughliner/docs/plan.md` — the keep/delete disposition step reworded: the operation is processing, the ask and every specimen name the outcome (into Processed cleared to run / held below the line / deleted); "the keep-step" renamed wherever docs cite it by name — and the build picks a plain name for it rather than "the disposition step": "disposition" itself needed explaining to the user in the session that decided this (2026-08-27), so a candidate like "the decision step" is preferred, chosen at the build. `plugin/throughliner/docs/skill-nonspecific-rules.md`, `plugin/throughliner/docs/next.md` and family, `plugin/throughliner/docs/done.md` and family, `SPEC.md`, `CLAUDE.md` — term-of-art "keep"/"Kept"/"keep-step" uses reworded the same way; ordinary-English "keep" untouched; cross-doc references by name updated to the new step name.
-Acceptance: no shipped doc, SPEC or CLAUDE.md uses "keep" as the disposition term or "keep-step" as the step name; asks and specimens name outcomes in artifact words; retired-terms gains the entry via the close.
-Refused: rewording old "Kept" stamps in QUEUE.md and LOG/ — records keep the vocabulary of their time. Blind substitution — most "keep" occurrences are ordinary English.
---- End build block ---
-Ordering: builds after [shared-vocabulary-not-standing-names] and [user-line-terminology-retired], which touch the same files — carried by placement and this sentence, not a blocker, since one run can build all three in order.
-
 #### [user] Verify the cycles due-ness check live: one capture filed when due, no duplicate on the next opening [cycles-due-check-verification]
 Filed 2026-08-22 at the keep-step, on Claude's recommendation and your agreement. The cycles build ("Cycles shipped", record `2026-08-22-cycles-definitions-and-due-checks-build.md`) ticked done with one behaviour UNCONFIRMED: only the no-doc silent path was exercised, because this project has no cycles doc. Confirming it needs a live session in a project whose `CYCLES.md` carries a past-due observable — user work, since it happens in another project's session during your testing days. The release-cycle definition item ("Define this project's weekly release cycle") is held on this verification and lifts when it closes — timed so the definition can build before Wednesday 10am.
 **Walkthrough.**
@@ -567,6 +243,21 @@ Blocked by: [shared-vocabulary-not-standing-names]
 
 ## Unprocessed
 
+#### Last session advises: plan next, and start with the three failures this run recorded about itself [last-session-advises]
+Advice from the 2026-08-27 build close, not work. The next planning run reads this and deletes it in the same breath.
+
+**Plan rather than build.** Only 5 items are cleared to run and all five are `[user]` work, four of which this run already addressed. Unprocessed holds twelve fresh captures. A /next now would reach almost nothing.
+
+**Start with the three self-observations, and weigh them together rather than one at a time** — [capability-just-granted-not-considered], [walkthrough-jargon-broken-by-its-own-author] and [file-link-not-offered-at-hand-over]. All three are the same shape: a shipped, clearly written rule that did not fire at the moment it applied, and two of the three were caught by the user rather than by anything in the method. One of them broke a rule this very run had authored an hour earlier. The third capture names a candidate worth testing against the transcript: all three happened while composing a message handing something over, and none while editing a file. A rule per instance is what the admission gate exists to refuse.
+
+**Then [no-route-to-discord-is-false]**, which is the highest-value single fix: this project's own always-loaded instructions still tell every session that Claude has no route to Discord, and that route now exists. It is the standing instruction that would have produced the capability failure above again tomorrow, memory or not.
+
+**Two lifts are waiting**, both blocked on work this run shipped: [discord-post-plain-english-consent] (its own prose already says to reword its "ready list" example at the lift) and [comparison-article-post-needs-rewrite].
+
+**One red flag is uncleared**: [bot-prunes-test-rezips]. An unattended prune holding Manage Messages deletes published messages irreversibly, and a wrong bound could take the channel pin or another member's post. It wants deciding before it is built, not during.
+
+**And [compliance-audit-lag] is filed as an `[audit]`.** This run authored or amended roughly twenty rules and moved the always-loaded corpus by +47 statements for consumers — the largest single movement on record. That audit is the check on this session's own work.
+
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
 **The cost, narrowed to where it still exists.** Showing text in chat and writing it to a file are both the model producing those tokens, so text doing both is produced twice. That used to hit every approval moment; it no longer does — write-first shipped, and the post-write report is one line naming what landed, never a re-paste.
@@ -665,4 +356,160 @@ Not before: 2026-08-31
 #### Should cycles get mermaid diagrams? [cycles-mermaid-diagrams]
 Captured by you, 2026-08-24, mid-planning — your framing: seems reasonable. Filed at your direction without discussion, so the idea is unshaped: what a diagram would show (a cycle's steps? the turn's two events? due-ness over time?), where it would live (in CYCLES.md beside the definition, or generated), and who reads it are all open for the keep-step. Context worth having there: the desktop app renders mermaid in its markdown viewer, and the cycles doc is user-facing by design.
 Skipped 2026-08-26 on Claude's recommendation and your agreement: what settles it is a build that must ship first — [weekly-release-cycle] creating this project's first real cycles doc, with the due-ness check working ([cycles-check-fires-nowhere]'s fix). A diagram designed before any real cycles doc exists would be guessing at a document nobody has seen; take it up once there is one to draw.
+
+#### setup.md's Step 3 heading still promises two settings questions the step says do not exist [setup-step3-heading-stale]
+Noticed while tagging setup.md for [setup-case-d-untagged]. The heading reads "Step 3: Interview (adaptive discovery + two settings)", and the step's own body states plainly that there is no settings question at all, here or anywhere — the last one was dropped in favour of ignoring `INBOX/` on both paths. So the heading contradicts its own step. Left alone rather than fixed in that build, because the item was scoped to response-shape tags and a heading rewrite is not tagging. The fix is one parenthetical; the reason to file it rather than drop it is that a heading is what a session reads first when it jumps into a step, so a stale one steers the read before the correcting sentence is reached.
+
+#### [user] Delete the test cycle fixture and its filed capture from the demo project [cycles-fixture-cleanup]
+Split out of [cycles-due-check-verification], whose verification passed on 2026-08-26 (`LOG/2026-08-26-cycles-due-check-verification-2.md`). What remains is housekeeping in another project, not verification: `DEMOS/Polit Fart Announcer 1` still carries the made-up `CYCLES.md` with its `[weekly-listen]` definition and fixture observable of 2026-08-10, plus the `[weekly-listen]` entry the check filed into that project's Unprocessed.
+
+Both are downstream of a fixture rather than work that project chose — the user's correction on 2026-08-26: the whole cycle was made up as a test, not just its date. The three items the filed entry overlaps ([reload-persistence-check], [other-chimes-unheard], [honorifics-never-fired]) were queued on their own merits and are untouched by this.
+
+Filed as its own item because a walkthrough ends at the item's observable and cleanup after a test gets its own line — and because no session here writes another project's files, so this can only be done in that project's own chat. It blocks nothing: the verification it follows has already passed.
+
+**Walkthrough.**
+1. Open a chat on `DEMOS/Polit Fart Announcer 1`. Ask Claude there to delete `CYCLES.md` from the project root. Look for: the file gone from the folder listing.
+2. In the same chat, ask Claude to delete the `#### [user] Weekly listen-through of the page is due [weekly-listen]` entry from that project's Unprocessed. Look for: the entry gone from QUEUE.md, and the three items it named still present.
+3. Tell this project it is done; this item closes.
+
+#### Discord posts split into tips and news, and the posting rule describes only one kind [discord-channel-purposes-split]
+Raised by you on 2026-08-27, while naming the channels the bot may post in. Your decision, in your own terms: what currently sits in *announcements* is posts that will from now on be known as **tips**, and *announcements* is being narrowed to **news only**. The bot may post in tips, announcements, and test rezips for nerds.
+
+This project's own posting rule (CLAUDE.md, "Discord posts") does not carry that split. It describes a single kind of post — announcing new features, changes and improvements to Throughliner — and explicitly rules out tips on using Claude Code and general development lessons, with the test being "did Throughliner change" rather than "did we learn it". Under the new split that test still fits announcements-as-news, but it is the wrong test for a tips channel, and the rule now has nothing to say about the channel that will carry most of the volume.
+
+Worth settling before a bot can post anywhere, because a bot aimed at the wrong channel is a published mistake rather than a draft one, and because the existing rule would currently refuse to draft the tips the tips channel is for.
+
+What a planning session would decide: whether the posting rule gains a second kind with its own test, or whether tips are out of scope for this project entirely and only news is drafted here; and what the draft brief is for a tip, given the existing brief is written for a feature announcement. Also whether `INBOX/sent.md` should record which channel a post went to — it currently records the destination as "the Throughliner channel", which no longer distinguishes anything.
+
+Filed rather than built: this changes a standing rule about what leaves the machine, and rule admission is planning work.
+
+#### Posting bot prunes old test-rezips entries after each new post [bot-prunes-test-rezips]
+Your decision, 2026-08-27, given while the channel pin was being edited: pruning old entries is no longer a by-hand job — now the bot exists it can be done from this project, straight after each new build entry is posted. The pin no longer claims hand-pruning; it was reworded to name no mechanism at all, precisely so this can ship without the pin becoming wrong.
+
+Scoped as an addition to [discord-posting-bot] rather than separate work: the same script that posts an entry does the prune in the same run. Referenced by slug from both sides.
+
+What the build has to settle: how many entries the list keeps (a number nobody can derive is a bare number, so it wants your figure or a rule like "keeps the newest N of each label"); that the **pin itself is never pruned** — it is a pinned message rather than a build entry, and the prune must exclude it by construction rather than by ordering luck; and what happens when a prune fails partway, since deleting published messages is not recoverable.
+
+Two facts established live this session and worth carrying into that build:
+- the bot's `Manage Messages` permission is what allows deleting other people's messages, and it is already granted;
+- a bot can only EDIT messages it authored itself, so anything the bot may later need to rewrite has to have been posted by the bot in the first place. Pruning is deletion, not editing, so this does not block the prune — but it does mean an entry posted by hand can never be corrected by the bot afterwards.
+
+Red flag · State: uncleared
+Deleting published messages is irreversible and reaches other people's posts. The prune targets a public channel, runs unattended after a post, and has `Manage Messages` — so a wrong bound, an off-by-one, or a mis-parsed entry deletes content nobody can recover, including potentially the pin or another member's message. The risk is stated rather than designed around here: what to do about it is the build's decision and yours, not this capture's.
+
+#### Sent-register pointer resolved to nothing — the pin's text was not where the register said [sent-register-pointer-resolves-to-nothing]
+Found live on 2026-08-27 while trying to rewrite the test-rezips channel pin. The register line in `INBOX/sent.md` for that pin ends "posted text verbatim in `LOG/2026-08-26-beta-day-one-posts-2.md`". That record contains no quoted text at all — no blockquotes, no fenced block, nothing. The pin's words were in no other record either. What the project actually held was the register's own one-clause paraphrase of the claims.
+
+This defeats the register's stated purpose. The rule says a post's claim is recorded so a later repeal can be checked against it, and a pointer that resolves to nothing means the check cannot run — while the line still reads as though it can, which is worse than an obviously missing record. The failure was only found because a session needed the text for something else; nothing detects it.
+
+The text was recovered from the live channel through the newly-built Discord bot, so the pin's words are now genuinely on file in `LOG/2026-08-27-test-rezips-pin-edited.md`. That repairs this one instance and nothing else.
+
+What a planning session would settle: whether the same fault sits on other register lines (several say "posted text verbatim in <file>" and none has been checked); whether a pointer should be verified at the moment it is written, which is the only moment the text is definitely to hand; and whether the bot now makes recovery cheap enough that unverified pointers matter less — noting that recovery only works for channels the bot can read, and only while the message still exists.
+
+Related: [bot-prunes-test-rezips] would delete old entries, which removes the recovery route for exactly the posts whose text was never stored.
+
+#### Capability granted minutes earlier was not considered when the work needed it [capability-just-granted-not-considered]
+Raised by you on 2026-08-27, in your own words: *"you're supposed to have read message history access through the bot"*.
+
+The sequence, which is the whole point of the capture. Claude walked you through creating the Discord bot, and in that walkthrough specified Read Message History among its permissions and confirmed the token was on disk. Roughly twenty minutes later, in the very next item, Claude needed the text of a Discord message, could not find it on file, and offered you two ways to supply it yourself — never considering the bot it had just provisioned for reading Discord.
+
+The method already carries the rule this breaks: before handing work to the user, name the tool that would do it and confirm it is absent or unauthenticated. Here the tool was present, authenticated, and had been set up in the same session by the same session. The check either did not run or ran against stale knowledge of what this project can do.
+
+Why it is worth a rule rather than a shrug: the existing check is written for tools that might exist somewhere in the environment, and it is weakest exactly where it should be strongest — on a capability so new that nothing in the project's documents mentions it yet. A session's sense of "what I can do here" is formed early and is not re-derived when it changes mid-session.
+
+What a planning session would settle: whether anything durable should record a project's live capabilities as they are gained — a `TOOLS.md` line written at the moment a credential or integration lands would have answered this in one look — or whether the fix belongs in the capability check's wording, requiring it to re-read what this session itself has set up. Note that `TOOLS.md` already exists for exactly this class of fact, which suggests the gap is a missing write rather than a missing mechanism.
+
+#### Walk-through jargon rule broken within the hour by the run that built it [walkthrough-jargon-broken-by-its-own-author]
+Found live on 2026-08-27. Your words when the step arrived: *"I don't understand what you want me to do"*.
+
+Earlier in the same run, two rules shipped: general developer and testing vocabulary joins the translate-away list ([general-jargon-translate-and-walkthrough-readback]), and a step being handed over is read back for such terms before it goes out. Within the hour the same session handed you a step reading "Developer Portal → Bot → Privileged Gateway Intents → Message Content Intent → Save Changes" — four terms naming nothing in your own files, no indication where any of them sit on screen, and no read-back.
+
+Re-explaining it as five located steps worked immediately, which is the evidence the rule is right and the trigger is what failed.
+
+The uncomfortable part, and the reason this is worth filing rather than noting: the rule was not forgotten. It was authored, tested against a specimen and written into the shipped docs by the session that then broke it. So "state the rule more clearly" is not the fix — the rule was as clear as it will ever be to its own author. What failed is that nothing fires at the moment a step is composed; the read-back is an instruction to remember to re-read, which is the shape this project has repeatedly found does not hold.
+
+Compounding it: those steps were also not verified before being handed over. The permission fix and the intent toggle were each described from Claude's model of Discord's interface rather than checked, and the first description of the intent toggle was the one that failed.
+
+What a planning session would settle: whether a hand-over step can be checked mechanically at all (a word list is the obvious idea and the rule itself already refuses one, on the ground that the class is open-ended); or whether the answer is structural — for instance requiring every handed-over step to name a thing on screen and a thing to look for, which is a shape a reader can check even where the vocabulary cannot be enumerated. Note that requirement already exists for authored walkthroughs and was not applied to a step composed live.
+
+#### CLAUDE.md still says Claude has no route to Discord, and that stopped being true today [no-route-to-discord-is-false]
+Surfaced by /rescan at the end of the 2026-08-27 build run. The Discord posts section of this project's CLAUDE.md ends "Claude drafts and Alex posts, because Claude has no route to Discord." The bot built and authorised in that same run read the test-rezips channel's pinned message live, so the stated reason is already false, and the posting half becomes false when [discord-posting-bot] ships.
+
+This is not a tidying job. The sentence is a standing instruction read at the start of every session in this project, and it tells a session not to look for a route. That is the precise shape of the failure recorded the same day in [capability-just-granted-not-considered]: work was handed to the user that the project could have done, minutes after the capability landed. The instruction would have produced that outcome again tomorrow even without the memory lapse.
+
+What a planning session would settle: what the sentence becomes. Reading and posting are not the same permission and should probably not be described together — the bot can read the channels it has been added to, and posting stays gated by the standing rule that nothing leaves the machine without the user seeing the exact text. That approval rule is untouched by any of this and should be restated rather than quietly dropped, since "Claude has no route" was doing double duty as both a fact and a safeguard. Only the fact has changed.
+
+Also worth settling in the same pass: whether the draft-and-hand-over flow survives at all for channels the bot can post in, or whether the user approves text that Claude then posts directly.
+
+Related: [capability-just-granted-not-considered], [discord-channel-purposes-split], [bot-prunes-test-rezips], [record-discord-environment-in-tools-md].
+
+#### Record the Discord environment in TOOLS.md so the next session doesn't rediscover it [record-discord-environment-in-tools-md]
+Surfaced by /rescan at the end of the 2026-08-27 build run. Everything below was learned live that day, by making API calls and by two rounds of you changing settings in Discord. None of it is written anywhere a future session reads, so the next one that needs it repeats the calls and, where a permission is missing, repeats the walkthrough.
+
+`TOOLS.md` at the project root is the home the method already defines for exactly this — facts about a project's environment that are expensive to re-derive — and this project has no such file yet. Any session may write one the moment it has a fact to record, so this is an overdue write rather than new machinery.
+
+The facts:
+- the bot's token lives at `INBOX/discord-bot-token.txt`, outside git (proved with `git check-ignore`), and is used as an `Authorization: Bot <token>` header against `https://discord.com/api/v10`;
+- the server is "Throughliner fan club";
+- **announcements** and **tips** were readable with no per-channel setup;
+- **test-rezips-for-nerds** returned HTTP 403 "Missing Access" until the bot was added to that channel's own permissions — a channel overwrite, not a missing scope;
+- **main** still returns 403, and has not been granted access, although the bot item expected it to be a posting target;
+- Message Content Intent had to be enabled in the Developer Portal, or message text comes back as an empty string with no error;
+- a bot can only EDIT messages it authored itself; `Manage Messages` allows deleting others' messages and pinning, never rewriting them.
+
+One thing to decide rather than assume: `TOOLS.md` is committed, so the channel IDs would sit in the repository. They are not credentials and the server is this project's own, but it is a publication decision and yours to make — the alternative is recording the channel names only and letting a session look the IDs up through the bot.
+
+Related: [capability-just-granted-not-considered], which is the failure this write prevents; [no-route-to-discord-is-false]; [bot-prunes-test-rezips], whose build needs the can't-edit-others fact.
+
+#### View-in-doc link not offered until the user asked for it [file-link-not-offered-at-hand-over]
+Raised by you on 2026-08-27, in your own words: *"please link to the file so it opens in sidebar"*.
+
+The instance: during the bot walkthrough, Claude created an empty file for the token and told you to find it in File Explorer and open it with Notepad — naming the path in prose but giving no link. The view-in-doc rule already requires a plain link to a file being pointed at, and you had to ask for what the rule already mandates.
+
+Small on its own. Filed because it is the **third instance in one run** of a shipped rule failing to fire at the moment it applies, alongside [walkthrough-jargon-broken-by-its-own-author] and [capability-just-granted-not-considered]. Two of the three were caught by you rather than by anything in the method, and the third was caught only because a later step needed the thing the rule would have provided.
+
+What makes this one distinct from the jargon case: the jargon rule was authored in that same session, so recency was not the problem. This rule has shipped for months. So "the rule is too new to have stuck" does not explain the pattern, and neither does "the rule is unclear" — all three are clearly written and were correctly applied elsewhere in the same run.
+
+What a planning session might weigh: whether these three are one finding rather than three, and if so what the shared cause is. A candidate worth testing against the transcript: all three failures happened while composing a message to hand something over, and none happened while editing a file. If that holds, the gap is that hand-over composition has no checkpoint, while file edits have several.
+
+Not proposing a rule here — a rule per instance is what the admission gate exists to refuse, and the useful move is probably one look at all three together.
+
+#### Throughliner bot needs an icon in the sibling-project house style — white linework on Chagora's background [bot-icon-house-style]
+Captured by you on 2026-08-27, on your instruction, with the reference files you named.
+
+**What you asked for:** the Throughliner bot icon redone in the same style as Chagora's, and as AFK-cats' will be — **white linework, on the same background Chagora uses**. The draft to work from is `Throughliner-icon.png` at this project's root. Note it is currently untracked, so git holds no copy of it.
+
+**The house style, read from `Casual Projects/Chagora/icon.png`:** a circular badge with a thin dark rim; the subject drawn as flat, stroke-only **white** line art with no fill and no shading; sitting on a dark diagonal gradient that runs deep red at the left through to a desaturated teal-blue at the right, darkening toward the centre. The line art exists separately as `Casual Projects/Chagora/chagoraiconw.svg` — white paths, no background — which suggests the working method is line art as vector, composited onto the gradient disc and exported as PNG.
+
+**The gap is larger than a recolour, and that is the thing to weigh before scoping it.** The current draft is not line art with the wrong colour on it — it is a fully rendered illustration: a pastel orange-and-blue mascot with gradient fills, soft highlights, dark outlines and an orange flame glow, on black. Turning that into flat white strokes is a redraw, not a colour change, and no filter gets from one to the other. **Corrected at the 2026-08-27 close: a vector source now exists.** `throughlinerprojectboticon.svg` was added at the project root during that session — Inkscape, currently black fill on an A4 page. The paragraph above was written before it appeared and treated the job as a redraw because no line art existed. With vector line art in hand it is much closer to a recolour and composite, which changes who can do it: recolouring the strokes white and placing them on the Chagora background is plausibly Claude's work, not a design act. Confirm the SVG is the intended line art before scoping on it — it was not discussed, only found. The figure in the rendered draft carries a wrench and a pencil, which read well and are worth keeping either way.
+
+**AFK-cats is already staged for the same treatment**, which is why this is a family decision rather than a one-off: `AFK-cats/assets/` holds `cat-noun-project-source.svg` and, tellingly, `reference-sibling-bot-icon.png`. Whatever is settled here sets the pattern for that one.
+
+**On who does it — not settled, and worth splitting at the decision step.** Inkscape is installed on this machine (it is why `python` resolves oddly here, per the scripting constraints), and its command line could do the compositing and export once white line art exists as an SVG. The drawing itself is a design act and is likely yours, or a redraw commissioned some other way. So this probably decomposes into a `[user]` item for the line art and a build item for compositing to the house background — rather than being wholly one or the other.
+
+Also worth deciding: whether the finished icon belongs in the repository (Chagora keeps both the SVG and the PNG at its root), and whether the bot's Discord avatar gets set from it, which is a separate act in the Developer Portal.
+
+#### [audit] Compliance audit over the rule changes since the last audit [compliance-audit-lag]
+Filed by the rule checks at the 2026-08-27 build close, under the slug they print. `py resources/rule_signals.py .` reported 3 rule-bearing commits since `2026-08-26-compliance-audit-lag-build.md` uncovered by any compliance audit — and this session's own commit makes a fourth, much the largest, so the real scope is wider than the figure the check printed before the commit landed.
+
+Scoped to the changed files (delta scope, as the check computes it): `CLAUDE.md`, `plugin/throughliner/docs/done-build.md`, `done.md`, `feedback-and-inbox.md`, `next-build.md`, `next.md`, `plan.md`, `rescan.md` — plus, from this session, `skill-nonspecific-rules.md`, `next-audit.md`, `done-plan.md`, `setup.md` and `migrate-checklist.md`. The audit run should recompute the list rather than trusting this one, since the check reads it from git.
+
+The criteria are already written and are not re-derived: `resources/method-compliance-audit-checklist.md` carries the four lenses — self-authoring compliance, response-shape tag placement, narration drift, and decision history sitting in operative text (the delete-and-read test).
+
+**This session is an unusually good reason to run it rather than a routine one.** It authored or amended roughly twenty rules in a single run, several by supersession and repeal, and it added +47 always-loaded rule statements for consumers and +144 across the fetched procedure docs — the largest single movement the growth report has recorded. Two of the four lenses are exactly what a run that size is most likely to have degraded: rationale creeping into operative text, and tags placed by habit rather than by the arm they govern.
+
+Worth checking specifically, because they were done fast and late in the run: the response-shape tags added across `setup.md` (fifteen steps tagged in one pass, several with conditional arms), and whether the terminology renames left any sentence whose grammar no longer works around the new word.
+
+As an `[audit]` this edits nothing — it reads and files findings as captures, which the next planning session weighs.
+
+#### SPEC owes two sentences for behaviour built on 2026-08-27 [spec-owes-warn-and-outcomes]
+Filed at the build close, by the build that found the gap. Not written into SPEC here: the session that made a choice is not the session that certifies it in product truth, so this waits for a planning run. SPEC lags these two sentences, visibly, until then.
+
+**Most of the run needed nothing.** SPEC already carried the sentences for builds reading the queue's cleared region whole with its reasoning, the completion-ask carve-out keyed on a post-close hand-over, and session_start reporting the date from the clock — all written ahead of the build, which is the lead model working as designed. These two are what it does not carry.
+
+**One, for [warn-dont-enforce-immediate-requests].** SPEC describes no behaviour for what happens when a user asks directly for something a rule of the method would hold back. The shipped rule: one standalone warning turn naming what the request crosses, the risk, and briefly what could be done instead; the work then proceeds on the user's next word, whatever it is; both the warning and the work are recorded. Two carve-outs where the existing gate stands instead — anything leaving the machine still needs an explicit yes to the exact text, and destruction git cannot undo still goes through the file-safety rules. The warning is a turn of its own so the request can be withdrawn, and a second ask is not what unlocks it. This belongs in SPEC because it is a promise to the user about who decides, not an internal procedure detail.
+
+**Two, for [walkthrough-outcome-not-reached].** SPEC's `[user]`-work paragraph describes completion but has no vocabulary for an item a run did not get to. The shipped model: every `[user]` item a run touched ends on one of three outcomes — done, deferred, or not reached — with **deferred written only from the user's own word**, and not-reached telling a later session to present the item fresh. It matters in SPEC because it is what stops a record claiming a decision the user never made.
+
+Suggested placement is beside the existing "No completion asks on `[user]` work" paragraph for the second, and near the multi-item /next paragraph for the first — but where a sentence sits is the planning session's call, as is whether SPEC's own wording differs from the summary above.
 

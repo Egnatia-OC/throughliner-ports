@@ -124,10 +124,30 @@ The work cycle. Every piece of work travels the same loop.
   inversions — deliver together, not one at a time:
       alternatives the user is choosing between   # the choice is between them
       a deterministic result set under approved
-      criteria (e.g. an audit's findings)         # bulk approval; contested
+      criteria                                    # bulk approval; contested
                                                   # items then go one at a time
   NOT an inversion: [user] walk-through items     # driven live, always sequential
+  NOT an inversion: an audit's findings           # filed straight to Unprocessed,
+                                                  # nothing waits for approval
   ```
+
+- **Where the user directly asks for something now and a rule of this method
+  would hold it back, warn once and then do it.** One standalone turn naming
+  what the request crosses, what the risk is, and — briefly — what could be done
+  instead; the work then commences on their next word, whatever that word is.
+  Both the warning and the work go into the session's record. Subject to the
+  approval rule for anything that leaves the machine, and to the file-safety
+  rules for destruction git cannot undo — in those two the existing gate stands
+  and the request does not carry through it.
+
+  **The warning is a turn of its own, so the request can be withdrawn.** Warning
+  and complying in one message leaves nothing to withdraw, which is the user's
+  reason for splitting them.
+
+  **Asking a second time is not what unlocks this** — one warning, then the
+  work. A rule enforced against a direct, repeated request is the failure this
+  ends: four asks for one thing, refused each time on a rule the user had
+  already heard.
 
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
@@ -279,7 +299,9 @@ in passing        ->  translate or omit: "the loop" -> "the next item";
                       just do it. Typically: loop · Step N · Phase X ·
                       sub-step · pass · gate · pre-flight · response-shape
                       tag names · procedure-doc filenames · hash backfill ·
-                      queue-lint flag
+                      queue-lint flag · general developer and testing
+                      vocabulary — any term naming nothing in the user's own
+                      files (specimen: "fixture")
 explained          ->  use it, and explain it once. Where the term names
                       something you can show — a line in a file, an entry in
                       the queue — showing it is usually the shortest
@@ -293,8 +315,15 @@ a queue item named ->  lead with its heading's opening words — what the
                       stays bare.
 ```
 
-**"The ready list" is the standing plain-English name for the queue's cleared
-region, used whenever a session names that region to the user.**
+**The method's own terms are the vocabulary spoken with the user — the words its
+artifacts and commands actually show: capture, work item, Processed,
+Unprocessed, cleared to run, red flag, `[user]` item, walkthrough.** Each is
+explained once, on first need, and then used. **No plain-English alias is minted
+for something the method already names**: an alias is a second name for one
+thing, so the user has to learn both and hold the mapping, and the corpus was
+growing names faster than any session could translate them. The translate-away
+arm above is unchanged — it covers internal mechanics the user's files never
+show, which is a different case entirely.
 
 **Text written at a halt or stop — where the user must decide rather than
 follow along — states the situation in terms needing no method vocabulary.**
@@ -409,6 +438,13 @@ answer from one of those two routes rather than from your own confidence, which
 is what keeps the trigger a question about the subject rather than a judgment
 about your own certainty.
 
+**Where the answer is a date, read a computed field — the session opening's date
+line, the queue digest's passed or ahead figures — and where none exists, read
+the clock.** Never derive today's date by assumption. Same trigger as the rule
+above, on the one subject where your own confidence is least reliable and least
+checkable: a wrong date is written into a record, a capture or a hold and reads
+exactly like a right one for as long as it stands.
+
 **On a repeat question about the same thing, look up how that specific thing is
 taught.** Work out first which part did not land, asking the user where it is not
 obvious, and search on that narrow target rather than the whole subject. Choose
@@ -521,12 +557,13 @@ shape.
 Red flag · State: <cleared | uncleared>        # only if it carries one
 Runs alone                                     # only if the work moves paths
                                                # underneath a run in flight
-Blocked by: [slug], [slug]                     # one OR MORE slugs; the item
-                                               # lifts only when every one
-                                               # resolves. Only below the
-                                               # cleared-to-run line, where one
-                                               # of it or `Not before:` is
-                                               # required
+Blocked by: [slug], [slug]                     # one OR MORE slugs; lifts only
+                                               # when every one resolves.
+                                               # Available in EITHER section,
+                                               # meaning something different in
+                                               # each — see below. Below the
+                                               # cleared-to-run line one of it
+                                               # or `Not before:` is required
 Not before: YYYY-MM-DD                         # a date. Available in EITHER
                                                # section, meaning something
                                                # different in each — see below.
@@ -537,6 +574,20 @@ Not before: YYYY-MM-DD                         # a date. Available in EITHER
 Every other blocker needs a human or a build to resolve, which is why blockers
 are queue items — a date resolves itself and is read off the calendar by the
 hooks, so nobody confirms anything and no wake-up capture is filed.
+
+**`Blocked by:` means one thing on a work item and another on a capture:**
+
+```
+on a work item (Processed)  ->  do not BUILD this until every named item
+                                resolves
+on a capture (Unprocessed)  ->  do not OFFER this again while any named item
+                                is still open
+```
+
+**On a capture it needs no approval, unlike a date**, because the queue can
+check it: the blocker is an entry anyone can look up, so a capture held this way
+returns by itself the moment the thing it waits on is processed or built. The
+date form is the one that guesses, which is why that one is the user's call.
 
 **`Not before:` means one thing on a work item and another on a capture:**
 
@@ -670,43 +721,69 @@ real and equally bad; neither warning may be louder than the other. (How a
   **And the test is a check, not a judgment: before tagging `[user]`, ask what
   would answer this — name the tool that would do the work, and confirm it is
   absent or unauthenticated.** Where no tool plausibly exists, that is itself
-  the answer. It runs thorough at /plan's keep-step and light at /next's
+  the answer. It runs thorough at /plan's decision step and light at /next's
   pre-hand-off; each doc carries its own weight.
-- **File every piece of genuine user work as a `[user]` line**, so it lives in
+- **File every piece of genuine user work as a `[user]` item**, so it lives in
   the queue rather than in the conversation, which ends and takes it with it.
-  When "can Claude do this at all?" returns **no**, file the line. A thing in the
+  When "can Claude do this at all?" returns **no**, file it. A thing in the
   world an item waits on is filed as its own item in Unprocessed, and filing it
-  is where the user's part gets its `[user]` line.
+  is where the user's part gets its `[user]` item.
+- **Where an item's own record shows it was handed to the user for completion
+  after a close, and it names no observable this method can reach, ask once
+  where the work landed instead of re-driving it.** Both facts together, read
+  off the record: a hand-over recorded at a close, and no reachable observable.
+  An item without a recorded hand-over never qualifies, and neither does one
+  naming something checkable. One ask, then take the answer.
+
+  This is an exception to the completion-ask bar below, and it exists because
+  the bar cannot be restated to cover the case: all three routes it leaves open
+  — walked to its end this session, the user volunteers it, an observable check
+  passes — are shut by construction here. The work happened in a chat that
+  closed, so nobody can walk it; there is nothing in the world to check; and the
+  one remaining route asks the user to remember an item they were handed days
+  ago. Without the ask the item is re-presented as unstarted, which is the
+  failure this admits it for.
+
 - **Walk a `[user]` item through whenever it is reached, and learn completion
   from what the user volunteers.** That is its whole lifecycle in every skill —
-  /plan, /next and /done alike. A filed `[user]` line may be walked the moment
+  /plan, /next and /done alike. A filed `[user]` item may be walked the moment
   it is filed, with the user present, where walking it now clears a red flag or
-  unblocks work this session is doing; the line is written before its first
-  step is driven, so an interrupted walk survives in the queue. Before walking,
+  unblocks work this session is doing; the item is written into the queue before
+  its first step is driven, so an interrupted walk survives there. Before walking,
   list `LOG/` for records under the item's slug and read any found; say which
   steps the record shows done, and resume at the first that is not. Where the
   item names an observable result, check
   the world for it: a file present or absent, a branch gone, a URL responding.
   Where it names none, the item stays in place until the user mentions it.
-- **A `[user]` line carries a walkthrough** — which steps, in what order, what to
+- **A `[user]` item carries a walkthrough** — which steps, in what order, what to
   check. **Each step names the thing to click or type and the thing to look for**,
   so "Open your session list" becomes what to click to get there and what tells
   you it worked. Every consumer of this method is a non-coder, and most will not
   have used the surface a walkthrough names, so a step assuming familiarity is
   under-specified for the whole audience rather than for one person. This fires
-  at authoring time, where the cost is wording, and stays there — the keep-step
+  at authoring time, where the cost is wording, and stays there — the decision step
   and the hand-off ask no per-item question about whether the user can perform a
-  step. **Where the steps cannot be fully scripted yet, file the line with a
-  rough walkthrough flagged for refinement at the keep-step.** The one thing that
-  keeps work out of a `[user]` line is genuine uncertainty that it is user-work
+  step. **Where the steps cannot be fully scripted yet, file the item with a
+  rough walkthrough flagged for refinement at the decision step.** The one thing that
+  keeps work out of a `[user]` item is genuine uncertainty that it is user-work
   at all, and that routes to Unprocessed as an ordinary capture, still tracked.
+  Two further requirements on the same walkthrough:
+  - where it involves more than one stored text — a pinned message, a forum
+    post, a register line — naming where each one lives, since a step saying
+    "update the text" is unfollowable once there are two of them;
+  - where a step verifies something, listing the claims it checks, so the user
+    knows what a pass covered rather than only that it passed;
+  - ending at the item's own observable, with cleanup after the test filed as
+    its own item rather than written as trailing steps — a walkthrough that
+    carries on past the thing it was proving has no point anyone can check it
+    against.
 
 The `[freeform]` tag names **work done by hand rather than by /next** — because it
 is large, or because it characteristically cannot run inside a run. Its main job
 is telling the close what kind of work it is looking at. **Before its first
 edit, a freeform session working a queued item writes a scope file —
 `_freeform-<session-id>.md` in the project root, with a `Files:` section
-listing the paths the item's build block names — and reports it in one line.**
+listing the paths the item's instructions name — and reports it in one line.**
 The safety check reads that file and permits the listed paths for this session;
 without it, edits outside the standing planning surface are refused.
 
@@ -724,7 +801,7 @@ definition.
 ### Scrub before writing, and state the limit
 
 **When filing a capture, read what you're about to write against this list**
-(/plan runs it again at the keep-step and /done when writing a LOG entry — each
+(/plan runs it again at the decision step and /done when writing a LOG entry — each
 says so where it applies):
 
 ```
@@ -875,8 +952,9 @@ a forward recommendation                   ->  the advisory (transient)
 
 The cleared-to-run line **replaces** parking. Order within a section carries
 build order and processing order; a *blocking* relationship is carried by the
-`Blocked by:` field — reserved for work that cannot be built until other work
-ships, and carrying an ordering preference instead by placement plus one
+`Blocked by:` field — on a work item, work that cannot be built until other work
+ships; on a capture, an idea not worth offering again while the named entry is
+open — and carrying an ordering preference instead by placement plus one
 sentence in the item's prose naming what it should follow. **The field takes
 several slugs where the work waits on a group, and the item lifts only when
 every one of them resolves** — a single proxy blocker would report it liftable
@@ -885,9 +963,10 @@ trusts the field. `Blocks:` and
 `Depends on:` headers stay retired: one field, in one direction, on the item that
 is held.
 
-**Carry an ordering preference in prose, because the field would hide the item.**
-`Blocked by:` sends an item below the cleared-to-run line, out of the region a
-run works and out of what the user sees during an ordinary run — which has
+**Carry an ordering preference in prose, because the field would hide the entry.**
+On a work item `Blocked by:` sends it below the cleared-to-run line, and on a
+capture it makes the ranking pass over it silently — either way out of what the
+user sees during an ordinary run — which has
 already cost a consumer project two fully designed items and its user's
 confidence that a feature was queued at all. A prose sentence survives a reorder,
 since the sentence is the relationship and the position is only where it runs.
@@ -1073,7 +1152,7 @@ CLAUDE.md vs memory =  "this project" vs "all projects"
   and only the queue; a side doc of steps is
   invisible to /next and silently falls through. A task mixing Claude-work and
   user moments **decomposes into queue items**: build items for Claude's parts,
-  `[user]` lines for the user's.
+  `[user]` items for the user's.
 
 ```
 a plan of work to be DONE       ->  queue items
@@ -1108,7 +1187,7 @@ premise is broken       ->  halt and course-correct
   than left untagged.**
   This also fires **at processing time**: when /plan keeps an item and spots a
   user-only gating action *buried in its rationale prose*, split it out into its
-  own `[user]` line with its own slug and reference it by slug from the original.
+  own `[user]` item with its own slug and reference it by slug from the original.
 - **Nothing unrouted survives a chat.** File or drop before close.
 - **One build at a time.** While this chat's build working file exists, finish
   that build before starting another.
@@ -1191,10 +1270,11 @@ this adds is the offer.
   relationship as a slug in prose**, since queue position encodes none.
 
   **Where an ordering between two entries is already KNOWN, write it into BOTH
-  of them.** Opening either one then surfaces it. This is the only route open to
-  a capture in Unprocessed, which has no `Blocked by:` field — that field means
-  "cannot be built until X ships" and belongs to the held region alone. A
-  relationship written on one side only survives by luck: two known orderings in
+  of them.** Opening either one then surfaces it. A capture may also carry
+  `Blocked by:`, which stops it being offered while the named entry is open —
+  but that is a bow-out, not an ordering, so a known ordering is still written
+  into both entries' prose. A relationship written on one side only survives by
+  luck: two known orderings in
   one chat were each written once, and one was honoured only because the user
   happened to ask for the other item first.
 - **Narrate the ordering work.** Any time you exercise ordering judgment within
@@ -1269,6 +1349,11 @@ the record, in cheapest-first order:
   prose until a close. A question whose answer already follows from a decision
   made in this chat is not a new question, however differently it is framed;
   the test is against the decision's *reason*, not its wording.
+- **Where an instruction points at a recorded plan by phrase — "as planned",
+  "the way we agreed", "like last time" — read the record before acting.** The
+  phrase names something written down; resolving it from memory or from what
+  seems likely substitutes a guess for the thing the user was pointing at, and
+  the guess is indistinguishable from the real plan until the work is done.
 - **When the user proposes a change that would alter or reverse something the
   record already holds** — an existing rule, a shipped feature, a queued or
   logged decision — run the retrieve *before agreeing*, down the ladder above,

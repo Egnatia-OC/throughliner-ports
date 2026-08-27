@@ -2,32 +2,61 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — chat-level record for the 2026-08-27 planning session: every capture processed, 21 kept with per-item records, ready region rebuilt to 29, rezip to 1.21.0-test1 mid-session, port prompt handed over, the date error caught live → 2026-08-27-chat-plan.md
-- [HASH] — plan — droppable-set ask gains an explicit recommendation and a singular specimen (plan.md) → 2026-08-27-droppable-set-ask-lacks-recommendation-singular.md
-- [HASH] — plan — done-plan's "false SPEC" paragraph repealed for the SPEC-leads model; gate keeps its was-the-sentence-written check → 2026-08-27-spec-sync-gate-aligned-to-spec-leads.md
-- [HASH] — plan — README to mark LOG/ and resources/ as historical records, from the Gemini/BACKLOG.md confusion → 2026-08-27-readme-marks-history-folders.md
-- [HASH] — plan — [user] item: test-rezips pin promises a commit line, every entry carries one; format note on the bot item → 2026-08-27-test-rezips-entries-name-obtain-route.md
-- [HASH] — plan — developer/testing jargon joins the translate-away list ("fixture" the specimen); hand-over steps read back for it (skill-nonspecific-rules.md, next.md) → 2026-08-27-general-jargon-translate-and-walkthrough-readback.md
-- [HASH] — plan — completion-ask carve-out keyed on recorded post-close hand-over plus unreachable observable; SPEC sentence written; general bar unsoftened → 2026-08-27-completion-ask-carveout-post-close-handover.md
-- [HASH] — plan — walkthroughs end at the item's observable; another-project steps filed, never driven (skill-nonspecific-rules.md, next.md) → 2026-08-27-user-item-ends-at-observable-cleanup-separate.md
-- [HASH] — plan — resources/testing gains a discover-and-run-all runner; both ritual suite steps point at it with py → 2026-08-27-testing-suite-runner-discovers-all.md
-- [HASH] — plan — audit findings file straight to Unprocessed marked not-yet-reviewed; the write-time approval and the inversion's audit example repealed → 2026-08-27-audit-findings-file-unapproved.md
-- [HASH] — plan — the checkpoint carries the remaining-to-process count; the no-count clause narrowed (plan.md) → 2026-08-27-checkpoint-carries-remaining-count.md
-- [HASH] — plan — walkthroughs name where each stored text lives; verification steps enumerate their claims (skill-nonspecific-rules.md) → 2026-08-27-walkthrough-artifacts-named-and-verify-enumerated.md
-- [HASH] — plan — mover runs confirmed from the tool's report; usage read before any second attempt (plan.md) → 2026-08-27-mover-report-confirmed-before-continuing.md
-- [HASH] — plan — rare execution markers assigned only against their re-read definition; [freeform] vs Runs alone contrast sharpened (plan.md) → 2026-08-27-uncommon-flavor-definition-check.md
-- [HASH] — plan — plan-phrases resolve by reading the record (Prior decisions); the ritual compares stamps before packaging, carrying the user's tested-rezip invariant → 2026-08-27-as-planned-reads-the-record-and-stamps.md
-- [HASH] — plan — the release ritual opens the queue item that scheduled it and writes its record at the end (release-ritual.md) → 2026-08-27-release-ritual-opens-its-record.md
-- [HASH] — plan — walk-through outcomes get done / deferred / not reached, "deferred" only from the user's word (next.md, done.md) → 2026-08-27-walkthrough-outcome-not-reached.md
-- [HASH] — plan — every [user] item reached is presented; preconditions surface inside the drive, never as an outside filter (next.md) → 2026-08-27-walkthrough-no-batch-precondition-skip.md
-- [HASH] — plan — warn-don't-enforce: a do-it-now request gets one standalone warning turn with an alternative, then the work, logged (skill-nonspecific-rules.md) → 2026-08-27-warn-dont-enforce-immediate-requests.md
-- [HASH] — plan — "keep" retired as the disposition term: an entry is processed, with the outcome named in artifact words; internal step to get a plain name → 2026-08-27-keep-term-retired-for-processed.md
-- [HASH] — plan — "line" retired as the name for a [user] work item across six files → 2026-08-27-user-line-terminology-retired.md
-- [HASH] — plan — builds return to reading the queue whole: the generated view and build blocks retired, purpose instruction and boundary rule in their place, SPEC rewritten at the keep → 2026-08-27-builds-read-the-queue-again.md
-- [HASH] — plan — shared vocabulary replaces standing plain-English names; "the ready list" retired, the consent post draft held behind the build → 2026-08-27-shared-vocabulary-not-standing-names.md
-- [HASH] — plan — captures may carry Blocked by, meaning don't offer while the blocker is open; lint, digest and docs to follow → 2026-08-27-capture-blocked-by.md
-- [HASH] — plan — session_start to emit today's date; date decisions read computed fields, never assumption (from the live mis-dated capture) → 2026-08-27-session-date-anchor.md
-- [HASH] — plan — setup.md's tag-free declaration to be repealed and the whole doc tagged; the halted top-of-queue item buildable again → 2026-08-27-setup-case-d-untagged.md
+- [HASH] — chat-level record for the 2026-08-27 build session: 24 items built, five walk-throughs, the Discord bot live and used for the first time, three shipped rules that failed to fire (two caught by the user), close obligations and their results → 2026-08-27-chat-build.md
+- [HASH] — build — build view and `--- Build block ---` regions RETIRED; a run reads SPEC then the queue's cleared region whole under a stated purpose/boundary rule; generate_build_view.py, BUILD-VIEW.md and two suites deleted; lint + digest block-checks removed; FORMAT_EPOCH deliberately not bumped → 2026-08-27-builds-read-the-queue-again-build.md
+- [HASH] — build — "keep"/"Kept"/"keep-step" retired as disposition vocabulary; processing an entry now names one of three outcomes; "keep-step" → "the decision step" across 9 files → 2026-08-27-keep-term-retired-for-processed-build.md
+- [HASH] — build — "`[user]` line" → "`[user]` item" across 6 files, 14 sites; line-ness sentences rephrased; LOG/queue prose deliberately not swept → 2026-08-27-user-line-terminology-retired-build.md
+- [HASH] — build — "the ready list" evicted; shared-vocabulary rule added (method's own words, explained once, no aliases minted); FAQ templates + copies reworded to "cleared to run" → 2026-08-27-shared-vocabulary-not-standing-names-build.md
+- [HASH] — build — droppable-set ask now states its recommendation at any batch size; singular specimen added beside the plural (plan.md beat 1) → 2026-08-27-droppable-set-ask-lacks-recommendation-singular-build.md
+- [HASH] — build — done-plan's "false SPEC" paragraph repealed and replaced by the SPEC-leads statement; gate's was-the-sentence-written purpose kept; grep found no other site → 2026-08-27-spec-sync-gate-aligned-to-spec-leads-build.md
+- [HASH] — build — README gains one sentence marking LOG/ and resources/ as historical records, SPEC and README as the present → 2026-08-27-readme-marks-history-folders-build.md
+- [HASH] — build — developer/testing vocabulary joins the translate-away list ("fixture" the specimen); walk-through hand-over steps read back for it; rule then broken by this same session, filed → 2026-08-27-general-jargon-translate-and-walkthrough-readback-build.md
+- [HASH] — build — completion-ask carve-out added to skill-nonspecific-rules + next.md, keyed on recorded post-close hand-over AND no reachable observable; restatement test written as operative text → 2026-08-27-completion-ask-carveout-post-close-handover-build.md
+- [HASH] — build — walkthroughs end at the item's observable with cleanup filed separately; another-project steps filed not driven; applied within the hour to [cycles-due-check-verification] → 2026-08-27-user-item-ends-at-observable-cleanup-separate-build.md
+- [HASH] — build — resources/testing/run_all.py created: discovers suites by naming convention, reports skips, stops on first failure; both ritual steps point at it; release gained a suite step it never had → 2026-08-27-testing-suite-runner-discovers-all-build.md
+- [HASH] — build — audit write-time approval REPEALED: findings file straight to Unprocessed with an unreviewed-audit prose line; inversion example evicted; plan's decision step flags such entries → 2026-08-27-audit-findings-file-unapproved-build.md
+- [HASH] — build — planning checkpoint gains the remaining-to-process count; the no-count ban narrowed to the retrospective tally and route menu only → 2026-08-27-checkpoint-carries-remaining-count-build.md
+- [HASH] — build — walkthrough requirement gains two clauses: name where each stored text lives, and list the claims a verification step checks → 2026-08-27-walkthrough-artifacts-named-and-verify-enumerated-build.md
+- [HASH] — build — plan.md's mover guidance: read the tool's report and confirm the marker's position before continuing; read usage before any second attempt → 2026-08-27-mover-report-confirmed-before-continuing-build.md
+- [HASH] — build — `[freeform]`/`Runs alone` assigned only after re-reading the definition in that turn; contrast sentence rewritten as without-the-method vs isolated-run; common markers exempted → 2026-08-27-uncommon-flavor-definition-check-build.md
+- [HASH] — build — release ritual gains a content-stamp comparison before packaging with a standalone warning turn; Prior decisions gains the read-the-record-for-a-phrase clause → 2026-08-27-as-planned-reads-the-record-and-stamps-build.md
+- [HASH] — build — release ritual gains an opening queue-read step and a closing record-write step, both with no-scheduling-item arms; 11 steps renumbered, 3 references de-numbered → 2026-08-27-release-ritual-opens-its-record-build.md
+- [HASH] — build — walk-through outcomes get three values (done / deferred / not reached) at next.md, done.md and done-build.md; "deferred" only from the user's word → 2026-08-27-walkthrough-outcome-not-reached-build.md
+- [HASH] — build — walk-through presents every `[user]` item it reaches; preconditions tested inside the drive, never as an outside filter; mechanical precondition field refused → 2026-08-27-walkthrough-no-batch-precondition-skip-build.md
+- [HASH] — build — warn-don't-enforce rule added: a direct do-it-now request gets one standalone warning turn then the work; off-machine sends and irreversible destruction carved out by cross-reference → 2026-08-27-warn-dont-enforce-immediate-requests-build.md
+- [HASH] — build — `Blocked by:` extended to captures as a bow-out; lint's slug-resolution and self-blocker checks now run in both sections; new 9-case suite; digest and session_start confirmed already correct → 2026-08-27-capture-blocked-by-build.md
+- [HASH] — build — session_start emits a date-at-session-start fact line from the clock; always-loaded rule bars deriving "today" by assumption; new 4-case suite → 2026-08-27-session-date-anchor-build.md
+- [HASH] — build — setup.md's tag-free declaration repealed and every step tagged; Case D's two waiting steps get [PROMPT]; conditional arms written with the condition outside the brackets → 2026-08-27-setup-case-d-untagged-build.md
+- [HASH] — [user] — test-rezips pin edited and verified live through the bot: entries promise a commit line, pruning claim made mechanism-neutral; pin text was NOT recoverable from the sent register, filed → 2026-08-27-test-rezips-pin-edited.md
+- [HASH] — [user] — Discord bot created, token saved to a git-ignored file never read by the session, three channels named (tips, announcements, test-rezips) → 2026-08-27-discord-bot-server-setup.md
+- [HASH] — [user] — session-start-strength Discord post posted; register line and the FAQ entry it teaches authored in the same turn → 2026-08-27-discord-post-session-start-strength.md
+- [HASH] — [user] — cycles verification closed as passed from its 2026-08-26 observable check; cross-project cleanup split out as [cycles-fixture-cleanup] → 2026-08-27-cycles-due-check-verification.md
+- 99865ab — chat-level record for the 2026-08-27 planning session: every capture processed, 21 kept with per-item records, ready region rebuilt to 29, rezip to 1.21.0-test1 mid-session, port prompt handed over, the date error caught live → 2026-08-27-chat-plan.md
+- 99865ab — plan — droppable-set ask gains an explicit recommendation and a singular specimen (plan.md) → 2026-08-27-droppable-set-ask-lacks-recommendation-singular.md
+- 99865ab — plan — done-plan's "false SPEC" paragraph repealed for the SPEC-leads model; gate keeps its was-the-sentence-written check → 2026-08-27-spec-sync-gate-aligned-to-spec-leads.md
+- 99865ab — plan — README to mark LOG/ and resources/ as historical records, from the Gemini/BACKLOG.md confusion → 2026-08-27-readme-marks-history-folders.md
+- 99865ab — plan — [user] item: test-rezips pin promises a commit line, every entry carries one; format note on the bot item → 2026-08-27-test-rezips-entries-name-obtain-route.md
+- 99865ab — plan — developer/testing jargon joins the translate-away list ("fixture" the specimen); hand-over steps read back for it (skill-nonspecific-rules.md, next.md) → 2026-08-27-general-jargon-translate-and-walkthrough-readback.md
+- 99865ab — plan — completion-ask carve-out keyed on recorded post-close hand-over plus unreachable observable; SPEC sentence written; general bar unsoftened → 2026-08-27-completion-ask-carveout-post-close-handover.md
+- 99865ab — plan — walkthroughs end at the item's observable; another-project steps filed, never driven (skill-nonspecific-rules.md, next.md) → 2026-08-27-user-item-ends-at-observable-cleanup-separate.md
+- 99865ab — plan — resources/testing gains a discover-and-run-all runner; both ritual suite steps point at it with py → 2026-08-27-testing-suite-runner-discovers-all.md
+- 99865ab — plan — audit findings file straight to Unprocessed marked not-yet-reviewed; the write-time approval and the inversion's audit example repealed → 2026-08-27-audit-findings-file-unapproved.md
+- 99865ab — plan — the checkpoint carries the remaining-to-process count; the no-count clause narrowed (plan.md) → 2026-08-27-checkpoint-carries-remaining-count.md
+- 99865ab — plan — walkthroughs name where each stored text lives; verification steps enumerate their claims (skill-nonspecific-rules.md) → 2026-08-27-walkthrough-artifacts-named-and-verify-enumerated.md
+- 99865ab — plan — mover runs confirmed from the tool's report; usage read before any second attempt (plan.md) → 2026-08-27-mover-report-confirmed-before-continuing.md
+- 99865ab — plan — rare execution markers assigned only against their re-read definition; [freeform] vs Runs alone contrast sharpened (plan.md) → 2026-08-27-uncommon-flavor-definition-check.md
+- 99865ab — plan — plan-phrases resolve by reading the record (Prior decisions); the ritual compares stamps before packaging, carrying the user's tested-rezip invariant → 2026-08-27-as-planned-reads-the-record-and-stamps.md
+- 99865ab — plan — the release ritual opens the queue item that scheduled it and writes its record at the end (release-ritual.md) → 2026-08-27-release-ritual-opens-its-record.md
+- 99865ab — plan — walk-through outcomes get done / deferred / not reached, "deferred" only from the user's word (next.md, done.md) → 2026-08-27-walkthrough-outcome-not-reached.md
+- 99865ab — plan — every [user] item reached is presented; preconditions surface inside the drive, never as an outside filter (next.md) → 2026-08-27-walkthrough-no-batch-precondition-skip.md
+- 99865ab — plan — warn-don't-enforce: a do-it-now request gets one standalone warning turn with an alternative, then the work, logged (skill-nonspecific-rules.md) → 2026-08-27-warn-dont-enforce-immediate-requests.md
+- 99865ab — plan — "keep" retired as the disposition term: an entry is processed, with the outcome named in artifact words; internal step to get a plain name → 2026-08-27-keep-term-retired-for-processed.md
+- 99865ab — plan — "line" retired as the name for a [user] work item across six files → 2026-08-27-user-line-terminology-retired.md
+- 99865ab — plan — builds return to reading the queue whole: the generated view and build blocks retired, purpose instruction and boundary rule in their place, SPEC rewritten at the keep → 2026-08-27-builds-read-the-queue-again.md
+- 99865ab — plan — shared vocabulary replaces standing plain-English names; "the ready list" retired, the consent post draft held behind the build → 2026-08-27-shared-vocabulary-not-standing-names.md
+- 99865ab — plan — captures may carry Blocked by, meaning don't offer while the blocker is open; lint, digest and docs to follow → 2026-08-27-capture-blocked-by.md
+- 99865ab — plan — session_start to emit today's date; date decisions read computed fields, never assumption (from the live mis-dated capture) → 2026-08-27-session-date-anchor.md
+- 99865ab — plan — setup.md's tag-free declaration to be repealed and the whole doc tagged; the halted top-of-queue item buildable again → 2026-08-27-setup-case-d-untagged.md
 
 - 2c76e53 — chat-level record for the 2026-08-26 late build run: 19 built, 1 audit, [setup-case-d-untagged] halted on setup.md's tag-free declaration, 4 user items closed and 3 deferred, 6 captures filed including two walk-through failures the user hit live → 2026-08-26-chat-build-4.md
 - 2c76e53 — audit — two transcripts read end to end, 10 findings filed, no clean pass; release trace pins the lost soak step to one sentence dissolving rezip-and-reinstall into the release ritual → 2026-08-26-ordering-rigidity-transcript-pair-audit-build.md

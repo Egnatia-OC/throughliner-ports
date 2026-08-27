@@ -9,8 +9,8 @@ announced yet, not that questions aren't welcome: just ask in chat.
   need. [faq.md](faq.md)
 - **What happens in my first session?** — what `/setup` asks you, what it
   creates, and how a big project splits into parts later. [faq.md](faq.md)
-- **What actually happens in a `/plan` session?** — captures, the ready list,
-  and what the opening checks for. [faq.md](faq.md)
+- **What actually happens in a `/plan` session?** — captures, what gets cleared
+  to run, and what the opening checks for. [faq.md](faq.md)
 - **What does `/next` do?** — how a build run works, what stops it, and the
   three work tags. [faq.md](faq.md)
 - **Why does every session end with `/done`, and why start a fresh chat?** —
@@ -18,3 +18,6 @@ announced yet, not that questions aren't welcome: just ask in chat.
   next step. [faq.md](faq.md)
 - **What is `/rescan` for?** — sweeping up what was said but never filed, and
   the two limits on how far back it reaches. [faq.md](faq.md)
+- **Does `/plan` know what happened in my other sessions?** — the history it
+  reads at the opening, the overlap it checks for, and why it reports either
+  way. [faq.md](faq.md)

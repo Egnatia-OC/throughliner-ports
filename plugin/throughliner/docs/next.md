@@ -55,39 +55,32 @@ Neither is worth saving one command.
 
 ## What /next runs on
 
-**A run reads the generated build view, not QUEUE.md.** Regenerate it first —
+**A run reads SPEC, then the queue's cleared region whole** — each item's full
+text, its reasoning inline, exactly as it stands in QUEUE.md. Nothing is
+generated and nothing is extracted; the file the user reads is the file the run
+reads.
 
-```
-python <plugin-root>/scripts/generate_build_view.py <QUEUE.md path>
-# writes BUILD-VIEW.md beside the queue. The plugin root is the grandparent of
-# the running skill's base directory — derive it, never hardcode a path.
-```
+**Read the reasoning to aim the work.** It says why the thing is worth building
+and what it is for, which is what lets a build get the point right rather than
+only the steps. **It is not itself part of what gets built.**
 
-— then read that file. It carries each cleared item's build block: what changes
-in which files, how to tell it worked, any risk it carries, and any option
-already refused. It also lists every entry in both sections by heading and slug
-alone, so a capture filed mid-run can still be checked against what is already
-in the queue.
+**Reasoning lands in a file this run writes only where that file is the record
+of the decision — the session's own LOG entry — or where the item specifically
+instructs it.** In every other file the run writes the action the reasoning
+justifies, and not the reasoning. That boundary is what the earlier generated
+view enforced structurally, by withholding the prose; it is stated here instead,
+because withholding it also produced builds that inferred the wrong why.
 
-**It carries no decision history, and that is the mechanism rather than a
-saving** — a build transcribes what it reads, so it cannot copy what it was
-never given. The reasoning is not lost: QUEUE.md keeps it inline and whole, and
-the close resolves each built slug back against the queue as one targeted read
-of one entry.
+**The cost is stated rather than hidden:** the run reads the whole cleared
+region to build it, and the guard against reasoning reaching shipped documents
+is this stated purpose rather than the prose being absent.
 
-**Refusals are the exception that travels**, carried inside the block, because a
-build that cannot see why an option was rejected proposes it again and stops to
-ask.
+**The run does not edit QUEUE.md except to remove each item as it is ticked**
+(Step 3), which is unchanged.
 
-**What the view costs, stated rather than discovered.** A heading tells you an
-item exists and nothing about what depends on it, so a capture filed during a run
-is weaker at spotting which detail matters to work already queued. Duplicate
-detection is restored; cross-item awareness is not.
-
-QUEUE.md itself holds two sections: **Unprocessed** (captured, not yet processed)
+QUEUE.md holds two sections: **Unprocessed** (captured, not yet processed)
 and **Processed** (agreed, ready). /next builds only from Processed, and only from
-above the cleared-to-run marker — which is the region the view's cleared section
-reproduces.
+above the cleared-to-run marker.
 
 ```
 run       = Processed[ top .. `--- Cleared to run above this line ---` )
@@ -119,7 +112,7 @@ Say plainly why the run stopped: this item must not be built alongside other
 work, so it gets a run of its own — then recommend /done. Mechanical, no
 judgment. It composes with the cleared-to-run line rather than replacing it:
 whichever bound comes first ends the run. What the marker means and where it is
-written are in plan.md's keep-step, which is the authoring site.
+written are in plan.md's decision step, which is the authoring site.
 
 The run includes any `[user]` items among the cleared work; Step 3 walks the user
 through each *without ending the run*. The marker is the only thing that bounds a
@@ -163,9 +156,7 @@ each item is built against, and a build that never reads it cannot be checked
 against it. Reading it once per run is what makes the per-item check below cost
 almost nothing.
 
-Then regenerate the build view and read its cleared section top-down. That is the
-run. **Leave QUEUE.md closed** — the scope-lock refuses a build's reads of it, and
-the view is what the run is built from.
+Then read QUEUE.md's cleared region top-down, each item whole. That is the run.
 
 ```
 early exits:
@@ -214,7 +205,7 @@ the correction for the close; a wrong `[user]` item otherwise stops an unattende
 run dead for work nobody needed the user to do.
 
 **Light, not thorough — no reframe, no search, no trying the tool.** The heavy
-version belongs at /plan's keep-step, where the user is in the room. Here the
+version belongs at /plan's decision step, where the user is in the room. Here the
 user is not, and a run should not stop to explore.
 
 ### 3. Open waiting mail  [SILENT] when the mailbox is empty; [BRIEF] when it isn't
@@ -336,10 +327,9 @@ Unprocessed, not folded in.
 
 Once the user confirms:
 
-**1. Self-scope.** Read each Claude-work item's build block in the view — its
-`Changes:` line names what changes in which files — and list those files. The
-block is the whole instruction set; there is no rationale to consult, and an item
-whose block does not say what changes inside its files is underspecified below. `[audit]` items name no files —
+**1. Self-scope.** Read each Claude-work item whole and list the files its
+instructions name. An item that does not say what changes inside the files it
+names is underspecified below. `[audit]` items name no files —
 an audit reads and reports — so a run of only audit items gets an empty Files
 list, locking the session to method docs.
 
@@ -359,7 +349,7 @@ you CAN scope it, but notice OTHER work      ->  adjacent-work discovery
 ```
 
 **An item is buildable only when it says what changes *inside* the files it
-names.** The same two-limb test runs at /plan's keep-step, which carries the full
+names.** The same two-limb test runs at /plan's decision step, which carries the full
 argument and is where an item like this should be stopped; meeting one here means
 it got through.
 
@@ -411,12 +401,11 @@ bare paths** — the hook matches each line as an exact path, so any annotation
 becomes part of the path and silently breaks the match. Make sure no other line
 in the file starts with `Files:`.
 
-**Rationale is neither copied here nor read during the build.** Each item's
-reasoning stays in QUEUE.md, where the close reads it back one entry at a time.
-What the build works from is the build block in the view, which carries
-instructions and any recorded refusal and nothing else. **The safety that governs
-this is step 3 below** — each item stays in QUEUE.md until the moment it is
-ticked, so no item's only copy ever sits in a file scheduled for deletion. **If
+**Rationale is not copied here.** Each item's reasoning stays in QUEUE.md, which
+is where the run reads it and where the close reads it back. Copying it into the
+working file would put a second copy in a file scheduled for deletion. **The
+safety that governs this is step 3 below** — each item stays in QUEUE.md until
+the moment it is ticked, so no item's only copy ever sits in that file. **If
 that copy-per-item ordering is ever changed, this must be revisited with it.**
 
 **3. Leave QUEUE.md alone. Copy, never cut.**
@@ -531,7 +520,7 @@ would leave it in neither.
 How a `[user]` item is run and closed. (What earns the tag is the matched pair in
 skill-nonspecific-rules.md, Captures; the record check before walking — read any
 LOG records under the item's slug and resume after what they show done — is that
-file's lifecycle bullet, and the view's `Records on file:` line names them.) Without the back half, a finished `[user]`
+file's lifecycle bullet.) Without the back half, a finished `[user]`
 item strands in Processed and the next /next presents it again as if unbuilt.
 
 - **/next leads with the walk-through and drives it live.** Name what's theirs to
@@ -560,11 +549,30 @@ item strands in Processed and the next /next presents it again as if unbuilt.
 ### Walk-through branch — the `[user]` items  [SEQUENCE, PROMPT]
 
 Once the Claude-work is built (or if the run had none), walk the user through each
-`[user]` item still in the cleared region. **The steps come from the view**,
-which carries each `[user]` item's Walkthrough block verbatim; where the view
-says no walkthrough travelled, halt on the item rather than reading the queue
-for the missing steps. Walking one through does **not** end
+`[user]` item still in the cleared region. **The steps come from the item's own
+walkthrough in QUEUE.md**; where an item carries none, halt on it rather than
+inventing steps. Walking one through does **not** end
 the run — it's the last pass of a run whose Claude work is already done.
+
+**Present every `[user]` item the pass reaches.** No item is set aside before it
+has had its own turn, and nothing is filtered out of the pass in advance on a
+judgment about whether its moment has come.
+
+**Test a precondition inside the item's own drive, never as an outside filter.**
+Where a drive's first step cannot proceed — the thing it needs isn't there, the
+build it assumes hasn't shipped — say so on that item's turn, in plain words,
+and let the user's answer settle it. That keeps the decision in front of the
+person who owns it, at the moment the item is actually in view.
+
+**A precondition field the run could evaluate mechanically is refused**: it
+recreates the outside filter with a schema, and this decision belongs in front
+of the user rather than in a check.
+
+**A step requiring action in another project is filed as a capture, never
+driven.** No session writes another project's files, and walking the user out of
+this project to do something in that one is where a drive stalls. File it,
+continue the walk-through, and let the receiving project pick it up with its own
+hands.
 
 **One item at a time**, each in its own message, led by its own walk-through. Finish one fully — or record that the user deferred it — before
 moving to the next. (This is *not* the [SEQUENCE] bulk-approval inversion: that's
@@ -582,6 +590,13 @@ untouched, so nothing is stranded, and a crash mid-walk-through leaves a partial
 entry saying exactly what was done. The close then finds an entry already started
 rather than writing one fresh.
 
+**Where that record shows the item was handed over for completion after a close
+and names no observable this run can reach, replace the drive with the one
+ask** — where did that land? Both facts together, read off the record, and one
+ask rather than a walk-through of steps the user may already have finished days
+ago. The carve-out and its reasoning are in skill-nonspecific-rules.md's
+`[user]` lifecycle; this is where it fires.
+
 This is a place to record, not a restriction on doing. The branch is *supposed*
 to run whatever parts Claude can — that is what makes it a live drive. The record
 goes to `LOG/` precisely because `LOG/` is writable whatever the scope-lock says,
@@ -596,6 +611,24 @@ Open with the first step itself, and satisfy this branch only by driving the
 steps — an offer to walk the user through it, or a statement that the item stays
 open until they have done it, leaves the branch unrun.
 
+**Every `[user]` item the run touched ends on one of three outcomes, and the
+record carries which:**
+
+```
+done         walked to its end this session, or the user said they did it, or
+             its walkthrough named an observable check and that check passed
+deferred     the USER said to leave it — their word, never inferred
+not reached  the run never presented it, or presented it and got no answer
+```
+
+**Write `deferred` only from the user's own word.** An item nobody put in front
+of them was not deferred by anyone; recording it that way tells the next session
+a decision was made when none was, and the item then sits unpresented with a
+record that explains why nobody need present it.
+
+**`not reached` tells the next session to present the item fresh**, with no
+deferral to honour and nothing to resume from.
+
 **Where the user volunteers that an item is done, take them at their word:** skip
 the walk-through and recommend /done to record it.
 
@@ -606,8 +639,13 @@ plainly as what was found, and the item stays in place.
 **Confirm the step can produce the observation the item names** — the light
 form: check that the step names something which yields the evidence, and no
 more. No experiment, no search, no stopping. (The heavy version, where the
-command is actually run, belongs at /plan's keep-step, where the walkthrough is
+command is actually run, belongs at /plan's decision step, where the walkthrough is
 authored and the user is in the room.)
+
+**Read a step back for developer and testing vocabulary before handing it
+over.** Same check the halt text already gets, applied to hand-over steps: a
+term naming nothing in the user's own files is translated or dropped before the
+step goes out. The user is about to act on these words with nobody to ask.
 
 **Verify any command before handing it over to be pasted.** Run it where doing
 so is safe — a scratch fixture — or read the tool's `--help`. The scope is

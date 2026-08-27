@@ -80,15 +80,37 @@ early turns the signal off while the problem stands.
 - `Planning state:` — a required line in a planning session's LOG entry naming its working file, retired 2026-08-14 with the file itself; the close reads `git diff HEAD -- QUEUE.md` instead
 - `close-out phase` — a phase of /plan, retired 2026-08-12 and listed 2026-08-14; /done owns that work and always did, so a user-facing sentence offering to "close out" offers something they cannot do. Every internal use — the build close-out, the audit close-out, the sub-doc headings in `done.md` and its family — is procedure-internal vocabulary and correctly named, so this term is the two-word phrase and never the bare word `close-out`.
 - `why-pipeline` — the name of the rationale-carrying mechanism, retired 2026-08-13; it is now **the throughline**, and the plugin is named for it. The mechanism is unchanged; only the name moved, so a live doc still saying `why-pipeline` is stale rather than wrong.
+- `the ready list` — the standing plain-English name for the queue's cleared region, retired 2026-08-27. Superseded by the shared-vocabulary rule: the method's own words are what is spoken with the user, each explained once, and no alias is minted for something the method already names. Say **cleared to run**, or the cleared region.
+- `keep-step` — the name of /plan's disposition step, retired 2026-08-27; it is **the decision step**. Listed as the hyphenated compound and never as the bare word `keep`, which has many correct live uses here — keep-private, "keeps its own reply", "keep discussing". A term that matches correct writing is the cry-wolf failure this list exists to avoid, as the `CEILING` entry above records.
+- `keep/delete` — the name of the two-outcome disposition, retired 2026-08-27. An entry is **processed**, ending in one of three named outcomes: into Processed cleared to run, into Processed held below the line, or deleted. Same cry-wolf caution as the entry above: the compound, never the bare verb.
+- `keep-check` — the name of the two-limb buildability check at that step, retired 2026-08-27 with the step's name. The check itself is unchanged.
+- `` `[user]` line `` — the name for a `[user]` work item, retired 2026-08-27; it is a `[user]` **item**. Listed as the two-word phrase and never as the bare word `line`, which is load-bearing elsewhere in correct writing — the readiness line, the cleared-to-run line, an index line, "one line either way".
+- `--- Build block ---` — the delimited region inside a cleared work item holding what changes in which files, how to tell it worked, and any refusal, retired 2026-08-27. A run reads the item's own text now, so an item's instructions are ordinary prose. **Old delimiters left in existing items are not stale and are not to be swept**: they read as part of the item, which is exactly how the new model treats them.
 
 ## Retired artifacts
 
 Files a retired step produced, deleted when the step was retired. Recorded so a
 later session meeting a reference to one knows it is gone rather than missing.
 
-*Currently empty.* The section was created on 2026-08-14 with the eviction rule
-that fills it, and the first two candidates were withdrawn the same day — see
-below.
+Retired 2026-08-27 with the build-view architecture
+([builds-read-the-queue-again]), and these are the section's first entries:
+
+- `plugin/throughliner/scripts/generate_build_view.py` — the generator that
+  assembled the view a run read. Deleted.
+- `BUILD-VIEW.md` — the file it wrote beside the queue, regenerated every run
+  and deleted at each close. Deleted, and its `.gitignore` line removed from this
+  project and from what `/setup` scaffolds.
+- `resources/testing/test_build_view.py` and
+  `resources/testing/test_build_view_gate_disposition.py` — the generator's
+  suites. Deleted; the suite count went 29 → 27.
+
+A consumer project may still have a `BUILD-VIEW.md` line in its own
+`.gitignore`. It is harmless — an ignore rule for a file that is never created
+again — and is left alone rather than swept.
+
+**Before this, the section was empty.** It was created on 2026-08-14 with the
+eviction rule that fills it, and the first two candidates were withdrawn the
+same day — see below.
 
 **The withdrawn pair, recorded because the mistake is instructive.**
 `plugin/throughliner.zip` and `plugin/zip-archive/` were deleted as a retired

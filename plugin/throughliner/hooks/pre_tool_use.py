@@ -855,7 +855,7 @@ def _freeform_scope_files(cwd: str, session_id: str) -> list[str]:
     per file. The fix mirrors the build's mechanism rather than inventing one:
     the session writes `_freeform-<session-id>.md` (same location and naming
     shape as the build working file) carrying a `Files:` section copied from
-    its queue item's build block, and those paths EXTEND the standing list for
+    its queue item's instructions, and those paths EXTEND the standing list for
     that session only.
 
     Reuses _parse_build_files, deliberately — one parser, one format, one set
@@ -1269,34 +1269,14 @@ def main() -> int:
         return 0
 
     # --- Edit/Write/MultiEdit: file-scope enforcement ---
-    # A build must not READ QUEUE.md, which is the whole mechanism rather than a
-    # saving. A build transcribes what it reads, and rationale written into work
-    # items was measured reaching this method's own shipped documents in
-    # near-verbatim form — so the separation only holds if the history never
-    # reaches the build at all. The run reads the generated view instead, which
-    # carries each cleared item's instructions and any refusal, and lists every
-    # entry by name so a mid-run capture can still be checked for duplicates.
     #
-    # The reasoning is not lost: the close reads it back from `git show
-    # HEAD:QUEUE.md`, one entry at a time, before the run commits.
-    if (tool_name == "Read"
-            and has_active_build
-            and _normalise(tool_input.get("file_path", ""))
-            == _normalise(os.path.join(cwd, "QUEUE.md"))):
-        return _deny(
-            "[Throughliner] BLOCKED: a build reads the generated view, not the "
-            "queue.\n\n"
-            "The view carries what each cleared item changes, how to tell it "
-            "worked, and any option already refused — everything a build needs "
-            "— and none of the decision history, which a build has been "
-            "measured copying into shipped documents.\n\n"
-            "Regenerate and read it:\n\n"
-            "  python <plugin-root>/scripts/generate_build_view.py QUEUE.md\n\n"
-            "If an item's instructions are missing from the view, that item is "
-            "underspecified and the run halts on it. The missing detail is not "
-            "in the queue to be found — it was never written."
-        )
-
+    # A build READS QUEUE.md, and that is deliberate. The generated-view era
+    # withheld the queue from a run so decision history could not be transcribed
+    # into shipped documents. It stopped that and cost something larger: a build
+    # that cannot see why a thing is being built infers a why, and a wrong why
+    # aims the whole change wrong. The boundary is now stated in the procedure
+    # (next.md's opening) rather than enforced by withholding — read the
+    # reasoning to aim the work, write the action and not the reasoning.
     if tool_name not in ("Edit", "Write", "MultiEdit"):
         return 0
 
@@ -1352,24 +1332,29 @@ def main() -> int:
                 )
             return 0
 
-        # A build does not edit QUEUE.md by hand. It builds from the generated
-        # view, and the only queue writes a run makes — removing a ticked item,
-        # appending a capture — go through reorder_queue.py, which the shell
-        # guard permits by name. A direct Edit or Write here is either a build
-        # rewriting an item's rationale, or the awkward hand-editing the mover
-        # exists to replace.
+        # A build does not edit QUEUE.md by hand. It reads the file — that is
+        # where its instructions and their reasoning live — and the only queue
+        # WRITES a run makes, removing a ticked item and appending a capture, go
+        # through reorder_queue.py, which the shell guard permits by name. A
+        # direct Edit or Write here is either a build rewriting an item's
+        # rationale, or the awkward hand-editing the mover exists to replace.
         #
         # Narrowed deliberately. The item that asked for this said the
         # scope-lock should "refuse QUEUE.md to a build", which taken flat would
         # have broken three shipped mechanisms: the per-item removal at each
-        # tick, capture-and-continue, and abort-and-requeue. What the separation
-        # is actually for is that a build never READS the decision history — so
-        # reads are refused (above) and mover writes are left alone.
+        # tick, capture-and-continue, and abort-and-requeue. So writes are
+        # routed through the mover rather than refused outright.
+        #
+        # The read-refusal that used to sit above this is retired (2026-08-27,
+        # [builds-read-the-queue-again]): withholding the reasoning stopped a
+        # build transcribing it and cost more than it saved, because a build
+        # that cannot see why a thing is being built infers a why.
         if _normalise(filepath) == _normalise(os.path.join(cwd, "QUEUE.md")):
             return _deny(
                 "[Throughliner] BLOCKED: a build does not edit the queue "
                 "directly.\n\n"
-                "A run builds from the generated view, not from QUEUE.md. The "
+                "A run READS the queue — that is where its instructions and "
+                "their reasoning live — but it does not hand-edit it. The "
                 "two queue writes a run legitimately makes both go through the "
                 "queue tool instead:\n\n"
                 "  - removing an item once it is built\n"

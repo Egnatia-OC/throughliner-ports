@@ -52,18 +52,24 @@ worked — routes out via Scope management below.
 
 ## Build the item
 
-**What this item's instructions are.** Its build block in the generated view —
-`Changes:`, `Acceptance:`, any `Red flag:` and any `Refused:` lines. That is the
-whole brief. **Leave QUEUE.md closed**: the scope-lock refuses a
-build's reads of it, and the missing detail is not there to be found — an item
-whose block does not say what changes inside its files is underspecified and
-halts, per next.md's self-scoping step.
+**What this item's instructions are.** The item's own text in QUEUE.md, read
+whole: which files change, what changes inside them, the observation that shows
+it landed, and any option already refused. An item that does not say what
+changes inside the files it names is underspecified and halts, per next.md's
+self-scoping step.
 
-**Treat a `Refused:` line as settled.** It names an option already rejected and
+**Read the item's reasoning to aim the work, and write the action rather than
+the reasoning.** Why the work is worth doing tells you what the change is for;
+it belongs in what this session records, not in the documents this session
+edits — unless the item specifically instructs otherwise. next.md's opening
+carries the full statement.
+
+**Treat a recorded refusal as settled.** It names an option already rejected and
 why it lost. Proposing it again, or stopping to ask about it, is the interruption
-that line exists to prevent.
+the record exists to prevent.
 
-**Check the work against `Acceptance:` before ticking**, and let it decide which
+**Check the work against what the item says would show it landed before
+ticking**, and let that decide which
 of the two tick forms is true.
 
 ```
@@ -173,10 +179,10 @@ completion step, which also says what to do when the item carries none.
 ## Scope management
 
 **When a mid-build discovery is work only the user can run** — a rename you can't
-do, an account action, a device step — **file it as a `[user]` line, never float
+do, an account action, a device step — **file it as a `[user]` item, never float
 it as a live question.** The failure to avoid is waving it off as "separate work
 you'd handle yourself" or asking a yes/no about it: that leaves real work living
-only in chat. If you can't yet script every step, file the line with a rough
+only in chat. If you can't yet script every step, file it with a rough
 walkthrough anyway.
 
 ### User raises something out of scope  [PROMPT]
@@ -194,7 +200,7 @@ It is one clause, not a lesson: the reason is given so the user can act on it.
 
 What to say, drawn from what capturing actually buys: it protects the run from
 drift; the item gets weighed against work still to come rather than against
-whoever is in the room; and it gets a keep-check and a file list before anything
+whoever is in the room; and it is weighed at the decision step and given a file list before anything
 is written, which is what stops a half-designed change landing mid-run.
 
 **On a second ask for the same thing, yield** — the same intent counts, not the

@@ -73,7 +73,7 @@ mid-build, or from `/rescan` sweeping up what was said but never filed.
 
 **Processed** is work you and Claude have agreed on, and inside it a readiness
 line separates work that's ready to build from work that's still waiting on
-something. The part above that line is the ready list, and it's what `/next`
+something. The part above that line is cleared to run, and it's what `/next`
 builds from. Work sits below the line for one of two reasons, written on the
 item itself: another named piece of work has to ship first, or a date hasn't
 passed yet.
@@ -143,7 +143,7 @@ at any moment.
 The reason to run it mid-session is that `/done` is too late for some things.
 If you've been freewheeling in a `/plan` session, running `/rescan` sweeps what
 was said into captures right then — so they can be processed in that same
-session and reach the ready list in time for your very next `/next`.
+session and be cleared to run in time for your very next `/next`.
 
 It also reads Claude's own working-out, not just your messages, so ideas that
 came up while Claude was actually working with your project get filed rather
@@ -157,3 +157,22 @@ way to record work you did after the close.
 Two limits worth knowing. It reaches only as far back as Claude can still see
 in the conversation. And it stops at the last `/rescan` in that chat, so
 running it twice doesn't comb the same ground again.
+
+## Does `/plan` know what happened in my other sessions?
+
+Yes. When you run `/plan`, Claude opens by reading your session history — not
+all of it, just everything recorded since the last time you sat down to plan.
+
+It isn't a summary, and it won't recite your history back at you. What it does
+is check for an overlap: did something built last week name a file, or a piece
+of work, that's about to come up today? If yes, you hear about it before you
+start deciding.
+
+You get one line either way — including when nothing overlaps. That's
+deliberate: a check that only speaks when it finds something is impossible to
+tell apart from a check that never ran.
+
+The window comes from your own records rather than a fixed number of sessions,
+so it stretches to cover however long it has been. It matters most if you plan
+every week or two and build in between: all that building lands in the record,
+and the next planning session walks in having read it.

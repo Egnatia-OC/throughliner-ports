@@ -172,47 +172,32 @@ def test_date_above_the_line_is_flagged():
     check("a date on a cleared item is flagged", hit, f"got: {warnings}")
 
 
-def test_cleared_item_without_a_build_block_is_flagged():
-    """A run builds from the block, so a cleared item without one has nothing.
+def test_build_block_delimiters_are_no_longer_asked_for_or_flagged():
+    """The build-block check is retired ([builds-read-the-queue-again]).
 
-    Caught at the keep-step, where it is a wording fix, rather than at the run,
-    which has already locked scope and presented the item as ready work.
+    A run reads each item whole from the queue now, so there is no block that
+    can be missing, half-written, or demanded of held work. What replaces it is
+    judgment at the decision step, not another check.
+
+    This asserts the SILENCE, which is the part that could regress: a leftover
+    check would fire on every item in every real queue, since none of them will
+    carry the delimiters any more.
     """
     lint = load_lint()
-    bad = CLEAN.replace(
-        "--- Build block ---\n"
-        "Changes: `somefile.md` — the thing the item describes.\n"
-        "Acceptance: the suite passes.\n"
-        "--- End build block ---\n", "")
-    warnings = lint(bad)
-    hit = any("no build block" in w for w in warnings)
-    check("a cleared item with no build block is flagged", hit, f"got: {warnings}")
-
-
-def test_half_a_build_block_is_flagged():
-    """An unterminated block is reported and never repaired.
-
-    The block is the instruction set the user approved. Anything that tidies one
-    is something that can change what the run builds.
-    """
-    lint = load_lint()
-    bad = CLEAN.replace("--- End build block ---\n", "")
-    warnings = lint(bad)
-    hit = any("half a build block" in w for w in warnings)
-    check("half a build block is flagged", hit, f"got: {warnings}")
-
-
-def test_held_work_and_captures_are_not_asked_for_a_block():
-    """Only cleared work is built, so only cleared work owes instructions.
-
-    Demanding a block from held work or a capture would fire on the normal state
-    of most of the queue — the cry-wolf shape this project has repealed twice.
-    """
-    lint = load_lint()
-    warnings = lint(CLEAN)
-    check("the unprocessed capture is not asked for a block",
-          not any("beta" in w and "build block" in w for w in warnings),
-          f"got: {warnings}")
+    for label, text in [
+        ("an item with no delimiters at all", CLEAN.replace(
+            "--- Build block ---\n"
+            "Changes: `somefile.md` — the thing the item describes.\n"
+            "Acceptance: the suite passes.\n"
+            "--- End build block ---\n", "")),
+        ("an item with half a leftover block", CLEAN.replace(
+            "--- End build block ---\n", "")),
+        ("an item with a whole leftover block", CLEAN),
+    ]:
+        warnings = lint(text)
+        check(f"{label} draws no build-block warning",
+              not any("build block" in w for w in warnings),
+              f"got: {warnings}")
 
 
 def test_malformed_date_on_a_capture_is_flagged():
@@ -501,9 +486,7 @@ if __name__ == "__main__":
     test_held_item_with_neither_is_flagged()
     test_malformed_date_is_flagged()
     test_date_above_the_line_is_flagged()
-    test_cleared_item_without_a_build_block_is_flagged()
-    test_half_a_build_block_is_flagged()
-    test_held_work_and_captures_are_not_asked_for_a_block()
+    test_build_block_delimiters_are_no_longer_asked_for_or_flagged()
     test_malformed_date_on_a_capture_is_flagged()
     test_good_date_on_a_capture_is_silent()
     test_credit_without_a_quote_is_flagged()

@@ -4,9 +4,10 @@ docset: current
 note: >
   /setup procedure. It runs on two kinds of session: a fresh adoption, where the
   always-loaded behaviour rules are absent, and a migration or top-up inside an
-  already-adopted project, where they are present. This doc therefore carries no
-  response-shape tags and states its own plain-language guard, so that it holds
-  on the run where nothing else governs it.
+  already-adopted project, where they are present. It states its own
+  plain-language guard, so that it holds on the run where nothing else governs
+  it, and each step's prose carries its behaviour in full so a tag never has to
+  be read to follow the step.
 ---
 
 # /setup procedure
@@ -15,12 +16,12 @@ note: >
 intent across every session to come. You are setting up a project folder with
 the Throughliner method.
 
-**This doc carries no response-shape tags** (the bracketed `[BRIEF]`-style
-markers other procedure docs use); the prose in each step carries the behaviour
-directly instead. **It stays tag-free.** /setup runs on two kinds of session: a
-fresh adoption, where the rules defining those tags are not loaded, and a
-migration or top-up inside an already-adopted project, where they are. One text
-cannot carry markers that mean something on one run and nothing on the other.
+**Each step's prose carries its behaviour in full, and the response-shape tags
+are a summary of it.** /setup runs on two kinds of session: a fresh adoption,
+where the rules defining those tags are not loaded, and a migration or top-up
+inside an already-adopted project, where they are. So a step is followed from
+its prose on either run, and a tag never carries anything the prose does not
+already say.
 
 **Plain-language guard.** Everything you say during /setup is read by a non-coder
 who may be brand new to all of this. Keep internal terms out of what they see — no
@@ -28,7 +29,7 @@ hook filenames, no working-file names, no "scope-lock," "method docs," or "Case 
 labels. Say "your project's files," not "method docs"; say "I'll set this up as a
 migration," not "this is Case B."
 
-## Step 0: Is a build running right now?
+## Step 0: Is a build running right now?  [SILENT] when no build and no planning session; [BRIEF] when refusing a build; [BRIEF, PROMPT] when describing a planning session
 
 Look for a file named `_build-<session-id>.md` in the project folder. That file
 means a build is in progress — either in this chat or another one — and /setup
@@ -77,7 +78,7 @@ The scratchpad is used because it is writable in every session type — so the
 marker can always be created — and because it clears itself, so a run that dies
 partway leaves nothing to tidy up by hand.
 
-## Step 1: Detect folder state
+## Step 1: Detect folder state  [SILENT] while detecting; [BRIEF, PROMPT] when the project is already up to date
 
 ```
 Case A  no content            the folder is empty or nearly so. Fresh start.
@@ -112,8 +113,8 @@ parent — one unmanageable piece of a large differentiated project — becoming
 project of its own.
 
 **Read the parent's SPEC, infer which subpart this folder covers, and put it to
-the user in clarifier form** — inviting their answer rather than proposing one,
-exactly as Case B's peek does.
+the user in clarifier form**  [PROMPT] — inviting their answer rather than
+proposing one, exactly as Case B's peek does.
 
 **State the irreversibility in that same confirmation, plainly: there is no
 scripted way back in.** Popping out is a one-way move; folding the work back
@@ -134,8 +135,9 @@ show it done, or wait for the user to mention it.
 boundary travels as approval-gated mail, and the receiving project files it with
 its own hands.
 
-**At the close, draft the pop-out message to the parent's INBOX** — shown to the
-user in full, sent only on an explicit yes, like any other outbound mail.
+**At the close, draft the pop-out message to the parent's INBOX**  [PROMPT] —
+shown to the user in full, sent only on an explicit yes, like any other outbound
+mail.
 
 ## Case B: pre-existing content rules
 
@@ -191,7 +193,7 @@ source's shape wholesale.
   the source used a path block or pointed its docs elsewhere, that doesn't carry
   over.
 
-## Step 2C: Migration scaffolding
+## Step 2C: Migration scaffolding  [SILENT] for the checks and file creation; [BRIEF] at the close
 
 The plugin version changed since this project was last set up. Re-scaffold without
 overwriting user content. Run the checks and file creation **silently**; keep the
@@ -200,7 +202,9 @@ close to a sentence or two.
 **1. Check each doc/folder** from the Step 2 scaffold list. Exists → skip. Missing
 → create from the standard scaffold (empty structure, not interview-filled).
 
-**1a. Run every document-format conversion the project is behind on.** Read the
+**1a. Run every document-format conversion the project is behind on**  [SILENT]
+when the project is on the current epoch; [PROMPT] for each conversion shown
+before writing. Read the
 project's recorded epoch from `.throughliner-format-epoch` and compare it against
 `FORMAT_EPOCH` near the top of `${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py`:
 
@@ -225,15 +229,16 @@ applied, not an exception to it: a project being adopted or migrated may not be
 a committed git repo, so its old documents may not be recoverable once
 overwritten.
 
-**1b. Reconcile the settings attached to the scaffold list.** Step 1 restores
+**1b. Reconcile the settings attached to the scaffold list**  [SILENT] for the
+settings added without an answer; [BRIEF, PROMPT] for the brevity-style offer
+and for INBOX files already in git history. Step 1 restores
 missing *files*. It does not re-run the *decisions* attached to them, so a
 migrated project can end up with a file and none of the setup that goes with it.
 Check each, and make it so if it isn't:
 
 ```
 INBOX/ present          ->  `.gitignore` carries an `INBOX/` line
-.gitignore present      ->  it carries a `.throughliner/` line and a
-                            `BUILD-VIEW.md` line
+.gitignore present      ->  it carries a `.throughliner/` line
 no outputStyle set in the project's .claude/settings.local.json
                         ->  make the brevity-style offer from Step 2, exactly
                             as a fresh setup would — this project was set up
@@ -246,7 +251,9 @@ committed, and it cannot remove anything from history. Tell the user what is
 there and that the line does not undo it — the line goes in only alongside that
 plain statement, so nobody is left thinking the mail is now private.
 
-**2. Retire REGISTRY.md if present.** No longer one of the method's docs, but
+**2. Retire REGISTRY.md if present**  [SILENT] when it holds only what the old
+setup put there; [BRIEF, PROMPT] when the user has written into it. No longer
+one of the method's docs, but
 **read it before deleting** — the user may have written real notes there.
 
 ```
@@ -261,7 +268,7 @@ holds anything the user clearly added
 
 Where their own content goes is the user's call, not yours.
 
-**2a. Rewrite a plain-prose section preamble as a blockquote.** Where the
+**2a. Rewrite a plain-prose section preamble as a blockquote**  [SILENT]. Where the
 paragraph directly under `## Processed` or `## Unprocessed` in the project's
 QUEUE.md is ordinary prose, prefix each of its lines with `> ` so it becomes a
 blockquote. Leave the wording alone — this changes the shape, not the text.
@@ -281,7 +288,7 @@ no preamble under the heading     ->  nothing to do; the scaffold's own
 refused (2026-08-15):** it would exempt genuinely orphaned prose, which is the
 thing the check exists to catch.
 
-**3. Update `.throughliner-version`** to the current plugin version.
+**3. Update `.throughliner-version`**  [SILENT] to the current plugin version.
 
 If the project instead carries the pre-rename marker `.si-version`, write the
 new file and delete the old one — the method was called Sovereign Implementer
@@ -290,7 +297,8 @@ until epoch 3 and both marker files were named for it. Do the same for
 session reads a marker the plugin no longer writes to, so the two names drift
 apart silently.
 
-**3a. Write `.throughliner-format-epoch`** — the document-format number this migration
+**3a. Write `.throughliner-format-epoch`**  [SILENT] when the conversion ran to
+completion; [BRIEF] when the user skipped it — the document-format number this migration
 brings the project up to. Read it from `FORMAT_EPOCH` near the top of
 `${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py` and write that number, on its own,
 into `.throughliner-format-epoch` at the project root.
@@ -346,7 +354,9 @@ one hit    ->  name the term, what it was, what replaced it
 several    ->  one message listing all of them, then carry on
 ```
 
-**3c. Refresh the plugin-managed block in the project's CLAUDE.md**  [BRIEF].
+**3c. Refresh the plugin-managed block in the project's CLAUDE.md**  [SILENT]
+when the regions match; [BRIEF] when replacing the region or reporting a missing
+one.
 
 Compare the region between the PLUGIN-MANAGED markers in the project's CLAUDE.md
 against the same region in the installed `templates/CLAUDE-TEMPLATE.md`.
@@ -370,9 +380,9 @@ queue model there is read as current at the start of every session. The move-
 then-replace order is what keeps the exception safe: nothing the user wrote is
 deleted, only relocated below the marker, and the narration names it.
 
-**4. Skip the interview** — the project is already described in SPEC.md.
+**4. Skip the interview**  [SILENT] — the project is already described in SPEC.md.
 
-**5. Close state-aware.**
+**5. Close state-aware**  [BRIEF].
 
 ```
 a leftover build working file    ->  an earlier build was interrupted: name it
@@ -390,7 +400,7 @@ plugin-managed block in CLAUDE.md (3c), which is method-owned text the marker
 promises is kept current — and even there, user-authored lines are moved rather
 than deleted.
 
-## Step 2: Scaffold the docs
+## Step 2: Scaffold the docs  [SILENT] for the file creation; the tagged offers inside it govern their own turns
 
 Create these files (empty structure; content comes from the interview),
 **silently** — the Step 4 close-out reports the full list.
@@ -472,7 +482,7 @@ project's mailbox: another project you run can drop a message file in here, and
 session_start surfaces anything waiting in one line. A project only ever reads its
 own INBOX — it never goes looking through other projects for mail.
 
-Add `INBOX/` to `.gitignore`, and say so in one line — that mail from other
+Add `INBOX/` to `.gitignore`, and say so in one line  [BRIEF] — that mail from other
 projects stays out of the repository, and they can remove the line if they want it
 committed. No question is asked.
 
@@ -504,10 +514,8 @@ when a change makes older projects' documents structurally wrong. session_start
 compares the two and halts the session when the project is behind, so a project
 on an old shape finds out instead of quietly running on stale scaffolding.
 
-**.gitignore** — create it if absent, and make sure it carries entries for
-`.throughliner/` and `BUILD-VIEW.md`, each added only where it is missing.
-`BUILD-VIEW.md` is the generated view a run reads — regenerated from the queue
-every run and deleted at the close, so it is never repository content.
+**.gitignore** — create it if absent, and make sure it carries an entry for
+`.throughliner/`, added only where it is missing.
 
 That folder holds the editing-state signal: while Claude is writing a file, the
 hooks drop a small file in there saying so, so a Markdown reader or editor open
@@ -651,7 +659,7 @@ were named and accepted: a user who never asks for a public repository never
 considers licensing, and a user who publishes may never think about whether their
 logs belong in it.
 
-## Step 3: Interview (adaptive discovery + two settings)
+## Step 3: Interview (adaptive discovery + two settings)  [SEQUENCE, PROMPT]
 
 The interview is an **adaptive discovery, not a fixed script.** Its job is to reach
 a shared, buildable understanding — enough to fill SPEC's What / Who / How /
@@ -731,7 +739,7 @@ The editor and working-mode questions that used to sit here are **gone**,
 replaced by one default: point at the doc, with a plain-English summary inline
 where a discussion needs one.
 
-## Step 4: Write the docs
+## Step 4: Write the docs  [BRIEF, PROMPT]
 
 Once discovery reaches a buildable understanding (or the user says "build from what
 we have"), write the docs, then close in a sentence or two and **stop and wait**.

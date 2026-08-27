@@ -58,37 +58,31 @@ Group observations into discrete findings — **one finding per actionable chang
 Phrase each as *observed + why it matters*, the shape a capture takes, since
 that's where they'll land.
 
-## Present findings as one numbered set  [BRIEF, PROMPT]
+## File the findings to Unprocessed  [SILENT]
 
-One message, all findings. State the count upfront, then list each: number,
-observation, file:line, why it matters. Ask the user to approve the whole set or
-list the numbers they don't accept as-is. Then wait.
+Append every finding to Unprocessed, each placed per the Captures placement rule
+and written to the capture-authoring standard. Tick each in the build working
+file Progress as `captured`. Then say in one line how many were filed and which
+audit they came from.
 
-This keeps the always-show rule fully intact — the user reads every finding's
-exact wording before any of it is filed.
+**Each capture carries a prose line saying it is unreviewed audit output** —
+"from the <name> audit, not yet reviewed" — written into the rationale like any
+other provenance. Not a parsed field: /plan's decision step reads the line, and
+nothing else needs to.
 
-## Handle contested findings one at a time  [SEQUENCE, PROMPT]
+**Nothing waits for approval here.** A finding is a capture like any other, and a
+capture is filed and then weighed at /plan — asking the user to accept a set of
+findings before filing them makes them assess the same material twice, once with
+no context and again when it is actually being decided.
 
-State how many, then take the first.
-
-```
-reword  ->  redraft, show the new wording for approval
-drop    ->  remove it
-```
-
-Wait for the user's call on each before presenting the next. Every finding they
-didn't contest is approved as-is.
-
-## Route the approved set to Unprocessed
-
-Append the approved findings to Unprocessed, each placed per the Captures
-placement rule and written to the capture-authoring standard. Tick each in
-the build working file Progress as `captured` or `dropped`.
+The `dropped` tick form stays available for a finding that turns out to be
+wrong on Claude's own re-reading before filing — it is not a route for the user
+to reject one, which happens at /plan.
 
 ## Close  [BRIEF, PROMPT]
 
 When the audit item is done, next.md moves to the run's next item. When the whole
-run is done, tell the user with the captured/dropped counts, and say: "Run /done
+run is done, tell the user how many findings were filed, and say: "Run /done
 to record this and commit, or keep reviewing."
 
 Reviewing means re-examining what was already found — not raising new work.

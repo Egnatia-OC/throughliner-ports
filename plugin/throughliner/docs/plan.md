@@ -51,7 +51,7 @@ gets built first — through discussion, not silently.
   **Product truth is written here, at planning time** — the sentence is written
   ahead of the build, and the build-asks-and-edits-inline route is repealed.
 
-  **So the keep-step asks, on every item: does this change what SPEC says?** If
+  **So the decision step asks, on every item: does this change what SPEC says?** If
   yes, write the sentence now, with the user present.
 
   **Where this step misses one, the build files it rather than writing it.** The
@@ -101,16 +101,16 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
 ## Capture and processing discipline
 
 - **Two sections, one move between them.** The only move is Unprocessed →
-  Processed, made in /plan by discussing an item and agreeing to keep it. No third
+  Processed, made in /plan by discussing an entry and agreeing to move it there. No third
   state, no parking.
-- **When placing an item into Processed — at the keep-step, or when lifting one
+- **When placing an item into Processed — at the decision step, or when lifting one
   from below the line — keep `[user]` and `[audit]` lines end-preferred, as
   done-plan.md's reorder step requires.**
 - **A user-credit stays on the item after processing** — see the provenance rule
   in skill-nonspecific-rules.md for what earns one.
 - **Who does the work, and how.** Work is Claude's to build by default, and the
-  flavor tags are in skill-nonspecific-rules.md. A `[user]` line must carry a
-  DESCRIBED walkthrough, settled here at the keep-step — including that each step
+  flavor tags are in skill-nonspecific-rules.md. A `[user]` item must carry a
+  DESCRIBED walkthrough, settled here at the decision step — including that each step
   names the thing to click or type and the thing to look for, not just where to
   go. The requirement is stated in full in skill-nonspecific-rules.md; this is the
   moment it is applied, because the walkthrough is authored here, with the user in
@@ -139,7 +139,7 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
 Runs alone
 ```
 
-  Settle it at the keep-step, and place the item at one end of the cleared
+  Settle it at the decision step, and place the item at one end of the cleared
   region so the run reaches everything else first. **Use it where the work moves
   paths underneath a run in flight** — a rename, a folder move, a migration.
   /next reads the marker as a
@@ -149,8 +149,20 @@ Runs alone
   binds /next and nothing else, so it does
   not stop the work being done alongside other work by hand.
 
-  This is not `[freeform]`. `[freeform]` marks work /next must **not** build;
-  `Runs alone` marks work /next **should** build, on its own.
+  This is not `[freeform]`. `[freeform]` marks work done **without the method
+  running it at all** — by hand, in a session of its own, because the work is
+  too large for a run or because running it inside one is the risk. `Runs alone`
+  marks work the method **does** build, in an isolated run of its own.
+
+- **Assign an uncommon execution marker only after re-reading its definition in
+  that same turn, and name in the recommendation why this work matches it.**
+  `[freeform]` and `Runs alone` are the two: rare enough that nothing keeps
+  their difference fresh, close enough in shape to be reached for
+  interchangeably, and each carries a consequence the other does not. Re-reading
+  costs one look at the two entries above; getting it wrong costs the user a
+  correction at the moment ordering is being settled. The common markers — no
+  tag, `[audit]`, `[user]` — are exempt: they are assigned constantly, and a
+  re-read requirement on them would be friction with no failure behind it.
 
 
 ## Step 1: Read state and entry question
@@ -259,7 +271,7 @@ the opening narration — above a horizontal rule, with the narration and the
 opening's ask below it** [SILENT] when absent; [BRIEF] when present. If the top of
 Unprocessed holds a "Last session advises…" line — it carries the reserved slug
 `[forward-advisory]` at the end of its heading — read it and let it orient *where
-the session starts*. It is **not** a work item and never goes through keep/delete
+the session starts*. It is **not** a work item and is never processed
 in Step 2; skip it there. It never narrows the session to only the advised item —
 Step 2 still processes the full queue. One line: "Last session recommends starting
 with [slug]." Orientation, not a command.
@@ -452,7 +464,7 @@ item in Processed whose own text says     ->  surface it. It is cleared to run
   it must not be built, or was                and its own text forbids building
   returned unbuilt                            it — a /next run would build the
                                               thing the item forbids
-item in Processed whose Files line names  ->  surface it. The keep-check's
+item in Processed whose Files line names  ->  surface it. The decision step's
   nothing, or names its own design's          buildability limb, failing after
   output                                      the fact
 a loop of blockers that comes back to     ->  surface it. Nothing in the loop
@@ -535,13 +547,21 @@ if the drop-reason needs ANY argument  ->  not bulk-droppable; leave it for the
                                            one-at-a-time loop
 ```
 
-**This pass only ever deletes; keeping stays one item at a time.** Sliding undesigned work
+**This pass only ever deletes; moving an entry into Processed stays one item at a time.** Sliding undesigned work
 into Processed unread is the exact failure this ceiling prevents. If nothing is
 obviously droppable this beat doesn't fire at all — say nothing and go to beat 2.
+
+**The ask recommends the drop explicitly and offers keeping as the exception, at
+any batch size.** A set of one loses the plural phrasing that carried the
+recommendation implicitly, and "drop this, or keep it?" hands the user a
+balanced choice where the pass has in fact reached a view. Say the view.
 
 > "Two look droppable — 1. **[old-slug]**: its premise is gone, the feature it
 > targeted was cut. 2. **[dupe-slug]**: duplicates **[other-slug]**. Drop both, or
 > name any to keep?"
+
+> "One looks droppable — **[old-slug]**: its premise is gone, the feature it
+> targeted was cut. My recommendation is to drop it — keep it instead?"
 
 **Beat 2 — the ordering ask** [PROMPT]. One question: **"Anything you want to
 prioritise, or shall I pick the order?"** One question, not a menu — the only
@@ -622,6 +642,13 @@ presented and not counted toward the session's floor. Take it up in the ordinary
 way once the date has passed — the digest prints `Not before: <date> ->
 passed/ahead` on every entry, so this reads a computed field and needs no judgment.
 
+**Pass over any Unprocessed entry whose `Blocked by:` names an entry still open**
+[SILENT], on the same terms. On a capture the field means don't offer this again
+while the named entry is open, so such an entry is not ranked, not presented and
+not counted toward the session's floor. It returns by itself once every named
+entry has been processed or built — the digest prints each named blocker's
+resolved state on the capture's own line, so this reads a computed field too.
+
 **The fallback ladder — internal, and applied rather than offered.** When nothing
 meaningfully unblocks anything else, work down it:
 
@@ -662,7 +689,8 @@ derivation; a proportion of the thing it governs is admissible, and both medians
 are proportions.
 
 **Rung 3 reaches the work that keeps coming back, not the best-designed work.**
-It depends on a capture being able to bow out via `Not before:`.
+It depends on a capture being able to bow out — via `Not before:` where the wait
+is outside the project, or via `Blocked by:` where the queue itself holds it.
 
 **Rung 4 alternates, and that is what makes decay reachable at all.** Age-ordering
 within the long half never reaches a short old entry, and running the two concerns
@@ -807,24 +835,31 @@ The summary and the analysis come in the next message, on the yes.
 
 **2. Recommend**  [PROMPT]
 
+**Processing an entry ends in one of three outcomes, and the recommendation
+names the one it is proposing:**
+
 ```
-keep    the work is worth doing -> move it into Processed
-delete  remove it. If already decided (check LOG/index.md), state the prior
-        decision and commit.
+into Processed, cleared to run   the work is worth doing and nothing holds it
+into Processed, held below the   worth doing, but a named entry or a date
+  line                             holds it
+deleted                          not worth doing. If already decided (check
+                                   LOG/index.md), state the prior decision
+                                   and commit.
 ```
 
 **The recommendation states in plain words what would actually change and what
-happens to the item, and the ask requests agreement in those words — never a
-bare procedure term.** So a keep's ask reads "add it to the ready list?" rather
-than naming a section or a marker (the name is defined in
-skill-nonspecific-rules.md's Vocabulary section).
+happens to the entry, and the ask requests agreement in those words.** The words
+are the method's own — the ones the queue itself shows — so the ask reads
+"move it into Processed, cleared to run?", explained on first use and then used
+(skill-nonspecific-rules.md's Vocabulary section).
 
-**A keep recommendation must describe what would actually get built**, in terms
+**A recommendation to process an entry into Processed must describe what would
+actually get built**, in terms
 the user recognizes as the work product — which files change, what gets added,
 removed or rewritten, not just the topic. **This is a blocking check, not a prompt
-to try harder:** before recommending keep, state the build in both limbs — the
+to try harder:** before recommending it, state the build in both limbs — the
 files that change AND what changes inside them — and if either limb can't be
-stated, the keep cannot proceed.
+stated, the entry cannot move into Processed.
 
 Naming files alone is not passing. An item that can't pass both limbs gets
 sharpened further in the interview, or skip-to-deferred with its design progress
@@ -853,7 +888,7 @@ words are what find it.
 
 ```
 a match in INBOX/sent.md
-    -> file a correction post as its own [user] line, naming what was
+    -> file a correction post as its own [user] item, naming what was
        announced and what is no longer true
 no match
     -> nothing further
@@ -907,43 +942,35 @@ thing, or is one overturning the other?
 **This types the EDIT being made, not the reason being carried** — the reasoning
 stays prose.
 
-**An item that passes both limbs is given a build block, written here.** The
-block is what a run actually builds from — a run never reads the queue — so it is
-authored at the same moment the two limbs are settled, with the user present:
+**An item that passes both limbs carries its instructions in its own prose,
+written here.** Four things, one line each, in the item's text where the run
+reads them:
 
-````
---- Build block ---
-Changes: <what changes, in which files>
-Inputs: <files the work READS but does not change>   # or omit
-Acceptance: <how to tell it worked>
-Red flag: <cleared | uncleared>          # only where the item carries one
-Refused: <the option, and why it lost>   # one line per refusal, or omit
---- End build block ---
-````
+```
+which files change, and what changes inside each
+which files the work READS but does not change   # where any do
+the observation that shows the change landed
+any option already refused, and why it lost      # one line each, where any
+```
 
-**Write it inside the item, beneath the rationale.** `generate_build_view.py`
-copies the delimited region byte-for-byte, keyed by slug, into the generated view
-the run reads. Nothing reformats it in passing.
+**Write them for a reader with less of the project in view than you have, and
+possibly less capability.** The session that builds this did not sit through the
+conversation that designed it, so anything the work needs in order to start —
+paths, names, values — is stated, not implied.
 
-**Anything the work needs in order to start travels in the block — paths, names,
-values — and never only in the rationale.** The rationale does not reach the run,
-so a path mentioned there alone arrives nowhere.
+**State what would be observed, not what would be asserted.** "The suite passes",
+"a grep for the old wording returns nothing", "the section's first step is the
+queue read" — each is something a build can check and either meets or does not.
 
-**Refusals go in the block and the rest of the history does not.** Everything else
-— why the work is worth doing, what it grew out of, which concerns were raised and
-answered — stays in the item and is read back at the close.
+**Refusals travel with the item because a build that cannot see why an option
+was rejected proposes it again and stops to ask.** One line each is enough: the
+option, and what defeated it.
 
-**Telling instruction from history is judgment, so it is authored here and not
-computed.**
-
-**A cleared item with no block cannot be built**, and the run halts on it as
-underspecified rather than reading the queue for the missing detail. The queue
-lint flags one, so the gap is visible before a run meets it.
-
-**The Files line names only files that change**, with a file the item has decided
-NOT to touch stated in its own sentence outside the line. The digest reads every
-backticked path on that line and cannot tell an excluded path from an included
-one, so an exclusion written there returns as a false merge candidate.
+**Name only files that change**, with a file the item has decided NOT to touch
+stated in its own sentence apart from them. The digest reads every backticked
+path where the changed files are named and cannot tell an excluded path from an
+included one, so an exclusion written among them returns as a false merge
+candidate.
 
 **A Files entry whose content depends on a decision not yet made fails the second
 limb**, rather than partly passing it. "Any affordance the link-address question
@@ -1001,7 +1028,7 @@ split          ->  buildable half   kept into Processed, passing both limbs
                                     from the kept half by slug
 ```
 
-The split's mechanics are the decomposition sub-step in sub-step 3's Keep.
+The split's mechanics are the decomposition sub-step in sub-step 3's Into Processed.
 **A mixed item is designed out or split, and a failing limb is what decides
 which** — a close condition requiring the unbuilt half to be re-filed later is
 neither.
@@ -1021,7 +1048,14 @@ turn is due; nothing stores a position.
 offer a cycle once, in the message already discussing that item, never as a turn
 of its own.** Creating one stays the user's call.
 
-Part of keeping is settling who does it and how: Claude-work by default or
+**Where an entry's prose says it came from an audit and has not been reviewed,
+say so when you introduce it.** One clause: this came out of the such-and-such
+audit and nobody has weighed it yet. The user's single evaluation of it then
+happens knowingly, rather than on material they may assume was already vetted —
+audit findings are filed straight to Unprocessed with no approval on the way in,
+so this turn is the first time anyone has judged them.
+
+Part of moving an entry into Processed is settling who does it and how: Claude-work by default or
 `[user]`; and for Claude-work, its flavor. Claude places the item in Processed by
 relationship judgment and reports where it went.
 
@@ -1034,7 +1068,7 @@ live the moment it is written — one run can build the tool and then use it.
 Stop and wait. The user decides.
 
 **Fold the recommend into the action when the user already agreed** during the
-interview — name the route in one line ("going with keep — drafting the item
+interview — name the route in one line ("moving it into Processed — drafting the item
 now") and go straight to sub-step 3.
 
 ```
@@ -1060,10 +1094,10 @@ The checkpoint's "continue" answers *which item comes next*, never a disposition
 of that item.
 
 ```
-keep    ->  CAN fold. The item is written and then reported, and the user can
-            reject what was written and have it reverted — so folding loses no
-            decision.
-delete  ->  CANNOT fold to the action. It's terminal, with no later approval
+into Processed ->  CAN fold. The item is written and then reported, and the
+            user can reject what was written and have it reverted — so folding
+            loses no decision.
+deleted ->  CANNOT fold to the action. It's terminal, with no later approval
             step, so explicit approval is still required — except where every
             part of the item's content has already been relocated in this same
             exchange, which is narrated rather than asked (see Delete below).
@@ -1075,16 +1109,16 @@ this; anything you'd change, or shall I delete it?"* That reply is the terminal
 approval delete requires, so merging loses no decision — it drops the empty middle
 turn. The standalone recommend-and-wait stays the path when the lean isn't clear.
 
-**3. Execute keep or delete**
+**3. Execute the outcome**
 
-**Keep** [DISCUSS, PROMPT] — Draft the processed item: its one-line description
+**Into Processed** [DISCUSS, PROMPT] — Draft the processed item: its one-line description
 (slug at the end, `[user]` leading if user-work) and the prose rationale carrying
 the discussion's reasoning inline.
 
-*When the item is `[user]`, **file it as a line**:* genuine user work becomes a
-`[user]` line in the queue, rather than a live chat question or a "you'd do that
+*When the item is `[user]`, **file it into the queue**:* genuine user work becomes
+a `[user]` item there, rather than a live chat question or a "you'd do that
 yourself" aside. Then draft the walkthrough into the item's prose. Where the
-steps cannot all be scripted yet, file the line with a rough walkthrough and
+steps cannot all be scripted yet, file it with a rough walkthrough and
 sharpen it here.
 
 **Run the THOROUGH capability check here — this is its site.** Restate the
@@ -1113,7 +1147,7 @@ can do with an irreducible user action, split it:
 
 ```
 Claude-doable parts  ->  build item(s)
-the irreducible user action  ->  a single [user] line, reduced to ONLY that
+the irreducible user action  ->  a single [user] item, reduced to ONLY that
                                  action, cross-referenced by slug
 ```
 
@@ -1161,6 +1195,13 @@ held region NON-EMPTY  ->  place the item with BEFORE <first held item>, and
                            cleared> — never the item just placed
 ```
 
+**Read the mover's report after every run, and confirm the marker sits where you
+meant it to before continuing.** The tool says what it moved and where the
+readiness marker ended up; that report is the confirmation, and a second run
+fired without reading it can compound the first rather than correct it. **On a
+mismatch, read the tool's usage before any second attempt** — the hazards above
+are exactly the kind a re-guess repeats.
+
 **Before clearing, apply done-plan.md's hold-back-unverified-work rule.** Where
 this item's prose names a slug that LOG records as built but not yet verified,
 place it into Processed **below** the line naming that slug as its blocker,
@@ -1192,9 +1233,9 @@ than in neither section; the marking edit exists because after the add the file
 holds two near-identical copies and the natural text to reach for matches both.
 Re-run the digest afterwards either way.
 
-*Split out a buried user-only prerequisite before keeping.* Scan the item's
+*Split out a buried user-only prerequisite before moving the entry into Processed.* Scan the item's
 rationale for a gating action that is both user-only and gates this or other work.
-When found buried in prose, split it into its own `[user]` line with its own slug
+When found buried in prose, split it into its own `[user]` item with its own slug
 and reference that slug from the original.
 
 *Where the item's walkthrough is authored here, confirm the step can
@@ -1210,7 +1251,7 @@ step* yields the *evidence*. /plan is the only site where trying is free.
 as what it means for their step — and never as the code or command read to
 establish it.
 
-**Keep a surfaced risk with a red-flag marker** [DISCUSS, PROMPT] — the item gets
+**Process a surfaced risk with a red-flag marker** [DISCUSS, PROMPT] — the item gets
 one extra line under its description: `Red flag · State: <cleared | uncleared>`.
 Processing the risk *means* clearing it. Set **cleared** once this run designs
 it out (record how) or the user is told plainly and chooses to proceed (record the
@@ -1247,29 +1288,39 @@ After every item, present the next item. That is the whole checkpoint.
 
 **The specimen — this is the shape of the message:**
 
-> Kept and cleared. Next up:
+> Into Processed, cleared to run. Next up:
 >
 > **#### The close invites another /next in the same session [close-invites-same-session-next]**
 > Captured by you (2026-08-13), from a live instance minutes earlier in another
 > project running this plugin.
 >
 > **Take this one next?**
+>
+> 14 left to process.
 
-Beneath the item: one bold question about that item, and nothing else. No menu of
-routes, no analysis.
+Beneath the item: one bold question about that item, then the remaining count,
+and nothing else. No menu of routes, no analysis.
 
 ```
 message order:
-    1. the just-finished item's disposition, in one word or two —
-       "Deleted." / "Kept and cleared." — so the user knows where the last
-       item landed before meeting the next
+    1. where the just-finished entry landed, named as the outcome —
+       "Deleted." / "Into Processed, cleared to run." / "Into Processed,
+       held below the line." — so the user knows before meeting the next
     2. a one-line pointer to the NEXT item (item only, no analysis)
        — re-read from QUEUE.md first to confirm the pointer resolves
     3. one bold question inviting the user into THAT item ("Take this one
        next?") — never a fate question, which waits for the recommend step
        after the interview
-    4. nothing else. No menu of routes, no count, no tally.
+    4. the remaining-to-process count — how many entries are still to come,
+       excluding anything dated out and anything skipped this session
+    5. nothing else. No menu of routes, no disposition tally.
 ```
+
+**The count is how far there is left to go, not a record of what has been
+done.** The banned tally is the retrospective one — so many kept, so many
+deleted, so many skipped — which is clutter at a moment the user is deciding
+about one item. How much is left is the one number that bears on that decision,
+because it is what tells them whether to carry on now.
 
 **The question is what the user answers; the recital is what was removed.** What
 is banned here is the four-route recital ending in a named close — an ordinary
@@ -1334,12 +1385,24 @@ Unprocessed, and:
   not designing out — a decision the user owns, a fact to be looked up, or a
   build that must ship first;
 - ask before skipping, where that answer is a decision the user owns;
+- write `Blocked by: [slug]`, where the thing it waits on is an entry already in
+  the queue, subject to the blocker provisions below;
 - propose a `Not before:` date, where it waits on something outside the project
   entirely, subject to the date provisions below.
 
 Naming the blocker-in-kind turns an open item into an answerable one. **The ask is
 the load-bearing provision:** enrichment substituting for a decision that was
 available for the asking is the failure this fixes.
+
+**The `Blocked by:` blocker on a capture** [SILENT]. The trigger is that
+something already in the queue has to be settled first — a decision another
+entry carries, a build this one is scoped against. Write the field naming that
+entry; it needs no approval, because the queue can check it and the capture
+returns by itself the moment the blocker is processed or built.
+
+**Where nothing in the queue blocks it yet, file the blocker as a capture first,
+then write the field.** A slug that resolves to nothing is a lint failure and a
+hold nothing can lift — the same order the held region already requires.
 
 **The `Not before:` date** [PROMPT]. This is the one place a capture gains one.
 The trigger is that nothing in the queue can do what the item waits for — another
@@ -1412,7 +1475,7 @@ turn on its substance, so its disposition cannot fold into the same message
 that introduced it.
 
 **The timing answer is not a disposition, and the specimen is what shows it.**
-"Process it now" answers *when*, and the recommendation to keep still has to be
+"Process it now" answers *when*, and the recommendation on where it lands still has to be
 put and still has to wait:
 
 ```

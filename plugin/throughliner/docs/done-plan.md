@@ -46,13 +46,16 @@ No scope-lock is active at any close reaching this doc, so edit SPEC.md directly
 in-session. Editing SPEC to match a decision the user already made this session is
 RECORDING, not re-planning. That covers all three shapes alike.
 
-**A decision made this session but not yet built satisfies the gate when its work
-item lists SPEC.md.** This is the case the gate now meets by default, so say what
-happens rather than leaving it to be re-derived. Editing SPEC the moment a
-retirement is *decided* would make it describe a product that doesn't exist yet —
-a false SPEC, not a synced one. Where SPEC still describes the shipped product
-accurately and the item carrying the change names SPEC.md among its files, SPEC
-moves when the behaviour does, and the gate passes.
+**The gate checks that every decision this session made had its SPEC sentence
+written at the decision step.** That is where product truth is written — with
+the user in the room, ahead of the build — so by the time the close runs, the
+sentence either exists or was missed, and this is what catches the miss.
+
+**A SPEC sentence describing decided-but-unbuilt behaviour is the designed lead,
+not drift.** SPEC is read at build time, which is what requires it to lead: the
+build is checked against the sentence, so the sentence has to be there first.
+The lead is bounded by the cleared item that builds it — the sentence and the
+work sit in the queue together, and the gap closes when that item runs.
 
 A session that changed only queue ordering or captures touched no SPEC sentence
 and passes silently.

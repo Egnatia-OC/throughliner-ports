@@ -136,7 +136,7 @@ mail.
 stays where it is.** It lives in the mailbox permanently and is read, appended to
 and left alone — the archive instruction above reaches inbound message files
 only. Archiving it would file away the one artifact a repeal is checked against,
-which is what /plan's keep-step greps when work repeals something already
+which is what /plan's decision step greps when work repeals something already
 announced. The scan excludes it by name as well, so the two halves agree; the
 scan is the load-bearing half, because a directive is a step and a step can be
 skipped.
@@ -198,7 +198,7 @@ rather than closing it.
 project names what would show it done — a page that would load, a file that would
 appear, a branch that would be gone — and that is checked when the item is
 reached. Where nothing observable exists, the item says so and waits until the
-user mentions it. Authored at /plan's keep-step; see plan.md.
+user mentions it. Authored at /plan's decision step; see plan.md.
 
 **Every approved send writes one line into `INBOX/sent.md`, in the same turn as
 the send.** Mail, a method report, a GitHub issue, a public post, a draft handed

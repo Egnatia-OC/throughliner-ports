@@ -127,53 +127,52 @@ per-file discriminator:
 **5. Drop empty section placeholders.** An empty old Red-flags / Deferred-tests /
 Parked block just disappears — nothing carries over.
 
-## Epoch 4 — build blocks on cleared work
+## Epoch 4 — cleared work says what it changes
 
-**Every item cleared to run needs a build block before a run can build it.** A
-run reads a generated view assembled from those blocks and never reads QUEUE.md,
-so a cleared item without one reaches the run with no instructions and halts it
+**Every item cleared to run says what changes, in which files, and what would
+show it landed.** A run reads each cleared item whole from QUEUE.md, so an item
+that says none of that reaches the run with nothing to build from and halts it
 as underspecified.
 
-````
---- Build block ---
-Changes: <what changes, in which files>
-Acceptance: <how to tell it worked>
-Red flag: <cleared | uncleared>          # only where the item carries one
-Refused: <the option, and why it lost>   # one line per refusal, or omit
---- End build block ---
-````
+**Nothing is reformatted, and no delimiter is required.** An earlier version of
+this epoch asked for a `--- Build block ---` region, because a run then read a
+generated view assembled from those regions. That view is retired
+(2026-08-27) and the run reads the item's own text — so **an existing project's
+build blocks need no conversion at all**: they read as part of the item, exactly
+as prose does.
 
 ```
-a cleared item's own prose already    ->  lift those sentences into the block.
-  says what changes and where             The prose stays where it is; the
-                                          block is a projection of it, never
-                                          a move.
-a cleared item that does NOT say      ->  it never passed the keep check. Move
+a cleared item's own prose already    ->  nothing to do. It already says it.
+  says what changes and where
+a cleared item that does NOT say      ->  it never passed the decision step. Move
   what changes inside its files           it below the readiness line and
                                           process it at the next /plan, rather
                                           than inventing instructions for it.
+an item carrying an old delimited     ->  leave it. It reads as ordinary text
+  build block                             now; rewriting it would be editing a
+                                          record to match later vocabulary.
 a held item, or a capture             ->  nothing. Neither is built until it is
-                                          cleared, and the lint asks nothing of
-                                          them.
-a `[user]` or `[freeform]` item       ->  nothing. Neither is built from a block.
+                                          cleared.
+a `[user]` or `[freeform]` item       ->  nothing. One is walked through, the
+                                          other halts a run by design.
 ```
 
 **Write the blocks with the user, not for them.** Telling instruction from
 decision history is a judgment, which is the whole reason the split is authored
-at the keep-step rather than computed by a script. A migration doing it silently
+at the decision step rather than computed by a script. A migration doing it silently
 would make exactly the call the design reserves for a moment the user is present.
 
-**Only refusals travel out of the history.** A recorded "X was rejected because
-Y" goes into the block; everything else stays in the item. A build that cannot
-see why an option was rejected proposes it again and stops to ask.
+**Record a refusal where one was made.** A recorded "X was rejected because Y"
+belongs in the item, because a build that cannot see why an option was rejected
+proposes it again and stops to ask.
 
-**Nothing is deleted.** The block sits beneath the item's rationale, which stays
-inline and whole — that is what the throughline requires, and the generated view
-is regenerated rather than merged, so nothing is ever reconciled back.
+**Nothing is deleted.** An item's rationale stays inline and whole — that is
+what the throughline requires.
 
-**Check it landed:** run the generator and read its summary line — it prints how
-many **block-needing** cleared items it found and how many carried a block.
-Equal numbers mean the migration is complete.
+**Check it landed:** run the queue digest and read each cleared item's line.
+Every cleared build or `[audit]` item should be one you can say, from its own
+text, which files it changes and what changes inside them. Any you cannot goes
+below the readiness line.
 
 Cleared `[user]` and `[freeform]` items are counted separately, on the same
 line, as items that need no block — neither is built from one.
