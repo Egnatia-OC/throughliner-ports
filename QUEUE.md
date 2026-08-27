@@ -6,16 +6,204 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### [user] Verify the cycles due-ness check live: one capture filed when due, no duplicate on the next opening [cycles-due-check-verification]
-Filed 2026-08-22 at the keep-step, on Claude's recommendation and your agreement. The cycles build ("Cycles shipped", record `2026-08-22-cycles-definitions-and-due-checks-build.md`) ticked done with one behaviour UNCONFIRMED: only the no-doc silent path was exercised, because this project has no cycles doc. Confirming it needs a live session in a project whose `CYCLES.md` carries a past-due observable — user work, since it happens in another project's session during your testing days. The release-cycle definition item ("Define this project's weekly release cycle") is held on this verification and lifts when it closes — timed so the definition can build before Wednesday 10am.
-**Walkthrough.**
-1. In any project you're testing the rezip in (not Taskflowapp's product files — its INBOX is the only sanctioned write there, so pick another test project), ask Claude to create a test `CYCLES.md` at the project root with one definition whose observable is already past due — say a weekly cycle whose last completed turn reads as two weeks ago.
-2. Run /plan (or /next) there. Look for: one capture appearing in that project's queue under the cycle's slug, naming the due step.
-3. Run another opening in that project without touching the capture. Look for: no second capture — the check is satisfied while one is open.
-4. Ask Claude there to delete the test `CYCLES.md` and the test capture.
-5. Tell this project what you saw; this line closes and the definition item lifts.
-**Held 2026-08-26 at the planning close.** The feature this verifies is confirmed not to fire on the installed build ([cycles-check-fires-nowhere], whose fix is cleared to run) — walking this before that fix ships and a rezip lands can only reproduce the known failure. The dependency is host-side: it lifts once the fix is built and the host reinstalled.
-**Lifted 2026-08-26 at the next planning opening.** The fix was built in the 2026-08-26 build run (`2026-08-26-cycles-check-fires-nowhere-build.md`) and the host has since been reinstalled at 1.20.0-test20, so both halves of the lift condition are met.
+#### Discord posting bot: an all-rounder so posts and rezip-list updates can be made straight from a session [discord-posting-bot]
+Raised by you 2026-08-26, in the post-close tail, as a side-thought filed for a later /plan. The want: the test-rezips channel's posts and their updates — adding notes to previous entries when issues are reported, changing an entry's stable status — done by a bot rather than by hand, and more generally an all-rounder bot this project can post through directly during /plan or a build. That would be the first route Claude has to Discord, so the never-send-unseen guarantee has to be designed in from the start: nothing posts without you seeing the exact text and saying yes, and an automated update is still a send. Bears on the nerds-list mechanics left open on [expedite-first-beta-release] and on the eventual [weekly-release-cycle] turn.
+
+**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement — "ok I'm willing to try it."** It designs out smaller than "bot" sounds: no hosted service — a bot account (the Discord-side setup split out as the `[user]` line [discord-bot-server-setup], which holds this build) plus a script making one API call per send or edit. The token risk and its informed consent are recorded on that item's red flag. Every send stays behind the exact-text-yes rule; a register line is still written per post; the route is all that changes, which falsifies CLAUDE.md's "Claude has no route to Discord" sentences — amended in this build, with the never-send-unseen rule restated where they stood.
+
+Rule gate: run — amendment to CLAUDE.md's Discord section (the no-route sentences replaced by the route-plus-approval statement); no new freestanding rule, the send-approval rule unchanged and cited.
+
+--- Build block ---
+Changes: `resources/discord_post.py` — standard library only, UTF-8 reconfigure per the scripting constraints: send a message to a named channel, edit a previous message by id, token read from `INBOX/discord-bot-token.txt`, exact text passed in from a file; verified against Discord's current API docs before writing. `CLAUDE.md` — Discord posts section: the "Claude has no route to Discord" sentences amended to name the bot route, with the exact-text-yes approval and the sent-register line restated as unchanged; walkthrough steps in queue items keep "you post" wording only where a post genuinely stays manual. The amended text describes reading and posting separately (folded from the deleted [no-route-is-false] capture, 2026-08-27): the bot reads the channels it has been granted, while posting is gated by the approval rule stated as its own safeguard — the old sentence was doing double duty as fact and safeguard, and only the fact changed.
+Inputs: `INBOX/.discord-bot-token.txt` (created by [discord-bot-server-setup]; renamed to the dot-name 2026-08-27 so the mail scan never surfaces it — see TOOLS.md), the channel ids the user names there. Entry format: every test-rezips entry the script posts carries a "Commit: <hash>" line, per [test-rezips-entries-name-obtain-route].
+Draft-edit flow, settled 2026-08-27 at the prune item's processing and tested live: a draft is written to a `.txt` file and opened in Notepad for the user (the side panel opens `.md` read-only and `.txt` not at all — both tested); the user edits, saves and says done; the script posts the file's exact content after their explicit yes. The user's reason for the flow, rendered in Claude's words: editing the file directly beats negotiating wording change-by-change in chat. Post-post corrections are the bot editing its own message, since nobody can edit anyone else's Discord message.
+The prune bounds ride [bot-prunes-test-rezips], placed after this item.
+Acceptance: a test post to the test-rezips channel, its exact text approved by you first, appears in the channel and is then edited by the script; the token is never printed, quoted or committed; CLAUDE.md nowhere still claims Claude has no route to Discord.
+Refused: a hosted always-on bot — nothing here needs to listen, only to send; per-post manual copying stays available whenever you prefer it.
+--- End build block ---
+**Lifted 2026-08-27 at the planning opening.** [discord-bot-server-setup] completed in the 2026-08-27 build run (`LOG/2026-08-27-discord-bot-server-setup.md`): the token file exists and the bot is in the server, which is the closing condition that item names. Facts the build needs are recorded in `TOOLS.md` (written 2026-08-27) — including that "main" still returns 403 while tips, announcements and test-rezips-for-nerds are reachable, and that channel IDs are looked up through the bot rather than kept on file.
+
+#### Posting bot prunes old test-rezips entries after each new post [bot-prunes-test-rezips]
+Your decision, 2026-08-27, given while the channel pin was being edited: pruning old entries is no longer a by-hand job — the same script that posts a new build entry prunes the old ones in the same run. Scoped as an addition to [discord-posting-bot], referenced by slug from both sides. The pin was reworded to name no mechanism, so it cannot be falsified by this shipping.
+
+**Processed 2026-08-27, cleared to run, on Claude's design and your agreement.** The prune's bounds, settled at the decision step:
+- keep the newest **15** entries — your figure, given at processing;
+- delete only messages **the bot itself authored**, checked per message against the author field — your posts, other members' posts and the pin are untouchable by construction, not by ordering luck;
+- exclude pinned messages explicitly as a second, independent guard on the pin;
+- on any error partway, stop and report, with no retries — leftover old entries are simply picked up by the next post's prune, so nothing needs recovering.
+The author-scoped bound costs your workflow nothing because nobody can edit anyone else's Discord message anyway — a pre-post edit happens in the draft file (the Notepad flow recorded on [discord-posting-bot]), and a post-post correction is the bot editing its own message. The one cost: entries posted by hand before the bot existed can never be pruned or edited by the bot; they are cleaned up by hand once.
+Refused: pruning by position or count alone with no author check — that is what could reach the pin or a member's post.
+Interaction noted on [sent-register-pointer-resolves-to-nothing]: bot-posted entries are posted from a file on disk, so their text is on record before the prune can ever remove the channel copy.
+
+Red flag · State: cleared — designed out by the bounds above; the residue, stated plainly, is that `Manage Messages` stays granted to the bot, which you already consented to on [discord-bot-server-setup] (2026-08-26).
+
+--- Build block ---
+Changes: `resources/discord_post.py` — the prune added to the posting script, run after each new entry posts, under the four bounds above.
+Acceptance: after a test post, entries beyond the newest 15 that were bot-authored are gone; the pin and all non-bot messages remain; a forced mid-prune error stops the script with a plain report and deletes nothing further.
+--- End build block ---
+
+#### Adding the GitHub marketplace would collide with the local one — same name, and it may overwrite the rezip source [marketplace-name-collision-hazard]
+Found on 2026-08-27 while checking whether a commit could be used as an install ref for a test build; deliberately not tested, because the test itself was the risk. The local `flintcraft` directory marketplace is what every rezip depends on, and this repository's committed `marketplace.json` declares the same name.
+
+**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement — and the open question is answered, not guessed.** Research at the decision step (`resources/research/marketplace-name-collision.md`): `marketplace add` **silently overwrites** an existing registration of the same name — no warning, no error; an open, tracked Claude Code bug (anthropics/claude-code#44042). So the feared case is the confirmed behaviour: the beta install command on this machine would silently repoint `flintcraft` to GitHub, and every later rezip would install the remote while reporting success.
+
+Red flag · State: cleared — designed out by a standing rule this build writes, plus the fact only this project's own machines are exposed: testers have no local directory marketplace to collide with. Residue, stated plainly: the bug itself is outside our control, and the rule is a rule rather than a mechanical block.
+
+Refused: a distinctly named beta marketplace — the beta branch fast-forwards from main and cannot carry a divergent `marketplace.json` name without giving up that design. Re-examine only if #44042 ships a fix.
+
+--- Build block ---
+Changes: `CLAUDE.md` — one sentence in the Rezip/Push/Release section: never run `claude plugin marketplace add` against the GitHub repository on a machine using the local `flintcraft` directory marketplace, because the CLI silently overwrites same-name registrations (anthropics/claude-code#44042; `resources/research/marketplace-name-collision.md`).
+Acceptance: the sentence is present in CLAUDE.md's rezip section, names the bug number, and the research file it cites resolves.
+--- End build block ---
+
+Rule gate: run — amendment to CLAUDE.md's Rezip section (a guard clause on the existing rezip instructions, naming its derivation: a verified external bug); nothing evicted, no freestanding rule added.
+
+#### Hand-over messages get one pre-send checkpoint carrying all three composition checks [handover-composition-checkpoint]
+Merged 2026-08-27 at the decision step from three same-day captures — [capability-just-granted-not-considered], [walkthrough-jargon-broken-by-its-own-author] and [file-link-not-offered-at-hand-over] — on Claude's recommendation and your agreement. All three instances are from the 2026-08-27 build run, and together they are one finding, not three.
+
+**The evidence the merge carries.** Three shipped, clearly written rules each failed to fire at the moment they applied, in one run: the tool-check — a Discord message's text was handed to the user to supply by hand, twenty minutes after the same session provisioned a bot with Read Message History for exactly that (your words: *"you're supposed to have read message history access through the bot"*); the jargon rule — broken within the hour by the session that authored it, a hand-over step naming four UI terms with no location and no read-back (your words: *"I don't understand what you want me to do"*); and the view-in-doc link rule — months shipped, correctly applied elsewhere in the same run, yet a file was named in prose with no link until you asked (*"please link to the file so it opens in sidebar"*). Not recency, not unclear wording: all three failures happened while composing a message handing something over, and none while editing a file. Hand-over composition had no checkpoint; file edits have several.
+
+**A fourth instance, added at processing later the same day, sharpens the theory rather than widening the scope:** the shared-vocabulary rule (shipped the day before) was broken in this planning session itself — a capture was presented as a "standing note" and a "guard note", aliases minted for what the method simply calls a capture, and the user had to ask whether that was a real feature. Again while composing a message to the user, not while editing a file. The checklist's first question carries the alias arm for it.
+
+**The design.** The jargon rule's pre-send read-back of hand-over steps already exists and is the right moment; it currently checks one thing. This build widens that read-back into the single hand-over checkpoint, carrying three questions in one pass:
+1. does any step use a term naming nothing on the user's own screen or files — and is any method thing called by anything other than its own name — and does each step name the thing to click or type and the thing to look for;
+2. is there a tool that could do this work instead of the user — including anything this session itself set up, read from `TOOLS.md` rather than from memory of what the project can do;
+3. is every file the message points at given as a link, per the view-in-doc rendering rule.
+
+The tool-check and view-in-doc rules stay canonical where they are and are cross-referenced, not restated — this is an amendment to the read-back, consuming no new slot and evicting nothing.
+
+**The honest limit, which the wording must state:** this makes the checks more likely to fire by giving the moment one named checklist instead of three scattered rules; nothing verifies the read-back ran. A rule per instance was refused (the admission gate's own bar), and so was another freestanding remember-to rule — the second capture's own text records that shape as the one this project has found does not hold.
+
+Rule gate: run — amendment to the hand-over read-back rule shipped by [general-jargon-translate-and-walkthrough-readback]; parent named, the other two rules cross-referenced rather than restated, nothing evicted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` and `plugin/throughliner/docs/next.md` — the read-back rule at both its sites widened to the three-question checkpoint above, worded with the honest limit; grep for the current read-back wording first so both sites are found and no third copy is created.
+Acceptance: a grep for the read-back rule finds the three questions at its existing sites and nowhere new; the tool-check and view-in-doc rules are cited by cross-reference, not duplicated.
+--- End build block ---
+
+#### Posting rule gains the tips kind, and the rituals gain the tip pipeline [posting-rule-two-kinds-and-tip-pipeline]
+From your channel restructure of 2026-08-27, designed at the decision step from the deleted capture [discord-channel-purposes-split]: **some** of what has gone into *announcements* is from now on a **tip**, announcements narrows to **news only**, and old posts may be recycled into future ones. A tip explains one Throughliner feature — maybe newish, but with no release or big event behind it; news is releases and big happenings. The bot may post in tips, announcements and test-rezips-for-nerds.
+
+**The pipeline, your design rendered in Claude's words:** tip candidates are noticed at the rezip (the moment a feature lands in the installed build) and pooled in `ANNOUNCEMENT-IDEAS.md`; the release is what makes a candidate postable, so the release ritual marks which pooled candidates its shipped features clear and leaves a note; the next /plan reads that note and files the cleared candidates as dated `[user]`/post items on the one-a-day rhythm — new or updated features first, historical tips on slow news days. Tip staleness is covered by the existing repeal-grep over `INBOX/sent.md` once the register records the channel per post.
+
+**How-to posts ride the same check, added on your instruction in the same discussion:** the forum's how-to topics exist for welcoming and onboarding, their number must stay small (a new one is your call, never accumulated by drift), and each tip, rezip entry or announcement may bear on one — so the posting step checks the how-to topics' register lines for claims the new post touches, and a needed tweak is a bot edit of its own how-to post, under the approval rule like any send. Bot maintainability requires bot authorship — the migration is [howto-posts-bot-authorship].
+
+Rule gate: run — amendment to CLAUDE.md's Discord posts section: the "and nothing else" clause reworded to carry the tips kind with its own test ("explains one Throughliner feature"); the did-Throughliner-change test stays for news; the exclusion of general Claude Code tips stands; nothing else evicted.
+
+--- Build block ---
+Changes: `CLAUDE.md` (Discord posts section) — the two kinds with their two tests, the channel recorded in each sent-register line, the how-to check on each outbound post, and the how-to set's welcoming-purpose bound stated without a number. `resources/release-ritual.md` — the rezip gains a tip-candidate check writing to `ANNOUNCEMENT-IDEAS.md`; the release gains a step marking which pooled candidates its shipped features clear, leaving a note for the next /plan.
+Reads but does not change: `ANNOUNCEMENT-IDEAS.md` (the pool; its format is whatever it already uses), `INBOX/sent.md`.
+Acceptance: CLAUDE.md names both kinds and their tests and the how-to check; the ritual doc carries both steps; the grep for "and nothing else" in its old absolute form returns nothing.
+--- End build block ---
+
+#### Register pointers verified to resolve at the turn they are written [register-pointer-verified-at-write]
+From the deleted capture [sent-register-pointer-resolves-to-nothing], processed 2026-08-27. Two register lines claimed post text sat "verbatim" in a record holding no quoted text — one repair had even pointed back at the register in a circle — and the fault was findable only because a session happened to need the text. Both instances were repaired in-session through the bot (the pin, and the "living dangerously" post recovered from announcements); this build fixes the rule so the fault cannot be written silently again.
+
+**The design:** the always-loaded write-verify-point rule (write, then re-read to confirm the content is there, then point) applied to one more site — the sent-register line. A register line claiming text is on file "verbatim in X" is written only after X actually holds the quoted text, confirmed by re-read in the same turn, which is the only moment the text is guaranteed on hand. Where the text is not yet stored, the line says so plainly instead of pointing.
+
+Rule gate: run — amendment to the register-line specification in feedback-and-inbox.md (the "written in the same turn" paragraph gains the resolve check); parent named, the write-verify-point rule cited rather than restated, nothing evicted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/feedback-and-inbox.md` — the sent-register section's same-turn paragraph gains the requirement that a verbatim pointer is confirmed to resolve to the quoted text by re-read before the line is written, with the no-text-stored arm stated ("say so plainly instead of pointing").
+Acceptance: the section states the resolve check and the no-text arm; a grep for "nothing later reconstructs it" finds the amended paragraph carrying both.
+--- End build block ---
+
+#### Test-rezips entry posts at the close once one plan and one next have run on the build [rezip-posts-its-entry]
+Captured by you on 2026-08-27 after the unposted 1.21.0-test2 rezip; **redesigned by you at processing the same day, superseding the capture's rezip-sited step** — your design, rendered in Claude's words: an entry describes a build that has been exercised, not a fresh one, so it posts at **/done**, and the readiness test is sessions, not time. There is no timing to this.
+
+**The design.** At a close, check whether at least one full /plan session AND one full /next session have run on the installed build since its rezip — read from LOG records dated after the install date the session opening reports. Both run → the new entry is ready to draft (Notepad flow, exact-text yes, bot posts, register line with verified pointer). **The posting step also builds and attaches the zip** — your decision at processing, answering where a nerd's download comes from: the script zips `plugin/throughliner/` as it stands into the temp scratchpad and attaches it to the entry (~270KB, well under Discord's file limit), so every entry carries the exact build it describes and the channel's name is literally true. The zip is not kept locally — the release archive stays release-only pruned to three, Discord holds the download, and the entry's commit line lets any build be rebuilt byte-for-byte from git. **And on your instruction (2026-08-27), that folder is renamed `plugin/zip-archive/` → `plugin/release-zip-archive/` in this build**, so its name says what it holds; the build greps `zip-archive` across the project first and updates every live reference (release-ritual.md and CLAUDE.md at least — the grep is the authority), leaving LOG history and dated records untouched. The install-from-zip route (extract, add the folder as a local marketplace) is described once in the pin or how-to as part of this build, honestly framed as bleeding-edge work. **Posting the new entry unlocks the edit of the previous entry**: a short testing-outcomes summary from the LOG plus a **usability rating out of 5**, given by you at that moment. A fresh entry carries **no** rating — too new to rate is what "under testing" says. Entry format otherwise per the pin's promises: one of the three labels, a `Commit: <hash>` line, the version.
+
+**First iteration, stated because it differs:** the entry currently in the channel is your own post, so its backfill (outcomes + your rating of 3/5, given 2026-08-27) is yours to paste once; every entry after is bot-authored and bot-editable.
+
+**Placement is host-only by construction:** the check lives in CLAUDE.md's Discord section, never in the shipped close docs — consumers have neither the bot nor the channel. The posting and editing mechanics ride [discord-posting-bot]'s script; the prune runs in the same pass per [bot-prunes-test-rezips].
+
+Rule gate: run — amendment to CLAUDE.md's Discord posts section (host-only by residence); supersedes the capture's own rezip-sited suggestion on your redesign; the approval rule cited unchanged.
+
+--- Build block ---
+Changes: `CLAUDE.md` (Discord posts section) — the close-time readiness check (one plan + one next on the installed build since its rezip, read from LOG against the install date) and the two-step entry lifecycle (fresh entry unrated; superseded entry gains outcomes summary + rating out of 5 from the user). `CLAUDE.md` (host/target section) — the "rezip builds no zip" sentence widened to the full truth so the word stops misleading (from the deleted [rezip-name-promises-a-zip] capture): a rezip refreshes the install from the folder and builds nothing; a posted entry attaches a zip of that exact build, built at posting. Renaming the word was refused: the channel name keeps it public, and docs saying "refresh" against a channel saying "rezips" would mislead more, not less. `resources/release-ritual.md` — one pointer sentence in the rezip section naming where the entry now posts, so the ritual doesn't read as missing the step.
+Acceptance: CLAUDE.md states the check and both lifecycle steps with the approval rule cited; the ritual's rezip section points at it; no step claims an entry posts at rezip time.
+--- End build block ---
+
+Relationship written both ways: [discord-posting-bot] carries the script, [test-rezips-entries-name-obtain-route] carries the pin's promise, [bot-prunes-test-rezips] shares the posting pass.
+
+#### Criterion never restated as a calendar claim [criterion-not-restated-as-time]
+Raised by you 2026-08-27, mid-processing, after the second arbitrary time claim in one session — your words: *"There's no timing to this."* A readiness criterion of one plan and one next had been announced as "nothing goes up today", when the sessions could both run the same day. The first instance was the same shape earlier in the session.
+
+**The rule:** when saying when something can happen, state the criterion and check the world against it; never convert a criterion into a calendar or time claim ("today", "tomorrow", "later") unless the criterion itself is a date.
+
+Rule gate: run — amendment to the always-loaded date rule (the read-a-computed-field rule barring "today" by assumption); same subject one clause wider, parent named, no new slot, nothing evicted. Admission: two recorded failures in one session, both caught by the user.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/skill-nonspecific-rules.md` — the date rule's paragraph (Research and evidence filing, "Where the answer is a date, read a computed field") gains the clause: nor restate a non-date criterion as a time claim; a time word is justified only where the criterion is a date.
+Acceptance: the paragraph carries both arms; grep for "never derive today's date by assumption" finds the amended paragraph and no second statement of the new clause anywhere.
+--- End build block ---
+
+#### setup.md Step 3 heading drops its stale two-settings promise [setup-step3-heading-stale]
+From the 2026-08-27 build run's noticing, processed 2026-08-27: the heading reads "Step 3: Interview (adaptive discovery + two settings)" while the step's own body states there is no settings question anywhere — the last one was dropped in favour of ignoring `INBOX/` on both paths. A heading is what a session jumping into a step reads first, so the stale half steers the read before the correcting sentence is reached. Left out of the tagging build deliberately (a heading rewrite is not tagging).
+
+Rule gate: not needed — a stale-heading correction; no rule is authored, amended or repealed.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/setup.md` — the Step 3 heading becomes "Step 3: Interview (adaptive discovery)"; grep the docs for the two-settings phrasing to confirm nothing else promises it (cross-doc references go by name, so none is expected).
+Acceptance: the heading carries no settings mention; the grep returns nothing live.
+--- End build block ---
+
+#### Throughliner bot icon: white linework on the Chagora background, striations on the cord [bot-icon-house-style]
+Captured by you 2026-08-27 with the reference files you named; processed the same day. **The SVG at the project root, `throughlinerprojectboticon.svg`, is confirmed by you as the intended line art** (the wrench-and-pencil figure), which turns the job from a redraw into a recolour-and-composite. **Your addition at processing: the spinal cord at the bottom gains a couple of striations — up-and-down lines running along the cord, not cross-lines (your correction)** — to make it more recognisable for what it is meant to be. Claude attempts the vector edit and shows you the render; if it doesn't convince, the drawing goes back to you.
+
+The house style, read from `Casual Projects/Chagora/icon.png` and `chagoraiconw.svg`: flat white stroke-only line art, no fill or shading, on a circular badge — thin dark rim, dark diagonal gradient running deep red at the left to desaturated teal-blue at the right, darkening toward the centre.
+
+Refused: converting the rendered mascot draft (`Throughliner-icon.png`) — a filter cannot turn a shaded illustration into line art; it stays a draft, superseded by the vector route. AFK-cats is out of scope; this item sets the pattern its `assets/` folder is staged for.
+
+--- Build block ---
+Changes: `throughlinerprojectboticon.svg` — strokes white, striations added to the cord, page fitted to the art; a new composited icon PNG at the project root (both files kept in the repo, matching how Chagora keeps its pair). Uses Inkscape's command line (installed on this machine — see TOOLS.md's Python note) for compositing and export.
+Reads but does not change: `Casual Projects/Chagora/icon.png`, `chagoraiconw.svg` (style references), `Throughliner-icon.png` (superseded draft, left as is).
+Acceptance: the PNG at the root shows white line art with visible cord striations on the Chagora-style gradient disc; the user approves the render; on that yes the bot sets its own avatar through the API (an outward-facing change, made only on the explicit yes), and the avatar visibly updates in the server.
+--- End build block ---
+
+#### Rescan recommended before the close, and the close's scan stands down when one just ran [rescan-before-done]
+Captured by you 2026-08-27 at the session's rest, processed in the same exchange. Two halves, one build.
+
+**One: recommend the rescan wherever the method names the close as the next step.** The end-of-queue gate's wording ("we can close the session and record it…") and its sibling at /next's close hand-off each gain one clause recommending the rescan command first, named in words. The suggestion arrives exactly when closing is on the table and nowhere else — never mid-work.
+
+**Two: the close's wind-down scan does not re-run when a rescan literally just ran.** The window rule already limits the close's scan to what the last rescan didn't reach; this adds the final step: where nothing has happened since that rescan — no work, no decisions, only the close being invoked — the close performs no second pass, and its record carries one line, "covered by the rescan just run", so a stood-down scan stays distinguishable from one that never happened. Conversation between the rescan and the close still gets scanned under the existing window rule.
+
+Rule gate: run — both halves are amendments to existing steps (the gate's wording; the wind-down's window rule), parents named, nothing evicted.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/plan.md` — the end-of-queue gate's close wording gains the rescan-first clause; `done.md` — the wind-down scan gains the stood-down arm with its one-line record; `next.md` — the close hand-off wording gains the same clause where it names /done. Grep the docs for the close-naming sentences first so every site is found and no fourth copy is created.
+Acceptance: both gate wordings carry the rescan recommendation; done.md states the stood-down arm and its required line; the grep finds no close-naming sentence without the clause.
+--- End build block ---
+
+#### rescan's numbered set gains the process-now arm — no capture written for an item taken now [rescan-processnow-no-double-write]
+Found live 2026-08-27, raised by the user mid-planning: /rescan's candidate set was answered "process now" and captures were written first anyway, because rescan.md's Step 2 says unconditionally that "the writes then land" while plan.md's process-now rule says an item taken now is never written as a capture — it is written once, as a work item, after the interview. Two shipped docs disagreed and the session followed the wrong one; the user's words: *"Claude is not supposed to write until it has checked the user wants to process now or not."*
+
+The planning rule is the load-bearing side: filing first spends a write that is thrown away, and process-now is the common answer by the user's own recorded estimate. The fix is one amendment to rescan.md's Step 2: items answered *file* land as captures exactly as now; an item answered *process now* is not written — it enters the planning loop and is written once as a work item, the plan.md rule cited rather than restated.
+
+Rule gate: run — amendment to rescan.md Step 2; the conflicting unconditional sentence is reworded, which is the eviction; plan.md untouched; nothing else added.
+
+--- Build block ---
+Changes: `plugin/throughliner/docs/rescan.md` — Step 2's "the writes then land" sentence gains the two arms (file → capture written; process now → no capture, enters the planning loop, written once as a work item), with plan.md's process-now rule cited by name.
+Acceptance: the Step 2 paragraph states both arms; a grep for the old unconditional "the writes then land" phrasing returns nothing.
+--- End build block ---
+
+#### Define this project's weekly release cycle, and amend the release model to run on it [weekly-release-cycle]
+**Your decision, 2026-08-22: releases move from purely on-request to a weekly Wednesday cycle.** The pick costs no judgment — release the newest rezip at least a week old, so every change in it has had seven days of continuous dogfooding inside its successors; your correction that no single rezip runs a week is what led there. Due when the latest GitHub release is over seven days old and a week-old rezip exists — both observables. **Extended the same session by the three-channel model on [beta-tester-pathway]:** a Wednesday turn produces two events — this week's pick becomes the new beta, and last week's beta promotes to the stable release — so the cycle definition's steps carry both once those items are kept; the definition here stays buildable on the release half alone.
+
+**The rule change this carries, gate-run at the build from this disposition.** CLAUDE.md's release section currently says a release runs when Alex asks and at no other time (your decision of 2026-08-09, made after stopping an automatic release twice). This narrows it: on request, or when the weekly release cycle falls due — and the reason the old failure does not recur is that the cycle asks no readiness question: the calendar and the git log settle which rezip goes, retrospectively, where the rejected middle option asked "is this good enough?" prospectively. On-request stays; the pre-rejected pause-before-publishing middle option stays rejected.
+
+Rule gate: run — amendment to the Release section of CLAUDE.md, naming and superseding its at-no-other-time clause; the 2026-08-09 reasoning is outweighed on the stated ground rather than called wrong.
+
+--- Build block ---
+Changes: create this project's cycles doc with the release-cycle definition (artifact: the GitHub release; steps: pick newest week-old rezip, run the release ritual; cadence: weekly, Wednesday, declared; observable: the latest GitHub release's published date, plus the rezip log for a week-old candidate). `CLAUDE.md` — amend the Release section: a release runs when Alex asks, or when the weekly release cycle falls due; the at-no-other-time sentence is reworded to carry the cycle.
+Acceptance: the cycles doc parses under the shipped check; CLAUDE.md's release section names both routes and still bars the pause-before-publishing middle option; release-ritual.md needs no change (the ritual itself is untouched).
+Refused: choosing among candidate rezips each Wednesday — newest week-old wins, no judgment.
+--- End build block ---
+**Blocker repointed 2026-08-22:** the cycles machinery is built (`2026-08-22-cycles-definitions-and-due-checks-build.md`) with one behaviour unconfirmed, so the fact holding this item is the verification, not the build — the field now names the `[user]` verification line, and this lifts by itself when that closes.
+**Read [expedite-first-beta-release] before building this, 2026-08-26.** Alex proposed a published list of labelled test rezips and then that each Wednesday's pick be the most recent one labelled stable. That is a different selector from this item's newest-rezip-at-least-a-week-old, and it meets this item's recorded refusal of choosing among candidates — the argument for and against is written out there. It may also bear on this item's blocker, since a hand-driven Wednesday turn would not depend on the cycles due-ness check that [cycles-check-fires-nowhere] has stalled.
+**Selector settled 2026-08-26, your decision at the next planning opening — a supersession of this item's pick rule.** The Wednesday **beta** pick is the most recent rezip labelled stable on the nerds list; the **stable release** is last week's beta promoted after its seven-day soak. The newest-rezip-at-least-a-week-old selector is superseded: its week-old property now lives in the promotion step, not the pick. Why the old reasoning loses without reopening the readiness question: the label is applied when the rezip is posted, describing a build that already exists, so the Wednesday turn still reads a recorded state rather than asking "is this good enough?" — the prospective readiness question stays banned. The refusal of choosing among candidates stands: the selector is still mechanical (most recent stable label wins, no judgment on the day). The build block's pick wording is updated to match at build time.
+**Lifted 2026-08-27 at the planning opening.** [cycles-due-check-verification] closed as passed (`LOG/2026-08-27-cycles-due-check-verification.md`), and the host is live at the current stamp, so the checks that will read the definition are installed.
+**Files:** `CLAUDE.md`, the new cycles doc. The dependency is host-side: the checks that read the definition must ship first.
 
 #### [user] Smoke-test the `#beta` install on your second machine, then edit the how-to post's install command [beta-install-smoke-and-post-edit]
 Filed 2026-08-26 with [beta-branch-install-pin]. Two sequential user steps: the ref-pinned route is unverified against the open feature requests the research names, so it is proven on a real second machine before any tester is pointed at it; and the published "How to install" forum post claims the plain two-command route, which the pin falsifies — the correction is yours to make, per the repeal-falsifies-an-announcement rule.
@@ -26,44 +214,56 @@ Filed 2026-08-26 with [beta-branch-install-pin]. Two sequential user steps: the 
 4. On success, edit the "How to install" forum post so its install ask names `FlintcraftTech/throughliner#beta`. Look for: no live claim pointing new users at the unpinned route.
 5. Tell this project; the register line for the install post is updated with the corrected claim and this line closes.
 
-#### [user] Discord post: how much stronger a session is from its start once /plan opens by reading recent LOG index lines [discord-post-session-start-strength]
-Captured by you 2026-08-11. Your point, rendered in Claude's words rather than quoted: before, it felt shaky for the first few items; starting with log-awareness plus some maybe-relevant context massively boosts the start of sessions. The angle is yours; the correction below is Claude's.
-**It cannot be written yet, which is why this is a queue item rather than a draft.** You asked believing the feature was live. It wasn't: `plan.md`'s Step 1 reads QUEUE.md and SPEC.md only, and its three `LOG/index.md` mentions are targeted lookups — has this been decided — not an orientation read. The feature is [plan-reads-recent-log-index], held below the line behind [index-line-length-proportional-cap].
-**Your experience was real; the mechanism you credited was wrong.** What steadied that session was the below-line revisit reading LOG to check two blockers, plus the previous session's forward advisory naming where to start. Both live; neither is the five-recent-lines read. Worth carrying into the post — "the thing that helped wasn't the thing I thought" is the better story.
-**The post's content, to draft when it ships.** The shaky-first-items problem and its cause; what the orientation read changes; and the honest scope — it doesn't carry all necessary context, it sets upcoming work against past work. Include the cost bound, since it's why the feature waited: five index lines is an unbounded read until index lines are capped, which [index-line-length-proportional-cap] fixes.
-**Constraints:** 2000 characters, the Discord limit. Not posted until *everything* the post describes has shipped — standing rule in `CLAUDE.md`, adopted 2026-08-11.
-**Walkthrough.** 1. Feature ships. 2. Claude drafts inside the limit. 3. You say what to change. 4. You post — Claude has no route to Discord. 5. You confirm, and the line closes.
-**Unblocked 2026-08-13.** [plan-reads-recent-log-index] shipped — `LOG/2026-08-12-plan-reads-recent-log-index.md`; /plan's read-state step now opens with the five newest index lines. Ordinary ready work. Fourth item found sitting behind a shipped blocker; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries].
+#### [user] Correct and post the announcement about rationale moving out of operative rules — the draft tells readers the why lives in session logs they can't reach [announcement-rationale-split-correction]
+Captured by you 2026-08-09 — split out of [rationale-relocation-invisible-to-consumers] when that capture was deleted as otherwise satisfied. The 2026-08-09 Discord draft says the reasoning "lives in the session logs where you can go and read it." False for every reader not developing the method: the plugin package ships neither `LOG/` nor `resources/`. Posting it as written points users at something they cannot access.
+**Why this is the user's line:** Claude can draft the correction; only the user can post. Under the capability test, drafting is Claude-work and posting is not.
+**Walkthrough:**
+1. Claude drafts the corrected announcement, replacing the session-logs claim with the actual split: why the method behaves a certain way is in the shipped FAQ; why a rule is worded as it is stays in the development log.
+2. The user says what to change.
+3. The user posts it.
+4. The user confirms; it's recorded and the line removed.
+Rough draft, to sharpen at step 1 — the announcement's other content wasn't reviewed, so check the whole thing, not only the false sentence. Also decide at step 1 whether it's still worth announcing, given the week that has passed.
+**Paced 2026-08-14 on the user's decision: last in a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Last because it corrects an already-posted announcement rather than being news, so it yields to the three new posts. It lifts when [discord-post-session-start-strength] is posted and closed.
+**Lifted 2026-08-27 at the planning opening.** [discord-post-session-start-strength] was posted and closed in the 2026-08-27 build run (`LOG/2026-08-27-discord-post-session-start-strength.md`), so the chain ahead of this correction is clear. One-a-day pacing applies at posting time: a post went out today, so this goes out on a later day no other Throughliner post does.
 
-**Paced 2026-08-14 on the user's decision: third in a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Pacing alone holds it.
-**Blocker repointed 2026-08-21.** [discord-post-cycle-awareness] was posted and closed on 2026-08-21 (`INBOX/sent.md`), so the old blocker had resolved and this item read as liftable while the pacing chain still held it. Repointed at [discord-post-context-adjacency], the post now ahead of it in the chain — it lifts by itself when that one goes out and closes. Same repair, same reasoning, as the repointing recorded on that item.
-**Lifted 2026-08-24.** [discord-post-context-adjacency] was posted and confirmed on 2026-08-23 (`LOG/2026-08-23-discord-post-context-adjacency.md`), so the chain ahead of this post is clear. The one-a-day pacing still applies at posting time: it goes out on a day no other Throughliner post does.
-**Held again 2026-08-26.** The feature the post announces was found underdesigned ([plan-log-index-read-underdesigned], now cleared as its redesign: a derived window, a checkable relevance test, a required report line) — announcing the current version would describe behaviour about to change. Lifts by itself when the redesign ships.
-**Lifted 2026-08-26 at the next planning opening.** The redesign was built in the beta-eve run (`2026-08-26-plan-log-index-read-underdesigned-build.md`), the host has since been reinstalled at 1.21.0, and this very opening exercised the derived-window read live — built, live, and observed working. One-a-day pacing still applies at posting time.
+**Files:** none — the artifact is a Discord post. Relates to [self-authoring-rules].
 
-#### [user] Create the Throughliner Discord bot and hand its token to the project [discord-bot-server-setup]
-Split 2026-08-26 at the keep of [discord-posting-bot] — the Discord-side setup only you can do. The bot account is what gives the posting script a route; the script build is held behind this line.
-Red flag · State: cleared — the bot token is a credential on your disk: anyone or any session that reads it can post as the bot in your server. Designed out as far as it goes: stored inside `INBOX/` (gitignored on every path, so it can never be published) and never quoted into any document or chat, the address-book rule. It stays readable on this machine, and you were told so plainly and chose to proceed ("ok I'm willing to try it"), recorded 2026-08-26.
+#### [user] Discord post draft: plain-English consent [discord-post-plain-english-consent]
+Drafted 2026-08-25 at the planning close under the close-sweep design ([plan-close-post-drafting]); approved as a candidate by you, with your addition of the terse-docs mention. [keep-approval-reading-burden] shipped 2026-08-26 and its claims held — then held again 2026-08-27 behind [shared-vocabulary-not-standing-names], whose build retires "the ready list", which this draft's example quotes. **Lifted 2026-08-27 at the planning opening** — that build shipped (`LOG/2026-08-27-shared-vocabulary-not-standing-names-build.md`) and is live on the installed host; the example below is reworded to the method's own words in the same move. Before posting: re-verify the whole draft against the shipped build, then post on a day no other Throughliner post goes out — a post went out today.
+**Draft (under 2,000 characters):**
+> **Plain-English approvals.** When you and Claude go through your captured ideas in a planning session, each one now opens with a plain-English summary of what the idea says — right there in the chat, before any analysis. And when Claude recommends what to do with it, it says in plain words what would actually change ("this would move into Processed, cleared to run — the part of the queue the build command works from") and asks whether you agree, in those words. No procedure jargon, no needing to open the queue file to know what you're saying yes to: you approve what's in front of you.
+>
+> The files themselves stay tidy through a companion rule: everything written into your project's documents is bounded by the project's own measured norms, so records stay terse enough to actually read when you do open them. The summary serves the moment; the documents serve the return visit.
+
+#### [audit] Features requiring a tip post — coverage sweep [features-needing-tips-audit]
+Filed 2026-08-27 at the decision step, from your instruction on the tips restructure ([posting-rule-two-kinds-and-tip-pipeline]): a load of longstanding features have never had a post, and those are fed in by date rather than by release. This audit is what finds them.
+
+Reads SPEC.md's feature set against `INBOX/sent.md`, the FAQ index and `ANNOUNCEMENT-IDEAS.md`, and files one capture per longstanding feature with no tip coverage — a post candidate naming the feature and what a tip about it would teach. Findings go straight to Unprocessed marked unreviewed, per the audit discipline; the next /plan weighs them against the number-mustn't-overwhelm concern rather than posting everything found. Edits nothing.
+
+#### [audit] Compliance audit over the rule changes since the last audit [compliance-audit-lag]
+Filed by the rule checks at the 2026-08-27 build close, under the slug they print. `py resources/rule_signals.py .` reported 3 rule-bearing commits since `2026-08-26-compliance-audit-lag-build.md` uncovered by any compliance audit — and this session's own commit makes a fourth, much the largest, so the real scope is wider than the figure the check printed before the commit landed.
+
+Scoped to the changed files (delta scope, as the check computes it): `CLAUDE.md`, `plugin/throughliner/docs/done-build.md`, `done.md`, `feedback-and-inbox.md`, `next-build.md`, `next.md`, `plan.md`, `rescan.md` — plus, from this session, `skill-nonspecific-rules.md`, `next-audit.md`, `done-plan.md`, `setup.md` and `migrate-checklist.md`. The audit run should recompute the list rather than trusting this one, since the check reads it from git.
+
+The criteria are already written and are not re-derived: `resources/method-compliance-audit-checklist.md` carries the four lenses — self-authoring compliance, response-shape tag placement, narration drift, and decision history sitting in operative text (the delete-and-read test).
+
+**This session is an unusually good reason to run it rather than a routine one.** It authored or amended roughly twenty rules in a single run, several by supersession and repeal, and it added +47 always-loaded rule statements for consumers and +144 across the fetched procedure docs — the largest single movement the growth report has recorded. Two of the four lenses are exactly what a run that size is most likely to have degraded: rationale creeping into operative text, and tags placed by habit rather than by the arm they govern.
+
+Worth checking specifically, because they were done fast and late in the run: the response-shape tags added across `setup.md` (fifteen steps tagged in one pass, several with conditional arms), and whether the terminology renames left any sentence whose grammar no longer works around the new word.
+
+As an `[audit]` this edits nothing — it reads and files findings as captures, which the next planning session weighs.
+
+#### [user] Delete the test cycle fixture and its filed capture from the demo project [cycles-fixture-cleanup]
+Split out of [cycles-due-check-verification], whose verification passed on 2026-08-26 (`LOG/2026-08-26-cycles-due-check-verification-2.md`). What remains is housekeeping in another project, not verification: `DEMOS/Polit Fart Announcer 1` still carries the made-up `CYCLES.md` with its `[weekly-listen]` definition and fixture observable of 2026-08-10, plus the `[weekly-listen]` entry the check filed into that project's Unprocessed.
+
+Both are downstream of a fixture rather than work that project chose — the user's correction on 2026-08-26: the whole cycle was made up as a test, not just its date. The three items the filed entry overlaps ([reload-persistence-check], [other-chimes-unheard], [honorifics-never-fired]) were queued on their own merits and are untouched by this.
+
+Filed as its own item because a walkthrough ends at the item's observable and cleanup after a test gets its own line — and because no session here writes another project's files, so this can only be done in that project's own chat. It blocks nothing: the verification it follows has already passed.
+
 **Walkthrough.**
-1. Open discord.com/developers/applications in your browser, sign in, and click "New Application". Name it (e.g. "Throughliner"). Look for: the application's settings page opening.
-2. In the left menu click "Bot", then "Reset Token", and copy the token it shows. Look for: a long string you can copy — it is shown only once.
-3. Paste the token into a new file `INBOX/discord-bot-token.txt` in this project (ask Claude in this chat to create the file and confirm the gitignore covers it before you paste — the file must never be committed).
-4. Back in the left menu click "OAuth2" → "URL Generator": tick the `bot` scope, then the permissions "Send Messages", "Manage Messages" and "Read Message History". Open the generated URL and invite the bot to the Throughliner server. Look for: the bot appearing in the server's member list.
-5. Tell this project which channels the bot may post in (main channel, test-rezips). This line closes when the token file exists and the bot is in the server; the script build lifts.
-
-#### [user] Test-rezips entries name how to obtain the build — pin edited, commit line in every entry [test-rezips-entries-name-obtain-route]
-Surfaced by /rescan 2026-08-27, from the port prompt handed over this session: that prompt tells a porter to use "the newest test-rezips entry's build, obtained however the entry provides it" — and the entries so far provide nothing, the first one linking the release page instead. A porter or raw-build tester following the newest entry has no way to get the build it describes.
-
-**Processed 2026-08-27, cleared to run, on Claude's recommendation and your agreement.** Both surfaces are Discord posts only you can edit until the posting bot ships. The eventual script formats entries the same way — noted here and to be read by [discord-posting-bot]'s build, referenced by slug.
-**Walkthrough.**
-1. Open the test-rezips channel pin and add one line: every build entry names the repository commit it was cut from (and attaches a zip where one is offered). Look for: the pin's edited text showing the promise.
-2. From the next rezip entry on, include a line "Commit: <hash>" — Claude supplies the hash in the entry draft whenever it drafts one.
-3. Tell this project the pin is edited; the register line for the pin is updated with the added claim and this item closes.
-
---- Build block ---
-Changes: none in this project — the artifacts are Discord posts. The entry-format note travels to [discord-posting-bot] by this slug.
-Acceptance: the pin's text promises the commit line, reported by you.
---- End build block ---
+1. Open a chat on `DEMOS/Polit Fart Announcer 1`. Ask Claude there to delete `CYCLES.md` from the project root. Look for: the file gone from the folder listing.
+2. In the same chat, ask Claude to delete the `#### [user] Weekly listen-through of the page is due [weekly-listen]` entry from that project's Unprocessed. Look for: the entry gone from QUEUE.md, and the three items it named still present.
+3. Tell this project it is done; this item closes.
 
 --- Cleared to run above this line ---
 
@@ -144,38 +344,6 @@ Not before: 2026-09-21
 
 **Files:** none in this project except the research file step 2 creates under `resources/research/`. The artifact is an article for flintcraft.tech. Relates to [competition-comparison-article] — a separate piece, no dependency either way.
 
-#### [user] Correct and post the announcement about rationale moving out of operative rules — the draft tells readers the why lives in session logs they can't reach [announcement-rationale-split-correction]
-Captured by you 2026-08-09 — split out of [rationale-relocation-invisible-to-consumers] when that capture was deleted as otherwise satisfied. The 2026-08-09 Discord draft says the reasoning "lives in the session logs where you can go and read it." False for every reader not developing the method: the plugin package ships neither `LOG/` nor `resources/`. Posting it as written points users at something they cannot access.
-**Why this is the user's line:** Claude can draft the correction; only the user can post. Under the capability test, drafting is Claude-work and posting is not.
-**Walkthrough:**
-1. Claude drafts the corrected announcement, replacing the session-logs claim with the actual split: why the method behaves a certain way is in the shipped FAQ; why a rule is worded as it is stays in the development log.
-2. The user says what to change.
-3. The user posts it.
-4. The user confirms; it's recorded and the line removed.
-Rough draft, to sharpen at step 1 — the announcement's other content wasn't reviewed, so check the whole thing, not only the false sentence. Also decide at step 1 whether it's still worth announcing, given the week that has passed.
-**Paced 2026-08-14 on the user's decision: last in a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Last because it corrects an already-posted announcement rather than being news, so it yields to the three new posts. It lifts when [discord-post-session-start-strength] is posted and closed.
-Blocked by: [discord-post-session-start-strength]
-
-**Files:** none — the artifact is a Discord post. Relates to [self-authoring-rules].
-
-#### Define this project's weekly release cycle, and amend the release model to run on it [weekly-release-cycle]
-**Your decision, 2026-08-22: releases move from purely on-request to a weekly Wednesday cycle.** The pick costs no judgment — release the newest rezip at least a week old, so every change in it has had seven days of continuous dogfooding inside its successors; your correction that no single rezip runs a week is what led there. Due when the latest GitHub release is over seven days old and a week-old rezip exists — both observables. **Extended the same session by the three-channel model on [beta-tester-pathway]:** a Wednesday turn produces two events — this week's pick becomes the new beta, and last week's beta promotes to the stable release — so the cycle definition's steps carry both once those items are kept; the definition here stays buildable on the release half alone.
-
-**The rule change this carries, gate-run at the build from this disposition.** CLAUDE.md's release section currently says a release runs when Alex asks and at no other time (your decision of 2026-08-09, made after stopping an automatic release twice). This narrows it: on request, or when the weekly release cycle falls due — and the reason the old failure does not recur is that the cycle asks no readiness question: the calendar and the git log settle which rezip goes, retrospectively, where the rejected middle option asked "is this good enough?" prospectively. On-request stays; the pre-rejected pause-before-publishing middle option stays rejected.
-
-Rule gate: run — amendment to the Release section of CLAUDE.md, naming and superseding its at-no-other-time clause; the 2026-08-09 reasoning is outweighed on the stated ground rather than called wrong.
-
---- Build block ---
-Changes: create this project's cycles doc with the release-cycle definition (artifact: the GitHub release; steps: pick newest week-old rezip, run the release ritual; cadence: weekly, Wednesday, declared; observable: the latest GitHub release's published date, plus the rezip log for a week-old candidate). `CLAUDE.md` — amend the Release section: a release runs when Alex asks, or when the weekly release cycle falls due; the at-no-other-time sentence is reworded to carry the cycle.
-Acceptance: the cycles doc parses under the shipped check; CLAUDE.md's release section names both routes and still bars the pause-before-publishing middle option; release-ritual.md needs no change (the ritual itself is untouched).
-Refused: choosing among candidate rezips each Wednesday — newest week-old wins, no judgment.
---- End build block ---
-**Blocker repointed 2026-08-22:** the cycles machinery is built (`2026-08-22-cycles-definitions-and-due-checks-build.md`) with one behaviour unconfirmed, so the fact holding this item is the verification, not the build — the field now names the `[user]` verification line, and this lifts by itself when that closes.
-**Read [expedite-first-beta-release] before building this, 2026-08-26.** Alex proposed a published list of labelled test rezips and then that each Wednesday's pick be the most recent one labelled stable. That is a different selector from this item's newest-rezip-at-least-a-week-old, and it meets this item's recorded refusal of choosing among candidates — the argument for and against is written out there. It may also bear on this item's blocker, since a hand-driven Wednesday turn would not depend on the cycles due-ness check that [cycles-check-fires-nowhere] has stalled.
-**Selector settled 2026-08-26, your decision at the next planning opening — a supersession of this item's pick rule.** The Wednesday **beta** pick is the most recent rezip labelled stable on the nerds list; the **stable release** is last week's beta promoted after its seven-day soak. The newest-rezip-at-least-a-week-old selector is superseded: its week-old property now lives in the promotion step, not the pick. Why the old reasoning loses without reopening the readiness question: the label is applied when the rezip is posted, describing a build that already exists, so the Wednesday turn still reads a recorded state rather than asking "is this good enough?" — the prospective readiness question stays banned. The refusal of choosing among candidates stands: the selector is still mechanical (most recent stable label wins, no judgment on the day). The build block's pick wording is updated to match at build time.
-Blocked by: [cycles-due-check-verification]
-**Files:** `CLAUDE.md`, the new cycles doc. The dependency is host-side: the checks that read the definition must ship first.
-
 #### The beta channel: each Wednesday's pick offered via Discord and a GitHub pre-release [beta-tester-pathway]
 **Your idea, 2026-08-22, designed in the same session into a three-channel model — the standard release-channel shape (Chrome/Firefox), adopted on your terminology question.** Your day-to-day rezips are dev builds, yours alone and unchanged by this. Each Wednesday's pick becomes the **beta**: announced on the Throughliner Discord, hosted as a GitHub pre-release (Discord cannot host an install; the release ritual already builds and attaches zips), and offered to willing testers while it soaks for a week — you as the only tester at first, which is better than nothing and still a beta channel. After its week it promotes to **stable** and goes to the community listing ([marketplace-submission]). This superseded the earlier two-route question (repo-at-HEAD versus per-rezip artifacts): the weekly-pick artifact route won because it gives testers your chosen moments rather than every commit, and it reuses release machinery rather than adding a publish step to every rezip.
 **Your sequencing, 2026-08-22, revised the same day: the channels launch together rather than beta-then-listing** — the community listing is itself part of how testers arrive, so the chain is beta channel + community listing (honestly framed as early), then YouTube videos pointing at them. Written on both items per the known-ordering rule.
@@ -218,45 +386,24 @@ That draft is superseded. The 2026-08-23 rewrite names a specific project rather
 **Kept 2026-08-24, held below the line on Claude's recommendation and your agreement.** As a capture this carried its ordering in prose because captures have no `Blocked by:`; as a held work item it carries the field, so it lifts by itself when the article item closes instead of being re-offered every session while the external review is out. The same ordering sentence is written on the article item per the known-ordering rule.
 Blocked by: [competition-comparison-article]
 
-#### Discord posting bot: an all-rounder so posts and rezip-list updates can be made straight from a session [discord-posting-bot]
-Raised by you 2026-08-26, in the post-close tail, as a side-thought filed for a later /plan. The want: the test-rezips channel's posts and their updates — adding notes to previous entries when issues are reported, changing an entry's stable status — done by a bot rather than by hand, and more generally an all-rounder bot this project can post through directly during /plan or a build. That would be the first route Claude has to Discord, so the never-send-unseen guarantee has to be designed in from the start: nothing posts without you seeing the exact text and saying yes, and an automated update is still a send. Bears on the nerds-list mechanics left open on [expedite-first-beta-release] and on the eventual [weekly-release-cycle] turn.
+#### [user] Re-home the how-to forum posts under the bot's authorship [howto-posts-bot-authorship]
+Filed 2026-08-27 with [posting-rule-two-kinds-and-tip-pipeline], from your instruction that the how-to topics be editable and maintainable by the bot. The constraint that makes this an item at all (recorded in `TOOLS.md`): a bot can only edit messages it authored itself, and the existing how-to posts are yours — so bot maintainability requires each one re-posted by the bot once, after which every later tweak is a bot edit under the approval rule.
 
-**Kept 2026-08-26 at the next planning session, on Claude's recommendation and your agreement — "ok I'm willing to try it."** It designs out smaller than "bot" sounds: no hosted service — a bot account (the Discord-side setup split out as the `[user]` line [discord-bot-server-setup], which holds this build) plus a script making one API call per send or edit. The token risk and its informed consent are recorded on that item's red flag. Every send stays behind the exact-text-yes rule; a register line is still written per post; the route is all that changes, which falsifies CLAUDE.md's "Claude has no route to Discord" sentences — amended in this build, with the never-send-unseen rule restated where they stood.
-
-Rule gate: run — amendment to CLAUDE.md's Discord section (the no-route sentences replaced by the route-plus-approval statement); no new freestanding rule, the send-approval rule unchanged and cited.
-
---- Build block ---
-Changes: `resources/discord_post.py` — standard library only, UTF-8 reconfigure per the scripting constraints: send a message to a named channel, edit a previous message by id, token read from `INBOX/discord-bot-token.txt`, exact text passed in from a file; verified against Discord's current API docs before writing. `CLAUDE.md` — Discord posts section: the "Claude has no route to Discord" sentences amended to name the bot route, with the exact-text-yes approval and the sent-register line restated as unchanged; walkthrough steps in queue items keep "you post" wording only where a post genuinely stays manual.
-Inputs: `INBOX/discord-bot-token.txt` (created by [discord-bot-server-setup]), the channel ids the user names there. Entry format: every test-rezips entry the script posts carries a "Commit: <hash>" line, per [test-rezips-entries-name-obtain-route].
-Acceptance: a test post to the test-rezips channel, its exact text approved by you first, appears in the channel and is then edited by the script; the token is never printed, quoted or committed; CLAUDE.md nowhere still claims Claude has no route to Discord.
-Refused: a hosted always-on bot — nothing here needs to listen, only to send; per-post manual copying stays available whenever you prefer it.
---- End build block ---
-Blocked by: [discord-bot-server-setup]
-
-#### [user] Discord post draft: plain-English consent [discord-post-plain-english-consent]
-Drafted 2026-08-25 at the planning close under the close-sweep design ([plan-close-post-drafting]); approved as a candidate by you, with your addition of the terse-docs mention. [keep-approval-reading-burden] shipped 2026-08-26 and its claims held — then held again 2026-08-27 behind [shared-vocabulary-not-standing-names], whose build retires "the ready list", which this draft's example quotes. At the lift: reword the example to the method's own words, re-verify the whole draft against the shipped build, then post on a day no other Throughliner post goes out.
-Blocked by: [shared-vocabulary-not-standing-names]
-**Draft (under 2,000 characters):**
-> **Plain-English approvals.** When you and Claude go through your captured ideas in a planning session, each one now opens with a plain-English summary of what the idea says — right there in the chat, before any analysis. And when Claude recommends what to do with it, it says in plain words what would actually change ("this would go on the ready list — the queue's cleared-to-build region") and asks whether you agree, in those words. No procedure jargon, no needing to open the queue file to know what you're saying yes to: you approve what's in front of you.
->
-> The files themselves stay tidy through a companion rule: everything written into your project's documents is bounded by the project's own measured norms, so records stay terse enough to actually read when you do open them. The summary serves the moment; the documents serve the return visit.
+**Walkthrough.**
+1. Once the posting script exists, Claude fetches each how-to post's current text through the bot and shows it to you unchanged. Look for: the text matching what the forum shows.
+2. On your yes per post, the bot posts the replacement in the same topic. Look for: the new post appearing under the bot's name.
+3. You delete your original post of each (only you can — the bot cannot delete or edit your messages in a forum topic it doesn't manage, and your authorship is the thing being replaced). Look for: the topic showing only the bot's copy.
+4. The register line for each how-to post is updated to point at the bot's copy, with the channel named; this item closes when every how-to topic's live text is bot-authored.
+Blocked by: [discord-posting-bot]
 
 ## Unprocessed
 
-#### Last session advises: plan next, and start with the three failures this run recorded about itself [last-session-advises]
-Advice from the 2026-08-27 build close, not work. The next planning run reads this and deletes it in the same breath.
+#### Last session advises running a build next [forward-advisory]
+Advice from the 2026-08-27 second planning close, not work. The next planning run reads this and deletes it in the same breath.
 
-**Plan rather than build.** Only 5 items are cleared to run and all five are `[user]` work, four of which this run already addressed. Unprocessed holds twelve fresh captures. A /next now would reach almost nothing.
+**Build next.** 19 items are cleared to run and nothing unprocessed overlaps them — Unprocessed holds only six date-held captures (none due before 2026-08-28) and [close-removes-completed-user-items], whose premise the close that filed this has already spent: that capture is a first candidate for the droppable set. The run's shape: thirteen builds first — the Discord posting stack (bot script, prune, collision guard, tips model, entry lifecycle), the hand-over checkpoint, and five doc fixes — then the walk-throughs and two audits batched at the end. The compliance audit recomputes its scope from git, so it covers the rule builds the same run ships.
 
-**Start with the three self-observations, and weigh them together rather than one at a time** — [capability-just-granted-not-considered], [walkthrough-jargon-broken-by-its-own-author] and [file-link-not-offered-at-hand-over]. All three are the same shape: a shipped, clearly written rule that did not fire at the moment it applied, and two of the three were caught by the user rather than by anything in the method. One of them broke a rule this very run had authored an hour earlier. The third capture names a candidate worth testing against the transcript: all three happened while composing a message handing something over, and none while editing a file. A rule per instance is what the admission gate exists to refuse.
-
-**Then [no-route-to-discord-is-false]**, which is the highest-value single fix: this project's own always-loaded instructions still tell every session that Claude has no route to Discord, and that route now exists. It is the standing instruction that would have produced the capability failure above again tomorrow, memory or not.
-
-**Two lifts are waiting**, both blocked on work this run shipped: [discord-post-plain-english-consent] (its own prose already says to reword its "ready list" example at the lift) and [comparison-article-post-needs-rewrite].
-
-**One red flag is uncleared**: [bot-prunes-test-rezips]. An unattended prune holding Manage Messages deletes published messages irreversibly, and a wrong bound could take the channel pin or another member's post. It wants deciding before it is built, not during.
-
-**And [compliance-audit-lag] is filed as an `[audit]`.** This run authored or amended roughly twenty rules and moved the always-loaded corpus by +47 statements for consumers — the largest single movement on record. That audit is the check on this session's own work.
+**One caution for the run:** [discord-posting-bot] is the stack's foundation — several later items call its script — so if it halts, expect the prune, the entry lifecycle and the how-to migration to wait on it.
 
 #### Show-first approval moments produce their text twice [approval-flow-token-doubling-simplification]
 Captured by you (2026-08-01) while reviewing your Claude Code feature request anthropics/claude-code#77134. Rescoped at your direction 2026-08-13 from a larger item about approval-time doubling generally.
@@ -356,160 +503,9 @@ Not before: 2026-08-31
 #### Should cycles get mermaid diagrams? [cycles-mermaid-diagrams]
 Captured by you, 2026-08-24, mid-planning — your framing: seems reasonable. Filed at your direction without discussion, so the idea is unshaped: what a diagram would show (a cycle's steps? the turn's two events? due-ness over time?), where it would live (in CYCLES.md beside the definition, or generated), and who reads it are all open for the keep-step. Context worth having there: the desktop app renders mermaid in its markdown viewer, and the cycles doc is user-facing by design.
 Skipped 2026-08-26 on Claude's recommendation and your agreement: what settles it is a build that must ship first — [weekly-release-cycle] creating this project's first real cycles doc, with the due-ness check working ([cycles-check-fires-nowhere]'s fix). A diagram designed before any real cycles doc exists would be guessing at a document nobody has seen; take it up once there is one to draw.
-
-#### setup.md's Step 3 heading still promises two settings questions the step says do not exist [setup-step3-heading-stale]
-Noticed while tagging setup.md for [setup-case-d-untagged]. The heading reads "Step 3: Interview (adaptive discovery + two settings)", and the step's own body states plainly that there is no settings question at all, here or anywhere — the last one was dropped in favour of ignoring `INBOX/` on both paths. So the heading contradicts its own step. Left alone rather than fixed in that build, because the item was scoped to response-shape tags and a heading rewrite is not tagging. The fix is one parenthetical; the reason to file it rather than drop it is that a heading is what a session reads first when it jumps into a step, so a stale one steers the read before the correcting sentence is reached.
-
-#### [user] Delete the test cycle fixture and its filed capture from the demo project [cycles-fixture-cleanup]
-Split out of [cycles-due-check-verification], whose verification passed on 2026-08-26 (`LOG/2026-08-26-cycles-due-check-verification-2.md`). What remains is housekeeping in another project, not verification: `DEMOS/Polit Fart Announcer 1` still carries the made-up `CYCLES.md` with its `[weekly-listen]` definition and fixture observable of 2026-08-10, plus the `[weekly-listen]` entry the check filed into that project's Unprocessed.
-
-Both are downstream of a fixture rather than work that project chose — the user's correction on 2026-08-26: the whole cycle was made up as a test, not just its date. The three items the filed entry overlaps ([reload-persistence-check], [other-chimes-unheard], [honorifics-never-fired]) were queued on their own merits and are untouched by this.
-
-Filed as its own item because a walkthrough ends at the item's observable and cleanup after a test gets its own line — and because no session here writes another project's files, so this can only be done in that project's own chat. It blocks nothing: the verification it follows has already passed.
-
-**Walkthrough.**
-1. Open a chat on `DEMOS/Polit Fart Announcer 1`. Ask Claude there to delete `CYCLES.md` from the project root. Look for: the file gone from the folder listing.
-2. In the same chat, ask Claude to delete the `#### [user] Weekly listen-through of the page is due [weekly-listen]` entry from that project's Unprocessed. Look for: the entry gone from QUEUE.md, and the three items it named still present.
-3. Tell this project it is done; this item closes.
-
-#### Discord posts split into tips and news, and the posting rule describes only one kind [discord-channel-purposes-split]
-Raised by you on 2026-08-27, while naming the channels the bot may post in. Your decision, in your own terms: what currently sits in *announcements* is posts that will from now on be known as **tips**, and *announcements* is being narrowed to **news only**. The bot may post in tips, announcements, and test rezips for nerds.
-
-This project's own posting rule (CLAUDE.md, "Discord posts") does not carry that split. It describes a single kind of post — announcing new features, changes and improvements to Throughliner — and explicitly rules out tips on using Claude Code and general development lessons, with the test being "did Throughliner change" rather than "did we learn it". Under the new split that test still fits announcements-as-news, but it is the wrong test for a tips channel, and the rule now has nothing to say about the channel that will carry most of the volume.
-
-Worth settling before a bot can post anywhere, because a bot aimed at the wrong channel is a published mistake rather than a draft one, and because the existing rule would currently refuse to draft the tips the tips channel is for.
-
-What a planning session would decide: whether the posting rule gains a second kind with its own test, or whether tips are out of scope for this project entirely and only news is drafted here; and what the draft brief is for a tip, given the existing brief is written for a feature announcement. Also whether `INBOX/sent.md` should record which channel a post went to — it currently records the destination as "the Throughliner channel", which no longer distinguishes anything.
-
-Filed rather than built: this changes a standing rule about what leaves the machine, and rule admission is planning work.
-
-#### Posting bot prunes old test-rezips entries after each new post [bot-prunes-test-rezips]
-Your decision, 2026-08-27, given while the channel pin was being edited: pruning old entries is no longer a by-hand job — now the bot exists it can be done from this project, straight after each new build entry is posted. The pin no longer claims hand-pruning; it was reworded to name no mechanism at all, precisely so this can ship without the pin becoming wrong.
-
-Scoped as an addition to [discord-posting-bot] rather than separate work: the same script that posts an entry does the prune in the same run. Referenced by slug from both sides.
-
-What the build has to settle: how many entries the list keeps (a number nobody can derive is a bare number, so it wants your figure or a rule like "keeps the newest N of each label"); that the **pin itself is never pruned** — it is a pinned message rather than a build entry, and the prune must exclude it by construction rather than by ordering luck; and what happens when a prune fails partway, since deleting published messages is not recoverable.
-
-Two facts established live this session and worth carrying into that build:
-- the bot's `Manage Messages` permission is what allows deleting other people's messages, and it is already granted;
-- a bot can only EDIT messages it authored itself, so anything the bot may later need to rewrite has to have been posted by the bot in the first place. Pruning is deletion, not editing, so this does not block the prune — but it does mean an entry posted by hand can never be corrected by the bot afterwards.
-
-Red flag · State: uncleared
-Deleting published messages is irreversible and reaches other people's posts. The prune targets a public channel, runs unattended after a post, and has `Manage Messages` — so a wrong bound, an off-by-one, or a mis-parsed entry deletes content nobody can recover, including potentially the pin or another member's message. The risk is stated rather than designed around here: what to do about it is the build's decision and yours, not this capture's.
-
-#### Sent-register pointer resolved to nothing — the pin's text was not where the register said [sent-register-pointer-resolves-to-nothing]
-Found live on 2026-08-27 while trying to rewrite the test-rezips channel pin. The register line in `INBOX/sent.md` for that pin ends "posted text verbatim in `LOG/2026-08-26-beta-day-one-posts-2.md`". That record contains no quoted text at all — no blockquotes, no fenced block, nothing. The pin's words were in no other record either. What the project actually held was the register's own one-clause paraphrase of the claims.
-
-This defeats the register's stated purpose. The rule says a post's claim is recorded so a later repeal can be checked against it, and a pointer that resolves to nothing means the check cannot run — while the line still reads as though it can, which is worse than an obviously missing record. The failure was only found because a session needed the text for something else; nothing detects it.
-
-The text was recovered from the live channel through the newly-built Discord bot, so the pin's words are now genuinely on file in `LOG/2026-08-27-test-rezips-pin-edited.md`. That repairs this one instance and nothing else.
-
-What a planning session would settle: whether the same fault sits on other register lines (several say "posted text verbatim in <file>" and none has been checked); whether a pointer should be verified at the moment it is written, which is the only moment the text is definitely to hand; and whether the bot now makes recovery cheap enough that unverified pointers matter less — noting that recovery only works for channels the bot can read, and only while the message still exists.
-
-Related: [bot-prunes-test-rezips] would delete old entries, which removes the recovery route for exactly the posts whose text was never stored.
-
-#### Capability granted minutes earlier was not considered when the work needed it [capability-just-granted-not-considered]
-Raised by you on 2026-08-27, in your own words: *"you're supposed to have read message history access through the bot"*.
-
-The sequence, which is the whole point of the capture. Claude walked you through creating the Discord bot, and in that walkthrough specified Read Message History among its permissions and confirmed the token was on disk. Roughly twenty minutes later, in the very next item, Claude needed the text of a Discord message, could not find it on file, and offered you two ways to supply it yourself — never considering the bot it had just provisioned for reading Discord.
-
-The method already carries the rule this breaks: before handing work to the user, name the tool that would do it and confirm it is absent or unauthenticated. Here the tool was present, authenticated, and had been set up in the same session by the same session. The check either did not run or ran against stale knowledge of what this project can do.
-
-Why it is worth a rule rather than a shrug: the existing check is written for tools that might exist somewhere in the environment, and it is weakest exactly where it should be strongest — on a capability so new that nothing in the project's documents mentions it yet. A session's sense of "what I can do here" is formed early and is not re-derived when it changes mid-session.
-
-What a planning session would settle: whether anything durable should record a project's live capabilities as they are gained — a `TOOLS.md` line written at the moment a credential or integration lands would have answered this in one look — or whether the fix belongs in the capability check's wording, requiring it to re-read what this session itself has set up. Note that `TOOLS.md` already exists for exactly this class of fact, which suggests the gap is a missing write rather than a missing mechanism.
-
-#### Walk-through jargon rule broken within the hour by the run that built it [walkthrough-jargon-broken-by-its-own-author]
-Found live on 2026-08-27. Your words when the step arrived: *"I don't understand what you want me to do"*.
-
-Earlier in the same run, two rules shipped: general developer and testing vocabulary joins the translate-away list ([general-jargon-translate-and-walkthrough-readback]), and a step being handed over is read back for such terms before it goes out. Within the hour the same session handed you a step reading "Developer Portal → Bot → Privileged Gateway Intents → Message Content Intent → Save Changes" — four terms naming nothing in your own files, no indication where any of them sit on screen, and no read-back.
-
-Re-explaining it as five located steps worked immediately, which is the evidence the rule is right and the trigger is what failed.
-
-The uncomfortable part, and the reason this is worth filing rather than noting: the rule was not forgotten. It was authored, tested against a specimen and written into the shipped docs by the session that then broke it. So "state the rule more clearly" is not the fix — the rule was as clear as it will ever be to its own author. What failed is that nothing fires at the moment a step is composed; the read-back is an instruction to remember to re-read, which is the shape this project has repeatedly found does not hold.
-
-Compounding it: those steps were also not verified before being handed over. The permission fix and the intent toggle were each described from Claude's model of Discord's interface rather than checked, and the first description of the intent toggle was the one that failed.
-
-What a planning session would settle: whether a hand-over step can be checked mechanically at all (a word list is the obvious idea and the rule itself already refuses one, on the ground that the class is open-ended); or whether the answer is structural — for instance requiring every handed-over step to name a thing on screen and a thing to look for, which is a shape a reader can check even where the vocabulary cannot be enumerated. Note that requirement already exists for authored walkthroughs and was not applied to a step composed live.
-
-#### CLAUDE.md still says Claude has no route to Discord, and that stopped being true today [no-route-to-discord-is-false]
-Surfaced by /rescan at the end of the 2026-08-27 build run. The Discord posts section of this project's CLAUDE.md ends "Claude drafts and Alex posts, because Claude has no route to Discord." The bot built and authorised in that same run read the test-rezips channel's pinned message live, so the stated reason is already false, and the posting half becomes false when [discord-posting-bot] ships.
-
-This is not a tidying job. The sentence is a standing instruction read at the start of every session in this project, and it tells a session not to look for a route. That is the precise shape of the failure recorded the same day in [capability-just-granted-not-considered]: work was handed to the user that the project could have done, minutes after the capability landed. The instruction would have produced that outcome again tomorrow even without the memory lapse.
-
-What a planning session would settle: what the sentence becomes. Reading and posting are not the same permission and should probably not be described together — the bot can read the channels it has been added to, and posting stays gated by the standing rule that nothing leaves the machine without the user seeing the exact text. That approval rule is untouched by any of this and should be restated rather than quietly dropped, since "Claude has no route" was doing double duty as both a fact and a safeguard. Only the fact has changed.
-
-Also worth settling in the same pass: whether the draft-and-hand-over flow survives at all for channels the bot can post in, or whether the user approves text that Claude then posts directly.
-
-Related: [capability-just-granted-not-considered], [discord-channel-purposes-split], [bot-prunes-test-rezips], [record-discord-environment-in-tools-md].
-
-#### Record the Discord environment in TOOLS.md so the next session doesn't rediscover it [record-discord-environment-in-tools-md]
-Surfaced by /rescan at the end of the 2026-08-27 build run. Everything below was learned live that day, by making API calls and by two rounds of you changing settings in Discord. None of it is written anywhere a future session reads, so the next one that needs it repeats the calls and, where a permission is missing, repeats the walkthrough.
-
-`TOOLS.md` at the project root is the home the method already defines for exactly this — facts about a project's environment that are expensive to re-derive — and this project has no such file yet. Any session may write one the moment it has a fact to record, so this is an overdue write rather than new machinery.
-
-The facts:
-- the bot's token lives at `INBOX/discord-bot-token.txt`, outside git (proved with `git check-ignore`), and is used as an `Authorization: Bot <token>` header against `https://discord.com/api/v10`;
-- the server is "Throughliner fan club";
-- **announcements** and **tips** were readable with no per-channel setup;
-- **test-rezips-for-nerds** returned HTTP 403 "Missing Access" until the bot was added to that channel's own permissions — a channel overwrite, not a missing scope;
-- **main** still returns 403, and has not been granted access, although the bot item expected it to be a posting target;
-- Message Content Intent had to be enabled in the Developer Portal, or message text comes back as an empty string with no error;
-- a bot can only EDIT messages it authored itself; `Manage Messages` allows deleting others' messages and pinning, never rewriting them.
-
-One thing to decide rather than assume: `TOOLS.md` is committed, so the channel IDs would sit in the repository. They are not credentials and the server is this project's own, but it is a publication decision and yours to make — the alternative is recording the channel names only and letting a session look the IDs up through the bot.
-
-Related: [capability-just-granted-not-considered], which is the failure this write prevents; [no-route-to-discord-is-false]; [bot-prunes-test-rezips], whose build needs the can't-edit-others fact.
-
-#### View-in-doc link not offered until the user asked for it [file-link-not-offered-at-hand-over]
-Raised by you on 2026-08-27, in your own words: *"please link to the file so it opens in sidebar"*.
-
-The instance: during the bot walkthrough, Claude created an empty file for the token and told you to find it in File Explorer and open it with Notepad — naming the path in prose but giving no link. The view-in-doc rule already requires a plain link to a file being pointed at, and you had to ask for what the rule already mandates.
-
-Small on its own. Filed because it is the **third instance in one run** of a shipped rule failing to fire at the moment it applies, alongside [walkthrough-jargon-broken-by-its-own-author] and [capability-just-granted-not-considered]. Two of the three were caught by you rather than by anything in the method, and the third was caught only because a later step needed the thing the rule would have provided.
-
-What makes this one distinct from the jargon case: the jargon rule was authored in that same session, so recency was not the problem. This rule has shipped for months. So "the rule is too new to have stuck" does not explain the pattern, and neither does "the rule is unclear" — all three are clearly written and were correctly applied elsewhere in the same run.
-
-What a planning session might weigh: whether these three are one finding rather than three, and if so what the shared cause is. A candidate worth testing against the transcript: all three failures happened while composing a message to hand something over, and none happened while editing a file. If that holds, the gap is that hand-over composition has no checkpoint, while file edits have several.
-
-Not proposing a rule here — a rule per instance is what the admission gate exists to refuse, and the useful move is probably one look at all three together.
-
-#### Throughliner bot needs an icon in the sibling-project house style — white linework on Chagora's background [bot-icon-house-style]
-Captured by you on 2026-08-27, on your instruction, with the reference files you named.
-
-**What you asked for:** the Throughliner bot icon redone in the same style as Chagora's, and as AFK-cats' will be — **white linework, on the same background Chagora uses**. The draft to work from is `Throughliner-icon.png` at this project's root. Note it is currently untracked, so git holds no copy of it.
-
-**The house style, read from `Casual Projects/Chagora/icon.png`:** a circular badge with a thin dark rim; the subject drawn as flat, stroke-only **white** line art with no fill and no shading; sitting on a dark diagonal gradient that runs deep red at the left through to a desaturated teal-blue at the right, darkening toward the centre. The line art exists separately as `Casual Projects/Chagora/chagoraiconw.svg` — white paths, no background — which suggests the working method is line art as vector, composited onto the gradient disc and exported as PNG.
-
-**The gap is larger than a recolour, and that is the thing to weigh before scoping it.** The current draft is not line art with the wrong colour on it — it is a fully rendered illustration: a pastel orange-and-blue mascot with gradient fills, soft highlights, dark outlines and an orange flame glow, on black. Turning that into flat white strokes is a redraw, not a colour change, and no filter gets from one to the other. **Corrected at the 2026-08-27 close: a vector source now exists.** `throughlinerprojectboticon.svg` was added at the project root during that session — Inkscape, currently black fill on an A4 page. The paragraph above was written before it appeared and treated the job as a redraw because no line art existed. With vector line art in hand it is much closer to a recolour and composite, which changes who can do it: recolouring the strokes white and placing them on the Chagora background is plausibly Claude's work, not a design act. Confirm the SVG is the intended line art before scoping on it — it was not discussed, only found. The figure in the rendered draft carries a wrench and a pencil, which read well and are worth keeping either way.
-
-**AFK-cats is already staged for the same treatment**, which is why this is a family decision rather than a one-off: `AFK-cats/assets/` holds `cat-noun-project-source.svg` and, tellingly, `reference-sibling-bot-icon.png`. Whatever is settled here sets the pattern for that one.
-
-**On who does it — not settled, and worth splitting at the decision step.** Inkscape is installed on this machine (it is why `python` resolves oddly here, per the scripting constraints), and its command line could do the compositing and export once white line art exists as an SVG. The drawing itself is a design act and is likely yours, or a redraw commissioned some other way. So this probably decomposes into a `[user]` item for the line art and a build item for compositing to the house background — rather than being wholly one or the other.
-
-Also worth deciding: whether the finished icon belongs in the repository (Chagora keeps both the SVG and the PNG at its root), and whether the bot's Discord avatar gets set from it, which is a separate act in the Developer Portal.
-
-#### [audit] Compliance audit over the rule changes since the last audit [compliance-audit-lag]
-Filed by the rule checks at the 2026-08-27 build close, under the slug they print. `py resources/rule_signals.py .` reported 3 rule-bearing commits since `2026-08-26-compliance-audit-lag-build.md` uncovered by any compliance audit — and this session's own commit makes a fourth, much the largest, so the real scope is wider than the figure the check printed before the commit landed.
-
-Scoped to the changed files (delta scope, as the check computes it): `CLAUDE.md`, `plugin/throughliner/docs/done-build.md`, `done.md`, `feedback-and-inbox.md`, `next-build.md`, `next.md`, `plan.md`, `rescan.md` — plus, from this session, `skill-nonspecific-rules.md`, `next-audit.md`, `done-plan.md`, `setup.md` and `migrate-checklist.md`. The audit run should recompute the list rather than trusting this one, since the check reads it from git.
-
-The criteria are already written and are not re-derived: `resources/method-compliance-audit-checklist.md` carries the four lenses — self-authoring compliance, response-shape tag placement, narration drift, and decision history sitting in operative text (the delete-and-read test).
-
-**This session is an unusually good reason to run it rather than a routine one.** It authored or amended roughly twenty rules in a single run, several by supersession and repeal, and it added +47 always-loaded rule statements for consumers and +144 across the fetched procedure docs — the largest single movement the growth report has recorded. Two of the four lenses are exactly what a run that size is most likely to have degraded: rationale creeping into operative text, and tags placed by habit rather than by the arm they govern.
-
-Worth checking specifically, because they were done fast and late in the run: the response-shape tags added across `setup.md` (fifteen steps tagged in one pass, several with conditional arms), and whether the terminology renames left any sentence whose grammar no longer works around the new word.
-
-As an `[audit]` this edits nothing — it reads and files findings as captures, which the next planning session weighs.
-
-#### SPEC owes two sentences for behaviour built on 2026-08-27 [spec-owes-warn-and-outcomes]
-Filed at the build close, by the build that found the gap. Not written into SPEC here: the session that made a choice is not the session that certifies it in product truth, so this waits for a planning run. SPEC lags these two sentences, visibly, until then.
-
-**Most of the run needed nothing.** SPEC already carried the sentences for builds reading the queue's cleared region whole with its reasoning, the completion-ask carve-out keyed on a post-close hand-over, and session_start reporting the date from the clock — all written ahead of the build, which is the lead model working as designed. These two are what it does not carry.
-
-**One, for [warn-dont-enforce-immediate-requests].** SPEC describes no behaviour for what happens when a user asks directly for something a rule of the method would hold back. The shipped rule: one standalone warning turn naming what the request crosses, the risk, and briefly what could be done instead; the work then proceeds on the user's next word, whatever it is; both the warning and the work are recorded. Two carve-outs where the existing gate stands instead — anything leaving the machine still needs an explicit yes to the exact text, and destruction git cannot undo still goes through the file-safety rules. The warning is a turn of its own so the request can be withdrawn, and a second ask is not what unlocks it. This belongs in SPEC because it is a promise to the user about who decides, not an internal procedure detail.
-
-**Two, for [walkthrough-outcome-not-reached].** SPEC's `[user]`-work paragraph describes completion but has no vocabulary for an item a run did not get to. The shipped model: every `[user]` item a run touched ends on one of three outcomes — done, deferred, or not reached — with **deferred written only from the user's own word**, and not-reached telling a later session to present the item fresh. It matters in SPEC because it is what stops a record claiming a decision the user never made.
-
-Suggested placement is beside the existing "No completion asks on `[user]` work" paragraph for the second, and near the multi-item /next paragraph for the first — but where a sentence sits is the planning session's call, as is whether SPEC's own wording differs from the summary above.
+Held 2026-08-27 with the new capture bow-out field, so it stops being re-offered while the wait runs: the blocker is now cleared to run, and this returns by itself once it is built.
+Blocked by: [weekly-release-cycle]
+
+#### Close removes the four completed walk-through items — guard note [close-removes-completed-user-items]
+Filed by /rescan 2026-08-27 as belt-and-braces. This session's close is due to remove five completed `[user]` items from Processed, four proven done by their LOG records — [discord-bot-server-setup], [cycles-due-check-verification], [discord-post-session-start-strength], [test-rezips-entries-name-obtain-route] — and [bot-token-reset], walked to its verified end in this session (new token authenticated, old one dead). The intent otherwise lives only in this conversation. Once the close has done it, this capture's premise is gone and the next planning session deletes it in the droppable set.
 

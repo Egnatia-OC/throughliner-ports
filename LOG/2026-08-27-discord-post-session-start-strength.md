@@ -1,4 +1,4 @@
-# [HASH] — Session-start-strength post goes out, and its FAQ entry lands with it
+# 32675a3 — Session-start-strength post goes out, and its FAQ entry lands with it
 
 `[user]` item [discord-post-session-start-strength], walked through in the
 2026-08-27 build run's walk-through pass. Posted.

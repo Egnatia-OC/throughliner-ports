@@ -61,3 +61,23 @@ defect found in the morning caused a fresh instance of itself in the afternoon,
 which is about as direct a piece of evidence for it as the record will ever hold.
 
 Filed as [walkthrough-represents-work-completed-outside-a-session].
+
+## Appended 2026-08-27 — the "living dangerously" post's text, recovered
+
+The register claimed this record held the post verbatim; it held none. The text
+was recovered live through the bot by the planning session processing
+[sent-register-pointer-resolves-to-nothing] — and its channel was
+**announcements** (posted 2026-08-26 05:21), not "main" as the register said;
+"main" is a Chagora testing channel, per the user's correction. Verbatim:
+
+> **The first beta is out — and we're living dangerously. 🎲**
+>
+> I'm shipping before it's perfect, because there's never a good time and I don't believe in perfection. The tool is ready for testers, and that's good enough. Today's release is brand new — today's build, patched and re-run this afternoon on top of the version I've been living in since it landed late last night. Very fresh, but not untested.
+>
+> **Install it the reliable way:** follow the pinned "How to install" post in the how-to forum — that's the tested route, and Claude walks you through it in plain English.
+>
+> **Day-one prize: everyone here gets to be a nerd. 🏅** All 14 of you are getting the **nerd** role, which opens the test-rezips channel — a running list of my raw development builds, posted as I make them, each labelled honestly: stable (with caveats), not stable (with the problems named), or under testing — use at your own risk.
+>
+> **What's dangerous about them, straight up:** test rezips are snapshots of work in progress. They haven't soaked, some have known failures written right on the label, and a bad one can misbehave in your project's files. The beta release will be the safest pick; the rezips are for people who enjoy the bleeding edge and will tell me what broke. Either way — keep your projects in git (Throughliner sets this up by default), and report anything odd in the support channel.
+>
+> Thanks for being here on day one. This is exactly the group I wanted to break things with. 💖

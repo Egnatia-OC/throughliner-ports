@@ -1,4 +1,4 @@
-# [HASH] — Builds read the queue whole again; the generated view and build blocks are retired
+# 32675a3 — Builds read the queue whole again; the generated view and build blocks are retired
 
 A run used to read a generated file assembled from delimited `--- Build block ---`
 regions, with the queue itself refused by the scope-lock. The reasoning was

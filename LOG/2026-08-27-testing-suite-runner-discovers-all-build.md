@@ -1,4 +1,4 @@
-# [HASH] — A discovery runner replaces the ritual's hand-written suite list
+# 32675a3 — A discovery runner replaces the ritual's hand-written suite list
 
 The rezip ritual named three suites by hand. That list went stale the moment a
 fourth was written, and nothing anywhere reported the omission — a suite left off

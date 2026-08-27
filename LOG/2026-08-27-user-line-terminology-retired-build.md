@@ -1,4 +1,4 @@
-# [HASH] — "`[user]` line" becomes "`[user]` item" across the shipped docs
+# 32675a3 — "`[user]` line" becomes "`[user]` item" across the shipped docs
 
 The method called the same thing an item everywhere except when it carried the
 `[user]` tag, where it became a "line". Nothing turned on the difference — it was

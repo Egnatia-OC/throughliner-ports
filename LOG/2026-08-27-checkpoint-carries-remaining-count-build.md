@@ -1,4 +1,4 @@
-# [HASH] — The planning checkpoint says how many entries are left
+# 32675a3 — The planning checkpoint says how many entries are left
 
 The checkpoint banned every count and tally, which took the useful number out with
 the clutter. A user deciding whether to carry on through another item has one

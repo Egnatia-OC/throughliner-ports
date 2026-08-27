@@ -1,4 +1,4 @@
-# [HASH] — Captures gain a bow-out: `Blocked by:` now works in both sections
+# 32675a3 — Captures gain a bow-out: `Blocked by:` now works in both sections
 
 `Blocked by:` belonged to the held region alone. That left an unprocessed capture
 with no way to wait on something already in the queue: it returned to the top

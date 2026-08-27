@@ -1,4 +1,4 @@
-# [HASH] — A release compares stamps before packaging, and "as planned" means read the record
+# 32675a3 — A release compares stamps before packaging, and "as planned" means read the record
 
 Two halves of one failure: an instruction pointing at something written down was
 resolved from memory instead of from the writing.

@@ -1,4 +1,4 @@
-# [HASH] — The droppable-set ask states its recommendation at any batch size
+# 32675a3 — The droppable-set ask states its recommendation at any batch size
 
 The plural specimen carried its recommendation implicitly — "Drop both, or name
 any to keep?" reads as a recommendation because of the shape of the question. At a

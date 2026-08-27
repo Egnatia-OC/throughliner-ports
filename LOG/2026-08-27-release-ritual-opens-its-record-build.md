@@ -1,4 +1,4 @@
-# [HASH] — The release ritual now opens its queue item and closes with its record
+# 32675a3 — The release ritual now opens its queue item and closes with its record
 
 A release runs after the close, structurally — it is asked for, and by then the
 session that would have recorded it has finished. So a release left no trail at

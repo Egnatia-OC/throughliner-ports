@@ -1,4 +1,4 @@
-# [HASH] — README says LOG/ and resources/ are historical records
+# 32675a3 — README says LOG/ and resources/ are historical records
 
 An outside reader opening `LOG/` or `resources/` meets entries describing
 mechanisms that no longer exist, in vocabulary the method has since retired, with

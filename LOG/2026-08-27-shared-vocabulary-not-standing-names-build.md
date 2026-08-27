@@ -1,4 +1,4 @@
-# [HASH] — The method's own words are the shared vocabulary; standing aliases are retired
+# 32675a3 — The method's own words are the shared vocabulary; standing aliases are retired
 
 "The ready list" was a standing plain-English name for the queue's cleared region
 — a second name for something the method already names in the artifact the user is

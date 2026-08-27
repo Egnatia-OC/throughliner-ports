@@ -1,4 +1,4 @@
-# [HASH] — Sessions read the date from a fact line instead of assuming it
+# 32675a3 — Sessions read the date from a fact line instead of assuming it
 
 Sessions were deriving today's date by assumption and writing wrong ones into
 records, captures and holds. The user reported it recurring across sessions

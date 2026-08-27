@@ -1,4 +1,4 @@
-# [HASH] — Audit findings file straight to the queue; the write-time approval is repealed
+# 32675a3 — Audit findings file straight to the queue; the write-time approval is repealed
 
 An audit presented its findings as a numbered set and waited, then handled
 contested ones one at a time, then filed the survivors. The user pointed at the

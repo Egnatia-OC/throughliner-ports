@@ -1,4 +1,4 @@
-# [HASH] — Walk-through outcomes get a third value, and "deferred" needs the user's word
+# 32675a3 — Walk-through outcomes get a third value, and "deferred" needs the user's word
 
 Two outcomes could not describe what actually happens to `[user]` work. An item
 the run never presented was being recorded as deferred, which tells the next

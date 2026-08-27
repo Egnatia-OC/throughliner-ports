@@ -1,4 +1,4 @@
-# [HASH] — The queue mover's report is read before continuing, and no retry is blind
+# 32675a3 — The queue mover's report is read before continuing, and no retry is blind
 
 The mover prints what it moved and where the readiness marker ended up. That
 report was going unread, and a second run fired on a guess can compound the first

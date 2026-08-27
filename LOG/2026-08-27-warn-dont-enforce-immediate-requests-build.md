@@ -1,4 +1,4 @@
-# [HASH] — Warn once, then do it: a direct request stops being refused by a rule
+# 32675a3 — Warn once, then do it: a direct request stops being refused by a rule
 
 A direct do-it-now request was being refused on a rule the user had already
 heard. The instance earning this rule's slot is in the 2026-08-26 build

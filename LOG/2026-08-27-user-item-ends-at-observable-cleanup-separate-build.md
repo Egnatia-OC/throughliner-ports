@@ -1,4 +1,4 @@
-# [HASH] — Walkthroughs end at the observable, and another project's steps are filed rather than driven
+# 32675a3 — Walkthroughs end at the observable, and another project's steps are filed rather than driven
 
 Two clauses from one recorded stall. A `[user]` item had proved what it existed to
 prove and then kept going: its remaining steps were cleanup, in a different

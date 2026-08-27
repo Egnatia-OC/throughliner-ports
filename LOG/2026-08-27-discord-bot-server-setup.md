@@ -1,4 +1,4 @@
-# [HASH] — Discord bot created, token on disk, three channels named
+# 32675a3 — Discord bot created, token on disk, three channels named
 
 `[user]` item [discord-bot-server-setup], walked through live in the 2026-08-27
 build run's walk-through pass. Complete.

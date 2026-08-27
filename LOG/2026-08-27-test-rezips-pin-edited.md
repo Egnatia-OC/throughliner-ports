@@ -1,4 +1,4 @@
-# [HASH] — Test-rezips pin edited: entries promise a commit line, pruning claim made mechanism-neutral
+# 32675a3 — Test-rezips pin edited: entries promise a commit line, pruning claim made mechanism-neutral
 
 `[user]` item [test-rezips-entries-name-obtain-route], walked through live in the
 2026-08-27 build run's walk-through pass. Step 1 done.
@@ -79,8 +79,36 @@ messages irreversibly.
 ## Verified from the world, not from the report
 
 The pin was read back through the bot after the edit. The live text carries both
-changes. Full edited text is the block the user pasted, reproduced in the register
-line's pointer.
+changes.
+
+**Appended 2026-08-27 by the planning session processing
+[sent-register-pointer-resolves-to-nothing]:** this record originally said the
+full text was "reproduced in the register line's pointer" — but the register
+line points back here, a circle with the full text in neither. The repair had
+repeated the fault it was repairing. The full pin text, fetched live through
+the bot at the append:
+
+> **Welcome, nerds. 🤓 Read this before installing anything from here.**
+>
+> This channel is a running list of my raw development builds ("test rezips"), posted as I make them. Each entry carries one of three labels:
+>
+> **stable - [caveats]** — I've run it and it held up, with any caveats named.
+> **not stable - [problems]** — it has known failures, listed on the entry. For the curious only.
+> **under testing - use at your own risk** — too new for me to vouch for either way.
+>
+> **Every entry also names the commit it was cut from**, so you can always tell exactly which version you're running and get back to it later — and attaches a zip where one is offered.
+>
+> **What's dangerous, straight up:** these are snapshots of work in progress. They haven't soaked, a label describes only what I'd seen when I posted it, and a bad build can misbehave inside your project's files — writing where it shouldn't, or mangling the documents Throughliner manages. Keep your projects in git (Throughliner sets this up by default), so anything a bad build does can be rolled back.
+>
+> **The safe route is the beta release** — pinned in the how-to forum. Use this channel only if you enjoy the bleeding edge and will tell me what broke.
+>
+> **When something breaks:** tell Claude about it right there in your Claude Code chat. It knows the reporting route — it'll draft a GitHub issue on the Throughliner repository and post it with your yes (or, without the GitHub CLI, draft a report for the form for you to paste). Mention the build label you were on. Every report makes the next beta better.
+>
+> The list keeps the newest builds; older entries are pruned as new ones go up.
+
+The old pin's text is recoverable from this: it is the block above minus the
+commit-line sentence, with the closing line reading "I prune old entries by
+hand" — both deltas quoted earlier in this record.
 
 ## Outcome: step 1 done; the item is NOT complete
 

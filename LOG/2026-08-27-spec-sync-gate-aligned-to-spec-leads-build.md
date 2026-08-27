@@ -1,4 +1,4 @@
-# [HASH] — The spec-sync gate stops describing a SPEC-trails-behaviour model
+# 32675a3 — The spec-sync gate stops describing a SPEC-trails-behaviour model
 
 The /plan close's spec-sync gate carried a paragraph from the model that preceded
 SPEC-leads. It said editing SPEC when a change was merely *decided* would make it

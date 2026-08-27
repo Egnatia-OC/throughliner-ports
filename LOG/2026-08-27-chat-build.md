@@ -1,4 +1,4 @@
-# [HASH] — Chat record: 24 builds, five walk-throughs, a live Discord bot, and three rules this run broke itself
+# 32675a3 — Chat record: 24 builds, five walk-throughs, a live Discord bot, and three rules this run broke itself
 
 Chat-level record for the 2026-08-27 build session. The per-item records are the
 24 `-build.md` entries and the four `[user]` records of the same date; this one

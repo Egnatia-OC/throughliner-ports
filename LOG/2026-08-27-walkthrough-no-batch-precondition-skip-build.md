@@ -1,4 +1,4 @@
-# [HASH] — Every `[user]` item the pass reaches gets its own turn
+# 32675a3 — Every `[user]` item the pass reaches gets its own turn
 
 A walk-through pass was filtering items away before presenting them, on a
 judgment about whether each one's moment had come. That decides something the

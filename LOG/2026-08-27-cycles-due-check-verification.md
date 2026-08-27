@@ -1,4 +1,4 @@
-# [HASH] — Cycles verification closes at its observable; the cleanup splits off
+# 32675a3 — Cycles verification closes at its observable; the cleanup splits off
 
 `[user]` item [cycles-due-check-verification], reached in the walk-through pass
 of the 2026-08-27 build run. Not re-driven: the record check answered it.

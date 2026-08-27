@@ -1,4 +1,4 @@
-# [HASH] — setup.md's tag-free declaration repealed and every step tagged
+# 32675a3 — setup.md's tag-free declaration repealed and every step tagged
 
 /setup used to declare itself free of response-shape tags, on the reasoning that
 it runs on two kinds of session — a fresh adoption where the rules defining those

@@ -1,4 +1,4 @@
-# [HASH] — One exception to the no-completion-asks bar, keyed on two recorded facts
+# 32675a3 — One exception to the no-completion-asks bar, keyed on two recorded facts
 
 The bar on asking whether `[user]` work is done is strong and stays strong. It
 leaves three routes to knowing: the item was walked to its end this session, the

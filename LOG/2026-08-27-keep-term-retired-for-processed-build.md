@@ -1,4 +1,4 @@
-# [HASH] — "Keep" retires as the disposition term; an entry is processed, with its outcome named
+# 32675a3 — "Keep" retires as the disposition term; an entry is processed, with its outcome named
 
 "Keep" said nothing about where a piece of work went. It named the operation by
 its opposite — not-delete — and the queue has two destinations behind it: cleared

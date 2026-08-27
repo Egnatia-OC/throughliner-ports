@@ -1,4 +1,4 @@
-# [HASH] — Walkthroughs name where each stored text lives, and verification steps list their claims
+# 32675a3 — Walkthroughs name where each stored text lives, and verification steps list their claims
 
 Two clauses on the existing walkthrough requirement, both from the same root: a
 step that reads clearly to its author can be unfollowable to the person driving it.

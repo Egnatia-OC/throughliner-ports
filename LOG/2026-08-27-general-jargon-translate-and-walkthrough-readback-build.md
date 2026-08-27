@@ -1,4 +1,4 @@
-# [HASH] — Developer and testing words join the translate-away list
+# 32675a3 — Developer and testing words join the translate-away list
 
 The vocabulary rule's translate-in-passing list named method-internal terms — step
 numbers, procedure filenames, tag names. It said nothing about ordinary developer
