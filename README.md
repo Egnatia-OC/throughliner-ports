@@ -55,6 +55,13 @@ This is exactly what the installer does (clone into `~/.hermes/plugins/<name>/`)
 the runtime loader performs no security scan. Recommended if you prefer to
 keep the install-time scan on.
 
+`hermes plugins enable throughliner` asks one interactive question:
+*"Allow this plugin to replace built-in tools (e.g. shell_exec, write_file)?
+Grant it?"* Answer **no** — this port does not override built-in tools; it
+intercepts them through lifecycle hooks (accepted per-run with
+`--accept-hooks`). In a non-interactive shell the prompt waits for input
+and blocks, so run the enable in a terminal.
+
 Either way, on first load the plugin:
 
 - verifies the vendored hook tree (`vendor/throughliner/hooks/pre_tool_use.py`
