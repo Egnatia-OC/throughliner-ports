@@ -349,11 +349,16 @@ def _pre_llm_call(**kwargs) -> dict | None:
         cwd = os.getcwd()
         sid = kwargs.get("session_id") or ""
         parts: list[str] = []
-        if kwargs.get("is_first_turn"):
+        if kwargs.get("is_first_turn") and sid:
             out = _run_hook("session_start.py", {"cwd": cwd, "session_id": sid}, timeout=60)
             ctx = (out or {}).get("hookSpecificOutput", {}).get("additionalContext")
             if ctx:
-                parts.append(ctx)
+                # The vendored hooks name per-session working files
+                # _build-<id>.md from the hook payload's session_id; Claude
+                # Code shows the model its session id natively, Hermes does
+                # not, so the shim says it.
+                safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", sid)
+                parts.append(ctx + f"\nSession ID for this session: {safe_id} — per-session working files are named with it, exactly _build-{safe_id}.md (and _freeform-{safe_id}.md for freeform work).")
         pending = _drain_pending_context(cwd)
         if pending:
             parts.append(f"[Throughliner] notes from earlier activity in this project:\n{pending}")

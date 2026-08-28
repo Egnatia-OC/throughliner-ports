@@ -184,6 +184,10 @@ class HermesPluginTest(unittest.TestCase):
         res = self._call(ctx, "pre_llm_call", session_id="test-sid", is_first_turn=True)
         self.assertIsNotNone(res, "no session-start context on first turn")
         self.assertTrue(len(res["context"]) > 0)
+        # The model cannot know the harness session id natively, so the shim
+        # says it — the vendored hooks name per-session files from it.
+        self.assertIn("Session ID for this session: test-sid", res["context"])
+        self.assertIn("_build-test-sid.md", res["context"])
 
     def test_no_context_when_nothing_parked(self) -> None:
         _, ctx = self._plugin_and_ctx()

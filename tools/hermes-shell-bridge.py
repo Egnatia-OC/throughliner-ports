@@ -231,11 +231,12 @@ def main(argv: list[str]) -> int:
             cwd = payload.get("cwd") or os.getcwd()
             sid = payload.get("session_id") or ""
             parts = []
-            if extra.get("is_first_turn"):
+            if extra.get("is_first_turn") and sid:
                 out = _run_hook("session_start.py", {"cwd": cwd, "session_id": sid}, timeout=60)
                 ctx = (out or {}).get("hookSpecificOutput", {}).get("additionalContext")
                 if ctx:
-                    parts.append(ctx)
+                    safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", sid)
+                    parts.append(ctx + f"\nSession ID for this session: {safe_id} — per-session working files are named with it, exactly _build-{safe_id}.md (and _freeform-{safe_id}.md for freeform work).")
             pending = _drain_pending(cwd)
             if pending:
                 parts.append(f"[Throughliner] notes from earlier activity in this project:\n{pending}")
