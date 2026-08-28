@@ -55,6 +55,10 @@ self-invocation** of all five, exactly as upstream intends:
 | `/rescan` | Re-read project state into the session context                 |
 | `/done`   | Close out the build: file results, commit, queue updates       |
 
+**Headless automation note:** `opencode run` treats a non-TTY *open* stdin as
+piped input and waits on it. When scripting runs, redirect stdin:
+`opencode run … < /dev/null` (verified 1.18.x).
+
 ## What the shim enforces
 
 All decisions come from the vendored Python hooks; the shim only translates
