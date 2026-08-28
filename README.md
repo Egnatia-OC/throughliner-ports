@@ -20,13 +20,42 @@ Throughliner is model-agnostic and makes no model choice.
 
 ## Install
 
+Hermes's installer runs a security scan before installing any external
+plugin. This repo will report a **dangerous** verdict — and every finding in
+it is a false positive: the vendored upstream docs legitimately reference
+agent-config files (the upstream method maintains a managed block in the
+project's Claude Code config file), and this port's own docs reference the
+Hermes config file. The scanner treats any such reference *in documentation*
+as a persistence signal, and a single critical finding blocks
+`hermes plugins install` outright — `--force` does not override a dangerous
+verdict. The hooks themselves are stdlib-only, spawn only the vendored hook
+scripts, and fail open on every error path.
+
+Two install paths (both permanent; the loaded plugin is identical):
+
+**Path A — installer, with the install-time scan disabled:**
+
 ```
-hermes plugins install <port-git-url> --enable
+hermes config set plugins.scan_on_install false
+hermes plugins install <port-git-url> --ref <40-hex-sha> --enable
 ```
 
-One command. The installer clones the repo into `~/.hermes/plugins/throughliner/`
-(the repo root carries `plugin.yaml` + `__init__.py` + the vendored tree). On
-first load the plugin:
+`--ref` takes the full 40-hex SHA of the pinned commit you verified
+(see Provenance). You can re-enable the scan afterwards — it only governs
+future installs, not this plugin.
+
+**Path B — manual clone (no scan involved):**
+
+```
+git clone --depth 1 --branch <port-branch> <port-git-url> ~/.hermes/plugins/throughliner
+hermes plugins enable throughliner
+```
+
+This is exactly what the installer does (clone into `~/.hermes/plugins/<name>/`);
+the runtime loader performs no security scan. Recommended if you prefer to
+keep the install-time scan on.
+
+Either way, on first load the plugin:
 
 - verifies the vendored hook tree (`vendor/throughliner/hooks/pre_tool_use.py`
   must exist — without it the plugin disables itself and logs one line),

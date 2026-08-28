@@ -1,6 +1,6 @@
 # Throughliner → Hermes: ANALYSIS
 
-Port target: pristine upstream vendored at `vendor/throughliner/` (pinned `743aa63166ce4875305c7d97041a1b462b0fdc2c`, v1.21.1, 34 files, identity via `vendor/MANIFEST.sha256`; invariant: no vendored file is ever modified). Strategy (per the verified omp reference port at `/home/oc/reports/throughliner`): pristine vendored Python + thin shim translating Hermes events ↔ Claude hook JSON + declarative files; fail-open everywhere.
+Port target: pristine upstream vendored at `vendor/throughliner/` (pinned `743aa63166ce4875305c7d97041a1b462b0fdc2c`, v1.21.1, 34 files, identity via `vendor/MANIFEST.sha256`; invariant: no vendored file is ever modified). Strategy (per the verified omp reference port, published on the fork's `main` branch): pristine vendored Python + thin shim translating Hermes events ↔ Claude hook JSON + declarative files; fail-open everywhere.
 
 ---
 
@@ -129,7 +129,7 @@ Port target: pristine upstream vendored at `vendor/throughliner/` (pinned `743aa
 {
     "hook_event_name": "pre_tool_call",
     "tool_name":       "terminal",
-    "tool_input":      {"command": "rm -rf /"},
+    "tool_input":      {"command": "rm -rf /tmp/scratch"},
     "session_id":      "sess_abc123",
     "cwd":             "/home/user/project",
     "extra":           {...}   # event-specific kwargs
@@ -219,7 +219,7 @@ cd /tmp/smoke/tl-<skill> && git init -q
 git config user.email smoke@example.com && git config user.name Smoke
 hermes -z "You are running the <skill> skill of the Throughliner method. <one-line task for that skill>." \
   -s <installed-skill-name> --in /tmp/smoke/tl-<skill> \
-  -m /models/Qwen3.8-27B-UD-Q4_K_M.gguf --provider <provider-from-§7> \
+  -m <your-model> --provider <provider-from-§7> \
   --accept-hooks --pass-session-id --usage-file /tmp/smoke/tl-<skill>.usage.json
 ```
 - **setup**: "set up this folder with the Throughliner method; answer interview questions minimally (one-word answers)." Assert: `SPEC.md`, `QUEUE.md` (both `## Processed` / `## Unprocessed` sections), `LOG/` exist and are non-empty.
@@ -236,41 +236,27 @@ hermes -z "You are running the <skill> skill of the Throughliner method. <one-li
 - `hermes hooks list` — configured hooks + consent status; `hermes hooks doctor` — exec bit + script drift.
 - `HERMES_PLUGINS_DEBUG=1` on every run for plugin discovery/registration trace.
 
-## 7. Smoke-test model config — THIS MACHINE ONLY (never ship these values)
+## 7. Smoke-test model config (portable — no machine values)
 
-Machine: CPU llama.cpp box. Local OpenAI-compatible endpoint `http://192.168.1.117:8083/v1`, model id `/models/Qwen3.8-27B-UD-Q4_K_M.gguf`. `~/.hermes/config.yaml` already has providers on these hosts (verbatim, relevant entries):
-```yaml
-model:
-  base_url: https://api.minimaxi.com/v1
-  default: glm-5.3
-  provider: zai
-providers:
-  mirai-router:
-    base_url: http://192.168.1.117:8083/v1
-custom_providers:
-  - name: mirai-qwen38
-    base_url: http://192.168.1.117:8085/v1
-    context_length: 262144
-    model: Qwen3.8-27B-UD-Q5_K_XL.gguf
-    api_key: not-needed
-    extra_body: {chat_template_kwargs: {enable_thinking: false}}
-  - name: mirai-router
-    base_url: http://192.168.1.117:8083/v1
-    api_key: ''
-    model: /models/Qwen3.8-27B-Q4_K_M.gguf
-    context_length: 160000
-  - name: mirai-mercury
-    base_url: http://192.168.1.117:8082/v1
-    api_key: not-needed
-    model: /models/Qwen3.8-27B-Q4_K_M.gguf
-    context_length: 160000
-    models: {/models/Qwen3.8-27B-UD-Q4_K_M.gguf: {}}
-    models_discovered: true
-```
-Smoke recipe (pick one):
-1. Per-invocation override (no config edit): append `-m /models/Qwen3.8-27B-UD-Q4_K_M.gguf --provider mirai-router` to every one-shot (`--provider` has no `choices=`, so user-defined names pass; keyed `providers:` entries normalize into `custom_providers`).
-2. Or add one `custom_providers` entry: `- name: mirai-qwen38-ud / base_url: http://192.168.1.117:8083/v1 / api_key: not-needed / model: /models/Qwen3.8-27B-UD-Q4_K_M.gguf / context_length: 160000` (+ optionally `extra_body: {chat_template_kwargs: {enable_thinking: false}}` like the 8082/8085 entries) and use `--provider mirai-qwen38-ud`.
-`-z --usage-file` gives per-run token/cost accounting. Cloud glm-5.3 (zai) is the configured default if the local box is down.
+The port is model-agnostic: any provider/model already configured in Hermes works
+(`hermes setup`). Smoke runs pass the model and provider explicitly per invocation
+so the recipe works on ANY machine that has an OpenAI-compatible endpoint
+configured (local llama.cpp box, cloud, router — any of them):
+
+    hermes -z "Reply with exactly: OK" --provider <your-provider> -m <your-model> --accept-hooks
+
+Notes:
+- `--provider` has no `choices=`, so user-defined provider names pass; keyed
+  `providers:` entries in the Hermes config normalize into `custom_providers`.
+- A `custom_providers` entry for a local endpoint looks like:
+  `- name: <anything> / base_url: http://<host>:<port>/v1 / api_key: <or empty> /
+  model: <model-id> / context_length: <N>` (+ optionally
+  `extra_body: {chat_template_kwargs: {enable_thinking: false}}` for models that
+  emit thinking blocks by default).
+- `-z --usage-file` gives per-run token/cost accounting.
+
+No endpoint, model name, or credential from any particular machine appears in any
+shipped file — pick your own.
 
 ## 8. Universal install contract (end-user, model-agnostic)
 
