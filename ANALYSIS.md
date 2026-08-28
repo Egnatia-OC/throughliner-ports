@@ -4,9 +4,9 @@ Analysis phase deliverable. Scope: map OpenCode's extension model against what t
 Throughliner plugin needs, with verbatim schemas from the 1.18.21 source, so the shim
 author can implement without re-deriving any field.
 
-- Upstream Throughliner: `/tmp/throughliner-upstream` (HEAD 743aa63)
-- Reference port (verified live): the omp port at `/home/oc/reports/throughliner`
-- OpenCode source clone (ground truth for all quotes below): `/tmp/opencode-1.18.21`
+- Upstream Throughliner: pinned at commit `743aa63` (v1.21.1)
+- Reference port (verified live): the omp port, published on the fork's `main` branch
+- OpenCode source: tag v1.18.21 (ground truth for all quotes below)
 
 ---
 
@@ -88,7 +88,7 @@ export const Info = Schema.Struct({
 }).annotate({ identifier: "Config" })
 ```
 
-Note: **`model` is a string** ("provider/model", e.g. `"mercury//models/Qwen3.8-27B-UD-Q4_K_M.gguf"`).
+Note: **`model` is a string** ("provider/model", e.g. `"mercury/my-model-id"`).
 
 **Provider schema** (`packages/core/src/v1/config/provider.ts`):
 
@@ -447,25 +447,17 @@ agent, v2, info, paths, wait }` (`cli/cmd/debug/index.ts`).
   plugins disabled (--pure)" when pure).
 - `opencode debug paths` → global data/config/cache/state dirs.
 
-### 2.11 Machine state (this box)
+### 2.11 Config discovery notes (general)
 
-- `~/.config/opencode/opencode.jsonc` — **valid 1.18.21 config, actually loaded**:
-  provider `mercury` (npm `@ai-sdk/openai-compatible`,
-  `options.baseURL: "http://192.168.1.117:8082/v1"`, model id
-  `/models/Qwen3.8-27B-UD-Q4_K_M.gguf`), `"model": "mercury//models/Qwen3.8-27B-UD-Q4_K_M.gguf"`;
-  plus a `zhipuai-coding-plan` GLM backup provider (API key present on disk — not
-  quoted here).
-- `~/.opencode.json` — legacy dot-file, **not loaded** by 1.18.21 (see §2.1). Also
-  uses port 8082 and an object-form `model` that doesn't match the schema.
-- `~/.config/opencode/` also contains `agent/` + `agents/` (~258 agent .md files) and
-  `commands/` — evidence that both singular and plural dir names are used; the globs
-  cover both.
-- **Port discrepancy**: the batch brief says the llama.cpp endpoint is
-  `http://192.168.1.117:8083/v1`; both machine configs use **8082**. The smoke runner
-  MUST verify which port is live (`curl -s http://192.168.1.117:808{2,3}/v1/models`)
-  before running anything.
-- No `opencode.json`/`opencode.jsonc` in `/home/oc/tmp` or `/home/oc/reports/*` — the
-  smoke fixture project must ship its own config.
+- Global config lives at `~/.config/opencode/opencode.jsonc` (valid 1.18.21 config
+  format: `provider` map + `model` string — see §2.4). A self-contained smoke
+  fixture must ship its own project `opencode.json` (see §6/§7); there is no
+  requirement that a global config exist.
+- `~/.opencode.json` — legacy dot-file, **not loaded** by 1.18.21 (see §2.1).
+- `~/.config/opencode/` may contain `agent/` + `agents/` and `commands/` — evidence
+  that both singular and plural dir names are used; the globs cover both.
+- **Endpoint check before any live run**: `curl -s <your-endpoint>/v1/models` —
+  confirm the provider's `baseURL` responds before budgeting model time.
 
 ---
 
@@ -776,34 +768,32 @@ project files; scripts are stdin/stdout-only (same posture as the omp port).
    skill frontmatter into `.opencode/command*.md`; skills use the permissive path.
 10. **Legacy `~/.opencode.json` is not loaded** — do not ship anything relying on it;
     universal installs use `.opencode/` project config or `~/.config/opencode/`.
-11. **Model quality**: local Qwen3.8-27B Q4 may follow multi-step skill methods
-    imperfectly — smoke tests assert PLUMBING (hooks fired, denials enforced, context
-    injected), not output quality.
-12. **Port discrepancy** (8082 in machine configs vs 8083 in the batch brief) — verify
-    before smoke (§6 step 0).
+11. **Model quality**: the smoke model (whatever the machine runs) may follow
+    multi-step skill methods imperfectly — smoke tests assert PLUMBING (hooks fired,
+    denials enforced, context injected), not output quality.
+12. **Endpoint/port**: verify the provider's `baseURL` responds before smoke
+    (§6 step 0).
 
 ---
 
-## 6. Smoke-test plan (this machine; slow local model — budget 3–15 min per run)
+## 6. Smoke-test plan (any machine; slow local models budget 3–15 min per run)
 
-**Fixture**: `/tmp/tl-smoke-opencode/` containing the ported plugin
-(`plugin/throughliner/`), skills (`.opencode/skills/{setup,plan,next,rescan,done}/SKILL.md`),
-and an `opencode.json`:
+**Fixture**: a scratch git project containing the ported plugin and an
+`opencode.json`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "mercury//models/Qwen3.8-27B-UD-Q4_K_M.gguf",
-  "plugin": ["./plugin/throughliner"]
+  "model": "<provider>/<model-id>",
+  "plugin": ["<abs-path-to-repo>/opencode/plugin.ts"]
 }
 ```
 
 **Step 0 — endpoint check** (30 s):
 ```sh
-curl -s http://192.168.1.117:8082/v1/models   # machine configs use 8082
-curl -s http://192.168.1.117:8083/v1/models   # batch brief says 8083
+curl -s <your-endpoint>/v1/models
 ```
-Use whichever responds; if neither, stop and report. (If the fixture needs its own
-provider block, see §7.)
+Confirm the configured provider responds; if not, stop and report. (If the fixture
+needs its own provider block, see §7.)
 
 **Step 1 — zero-model verification** (seconds):
 ```sh
@@ -854,39 +844,40 @@ interpreter env var at a nonexistent binary) → all tools must still work
 
 ---
 
-## 7. Model/provider config for THIS machine (machine-specific)
+## 7. Model/provider config (portable recipe — no machine values)
 
-The global config `~/.config/opencode/opencode.jsonc` already defines the `mercury`
-provider and default model (port **8082**). If the fixture must be self-contained
-(it should be — §6), use:
+The port is model-agnostic: any provider/model the machine's OpenCode already has
+configured works. If a smoke fixture must be self-contained (§6), the provider
+block shape (any OpenAI-compatible endpoint — local llama.cpp, router, cloud):
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "mercury//models/Qwen3.8-27B-UD-Q4_K_M.gguf",
+  "model": "<provider>/<model-id>",
   "provider": {
-    "mercury": {
+    "<provider>": {
       "npm": "@ai-sdk/openai-compatible",
-      "options": { "baseURL": "http://192.168.1.117:8082/v1" },
+      "options": { "baseURL": "http://<host>:<port>/v1" },
       "models": {
-        "/models/Qwen3.8-27B-UD-Q4_K_M.gguf": { "name": "Qwen3.8-27B (llama.cpp Q4)" }
+        "<model-id>": { "name": "<label>" }
       }
     }
   }
 }
 ```
 
-- **Port**: verify 8082 vs 8083 first (Step 0); swap `baseURL` accordingly.
-- **API key**: llama.cpp needs no auth; if provider init fails for a missing key, add
-  `"apiKey": "not-needed"` to `options` (resolution order: `options.apiKey` →
-  `provider.key` from auth/`env` vars). Alternative env form: `"env": ["MERCURY_API_KEY"]`
-  + export that var.
-- **CLI override** (no config needed): `opencode run -m mercury//models/Qwen3.8-27B-UD-Q4_K_M.gguf …`
-  — `pick()` splits on the FIRST `/` (providerID = `mercury`, modelID = the rest), so
-  the leading-slash model id works.
-- **Latency budget**: CPU llama.cpp, 3–15 min per one-shot run; run the 5 skill smokes
-  sequentially with generous timeouts, and prefer Step 1 (zero-model) evidence for
-  anything that doesn't strictly need generation.
+- **Endpoint**: verify with Step 0's `curl <baseURL>/models` before budgeting
+  model time.
+- **API key**: keyless local endpoints need no auth; if provider init fails for a
+  missing key, add `"apiKey": "not-needed"` to `options` (resolution order:
+  `options.apiKey` → `provider.key` from auth/`env` vars). Alternative env form:
+  `"env": ["<PROVIDER>_API_KEY"]` + export that var.
+- **CLI override** (no config needed): `opencode run -m <provider>/<model-id> …`
+  — `pick()` splits on the FIRST `/` (providerID = before it, modelID = the rest),
+  so leading-slash model ids (llama.cpp) work.
+- **Latency budget**: CPU inference runs 3–15 min per one-shot; run the 5 skill
+  smokes sequentially with generous timeouts, and prefer Step 1 (zero-model)
+  evidence for anything that doesn't strictly need generation.
 
 ---
 
