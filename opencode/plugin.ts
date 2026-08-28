@@ -27,37 +27,46 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 // ---------------------------------------------------------------------------
-// Port configuration (the only thing the Kilo port changes is SKILLS_DIR)
+// Port configuration: SKILLS_DIR is the one thing the Kilo port changes —
+// it is env-configurable, so the port just sets THROUGHLINER_SKILLS_DIR.
 // ---------------------------------------------------------------------------
 
-const SKILLS_DIR = path.join(homedir(), ".config", "opencode", "skills");
+function skillsDir(): string {
+  if (process.env.THROUGHLINER_SKILLS_DIR) return process.env.THROUGHLINER_SKILLS_DIR;
+  // OpenCode auto-loads skills from OPENCODE_CONFIG_DIR when it is set, so
+  // materialize there rather than only in the default global dir.
+  if (process.env.OPENCODE_CONFIG_DIR) return path.join(process.env.OPENCODE_CONFIG_DIR, "skills");
+  return path.join(homedir(), ".config", "opencode", "skills");
+}
+
+const SKILLS_DIR = skillsDir();
 const LOG_PREFIX = "[throughliner]";
 
 // ---------------------------------------------------------------------------
 // Root resolution: this file lives at <repo>/opencode/plugin.ts
 // ---------------------------------------------------------------------------
 
- function repoRoot(): string | null {
-   let root: string | null = null;
+function repoRoot(): string | null {
+  let root: string | null = null;
   if (process.env.THROUGHLINER_ROOT) {
     root = process.env.THROUGHLINER_ROOT;
-   } else {
-     try {
-       const here = path.dirname(fileURLToPath(import.meta.url));
-       root = path.join(path.dirname(here), "vendor", "throughliner");
-     } catch {
-       return null;
-     }
-   }
-   // A path that is not a usable vendor tree is the same as none: the plugin
-   // disables itself instead of running inert hooks against missing files.
-   try {
-     if (!existsSync(path.join(root, "hooks", "pre_tool_use.py"))) return null;
-   } catch {
-     return null;
-   }
-   return root;
- }
+  } else {
+    try {
+      const here = path.dirname(fileURLToPath(import.meta.url));
+      root = path.join(path.dirname(here), "vendor", "throughliner");
+    } catch {
+      return null;
+    }
+  }
+  // A path that is not a usable vendor tree is the same as none: the plugin
+  // disables itself instead of running inert hooks against missing files.
+  try {
+    if (!existsSync(path.join(root, "hooks", "pre_tool_use.py"))) return null;
+  } catch {
+    return null;
+  }
+  return root;
+}
 
 const VENDOR_ROOT = repoRoot();
 

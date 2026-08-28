@@ -31,16 +31,18 @@ model-agnostic and makes no model choice.
    or globally in `~/.config/opencode/opencode.json` for every project.
    Absolute paths, paths relative to the config file, and `file://` URLs all
    work (OpenCode resolves path plugin specs against the config file's
-   directory).
+   directory). A minimal config template is checked in at
+   `example.opencode.json`.
 
 3. Done. On load the plugin:
    - verifies the vendored hook tree next to `plugin.ts`
      (`<repo>/vendor/throughliner/hooks/pre_tool_use.py` must exist — without
      it the plugin disables itself and logs one line), and
-   - materializes the five method skills into
-     `~/.config/opencode/skills/<name>/SKILL.md`, rewriting
-     `${CLAUDE_PLUGIN_ROOT}` to the real vendor path (idempotent; content
-     unchanged → no rewrite).
+   - materializes the five method skills into the OpenCode global skills dir
+     `~/.config/opencode/skills/<name>/SKILL.md` (a global side effect — the
+     skills are then available in every project; override the location with
+     `THROUGHLINER_SKILLS_DIR`), rewriting `${CLAUDE_PLUGIN_ROOT}` to the real
+     vendor path (idempotent; content unchanged → no rewrite).
 
 ## The five commands
 
@@ -89,6 +91,8 @@ OpenCode events to the Claude hook protocol and back:
 |----------------------|------------------------------------------------------|
 | `THROUGHLINER_ROOT`  | Override the vendored hook tree location             |
 | `THROUGHLINER_PYTHON`| Python interpreter for the hooks (default `python3`) |
+| `THROUGHLINER_SKILLS_DIR` | Override the skills dir the plugin materializes into |
+| `OPENCODE_CONFIG_DIR`     | If set, skills materialize under `<dir>/skills` (OpenCode auto-loads it) |
 
 ## Uninstall
 
@@ -109,11 +113,17 @@ platform mapping, source-verified).
 
 ```sh
 npm install
-npx tsc -p .test/tsconfig.check.json
-npx esbuild opencode/plugin.ts --bundle --format=esm --platform=node --outfile=.test/plugin.mjs
-node --test test/harness.mjs   # 20 tests, ~20s
+npm run typecheck   # tsc -p tsconfig.json (strict, no emit)
+npm test            # esbuild bundle + node --test test/harness.mjs — 21 tests
 ```
+
+The same flow runs in CI on every push (`.github/workflows/test.yml`), plus a
+`sha256sum -c` of the vendored tree.
 
 The suite drives the real bundle with a mock OpenCode client and the **real
 vendored Python hooks**, asserting the translation contract end-to-end
 (denies, allows, ask paths, stop blocks, skill materialization, fail-open).
+
+## License
+
+CC BY-NC-SA 4.0 — non-commercial. See `LICENSE`.

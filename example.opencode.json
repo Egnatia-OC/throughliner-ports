@@ -1,0 +1,3 @@
+{
+  "plugin": ["/absolute/path/to/this/repo/opencode/plugin.ts"]
+}
