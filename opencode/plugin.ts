@@ -69,6 +69,21 @@ function log(msg: string): void {
   }
 }
 
+// Best-effort debug channel: one JSON line per hook fire, appended to
+// <cwd>/.throughliner/.shim-<sessionID>.jsonl — the primary observation
+// channel for live runs. Never throws.
+function trace(cwd: string, sid: string | undefined, entry: Record<string, unknown>): void {
+  try {
+    if (!cwd || !sid) return;
+    const dir = path.join(cwd, ".throughliner");
+    mkdirSync(dir, { recursive: true });
+    const line = JSON.stringify({ at: new Date().toISOString(), session: sid, ...entry });
+    writeFileSync(path.join(dir, `.shim-${sid.slice(0, 40)}.jsonl`), line + "\n", { flag: "a" });
+  } catch {
+    // tracing must never affect the session
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Hook runner: spawn the vendored Python, feed Claude-protocol JSON, parse
 // the JSON reply. Fail-open on every failure mode.
@@ -335,6 +350,7 @@ export default function throughlinerPlugin(input: PluginInputLike) {
       return;
     }
     stopBlocks.set(sid, count);
+    trace(cwd, sid, { hook: "stop", decision: "block", block: count });
     try {
       await input.client.session.prompt({ sessionID: sid, parts: [{ type: "text", text: out.reason }] });
       log(`stop-block fired for ${sid} (block ${count}/2)`);
@@ -366,13 +382,17 @@ export default function throughlinerPlugin(input: PluginInputLike) {
         const decision = out?.hookSpecificOutput?.permissionDecision;
         const reason = out?.hookSpecificOutput?.permissionDecisionReason ?? "blocked by Throughliner";
         if (decision === "deny") {
+          trace(cwd, _input.sessionID, { hook: "pre_tool_use", tool: claudeName, decision: "deny", action: "throw" });
           throw new ToolDenied(reason);
         }
         if (decision === "ask") {
+          trace(cwd, _input.sessionID, { hook: "pre_tool_use", tool: claudeName, decision: "ask", action: "allow(native gate)" });
           const reply = await askUser(_input.sessionID, _input.tool, reason);
           if (reply === "deny") throw new ToolDenied(reason);
           // null (no UI / timeout / headless auto-reject) and "allow" both proceed —
           // Claude ask degrades to allow-with-log, never block.
+        } else {
+          trace(cwd, _input.sessionID, { hook: "pre_tool_use", tool: claudeName, decision: "none", action: "allow" });
         }
       } catch (err) {
         // Fail-open: the ONLY tool denial path is an explicit Python "deny" decision
@@ -404,6 +424,7 @@ export default function throughlinerPlugin(input: PluginInputLike) {
         if (!ctx) return;
         if (typeof output.output === "string") {
           output.output += `\n\n${ctx}`;
+          trace(cwd, _input.sessionID, { hook: "post_tool_use", tool: claudeName, action: "context-appended" });
         }
       } catch (err) {
         log(`tool.execute.after error — ignoring (fail-open): ${String(err)}`);
