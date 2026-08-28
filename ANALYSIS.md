@@ -366,6 +366,13 @@ Config `permission` merges into every agent; agent-specific `permission` overrid
   webfetch, websearch, lsp, doom_loop, skill` + open `Record<string, Rule>`).
 - **The `permission.ask` plugin hook (declared in the `Hooks` type) is NEVER triggered
   anywhere in the 1.18.21 server code** (grep-verified). It is dead in this version.
+- The SDK client (`@opencode-ai/sdk` `OpencodeClient`) likewise has **no
+  method to create a permission request** — only
+  `postSessionIdPermissionsPermissionId` (the reply:
+  `POST /session/{id}/permissions/{permissionID}`, body
+  `{ response: "once"|"always"|"reject" }`). A plugin therefore cannot raise
+  a permission prompt on 1.18.x; the host's own permission system (config
+  `permission.*`) is the only prompt path.
 
 ### 2.7 Instructions (auto-injected context — output-style landing spot)
 

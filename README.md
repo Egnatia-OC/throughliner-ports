@@ -42,7 +42,10 @@ model-agnostic and makes no model choice.
      `~/.config/opencode/skills/<name>/SKILL.md` (a global side effect — the
      skills are then available in every project; override the location with
      `THROUGHLINER_SKILLS_DIR`), rewriting `${CLAUDE_PLUGIN_ROOT}` to the real
-     vendor path (idempotent; content unchanged → no rewrite).
+     vendor path (idempotent; content unchanged → no rewrite), and
+   - writes a per-session trace to `<project>/.throughliner/.shim-<sid>.jsonl`
+     (add `.throughliner/` to the project's `.gitignore`; disable with
+     `THROUGHLINER_TRACE=0`).
 
 ## The five commands
 
@@ -73,17 +76,27 @@ OpenCode events to the Claude hook protocol and back:
   outside its `Files:` list are denied; the session's own build file is always
   editable.
 - **Git guard** — `git push --force` etc. denied.
-- **Subagent cost gate** — spawning a subagent (`task` tool) triggers a
-  permission prompt with the cost reason. In an interactive TUI you approve or
-  decline; in headless `opencode run` (no `--auto`) OpenCode auto-rejects
-  instantly and the shim treats that as allow-and-log (never blocks a headless
-  run); with `--auto` it is auto-approved.
+- **Subagent cost gate** — a `task` (subagent) spawn carries the vendored
+  cost reason. OpenCode 1.18.x gives plugins no way to raise a permission
+  prompt (the SDK has no permission-create method, and the `permission.ask`
+  hook is declared but never triggered — source-verified in `ANALYSIS.md`),
+  so the shim records the reason in the trace and lets OpenCode's own
+  permission system gate the call: default config prompts in the TUI,
+  headless `opencode run` auto-rejects (approve with `--auto`), and
+  `permission: { "task": "allow" }` in `opencode.json` disables the gate.
 - **Queue lint** — after `QUEUE.md` writes, structural findings (e.g. a
   `####` entry with no trailing `[slug]`) are appended to the tool output as
   advisory context.
 - **Stop check** — when a session goes idle, a claim like "I filed
   [some-slug]" that is not actually in `QUEUE.md` re-prompts the session to
   fix it (once per claim; marker-guarded).
+
+Treat this as a workflow guardrail, not a security boundary: every shim
+failure mode is fail-open, and enforcement covers only the mapped host tools
+(write/edit/bash/task/skill). The orientation injection also rides on the
+`experimental.chat.system.transform` hook (1.18.21-verified); if a future
+OpenCode renames it, orientation silently stops appearing — the trace file
+shows whether the hook fired.
 
 ## Environment overrides
 
@@ -93,12 +106,13 @@ OpenCode events to the Claude hook protocol and back:
 | `THROUGHLINER_PYTHON`| Python interpreter for the hooks (default `python3`) |
 | `THROUGHLINER_SKILLS_DIR` | Override the skills dir the plugin materializes into |
 | `OPENCODE_CONFIG_DIR`     | If set, skills materialize under `<dir>/skills` (OpenCode auto-loads it) |
+| `THROUGHLINER_TRACE`    | Set `0` to disable the `.throughliner/` trace files |
 
 ## Uninstall
 
 Remove the `plugin` line from your config. The materialized skills remain in
 `~/.config/opencode/skills/` — delete those five directories if you want them
-gone.
+gone. Per-project `.throughliner/` trace directories remain in your projects.
 
 ## Provenance
 
@@ -114,7 +128,7 @@ platform mapping, source-verified).
 ```sh
 npm install
 npm run typecheck   # tsc -p tsconfig.json (strict, no emit)
-npm test            # esbuild bundle + node --test test/harness.mjs — 21 tests
+npm test            # esbuild bundle + node --test test/harness.mjs — 19 tests
 ```
 
 The same flow runs in CI on every push (`.github/workflows/test.yml`), plus a
@@ -122,7 +136,10 @@ The same flow runs in CI on every push (`.github/workflows/test.yml`), plus a
 
 The suite drives the real bundle with a mock OpenCode client and the **real
 vendored Python hooks**, asserting the translation contract end-to-end
-(denies, allows, ask paths, stop blocks, skill materialization, fail-open).
+(denies, allows, ask degradation, stop blocks, skill materialization,
+fail-open). The mock client implements the real 1.18.x SDK call shapes
+(`{ path: { id } }` envelopes) and rejects anything else — a hand-imagined
+API fails the suite.
 
 ## License
 

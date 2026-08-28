@@ -7,7 +7,7 @@
  * port surface.
  *
  * Mapping (host event -> vendored hook):
- *   tool.execute.before  -> pre_tool_use.py   (deny -> throw; ask -> permission prompt)
+ *   tool.execute.before  -> pre_tool_use.py   (deny -> throw; ask -> trace+log, host gate decides)
  *   tool.execute.after   -> post_tool_use.py  (additionalContext appended to tool output)
  *   session.created      -> session_start.py  (context stashed, injected per
  *                                                            LLM call via system.transform)
@@ -25,6 +25,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { OpencodeClient } from "@opencode-ai/sdk";
 
 // ---------------------------------------------------------------------------
 // Port configuration: SKILLS_DIR is the one thing the Kilo port changes —
@@ -78,12 +79,16 @@ function log(msg: string): void {
   }
 }
 
+// .throughliner/ is per-project scratch (add it to the project's
+// .gitignore). Disable the channel entirely: THROUGHLINER_TRACE=0.
+const TRACE_ENABLED = process.env.THROUGHLINER_TRACE !== "0";
+
 // Best-effort debug channel: one JSON line per hook fire, appended to
 // <cwd>/.throughliner/.shim-<sessionID>.jsonl — the primary observation
 // channel for live runs. Never throws.
 function trace(cwd: string, sid: string | undefined, entry: Record<string, unknown>): void {
   try {
-    if (!cwd || !sid) return;
+    if (!TRACE_ENABLED || !cwd || !sid) return;
     const dir = path.join(cwd, ".throughliner");
     mkdirSync(dir, { recursive: true });
     const line = JSON.stringify({ at: new Date().toISOString(), session: sid, ...entry });
@@ -261,17 +266,12 @@ function materializeSkills(): void {
 // Plugin
 // ---------------------------------------------------------------------------
 
+// The host passes the real @opencode-ai/sdk client. We type against the
+// actual SDK (not a hand-rolled shape) so tsc catches API drift at build
+// time — the earlier flat `{ sessionID, parts }` calls passed a hand-rolled
+// type but 404 against the real `path`/`body` envelope.
 interface PluginInputLike {
-  client: {
-    session: {
-      messages(params: { sessionID: string }): Promise<{ data?: Array<{ info?: { role?: string; id?: string } & Record<string, unknown>; parts?: Array<{ type?: string; text?: string }> & Record<string, unknown>}>, [k: string]: unknown }>;
-      prompt(params: { sessionID: string; parts: Array<{ type: "text"; text: string }> }): Promise<unknown>;
-      permission: {
-        create(params: { sessionID: string; action?: string; resources?: string[]; metadata?: Record<string, unknown> }): Promise<{ data?: { id?: string } & Record<string, unknown>, [k: string]: unknown }>;
-      };
-    };
-    [k: string]: unknown;
-  };
+  client: OpencodeClient;
   directory?: string;
   [k: string]: unknown;
 }
@@ -285,7 +285,6 @@ export default function throughlinerPlugin(input: PluginInputLike) {
 
   const startContext = new Map<string, Promise<string | null>>();
   const stopBlocks = new Map<string, number>();
-  const pendingAsks = new Map<string, (reply: "allow" | "deny") => void>();
 
   function sessionStart(sid: string, cwd: string): Promise<string | null> {
     let p = startContext.get(sid);
@@ -308,51 +307,11 @@ export default function throughlinerPlugin(input: PluginInputLike) {
     return input.directory || process.cwd();
   }
 
-  // Claude "ask" -> host permission prompt. Resolves "allow"|"deny"|null(no UI/timeout).
-  // `opencode run` without --auto auto-REJECTS every permission.asked instantly
-  // (run.ts event loop); a human in TUI takes longer than the auto-reject window.
-  const AUTO_REJECT_WINDOW_MS = 2_000;
-  function askUser(sid: string, tool: string, reason: string): Promise<"allow" | "deny" | null> {
-    const { promise, resolve } = Promise.withResolvers<"allow" | "deny" | null>();
-    let settled = false;
-    let requestID = "";
-    const created = Date.now();
-    const finish = (r: "allow" | "deny" | null, note?: string) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      if (requestID) pendingAsks.delete(requestID);
-      if (note) log(note);
-      resolve(r);
-    };
-    const timer = setTimeout(() => {
-      finish(null, `permission prompt for ${tool} unanswered after 5min — allowing (fail-open, headless)`);
-    }, 5 * 60 * 1000);
-    input.client.session
-      .permission.create({ sessionID: sid, action: tool, resources: [reason], metadata: { throughliner: "ask" } })
-      .then((res) => {
-        requestID = res?.data?.id ?? "";
-        pendingAsks.set(requestID, (reply: "allow" | "deny") => {
-          if (reply === "deny" && Date.now() - created < AUTO_REJECT_WINDOW_MS) {
-            // Headless run-loop auto-reject (no UI to answer) — degrade to allow+log,
-            // never block. A slow reject is a real user denial.
-            finish(null, `permission auto-rejected within ${AUTO_REJECT_WINDOW_MS}ms (headless) — allowing, not blocking`);
-            return;
-          }
-          finish(reply);
-        });
-      })
-      .catch((err) => {
-        finish(null, `permission.create failed: ${String(err)} — allowing (fail-open)`);
-      });
-    return promise;
-  }
-
   async function onStopIdle(sid: string): Promise<void> {
     const cwd = cwdOf();
     let messages: Array<{ info?: { role?: string }; parts?: Array<{ type?: string; text?: string }> }> = [];
     try {
-      const res = await input.client.session.messages({ sessionID: sid });
+      const res = await input.client.session.messages({ path: { id: sid } });
       messages = (res?.data ?? []) as typeof messages;
     } catch (err) {
       log(`stop: message fetch failed: ${String(err)}`);
@@ -377,7 +336,7 @@ export default function throughlinerPlugin(input: PluginInputLike) {
     stopBlocks.set(sid, count);
     trace(cwd, sid, { hook: "stop", decision: "block", block: count });
     try {
-      await input.client.session.prompt({ sessionID: sid, parts: [{ type: "text", text: out.reason }] });
+      await input.client.session.prompt({ path: { id: sid }, body: { parts: [{ type: "text", text: out.reason }] } });
       log(`stop-block fired for ${sid} (block ${count}/2)`);
     } catch (err) {
       log(`stop-block re-prompt failed: ${String(err)}`);
@@ -411,11 +370,16 @@ export default function throughlinerPlugin(input: PluginInputLike) {
           throw new ToolDenied(reason);
         }
         if (decision === "ask") {
-          trace(cwd, _input.sessionID, { hook: "pre_tool_use", tool: claudeName, decision: "ask", action: "allow(native gate)" });
-          const reply = await askUser(_input.sessionID, _input.tool, reason);
-          if (reply === "deny") throw new ToolDenied(reason);
-          // null (no UI / timeout / headless auto-reject) and "allow" both proceed —
-          // Claude ask degrades to allow-with-log, never block.
+          // OpenCode 1.18.x gives plugins no way to raise a permission prompt:
+          // the SDK client has no permission-create method, and the
+          // `permission.ask` hook is declared but never triggered
+          // (source-verified, ANALYSIS.md section 2.6). Record the cost
+          // reason in the trace and let the host's own permission system
+          // gate the call: default config asks in the TUI, headless
+          // `opencode run` auto-rejects (approve with --auto), and
+          // `permission.task` in opencode.json overrides.
+          trace(cwd, _input.sessionID, { hook: "pre_tool_use", tool: claudeName, decision: "ask", action: "allow(native gate)", reason });
+          log(`cost gate: ${reason} — no plugin prompt API on this host; OpenCode's native permission gate decides`);
         } else {
           trace(cwd, _input.sessionID, { hook: "pre_tool_use", tool: claudeName, decision: "none", action: "allow" });
         }
@@ -457,20 +421,12 @@ export default function throughlinerPlugin(input: PluginInputLike) {
     },
 
     // The server dispatches as hook["event"]({ event: { id, type, properties: <bus data> } })
-    // (opencode plugin/index.ts:259). permission.replied carries
-    // properties { sessionID, requestID, reply: "once"|"always"|"reject" }.
+    // (opencode plugin/index.ts:259).
     async event(input: {
-      event?: { type?: string; properties?: { sessionID?: string; requestID?: string; reply?: string; [k: string]: unknown }; [k: string]: unknown };
+      event?: { type?: string; properties?: { sessionID?: string; [k: string]: unknown }; [k: string]: unknown };
     }): Promise<void> {
       const event = input.event;
       if (!event) return;
-      if (event.type === "permission.replied") {
-        const id = event.properties?.requestID;
-        const reply = event.properties?.reply;
-        const waiter = id ? pendingAsks.get(id) : undefined;
-        if (waiter) waiter(reply === "reject" ? "deny" : "allow");
-        return;
-      }
       const sid = event.properties?.sessionID;
       if (!sid) return;
       if (event.type === "session.created") {

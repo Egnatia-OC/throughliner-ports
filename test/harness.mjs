@@ -70,33 +70,32 @@ function makeProject({ adopted = true, buildFiles = null, queue = true } = {}) {
   return dir;
 }
 
+// The real 1.18.x SDK client surface (hey-api generated): session calls take
+// { path: { id } } envelopes plus body. The mock REJECTS flat shapes so a
+// regression to a hand-imagined API fails loudly instead of passing against
+// a fiction.
 function makeClient(state) {
   return {
     session: {
-      messages: async ({ sessionID }) => ({ data: state.messages[sessionID] ?? [] }),
-      prompt: async (args) => {
-        state.prompts.push(args);
+      messages: async (args) => {
+        assert.ok(args?.path?.id, `session.messages must use { path: { id } } (real SDK shape), got: ${JSON.stringify(args)}`);
+        return { data: state.messages[args.path.id] ?? [] };
       },
-      permission: {
-        create: async (args) => {
-          state.permissions.push(args);
-          return { data: { id: `req-${state.permissions.length}` } };
-        },
+      prompt: async (args) => {
+        assert.ok(args?.path?.id, `session.prompt must use { path: { id } } (real SDK shape), got: ${JSON.stringify(args)}`);
+        assert.ok(Array.isArray(args?.body?.parts), `session.prompt must use { body: { parts } }, got: ${JSON.stringify(args)}`);
+        state.prompts.push(args);
       },
     },
   };
 }
 
 async function makePlugin(dir, state) {
-  state ??= { messages: {}, prompts: [], permissions: [] };
+  state ??= { messages: {}, prompts: [] };
   const input = { client: makeClient(state), directory: dir };
   return { hooks: await throughliner(input), state };
 }
 
-async function waitForPermission(state, ms = 5_000) {
-  const t0 = Date.now();
-  while (state.permissions.length === 0 && Date.now() - t0 < ms) await sleep(50);
-}
 
 async function waitForPrompts(state, n, ms = 10_000) {
   const t0 = Date.now();
@@ -225,43 +224,23 @@ test("git guard: plain `git status` bash is allowed", T, async () => {
 });
 
 // ---------------------------------------------------------------------------
-// 6-8. Subagent ask-gate (Task tool) — the three reply paths
+// 6. Subagent cost gate (Task tool) — 1.18.x has no plugin prompt API
 // ---------------------------------------------------------------------------
 
-async function runTaskGate(hooks, state, { reply, preReplyDelayMs = 0, expectDeny = false }) {
-  const p = hooks["tool.execute.before"](
+test("ask-gate: 'ask' never blocks and raises no host prompt (no plugin prompt API in 1.18.x); cost reason is traced", T, async () => {
+  const dir = makeProject();
+  const { hooks, state } = await makePlugin(dir);
+  await hooks["tool.execute.before"](
     { tool: "task", sessionID: "test-sid", callID: "tg" },
     { args: { description: "audit", prompt: "audit the queue", subagent_type: "general" } },
-  );
-  await waitForPermission(state);
-  // The plugin registers its waiter in a microtask AFTER the mock's create
-  // resolves — give it a tick before firing the reply, or the event lands
-  // with no waiter registered and the gate never settles.
-  await sleep(100);
-  if (preReplyDelayMs) await sleep(preReplyDelayMs);
-  await hooks.event(busEvent("permission.replied", { sessionID: "test-sid", requestID: "req-1", reply }));
-  if (expectDeny) await assert.rejects(p, /subagent/i);
-  else await p;
-}
-
-test("ask-gate: headless auto-reject (instant) degrades to allow, never block", T, async () => {
-  const dir = makeProject();
-  const { hooks, state } = await makePlugin(dir);
-  await runTaskGate(hooks, state, { reply: "reject" }); // instant reject = the headless run-loop
-  assert.equal(state.permissions.length, 1, "permission prompt was created");
-  assert.match(state.permissions[0].resources?.[0] ?? "", /subagent/i, "the cost reason names subagents");
-});
-
-test("ask-gate: a slow (human) reject denies the tool", T, async () => {
-  const dir = makeProject();
-  const { hooks, state } = await makePlugin(dir);
-  await runTaskGate(hooks, state, { reply: "reject", preReplyDelayMs: 3_000, expectDeny: true });
-});
-
-test("ask-gate: an explicit allow proceeds", T, async () => {
-  const dir = makeProject();
-  const { hooks, state } = await makePlugin(dir);
-  await runTaskGate(hooks, state, { reply: "once" });
+  ); // must resolve — the gate degrades to allow, never blocks
+  assert.equal(state.prompts.length, 0, "no host prompt was raised");
+  // The only channel the shim has for the cost reason is the trace file.
+  const lines = readFileSync(path.join(dir, ".throughliner", ".shim-test-sid.jsonl"), "utf8")
+    .trim().split("\n").map((l) => JSON.parse(l));
+  const ask = lines.find((e) => e.hook === "pre_tool_use" && e.decision === "ask");
+  assert.ok(ask, "an ask trace entry was written");
+  assert.match(ask.reason ?? "", /subagent/i, "the cost reason names subagents");
 });
 
 // ---------------------------------------------------------------------------
@@ -306,7 +285,6 @@ function idleState(text) {
       ],
     },
     prompts: [],
-    permissions: [],
   };
 }
 
@@ -316,7 +294,7 @@ test("stop: a claimed slug missing from QUEUE.md re-prompts the session", T, asy
   await hooks.event(busEvent("session.idle", { sessionID: "test-sid" }));
   await waitForPrompts(state, 1);
   assert.equal(state.prompts.length, 1, "a continuation prompt was sent");
-  const sent = state.prompts[0].parts?.[0]?.text ?? "";
+  const sent = state.prompts[0].body?.parts?.[0]?.text ?? "";
   assert.match(sent, /ghost-slug/, "the missing slug is named in the feedback");
 });
 
