@@ -1,0 +1,11 @@
+name: throughliner
+version: "1.0.0"
+description: "Throughliner spec-driven workflow: pristine vendored upstream hooks (pinned 743aa63, v1.21.1) translated to Hermes lifecycle hooks, plus the five tl-* method skills (tl-setup, tl-plan, tl-next, tl-rescan, tl-done). Model-agnostic; requires Python 3 and git."
+author: Egnatia-OC
+hooks:
+  - pre_tool_call
+  - post_tool_call
+  - pre_llm_call
+  - post_llm_call
+  - on_session_end
+  - pre_verify

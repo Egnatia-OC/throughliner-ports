@@ -1,0 +1,26 @@
+# Manual (no-plugin) install: merge this into ~/.hermes/config.yaml and copy
+# the five adapted skills into ~/.hermes/skills/throughliner/ (they are
+# materialized there after any plugin load; the source of truth is
+# vendor/throughliner/skills/).
+#
+# Point the paths at THIS repo's checkout:
+#   /path/to/this/repo = the directory containing tools/hermes-shell-bridge.py
+#
+# Limitations vs the plugin install (README "Manual install"):
+#   - the subagent cost gate degrades ask -> deny-with-explanation
+#     (shell hooks have no approve channel);
+#   - no shim trace files (the plugin's .shim-<sid>.jsonl).
+
+hooks:
+  pre_tool_call:
+    - command: "/path/to/this/repo/tools/hermes-shell-bridge.py pre_tool_call"
+  post_tool_call:
+    - command: "/path/to/this/repo/tools/hermes-shell-bridge.py post_tool_call"
+  pre_llm_call:
+    - command: "/path/to/this/repo/tools/hermes-shell-bridge.py pre_llm_call"
+  pre_verify:
+    - command: "/path/to/this/repo/tools/hermes-shell-bridge.py pre_verify"
+  post_llm_call:
+    - command: "/path/to/this/repo/tools/hermes-shell-bridge.py post_llm_call"
+  on_session_end:
+    - command: "/path/to/this/repo/tools/hermes-shell-bridge.py on_session_end"
