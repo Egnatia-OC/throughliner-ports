@@ -106,6 +106,22 @@ def _python_bin() -> str:
     return os.environ.get("THROUGHLINER_PYTHON") or sys.executable
 
 
+def _expand_plugin_root(obj):
+    """Expand ``${CLAUDE_PLUGIN_ROOT}`` in hook output.
+
+    Claude Code expands that variable in hook context on the harness side;
+    Hermes does not, so the literal template would reach the model and the
+    model would guess the path. The vendor code stays pristine, so the shim
+    expands it here.
+    """
+    if isinstance(obj, str):
+        return obj.replace("${CLAUDE_PLUGIN_ROOT}", str(VENDOR_ROOT))
+    if isinstance(obj, dict):
+        return {k: _expand_plugin_root(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_expand_plugin_root(v) for v in obj]
+    return obj
+
 def _run_hook(script: str, payload: dict, timeout: int = 30) -> dict | None:
     """Spawn a vendored hook, feed it Claude-protocol JSON on stdin, parse the
     JSON reply. Fail-open on every failure mode."""
@@ -136,7 +152,7 @@ def _run_hook(script: str, payload: dict, timeout: int = 30) -> dict | None:
         except (json.JSONDecodeError, ValueError):
             continue
         if isinstance(parsed, dict):
-            return parsed
+            return _expand_plugin_root(parsed)
     _log(f"{script} returned non-JSON output — failing open")
     return None
 

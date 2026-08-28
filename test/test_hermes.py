@@ -214,6 +214,21 @@ class HermesPluginTest(unittest.TestCase):
                          changed_paths=["src/app.py"])
         self.assertIsNone(res, "a real filing must not block")
 
+    def test_session_start_expands_plugin_root(self) -> None:
+        """The rules directive must name a real path, not the template.
+
+        Claude Code expands ${CLAUDE_PLUGIN_ROOT} in the harness; Hermes does
+        not, so an unexpanded literal made the setup run's model guess the
+        plugin root and report the rules as missing (live smoke, 2026-08-28).
+        """
+        _, ctx = self._plugin_and_ctx()
+        res = self._call(ctx, "pre_llm_call", session_id="test-sid", is_first_turn=True)
+        self.assertIsNotNone(res, "no session-start context on first turn")
+        self.assertNotIn("${CLAUDE_PLUGIN_ROOT}", res["context"],
+                         "unexpanded template leaked into session context")
+        self.assertIn(str(VENDOR) + "/docs/skill-nonspecific-rules.md", res["context"],
+                      "rules directive must name the vendored rules file")
+
     def test_on_session_end_notes_unfiled_claim(self) -> None:
         _, ctx = self._plugin_and_ctx()
         self._call(ctx, "post_llm_call", session_id="test-sid",
