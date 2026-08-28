@@ -1,0 +1,23 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test (esbuild bundle + 21-test harness, real Python hooks)
+        run: npm test
+      - name: Verify vendored tree identity
+        run: (cd vendor/throughliner && sha256sum -c ../MANIFEST.sha256)

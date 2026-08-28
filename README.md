@@ -117,8 +117,8 @@ npm run typecheck   # tsc -p tsconfig.json (strict, no emit)
 npm test            # esbuild bundle + node --test test/harness.mjs — 21 tests
 ```
 
-The vendored tree's identity is re-verifiable at any time:
-`(cd vendor/throughliner && sha256sum -c ../MANIFEST.sha256)`.
+The same flow runs in CI on every push (`.github/workflows/test.yml`), plus a
+`sha256sum -c` of the vendored tree.
 
 The suite drives the real bundle with a mock OpenCode client and the **real
 vendored Python hooks**, asserting the translation contract end-to-end
