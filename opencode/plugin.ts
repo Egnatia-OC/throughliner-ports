@@ -290,7 +290,13 @@ export default function throughlinerPlugin(input: PluginInputLike) {
     let p = startContext.get(sid);
     if (!p) {
       p = runHook("session_start.py", { cwd, session_id: hookSid(sid) }, 60_000).then((out) => {
-        const ctx = out?.hookSpecificOutput?.additionalContext ?? null;
+        const raw = out?.hookSpecificOutput?.additionalContext ?? null;
+        // The rules directive emits the literal ${CLAUDE_PLUGIN_ROOT} template
+        // (session_start.py:1099); rewrite it to the vendored tree's absolute
+        // path, as the materialized skill docs already carry (line ~252).
+        // Without this the model probes the env var, finds it empty, and goes
+        // hunting for the doc across the machine.
+        const ctx = raw ? raw.replace(/\$\{CLAUDE_PLUGIN_ROOT\}/g, VENDOR_ROOT as string) : null;
         if (!ctx) startContext.delete(sid);
         return ctx;
       }).catch((err) => {

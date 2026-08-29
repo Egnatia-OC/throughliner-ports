@@ -123,6 +123,12 @@ test("system.transform injects brevity (always) and session orientation (once st
   // it — the vendored hooks name per-session files from it.
   assert.match(joined, /Session ID for this session: test-sid/, "session id stated");
   assert.match(joined, /_build-test-sid\.md/, "build file name spelled out");
+  // Regression (found live in the 1.18.25 smoke): the rules directive must
+  // not ship the raw ${CLAUDE_PLUGIN_ROOT} template — the model's shell has
+  // the var empty, so a raw template sends it hunting for the doc across
+  // the machine. It must name the vendored tree's absolute path.
+  assert.ok(!joined.includes("${CLAUDE_PLUGIN_ROOT}"), "no unrewritten template in orientation");
+  assert.ok(joined.includes(path.join(VENDOR, "docs", "skill-nonspecific-rules.md")), "rules directive names the vendored doc path");
   // A second transform call gets a FRESH array (the host rebuilds system per
   // LLM call) — appending per call is idempotent, never cumulative.
   const again = { system: ["base system prompt"] };
