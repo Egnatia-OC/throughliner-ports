@@ -374,7 +374,26 @@ def _pre_llm_call(**kwargs) -> dict | None:
                 # Code shows the model its session id natively, Hermes does
                 # not, so the shim says it.
                 safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", sid)
-                parts.append(ctx + f"\nSession ID for this session: {safe_id} — per-session working files are named with it, exactly _build-{safe_id}.md (and _freeform-{safe_id}.md for freeform work).")
+                note = (
+                    f"\nSession ID for this session: {safe_id} — per-session "
+                    f"working files are named with it, exactly _build-{safe_id}.md "
+                    f"(and _freeform-{safe_id}.md for freeform work)."
+                )
+                # The rule gate the method ships is judgment (a `Rule gate:`
+                # disposition at close); upstream pairs it with a mechanical
+                # corpus check that is path-specific to their repo. This port
+                # ships a layout-agnostic one in tools/ (outside the pristine
+                # vendor tree) — point the session at it.
+                if VENDOR_ROOT is not None:
+                    rule_check = VENDOR_ROOT.parent.parent / "tools" / "rule_corpus_check.py"
+                    if rule_check.is_file():
+                        note += (
+                            f"\nRule corpus check (mechanical half of the rule "
+                            f"gate): python3 {rule_check} <project-dir> — run once "
+                            f"the project's own instructions require rule-gate "
+                            f"dispositions and the records deserve a mechanical pass."
+                        )
+                parts.append(ctx + note)
         pending = _drain_pending_context(cwd)
         if pending:
             parts.append(f"[Throughliner] notes from earlier activity in this project:\n{pending}")

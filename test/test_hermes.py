@@ -91,6 +91,20 @@ class HermesPluginTest(unittest.TestCase):
         self.assertIn("throughliner-brevity", ctx.sections)
         self.assertIn("non-coder", ctx.sections["throughliner-brevity"])
 
+    # -- session-start orientation --------------------------------------------
+
+    def test_orientation_names_rule_corpus_checker(self) -> None:
+        """The first-turn context must point at the port's rule-corpus
+        checker (the mechanical half of the rule gate; upstream's copy is
+        path-specific to their repo and not shipped)."""
+        _, ctx = self._plugin_and_ctx()
+        res = self._call(ctx, "pre_llm_call", session_id="test-sid", is_first_turn=True)
+        self.assertIsNotNone(res, "first-turn orientation context is injected")
+        self.assertIn("Session ID for this session: test-sid", res["context"])
+        self.assertIn(str(REPO / "tools" / "rule_corpus_check.py"), res["context"])
+        self.assertNotIn("${CLAUDE_PLUGIN_ROOT}", res["context"], "unrewritten env ref")
+
+
     def test_skills_materialized(self) -> None:
         self._plugin_and_ctx()
         base = Path(os.environ["HOME"]) / ".hermes" / "skills" / "throughliner"
