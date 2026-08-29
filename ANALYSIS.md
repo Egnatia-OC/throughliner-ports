@@ -7,6 +7,8 @@ author can implement without re-deriving any field.
 - Upstream Throughliner: pinned at commit `743aa63` (v1.21.1)
 - Reference port (verified live): the omp port, published on the fork's `main` branch
 - OpenCode source: tag v1.18.21 (ground truth for all quotes below)
+- Re-verified against tag v1.18.25 (2026-08-29): the shim's full API surface is
+  unchanged — see §9.
 
 ---
 
@@ -891,7 +893,7 @@ block shape (any OpenAI-compatible endpoint — local llama.cpp, router, cloud):
 ## 8. Universal install contract (what ships; no machine-specific values, no secrets)
 
 **User prerequisites** (any machine):
-- OpenCode ≥ 1.18 (1.18.21 verified) — any install channel (snap/npm/binary)
+- OpenCode ≥ 1.18 (1.18.25 verified, §9 — analysis base 1.18.21) — any install channel (snap/npm/binary)
 - Python 3.8+ (vendored hooks are stdlib-only)
 - git (Throughliner reads repo state)
 - any working model/provider already configured in OpenCode — **Throughliner is a
@@ -919,6 +921,42 @@ cp -r /path/to/throughliner-opencode/plugin/throughliner/skills/* .opencode/skil
 **Verify (zero model calls)**: `opencode debug skill` (5 skills listed) +
 `opencode debug info` (plugin listed). No secrets, no ports, no IP addresses in any
 shipped file.
+
+---
+
+## 9. Re-verification against v1.18.25 (2026-08-29)
+
+The binary moved from snap 1.18.21 to the official 1.18.25 release binary
+(`~/.local/bin/opencode`; the snap stays at 1.18.21 — `snap refresh` needs
+sudo). Every surface this port depends on was re-verified against tag
+v1.18.25 rather than assumed:
+
+- **SDK client** (`@opencode-ai/sdk`, now pinned `^1.18.25` as a type-only
+  devDep): full diff of the generated client 1.18.21 → 1.18.25 is one doc
+  comment (upgrade endpoint) plus one unrelated required field
+  (`target?: string` → `target: string` in a non-session type). Zero changes
+  to `session.messages`, `session.prompt`, the absent `permission` namespace,
+  or the hooks types. `tsc -p tsconfig.json` passes against the 1.18.25
+  generated types; the suite passes 19/19.
+- **`packages/opencode/src/plugin/index.ts`** (Hooks type + trigger
+  mechanism): unchanged between tags.
+- **`packages/opencode/src/tool/tools.ts`** (`tool.execute.before/after`
+  trigger sites, including the MCP path the §4/§5 claims rest on): unchanged.
+- **Server plugin trigger sites**: the only changes under `src/plugin`,
+  `src/tool`, `src/server` between tags are `plugin/azure.ts` (+241, a new
+  Azure auth provider) and two global-HTTP-route files — none of them hook
+  dispatch.
+- **`experimental.chat.system.transform`**: still present and still triggered
+  (`session/llm/request.ts:70`); the file's only inter-tag change is a
+  reindent of the `x-parent-session-id` header line.
+- **Config loading**: `config/paths.ts` (which files are read, incl. the
+  §2.1 finding that `~/.opencode.json` is not loaded) is unchanged; the
+  inter-tag change in `config/config.ts` adds a v2-compat normalization layer
+  with warning diagnostics — content-level only, not file locations.
+
+Conclusion: every claim in this document that the shim relies on holds
+verbatim in 1.18.25; the document itself remains a v1.18.21 source analysis
+(its quoted line numbers refer to that tag).
 
 ---
 

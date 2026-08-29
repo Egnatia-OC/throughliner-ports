@@ -94,7 +94,7 @@ OpenCode events to the Claude hook protocol and back:
 Treat this as a workflow guardrail, not a security boundary: every shim
 failure mode is fail-open, and enforcement covers only the mapped host tools
 (write/edit/bash/task/skill). The orientation injection also rides on the
-`experimental.chat.system.transform` hook (1.18.21-verified); if a future
+`experimental.chat.system.transform` hook (verified in 1.18.21, re-verified in 1.18.25); if a future
 OpenCode renames it, orientation silently stops appearing — the trace file
 shows whether the hook fired.
 

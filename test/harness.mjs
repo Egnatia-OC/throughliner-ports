@@ -6,7 +6,7 @@
  * vendored Python hooks are the real ones — this suite asserts the SHIM's
  * translation contract: event -> Claude-protocol JSON -> decision.
  *
- * Event shapes are the REAL bus shapes (opencode 1.18.21 source-verified):
+ * Event shapes are the REAL bus shapes (opencode 1.18.21 source-verified; client API re-verified against 1.18.25):
  *   server dispatch: hook["event"]({ event: { id, type, properties: <bus data> } })
  *   session.created / session.idle:  properties { sessionID, ... }
  *   permission.replied:              properties { sessionID, requestID, reply }
