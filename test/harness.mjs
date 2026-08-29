@@ -129,6 +129,9 @@ test("system.transform injects brevity (always) and session orientation (once st
   // the machine. It must name the vendored tree's absolute path.
   assert.ok(!joined.includes("${CLAUDE_PLUGIN_ROOT}"), "no unrewritten template in orientation");
   assert.ok(joined.includes(path.join(VENDOR, "docs", "skill-nonspecific-rules.md")), "rules directive names the vendored doc path");
+  // The port ships the mechanical half of the rule gate (upstream's checker
+  // is path-specific to their repo); the orientation must point at it.
+  assert.ok(joined.includes("rule_corpus_check.py"), "orientation points at the rule corpus checker");
   // A second transform call gets a FRESH array (the host rebuilds system per
   // LLM call) — appending per call is idempotent, never cumulative.
   const again = { system: ["base system prompt"] };

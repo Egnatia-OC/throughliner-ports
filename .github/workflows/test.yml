@@ -19,5 +19,7 @@ jobs:
         run: npm run typecheck
       - name: Test (esbuild bundle + 19-test harness, real Python hooks)
         run: npm test
+      - name: Rule corpus checker (port script)
+        run: python3 test/rule_corpus_check.py
       - name: Verify vendored tree identity
         run: (cd vendor/throughliner && sha256sum -c ../MANIFEST.sha256)

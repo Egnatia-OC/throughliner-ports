@@ -98,6 +98,39 @@ failure mode is fail-open, and enforcement covers only the mapped host tools
 OpenCode renames it, orientation silently stops appearing — the trace file
 shows whether the hook fired.
 
+## Rule gate — the mechanical half
+
+The vendored method ships the *judgment* side of the rule gate: at close, a
+session whose work touched the project's rules records a disposition
+(`Rule gate: <slug> — run, …` / `— not needed, <why>`; see
+`vendor/throughliner/docs/next.md`). Upstream pairs that judgment with a
+small script that re-checks the mechanical half against the project's own
+records; their script is hardwired to their repo's paths, so this port ships
+a layout-agnostic re-implementation of the same four checks:
+
+```sh
+python3 opencode/scripts/rule_corpus_check.py <project-dir> \
+    [--rules PATH ...] [--log-dir DIR] [--dup-threshold 0.85] \
+    [--retired NAME ...] [--capture-queue QUEUE.md]
+```
+
+Checks: `gate-line` (every rule-authoring session's record carries a
+`Rule gate:` line), `not-needed-growth` (a "not needed" disposition is not
+contradicted by rule text growing in the entry's own commit), `near-dup`
+(no two rule segments say nearly the same thing), `retired-name` (no live
+rule names a retired mechanism — names from any `## Retired` section in the
+rules files plus `--retired` flags). Exit codes: 0 clean, 1 findings, 2
+usage/setup error. `--capture-queue` files the findings as work items in
+the queue's Unprocessed section (stable slugs; re-runs never duplicate).
+Rule-authoring sessions are detected conservatively: the entry's
+`**Files touched:**` line or its title must name a rules file.
+
+The session-start orientation points the model at the script, so a session
+that must run a rule-gate pass can find it. A clean run proves the checks
+ran, never that the rules are good — the checks verify record-keeping
+consistency, not rule quality; that stays with the judgment gate.
+
+
 ## Environment overrides
 
 | Variable             | Meaning                                              |
@@ -129,6 +162,7 @@ platform mapping, source-verified).
 npm install
 npm run typecheck   # tsc -p tsconfig.json (strict, no emit)
 npm test            # esbuild bundle + node --test test/harness.mjs — 19 tests
+python3 test/rule_corpus_check.py  # 6 tests, throwaway git projects
 ```
 
 The same flow runs in CI on every push (`.github/workflows/test.yml`), plus a
