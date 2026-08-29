@@ -1,3 +1,7 @@
 node_modules/
 .test/
 *.log
+
+# Python bytecode (never part of the vendored tree)
+__pycache__/
+*.pyc
